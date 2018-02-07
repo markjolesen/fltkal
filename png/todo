@@ -1,0 +1,54 @@
+  The PNG Reference Library is supplied "AS IS".  The Contributing Authors
+  and Group 42, Inc. disclaim all warranties, expressed or implied,
+  including, without limitation, the warranties of merchantability and of
+  fitness for any purpose.  The Contributing Authors and Group 42, Inc.
+  assume no liability for direct, indirect, incidental, special, exemplary,
+  or consequential damages, which may result from the use of the PNG
+  Reference Library, even if advised of the possibility of such damage.
+ 
+  Permission is hereby granted to use, copy, modify, and distribute this
+  source code, or portions hereof, for any purpose, without fee, subject
+  to the following restrictions:
+ 
+    1. The origin of this source code must not be misrepresented.
+ 
+    2. Altered versions must be plainly marked as such and must not
+       be misrepresented as being the original source.
+ 
+    3. This Copyright notice may not be removed or altered from
+       any source or altered source distribution.
+ 
+  The Contributing Authors and Group 42, Inc. specifically permit, without
+  fee, and encourage the use of this source code as a component to
+  supporting the PNG file format in commercial products.  If you use this
+  source code in a product, acknowledgment is not required but would be
+  appreciated.
+/*
+TODO - list of things to do for libpng:
+
+Final bug fixes.
+Better C++ wrapper/full C++ implementation?
+Fix problem with C++ and EXTERN "C".
+cHRM transformation.
+Remove setjmp/longjmp usage in favor of returning error codes.
+Palette creation.
+Add "grayscale->palette" transformation and "palette->grayscale" detection.
+Improved dithering.
+Multi-lingual error and warning message support.
+Complete sRGB transformation (presently it simply uses gamma=0.45455).
+Make profile checking optional via a png_set_something() call.
+Man pages for function calls.
+Better documentation.
+Better filter selection
+   (counting huffman bits/precompression?  filter inertia?  filter costs?).
+Histogram creation.
+Text conversion between different code pages (Latin-1 -> Mac and DOS).
+Avoid building gamma tables whenever possible.
+Use greater precision when changing to linear gamma for compositing against
+  background and doing rgb-to-gray transformation.
+Investigate pre-incremented loop counters and other loop constructions.
+Add interpolated method of handling interlacing.
+Switch to the simpler zlib (zlib/libpng) license if legally possible.
+Extend pngvalid.c to validate more of the libpng transformations.
+
+*/

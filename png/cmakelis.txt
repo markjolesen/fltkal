@@ -1,0 +1,72 @@
+#  The PNG Reference Library is supplied "AS IS".  The Contributing Authors
+#  and Group 42, Inc. disclaim all warranties, expressed or implied,
+#  including, without limitation, the warranties of merchantability and of
+#  fitness for any purpose.  The Contributing Authors and Group 42, Inc.
+#  assume no liability for direct, indirect, incidental, special, exemplary,
+#  or consequential damages, which may result from the use of the PNG
+#  Reference Library, even if advised of the possibility of such damage.
+# 
+#  Permission is hereby granted to use, copy, modify, and distribute this
+#  source code, or portions hereof, for any purpose, without fee, subject
+#  to the following restrictions:
+# 
+#    1. The origin of this source code must not be misrepresented.
+# 
+#    2. Altered versions must be plainly marked as such and must not
+#       be misrepresented as being the original source.
+# 
+#    3. This Copyright notice may not be removed or altered from
+#       any source or altered source distribution.
+# 
+#  The Contributing Authors and Group 42, Inc. specifically permit, without
+#  fee, and encourage the use of this source code as a component to
+#  supporting the PNG file format in commercial products.  If you use this
+#  source code in a product, acknowledgment is not required but would be
+#  appreciated.
+
+# source files for png
+set(PNG_SRCS
+  png.c
+  pngerror.c
+  pngget.c
+  pngmem.c
+  pngpread.c
+  pngread.c
+  pngrio.c
+  pngrtran.c
+  pngrutil.c
+  pngset.c
+  pngtrans.c
+  pngwio.c
+  pngwrite.c
+  pngwtran.c
+  pngwutil.c
+)
+
+#######################################################################
+FL_ADD_LIBRARY(fltk_png STATIC "${PNG_SRCS}")
+# install the png headers
+install(FILES png.h;pngconf.h;pnglibconf.h
+    DESTINATION ${FLTK_INCLUDEDIR}/FL/images
+)
+
+if(OPTION_USE_SYSTEM_ZLIB)
+    target_link_libraries(fltk_png ${FLTK_ZLIB_LIBRARIES})
+else()
+    target_link_libraries(fltk_png fltk_z)
+endif(OPTION_USE_SYSTEM_ZLIB)
+
+#######################################################################
+if(OPTION_BUILD_SHARED_LIBS)
+#######################################################################
+FL_ADD_LIBRARY(fltk_png SHARED "${PNG_SRCS}")
+
+if(OPTION_USE_SYSTEM_ZLIB)
+    target_link_libraries(fltk_png_SHARED ${FLTK_ZLIB_LIBRARIES})
+else()
+    target_link_libraries(fltk_png_SHARED fltk_z_SHARED)
+endif(OPTION_USE_SYSTEM_ZLIB)
+
+#######################################################################
+endif(OPTION_BUILD_SHARED_LIBS)
+#######################################################################
