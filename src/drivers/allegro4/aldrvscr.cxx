@@ -757,7 +757,12 @@ bool Fl_Allegro_Screen_Driver::wait_mouse(Fl_Window *window)
         Fl::e_x = x;
         Fl::e_y = y;
 
-        wm::hit_type what= hit(window, Fl::e_x_root, Fl::e_y_root);
+        wm::hit_type what= wm::HIT_NONE;
+
+        if ((FL_WINDOW == window->type() || FL_DOUBLE_WINDOW == window->type()))
+        {
+            what= hit(window, Fl::e_x_root, Fl::e_y_root);
+        }
 
         int btn = mouse_b;
 
@@ -855,9 +860,23 @@ bool Fl_Allegro_Screen_Driver::wait_mouse(Fl_Window *window)
 double Fl_Allegro_Screen_Driver::wait(double time_to_wait)
 {
     bool triggered = false;
+    ticker ticker_loop;
+
+    ticker_loop.set(time_to_wait);
 
     do
     {
+
+        Fl::run_checks();
+
+        // idle processing
+        static int in_idle= 0;
+        if (Fl::idle && !in_idle)
+        {
+            in_idle = 1;
+            Fl::idle();
+            in_idle = 0;
+        }
 
         ticks_t cur;
         ticks_t elapsed;
@@ -866,6 +885,7 @@ double Fl_Allegro_Screen_Driver::wait(double time_to_wait)
         clock_ = cur;
         timer_.elapse(elapsed);
         dclick_.elapse(elapsed);
+        ticker_loop.elapse(elapsed);
 
         if (dclick_.expired())
         {
@@ -920,6 +940,11 @@ double Fl_Allegro_Screen_Driver::wait(double time_to_wait)
         triggered = wait_mouse(window);
 
         if (triggered)
+        {
+            break;
+        }
+
+        if (ticker_loop.expired())
         {
             break;
         }

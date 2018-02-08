@@ -219,13 +219,18 @@ extern BITMAP* cursor_get(int &hot_x, int &hot_y, Fl_Cursor const c)
 
 extern void cursor_set(Fl_Cursor const c)
 {
+  static BITMAP* prev= 0;
   int hot_x;
   int hot_y;
   BITMAP* bmp= cursor_get(hot_x, hot_y, c);
-  fl_graphics_driver->mouse_hide();
-  set_mouse_sprite(bmp);
-  set_mouse_sprite_focus(hot_x, hot_y);
-  fl_graphics_driver->mouse_show();
+  if (prev != bmp)
+  {
+     fl_graphics_driver->mouse_hide();
+     set_mouse_sprite(bmp);
+     set_mouse_sprite_focus(hot_x, hot_y);
+     fl_graphics_driver->mouse_show();
+     prev= bmp;
+  }
   return;
 }
 
