@@ -172,10 +172,28 @@ LIBS=-l fltk -l alleg -l png -l jpeg -l z
 OBJS= hello.o
 
 hello.exe : $(OBJS)
-        $(CXX) -o $@ $(OBJS) $(LIBPATH) $(LIBS)
+	$(CXX) -o $@ $(OBJS) $(LIBPATH) $(LIBS)
 
 %.o : %.cxx
-        $(CXX) $(INCLUDES) -c $< -o $@ 
+	$(CXX) $(INCLUDES) -c $< -o $@ 
 
 ```
+
+# Porting
+
+To port your application, simply include the normal FLTK headers and compile for the specific platform.
+
+```
+#if !defined(__DJGPP__)
+#include <FL/Fl.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Box.H>
+#else
+#include <fl/fl.h>
+#include <fl/win.h>
+#include <fl/box.h>
+#endif
+```
+
+See FLTK [Basics](http://www.fltk.org/doc-1.1/basics.html) for more information.
 
