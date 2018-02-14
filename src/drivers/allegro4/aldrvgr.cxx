@@ -394,10 +394,12 @@ void Fl_Allegro_Graphics_Driver::push_clip(int x, int y, int w, int h)
 
     if (w > 0 && h > 0)
     {
-        r->x1 = x;
-        r->y1 = y;
-        r->x2 = (x + w - 1);
-        r->y2 = (y + h - 1);
+        int cx, cy, cw, ch;
+        clip_box(x, y, w, h, cx, cy, cw, ch);
+        r->x1 = cx;
+        r->y1 = cy;
+        r->x2 = (cx + cw - 1);
+        r->y2 = (cy + ch - 1);
     }
     else
     {
@@ -413,7 +415,7 @@ void Fl_Allegro_Graphics_Driver::push_clip(int x, int y, int w, int h)
     }
     else
     {
-        Fl::warning("Fl_Xlib_Graphics_Driver::push_clip: clip stack overflow!\n");
+        Fl::warning("Fl_Allegro_Graphics_Driver::push_clip: clip stack overflow!\n");
         free(r);
     }
 
@@ -493,9 +495,9 @@ int Fl_Allegro_Graphics_Driver::not_clipped(int x, int y, int w, int h)
     }
 
     return ((x < r->x2) &&
-            ((x + w - 1) > r->x1) &&
+            ((x + w) > r->x1) &&
             (y < r->y2) &&
-            ((y + h - 1) > r->y1));
+            ((y + h) > r->y1));
 }
 
 void Fl_Allegro_Graphics_Driver::push_no_clip()

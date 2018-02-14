@@ -982,6 +982,11 @@ void Fl_Allegro_Screen_Driver::get_system_colors()
 {
 }
 
+const char *Fl_Allegro_Screen_Driver::get_system_scheme()
+{
+    return fl_getenv("FLTK_SCHEME");
+}
+
 void Fl_Allegro_Screen_Driver::add_timeout(double time, Fl_Timeout_Handler cb, void *argp)
 {
     timer_.add(time, cb, argp);

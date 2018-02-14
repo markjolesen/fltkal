@@ -128,6 +128,8 @@ public:
 
     virtual void get_system_colors();
 
+    virtual const char *get_system_scheme();
+
     virtual void add_timeout(double time, Fl_Timeout_Handler cb, void *argp);
 
     virtual void repeat_timeout(double time, Fl_Timeout_Handler cb, void *argp);
