@@ -31,4 +31,19 @@ A demo of a couple of example apps running on FreeDOS can be found here
 
 [![Demo Video](http://img.youtube.com/vi/FpA-R-ko_z4/0.jpg)](http://www.youtube.com/watch?v=FpA-R-ko_z4)
 
+# Links
+
+FLTK port of DOS using Nano-X
+[FLTK for DOS](https://sourceforge.net/projects/fltk-dos/)
+
+```
+https://sourceforge.net/projects/fltk-dos/
+```
+
+A cross platform C++ TUI inspired by FLTK
+[FDOSTUI](http://www.nongnu.org/fdostui/)
+
+```
+http://www.nongnu.org/fdostui/
+```
 
