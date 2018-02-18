@@ -67,7 +67,7 @@
 #include "aldrvwin.h"
 #include <allegro.h>
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 
 extern void cursor_create();
 
@@ -671,7 +671,7 @@ bool Fl_Allegro_Screen_Driver::wait_keyboard(Fl_Window *window)
 
 wm::hit_type Fl_Allegro_Screen_Driver::hit(Fl_Window* window, int const x, int const y)
 {
-        Fl_Cursor cursor = static_cast<Fl_Cursor>(window->driver()->current_cursor());
+        Fl_Cursor cursor = window->driver()->get_cursor();
         wm::hit_type hit = wm_.hit((*window), x, y);
 
         switch (hit)

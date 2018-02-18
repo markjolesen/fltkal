@@ -92,7 +92,7 @@
 #include <fl/win.h>
 #include <fl/input.h>
 #include <fl/inphid.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/drvscr.h>
 #include <fl/fl_draw.h>
 

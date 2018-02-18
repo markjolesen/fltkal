@@ -1,8 +1,8 @@
-// grab.cxx
+// fl_rect.cxx
 //
-// "$Id: Fl_grab.cxx 11443 2016-03-27 17:37:07Z manolo $"
+// "$Id: fl_rect.cxx 12114 2016-11-16 19:56:22Z manolo $"
 //
-// Grab/release code for the Fast Light Tool Kit (FLTK).
+// Rectangle drawing routines for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
@@ -68,23 +68,43 @@
 //
 //
 
-#include <fl/fl.h>
-#include <fl/drvscr.h>
+/**
+  \file fl_rect.cxx
+  \brief Drawing and clipping routines for rectangles.
+*/
 
-////////////////////////////////////////////////////////////////
-// "Grab" is done while menu systems are up.  This has several effects:
-// Events are all sent to the "grab window", which does not even
-// have to be displayed (and in the case of Fl_Menu.cxx it isn't).
-// The system is also told to "grab" events and send them to this app.
-// This also modifies how Fl_Window::show() works, on X it turns on
-// override_redirect, it does similar things on WIN32.
+// These routines from fl_draw.H are used by the standard boxtypes
+// and thus are always linked into an fltk program.
+// Also all fl_clip routines, since they are always linked in so
+// that minimal update works.
 
-void Fl::grab(Fl_Window *win)
-{
-  screen_driver()->grab(win);
+#include <fl/platform.h>
+#include <fl/drvgr.h>
+
+// -----------------------------------------------------------------------------
+// all driver code is now in drivers/XXX/Fl_XXX_Graphics_Driver_xyz.cxx
+// -----------------------------------------------------------------------------
+
+/** see fl_restore_clip() */
+void Fl_Graphics_Driver::restore_clip() {
+  fl_clip_state_number++;
+}
+
+/** see fl_clip_region(Fl_Region) */
+void Fl_Graphics_Driver::clip_region(Fl_Region r) {
+  Fl_Region oldr = rstack[rstackptr];
+  if (oldr) XDestroyRegion(oldr);
+  rstack[rstackptr] = r;
+  restore_clip();
+}
+
+
+/** see fl_clip_region(void) */
+Fl_Region Fl_Graphics_Driver::clip_region() {
+  return rstack[rstackptr];
 }
 
 
 //
-// End of "$Id: Fl_grab.cxx 11443 2016-03-27 17:37:07Z manolo $".
+// End of "$Id: fl_rect.cxx 12114 2016-11-16 19:56:22Z manolo $".
 //

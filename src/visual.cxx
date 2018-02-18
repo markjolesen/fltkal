@@ -1,4 +1,4 @@
-// visiual.cxx
+// visual.cxx
 //
 // "$Id: Fl_visual.cxx 11443 2016-03-27 17:37:07Z manolo $"
 //

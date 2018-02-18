@@ -76,7 +76,7 @@
 // it interferes with the color cube used by fl_draw_image).
 
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/fl_draw.h>
 #include <fl/widget.h>
 #include <fl/menuitem.h>

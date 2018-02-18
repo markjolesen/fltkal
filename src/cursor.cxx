@@ -75,7 +75,7 @@
 // portable to other systems.
 
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/win.h>
 #include <fl/pixmap.h>
 #include <fl/imgrgb.h>

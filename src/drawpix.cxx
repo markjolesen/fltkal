@@ -90,7 +90,7 @@
 #if defined(FL_CFG_SYS_WIN32)
 #include "drivers/WinAPI/Fl_WinAPI_System_Driver.H"
 #endif
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/fl_draw.h>
 #include <stdio.h>
 #include "flstring.h"

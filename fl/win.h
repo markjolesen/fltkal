@@ -108,7 +108,10 @@ class Fl_Double_Window;
   window. Fl_Window has a default callback that calls Fl_Window::hide().
 */
 class FL_EXPORT Fl_Window : public Fl_Group {
-
+  friend int Fl::arg(int argc, char **argv, int &i);
+  friend class Fl_X;
+  friend class Fl_Window_Driver;
+private:
   static char *default_xclass_;
   static char show_iconic_; // 1 means create next window in iconic form
 
@@ -121,11 +124,6 @@ class FL_EXPORT Fl_Window : public Fl_Group {
   int fullscreen_screen_left;
   int fullscreen_screen_right;
 
-  friend int Fl::arg(int argc, char **argv, int &i);
-  friend class Fl_X;
-  friend class Fl_Window_Driver;
-  friend class Fl_PicoAndroid_Window_Driver;
-  friend class Fl_PicoSDL_Window_Driver;
   Fl_X *i; // points at the system-specific stuff, but exists only after the window is mapped
   Fl_Window_Driver *pWindowDriver; // points at the system-specific stuff at window creation time
 
@@ -138,8 +136,6 @@ class FL_EXPORT Fl_Window : public Fl_Group {
   // cursor stuff
   Fl_Cursor cursor_default;
   
-private:
-
   void _Fl_Window(); // constructor innards
 
   // unimplemented copy ctor and assignment operator
@@ -407,7 +403,7 @@ public:
   void icon(const Fl_RGB_Image*);
   void icons(const Fl_RGB_Image*[], int);
 
-#if defined(WIN32) && !defined(FL_DOXYGEN)
+#if defined(_WIN32) && !defined(FL_DOXYGEN)
   typedef struct HICON__* HICON;
   // These 2 member functions break the driver model but are kept for back compatibility.
   // They are implemented in Fl_win32.cxx

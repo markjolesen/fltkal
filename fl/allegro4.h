@@ -1,6 +1,6 @@
-// fd.h
+// allegro4.h
 //
-// FD header file for the Fast Light Tool Kit (FLTK).
+// Allegro header file for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
 // Copyright 2017 by Bill Spitzak and others.
@@ -66,13 +66,13 @@
 //
 //
 
-// Do not directly include this file, instead use <fl/x.h>.  It will
-// include this file if FL_FREEDOS is defined.  This is to encourage
-// portability of even the system-specific code...
+// Do not directly include this file, instead use <fl/platform.h>.  It will
+// include this file if __DJGPP__ or USE_ALLEGRO is defined.  
+// This is to encourage portability of even the system-specific code...
 
-#ifndef Fl_X_H
-#  error "Never use <fl/fd.h> directly; include <fl/x.h> instead."
-#endif // !Fl_X_H
+#ifndef FL_PLATFORM_H
+#  error "Never use <fl/fd.h> directly; include <fl/platform.h> instead."
+#endif // !FL_PLATFORM_H
 
 typedef int Window;
 

@@ -1,4 +1,4 @@
-// arg.cxx
+// fl_arg.cxx
 //
 // "$Id: Fl_arg.cxx 11988 2016-09-26 19:35:20Z manolo $"
 //
@@ -121,7 +121,7 @@ extern const char *fl_bg2;
   \li -display host:n.n
   <br>
   Sets the X display to use; this option is silently
-  ignored under WIN32 and MacOS.
+  ignored under Windows and MacOS.
   
   \li -dnd and -nodnd
   <br>
@@ -344,7 +344,7 @@ void Fl_Window::show(int argc, char **argv) {
       //  if (mh > gh) gh = mh;
       Fl_Widget *r = resizable();
       if (!r) resizable(this);
-      // for WIN32 we assume window is not mapped yet:
+      // for Windows we assume window is not mapped yet:
       if (fl & (Fl_System_Driver::fl_XValue | Fl_System_Driver::fl_YValue))
 	x(-1), resize(gx,gy,gw,gh);
       else

@@ -66,9 +66,39 @@
  *     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+/** \file
+ Definitions of platform-dependent types.
+ The exact nature of these types varies with the platform.
+ Therefore, portable FLTK applications should not assume these types
+ have a specific size, or that they are pointers.
+ */
 
-#ifndef PLATFORM_TYPES_H
-#define PLATFORM_TYPES_H
+#ifdef FL_DOXYGEN
+
+/** An integral type large enough to store a pointer or a long value.
+ A pointer value can be safely cast to fl_intptr_t, and later cast back
+ to its initial pointer type without change to the pointer value.
+ A variable of type fl_intptr_t can also store a long int value. */
+typedef opaque fl_intptr_t;
+/** An unsigned integral type large enough to store a pointer or an unsigned long value.
+ A pointer value can be safely cast to fl_uintptr_t, and later cast back
+ to its initial pointer type without change to the pointer value.
+ A variable of type fl_uintptr_t can also store an unsigned long int value. */
+typedef opaque fl_uintptr_t;
+
+typedef opaque Fl_Offscreen; /**< an offscreen drawing buffer */
+typedef opaque Fl_Bitmask; /**< mask */
+typedef opaque Fl_Region; /**< a region made of several rectangles */
+typedef opaque FL_SOCKET; /**< socket or file descriptor */
+typedef opaque GLContext; /**< an OpenGL graphics context, into which all OpenGL calls are rendered */
+
+#  define FL_COMMAND  opaque   /**< An alias for FL_CTRL on Windows and X11, or FL_META on MacOS X */
+#  define FL_CONTROL  opaque   /**< An alias for FL_META on Windows and X11, or FL_CTRL on MacOS X */
+
+#else
+
+#ifndef FL_PLATFORM_TYPES_H
+#define FL_PLATFORM_TYPES_H
 
 /* Platform-dependent types are defined here.
   These types must be defined by any platform:
@@ -83,9 +113,6 @@
     different signedness of socket numbers on *some* platforms.
  */
 
-/**
-  \todo	typedef's fl_intptr_t and fl_uintptr_t should be documented.
-*/
 #ifdef _WIN64
 
 #if defined(_MSC_VER)
@@ -123,7 +150,7 @@ typedef int FL_SOCKET;
 #  define FL_COMMAND	FL_META
 #  define FL_CONTROL 	FL_CTRL
 
-#elif defined(WIN32)
+#elif defined(_WIN32)
 typedef struct HBITMAP__ *HBITMAP;
 typedef HBITMAP Fl_Offscreen;
 typedef HBITMAP Fl_Bitmask;
@@ -169,12 +196,14 @@ typedef struct __GLXcontextRec *GLContext;
 
 
 #ifndef __APPLE__
-#  define FL_COMMAND	FL_CTRL   /**< An alias for FL_CTRL on WIN32 and X11, or FL_META on MacOS X */
-#  define FL_CONTROL	FL_META   /**< An alias for FL_META on WIN32 and X11, or FL_CTRL on MacOS X */
+#  define FL_COMMAND	FL_CTRL   /**< An alias for FL_CTRL on Windows and X11, or FL_META on MacOS X */
+#  define FL_CONTROL	FL_META   /**< An alias for FL_META on Windows and X11, or FL_CTRL on MacOS X */
 #endif
 
-#endif /* PLATFORM_TYPES_H */
+#endif /* FL_PLATFORM_TYPES_H */
+
+#endif // FL_DOXYGEN
 
 /*
- * End of "$Id: platform_types.h 12196 2017-03-13 23:31:38Z AlbrechtS $".
+ * End of "$Id: platform_types.h 12665 2018-02-12 07:18:36Z manolo $".
  */

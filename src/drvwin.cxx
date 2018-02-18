@@ -74,7 +74,7 @@
 #include <fl/winovlay.h>
 #include <fl/fl_draw.h>
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 
 extern void fl_throw_focus(Fl_Widget *o);
 
@@ -181,9 +181,9 @@ void Fl_Window_Driver::destroy_double_buffer() {
  The shared image should not have been scaled through Fl_Shared_Image::scale().
  
  Platform details:
- \li On the Unix or GNU/Linux platform, the SHAPE extension of the X server is required.
+ \li On the unix/linux platform, the SHAPE extension of the X server is required.
  This function does control the shape of Fl_Gl_Window instances.
- \li On the MSWindows platform, this function does nothing with class Fl_Gl_Window.
+ \li On the Windows platform, this function does nothing with class Fl_Gl_Window.
  \li On the Mac platform, OS version 10.4 or above is required.
  An 8-bit shape-mask is used when \p img is an Fl_RGB_Image:
  with depths 2 or 4, the image alpha channel becomes the shape mask such that areas with alpha = 0
@@ -292,11 +292,6 @@ int Fl_Window_Driver::set_cursor(Fl_Cursor) {
 int Fl_Window_Driver::set_cursor(const Fl_RGB_Image*, int, int) {
   return 0;
 }
-
-fl_uintptr_t Fl_Window_Driver::current_cursor() {
-  return 0;
-}
-
 
 void Fl_Window_Driver::wait_for_expose() {
   if (!shown()) return;

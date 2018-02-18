@@ -77,7 +77,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/win.h>
 #include <fl/drvsys.h>
 #include <fl/drvscr.h>

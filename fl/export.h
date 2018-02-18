@@ -72,7 +72,7 @@
 #  define Fl_Export_H
 
 /*
- * The following is only used when building DLLs under WIN32...
+ * The following is only used when building DLLs under Windows...
  */
 
 #  if defined(FL_DLL)

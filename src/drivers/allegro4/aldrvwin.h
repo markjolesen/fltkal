@@ -112,12 +112,11 @@ public:
 
     virtual int scroll(int src_x, int src_y, int src_w, int src_h, int dest_x, int dest_y, void (*draw_area)(void *, int, int, int, int), void *data);
 
+    virtual Fl_Cursor get_cursor() const;
+
     virtual int set_cursor(Fl_Cursor);
 
     virtual int set_cursor(const Fl_RGB_Image *, int, int);
-
-    virtual fl_uintptr_t current_cursor();
-
 };
 
 #define FL_ALLEGRO_WINDOW_DRIVER_H

@@ -72,7 +72,7 @@
 // Also see fl_set_fonts.cxx which adds all possible fonts.
 
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/fl_draw.h>
 #include <fl/drvscr.h>
 #include "flstring.h"

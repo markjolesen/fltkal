@@ -72,7 +72,7 @@
 #include <fl/drvscr.h>
 #include <fl/drvsys.h>
 #include <fl/fl_draw.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/fl_math.h>
 #include <fl/fl_utf8.h>
 #include "flstring.h"

@@ -72,7 +72,7 @@
  */
 
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/windbl.h>
 //#include <FL/Fl_Printer.H>
 #include <fl/fl_draw.h>

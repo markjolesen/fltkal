@@ -66,7 +66,7 @@
 #include "aldrvwin.h"
 #include "aldrvgr.h"
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/win.h>
 
 Window fl_window = 0;
@@ -326,6 +326,11 @@ int Fl_Allegro_Window_Driver::scroll(int src_x, int src_y, int src_w, int src_h,
     return rc;
 }
 
+Fl_Cursor Fl_Allegro_Window_Driver::get_cursor() const
+{
+    return cursor_;
+}
+
 int Fl_Allegro_Window_Driver::set_cursor(Fl_Cursor c)
 {
     if (cursor_ != c)
@@ -339,10 +344,5 @@ int Fl_Allegro_Window_Driver::set_cursor(Fl_Cursor c)
 int Fl_Allegro_Window_Driver::set_cursor(const Fl_RGB_Image *img, int hot_x, int hot_y)
 {
     return 0;
-}
-
-fl_uintptr_t Fl_Allegro_Window_Driver::current_cursor()
-{
-    return static_cast<fl_uintptr_t>(cursor_);
 }
 

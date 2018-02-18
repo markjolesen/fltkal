@@ -186,6 +186,7 @@ class FL_EXPORT Fl {
 private:
 
   static int use_high_res_GL_;
+  static int draw_GL_text_with_textures_;
 
 public:
 
@@ -197,29 +198,29 @@ public: // run time information about compile time configuration
   /** @{ */
   static bool cfg_gfx_xlib;   ///< X11 Xlib rendering available, usually on GNU/Linux systems
   static bool cfg_gfx_quartz; ///< Quartz rendering available, usually on OS X systems
-  static bool cfg_gfx_gdi;    ///< GDI rendering available, usually on MSWindows systems
+  static bool cfg_gfx_gdi;    ///< GDI rendering available, usually on Windows systems
   static bool cfg_gfx_opengl; ///< OpenGL rendering available, available on many platforms
   static bool cfg_gfx_cairo;  ///< Cairo rendering available, available on many platforms
-  static bool cfg_gfx_directx;///< DirectX rendering available, usually on MSWindows systems
+  static bool cfg_gfx_directx;///< DirectX rendering available, usually on Windows systems
   static bool cfg_gfx_allegro;///< ALLEGRO: rendering available
   /** @} */
   /** \defgroup cfg_prn runtime printer driver configuration */
   /** @{ */
   static bool cfg_prn_ps;     ///< PostScript rendering available, usually on GNU/Linux systems
   static bool cfg_prn_quartz; ///< Quartz rendering available, usually on OS X systems
-  static bool cfg_prn_gdi;    ///< GDI rendering available, usually on MSWindows systems
+  static bool cfg_prn_gdi;    ///< GDI rendering available, usually on Windows systems
   /** @} */
   /** \defgroup cfg_win runtime window and event manager configuration */
   /** @{ */
   static bool cfg_win_x11;    ///< X11 window management available, usually on GNU/Linux systems
   static bool cfg_win_cocoa;  ///< Cocoa window management available, usually on OS X systems
-  static bool cfg_win_win32;  ///< WIN32 window management available, on low level MSWindows
+  static bool cfg_win_win32;  ///< WIN32 window management available, on low level Windows
   static bool cfg_win_allegro;///< ALLEGRO: window management avaiable
   /** @} */
   /** \defgroup cfg_sys runtime system configuration */
   /** @{ */
   static bool cfg_sys_posix;  ///< Posix system available, usually on GNU/Linux and OS X systems, but also Cygwin
-  static bool cfg_sys_win32;  ///< WIN32 system available, on MSWindows
+  static bool cfg_sys_win32;  ///< WIN32 system available, on Windows
   static bool cfg_sys_allegro;///< ALLEGRO: system available
   /** @} */
 
@@ -253,7 +254,7 @@ public: // should be private!
   static Fl_Widget* selection_owner_;
   static Fl_Window* modal_;
   static Fl_Window* grab_;
-  static int compose_state; // used for dead keys (WIN32) or marked text (MacOS)
+  static int compose_state; // used for dead keys (Windows) or marked text (MacOS)
   static void call_screen_init(); // recompute screen number and dimensions
   static void reset_marked_text(); // resets marked text
   static void insertion_point_location(int x, int y, int height); // sets window coordinates & height of insertion point
@@ -307,7 +308,7 @@ public:
       /// the widget. If disabled, no tooltip is shown.
     OPTION_SHOW_TOOLTIPS,
      /// When switched on (default), Fl_Native_File_Chooser runs GTK file dialogs
-     /// if the GTK library is available on the platform (GNU/Linux and Unix only).
+     /// if the GTK library is available on the platform (linux/unix only).
      /// When switched off, GTK file dialogs aren't used even if the GTK library is available.
     OPTION_FNFC_USES_GTK,
       // don't change this, leave it always as the last element
@@ -318,7 +319,8 @@ public:
 private:  
   static unsigned char options_[OPTION_LAST];
   static unsigned char options_read_;
-  
+  static int program_should_quit_; // non-zero means the program was asked to cleanly terminate
+
 public:  
   /*
    Return a global setting for all FLTK applications, possibly overridden
@@ -471,6 +473,22 @@ public:
   static int check();
   static int ready();
   static int run();
+  static int run_also_windowless();
+  static int wait_also_windowless(double delay = 1e20);
+  /** Returns non-zero when a request for program termination was received and accepted.
+   On the MacOS platform, the "Quit xxx" item of the application menu is such a request,
+   that is considered accepted when all windows are closed. On other platforms, this function
+   returns 0 until \p Fl::program_should_quit(1) is called.
+   \version 1.4.0
+   */
+  static int program_should_quit() {return program_should_quit_;}
+  /** Indicate to the FLTK library whether a program termination request was received and accepted.
+  A program may set this to 1, for example, while performing a platform-independent command asking the program to cleanly
+  terminate, similarly to the "Quit xxx" item of the application menu under MacOS.
+   \version 1.4.0
+   */
+  static void program_should_quit(int should_i) { program_should_quit_ = should_i; }
+
   static Fl_Widget* readqueue();
   /**
   Adds a one-shot timeout callback.  The function will be called by
@@ -531,27 +549,7 @@ int main() {
   static void remove_check(Fl_Timeout_Handler, void* = 0);
   // private
   static void run_checks();
-  /**
-    Adds file descriptor fd to listen to.
-    
-    When the fd becomes ready for reading Fl::wait() will call the
-    callback and then return. The callback is passed the fd and the
-    arbitrary void* argument.
-    
-    The second version takes a when bitfield, with the bits
-    FL_READ, FL_WRITE, and FL_EXCEPT defined,
-    to indicate when the callback should be done.
-    
-    There can only be one callback of each type for a file descriptor. 
-    Fl::remove_fd() gets rid of <I>all</I> the callbacks for a given
-    file descriptor.
-    
-    Under UNIX <I>any</I> file descriptor can be monitored (files,
-    devices, pipes, sockets, etc.). Due to limitations in Microsoft Windows,
-    WIN32 applications can only monitor sockets.
-  */
   static void add_fd(int fd, int when, Fl_FD_Handler cb, void* = 0); // platform dependent
-  /** See void add_fd(int fd, int when, Fl_FD_Handler cb, void* = 0) */
   static void add_fd(int fd, Fl_FD_Handler cb, void* = 0); // platform dependent
   /** Removes a file descriptor handler. */
   static void remove_fd(int, int when); // platform dependent
@@ -650,7 +648,7 @@ int main() {
    focus is (including in other programs). The window <I>does not have
    to be shown()</I> , this lets the handle() method of a
    "dummy" window override all event handling and allows you to
-   map and unmap a complex set of windows (under both X and WIN32
+   map and unmap a complex set of windows (under both X and Windows
    <I>some</I> window must be mapped because the system interface needs a
    window id).
    
@@ -854,7 +852,7 @@ int main() {
 
     On X Fl::get_key(FL_Button+n) does not work.
     
-    On WIN32 Fl::get_key(FL_KP_Enter) and Fl::event_key(FL_KP_Enter) do not work.
+    On Windows Fl::get_key(FL_KP_Enter) and Fl::event_key(FL_KP_Enter) do not work.
   */
   static int event_key(int key);
   /** 
@@ -980,7 +978,7 @@ int main() {
    
    \par Platform details for image data:
    \li Unix or GNU/Linux platform: Clipboard images in PNG or BMP formats are recognized. Requires linking with the fltk_images library.
-   \li MSWindows platform: Both bitmap and vectorial (Enhanced metafile) data from clipboard
+   \li Windows platform: Both bitmap and vectorial (Enhanced metafile) data from clipboard
    can be pasted as image data.
    \li Mac OS X platform: Both bitmap (TIFF) and vectorial (PDF) data from clipboard
    can be pasted as image data.
@@ -1131,7 +1129,7 @@ int main() {
     "-*" will select all fonts with any encoding as long as they have
     normal X font names with dashes in them.  Passing "*" will list every
     font that exists (on X this may produce some strange output).  Other
-    values may be useful but are system dependent.  With WIN32 NULL
+    values may be useful but are system dependent.  With Windows NULL
     selects fonts with ISO8859-1 encoding and non-NULL selects
     all fonts.
     
@@ -1143,7 +1141,7 @@ int main() {
  /** \defgroup  fl_drawings  Drawing functions
   FLTK global graphics and GUI drawing functions.
   These functions are declared in <FL/fl_draw.H>, 
-  and in <FL/x.H> for offscreen buffer-related ones.
+  and in <FL/platform.H> for offscreen buffer-related ones.
      @{ */
   // <Hack to re-order the 'Drawing functions' group>
  /** @} */
@@ -1324,6 +1322,27 @@ int main() {
    \version 1.3.4
    */
   static int use_high_res_GL() { return use_high_res_GL_; }
+
+  /**  sets whether OpenGL uses textures to draw all text.
+   By default, FLTK draws OpenGL text using textures, if the necessary
+   hardware support is available. Call \p Fl::draw_GL_text_with_textures(0)
+   once in your program before the first call to gl_font() to have FLTK
+   draw instead OpenGL text using a legacy, platform-dependent procedure.
+   It's recommended not to deactivate textures under the MacOS platform
+   because the MacOS legacy procedure is extremely rudimentary.
+   \param val use 0 to prevent FLTK from drawing GL text with textures
+   \see gl_texture_pile_height(int max)
+   \version 1.4.0
+   */
+  static void draw_GL_text_with_textures(int val) { draw_GL_text_with_textures_ = val; }
+  
+  /**  returns whether whether OpenGL uses textures to draw all text.
+   Default is yes.
+   \see draw_GL_text_with_textures(int val)
+   \version 1.4.0
+   */
+  static int draw_GL_text_with_textures() { return draw_GL_text_with_textures_; }
+
 
 #ifdef FLTK_HAVE_CAIRO
   /** \defgroup group_cairo Cairo Support Functions and Classes

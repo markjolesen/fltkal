@@ -71,7 +71,7 @@
 #include "cfg_lib.h"
 
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/drvscr.h>
 #include <fl/drvwin.h>
 #include <fl/drvsys.h>
@@ -165,12 +165,12 @@ bool Fl::cfg_win_allegro= 1;
 bool Fl::cfg_win_allegro= 0;
 #endif
 
-#ifdef FL_SYS_POSIX
+#ifdef FL_CFG_SYS_POSIX
 bool Fl::cfg_sys_posix = 1;
 #else
 bool Fl::cfg_sys_posix = 0;
 #endif
-#ifdef FL_SYS_WIN32
+#ifdef FL_CFG_SYS_WIN32
 bool Fl::cfg_sys_win32 = 1;
 #else
 bool Fl::cfg_sys_win32 = 0;
@@ -568,7 +568,14 @@ void fl_trigger_clipboard_notify(int source) {
 void (*Fl::idle)(); // see Fl::add_idle.cxx for the add/remove functions
 
 /**
-  See int Fl::wait()
+ Waits a maximum of \p time_to_wait seconds or until "something happens".
+ 
+ See Fl::wait() for the description of operations performed when
+ "something happens".
+ \return Always 1 on Windows. Otherwise, it is positive
+ if an event or fd happens before the time elapsed.
+ It is zero if nothing happens.  It is negative if an error
+ occurs (this will happen on X11 if a signal happens).
 */
 double Fl::wait(double time_to_wait) {
   // delete all widgets that were listed during callbacks
@@ -579,8 +586,8 @@ double Fl::wait(double time_to_wait) {
 #define FOREVER 1e20
 
 /**
-  As long as any windows are displayed this calls Fl::wait()
-  repeatedly.  When all the windows are closed it returns zero
+  Calls Fl::wait()repeatedly as long as any windows are displayed.
+  When all the windows are closed it returns zero
   (supposedly it would return non-zero on any errors, but FLTK calls
   exit directly for these).  A normal program will end main()
   with return Fl::run();.
@@ -603,16 +610,8 @@ int Fl::run() {
   any Fl::add_fd() callbacks.  It then handles the events and
   calls the callbacks and then returns.
 
-  The return value of Fl::wait() is non-zero if there are any
+  \return non-zero if there are any
   visible windows - this may change in future versions of FLTK.
-
-  Fl::wait(time) waits a maximum of \e time seconds.
-  <i>It can return much sooner if something happens.</i>
-
-  The return value is positive if an event or fd happens before the
-  time elapsed.  It is zero if nothing happens (on Win32 this will only
-  return zero if \e time is zero).  It is negative if an error
-  occurs (this will happen on UNIX if a signal happens).
 */
 int Fl::wait() {
   if (!Fl_X::first) return 0;
@@ -2165,11 +2164,33 @@ int Fl::clipboard_contains(const char *type)
 }
 
 
+/**
+ Adds file descriptor fd to listen to.
+ 
+ When the fd becomes ready for reading Fl::wait() will call the
+ callback and then return. The callback is passed the fd and the
+ arbitrary void* argument.
+ 
+ This version takes a when bitfield, with the bits
+ FL_READ, FL_WRITE, and FL_EXCEPT defined,
+ to indicate when the callback should be done.
+ 
+ There can only be one callback of each type for a file descriptor.
+ Fl::remove_fd() gets rid of <I>all</I> the callbacks for a given
+ file descriptor.
+ 
+ Under UNIX/Linux/MacOS <I>any</I> file descriptor can be monitored (files,
+ devices, pipes, sockets, etc.). Due to limitations in Microsoft Windows,
+ Windows applications can only monitor sockets.
+ */
 void Fl::add_fd(int fd, int when, Fl_FD_Handler cb, void *d)
 {
   Fl::system_driver()->add_fd(fd, when, cb, d);
 }
 
+/** Adds file descriptor fd to listen to.
+ See Fl::add_fd(int fd, int when, Fl_FD_Handler cb, void* = 0)
+ for details */
 void Fl::add_fd(int fd, Fl_FD_Handler cb, void *d)
 {
   Fl::system_driver()->add_fd(fd, cb, d);

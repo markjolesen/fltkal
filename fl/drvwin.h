@@ -70,7 +70,7 @@
 //
 
 /** \file Fl_Window_Driver.H
- \brief declaration of classe Fl_Window_Driver.
+ \brief declaration of class Fl_Window_Driver.
 */
 
 #ifndef FL_WINDOW_DRIVER_H
@@ -91,7 +91,7 @@ class Fl_RGB_Image;
  \brief A base class for platform specific window handling code.
  This class is only for internal use by the FLTK library.
  Each supported platform implements several of the virtual methods of this class.
-  */
+*/
 class FL_EXPORT Fl_Window_Driver
 {
   friend class Fl_Window;
@@ -122,13 +122,13 @@ public:
   int y() const { return pWindow->y(); }
   /** returns the width of the window. */
   int w() const { return pWindow->w(); }
-  /** returns the width of the window. */
+  /** returns the height of the window. */
   int h() const { return pWindow->h(); }
   /** returns whether the window has a border. */
   int border() const { return pWindow->border(); }
   /** returns whether the window itself is visible(). */
   int visible() const { return pWindow->visible(); }
-  /** returns whether the window and all its parents is visible(). */
+  /** returns whether the window and all its parents are visible(). */
   int visible_r() const { return pWindow->visible_r(); }
   /** returns whether the window is shown(). */
   int shown() const { return pWindow->shown(); }
@@ -202,16 +202,17 @@ public:
   virtual void size_range();
   virtual void iconize() {}
   virtual void decoration_sizes(int *top, int *left,  int *right, int *bottom) {
-    *top = *left = *right = *bottom = 0; }
+    *top = *left = *right = *bottom = 0;
+  }
   virtual void show_with_args_begin() {}
   virtual void show_with_args_end(int argc, char **argv) {}
   virtual int can_do_overlay();
   virtual void redraw_overlay();
   
   // --- window cursor stuff
+  virtual Fl_Cursor get_cursor() const = 0; // ALLEGRO: not compatible with FLTK
   virtual int set_cursor(Fl_Cursor);
   virtual int set_cursor(const Fl_RGB_Image*, int, int);
-  virtual fl_uintptr_t current_cursor();
 
   // --- window shape stuff
   void shape_pixmap_(Fl_Image* pixmap); // platform-independent, support function

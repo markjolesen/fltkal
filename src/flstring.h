@@ -100,10 +100,10 @@
 #    define strdup _strdup
 #  endif /* _MSC_VER */
 
-#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__MINGW32__)
+#  if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MINGW32__)
 #    define strcasecmp(s,t)	_stricmp((s), (t))
 #    define strncasecmp(s,t,n)	_strnicmp((s), (t), (n))
-#  endif /* WIN32 && ... */
+#  endif /* _WIN32 && ... */
 
 #  ifdef __cplusplus
 extern "C" {

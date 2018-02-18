@@ -101,7 +101,6 @@ FLTKOBJS=\
 	$(OBJ)/add_idle.o \
 	$(OBJ)/adjuster.o \
 	$(OBJ)/arc.o \
-	$(OBJ)/arg.o \
 	$(OBJ)/bmp.o \
 	$(OBJ)/box.o \
 	$(OBJ)/boxoval.o \
@@ -146,16 +145,19 @@ FLTKOBJS=\
 	$(OBJ)/filechn.o \
 	$(OBJ)/filedir.o \
 	$(OBJ)/filefltk.o \
+	$(OBJ)/fl_arg.o \
 	$(OBJ)/fl_ask.o \
 	$(OBJ)/fl_box.o \
 	$(OBJ)/fl_boxro.o \
 	$(OBJ)/fl_color.o \
-	$(OBJ)/fl.o \
 	$(OBJ)/fl_draw.o \
 	$(OBJ)/fl_font.o \
 	$(OBJ)/fl_gleam.o \
+	$(OBJ)/fl_grab.o \
 	$(OBJ)/fl_gtk.o \
+	$(OBJ)/fl.o \
 	$(OBJ)/flprintf.o \
+	$(OBJ)/fl_rect.o \
 	$(OBJ)/flstring.o \
 	$(OBJ)/fl_uri.o \
 	$(OBJ)/fl_utf8.o \
@@ -166,7 +168,6 @@ FLTKOBJS=\
 	$(OBJ)/fnlist.o \
 	$(OBJ)/fnmatch.o \
 	$(OBJ)/fnsetext.o \
-	$(OBJ)/grab.o \
 	$(OBJ)/group.o \
 	$(OBJ)/helpview.o \
 	$(OBJ)/hotspot.o \
@@ -207,7 +208,6 @@ FLTKOBJS=\
 	$(OBJ)/plastic.o \
 	$(OBJ)/pref.o \
 	$(OBJ)/progress.o \
-	$(OBJ)/rect.o \
 	$(OBJ)/roller.o \
 	$(OBJ)/scandir.o \
 	$(OBJ)/scrlarea.o \
@@ -236,7 +236,7 @@ FLTKOBJS=\
 	$(OBJ)/treepref.o \
 	$(OBJ)/valuator.o \
 	$(OBJ)/vertex.o \
-	$(OBJ)/visiual.o \
+	$(OBJ)/visual.o \
 	$(OBJ)/widget.o \
 	$(OBJ)/widgsurf.o \
 	$(OBJ)/win.o \

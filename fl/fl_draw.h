@@ -184,7 +184,7 @@ inline void fl_restore_clip() { fl_graphics_driver->restore_clip(); }
  Fl_Region is an operating system specific type.
  \param[in] r clipping region
  */
-inline void fl_clip_region(Fl_Region r) { if (r) fl_graphics_driver->clip_region(r); }
+inline void fl_clip_region(Fl_Region r) { fl_graphics_driver->clip_region(r); }
 /**
  Returns the current clipping region.
  */
@@ -338,7 +338,7 @@ inline void fl_yxline(int x, int y, int y1, int x2, int y3) {fl_graphics_driver-
  Draw ellipse sections using integer coordinates.
  
  These functions match the rather limited circle drawing code provided by X
- and WIN32. The advantage over using fl_arc with floating point coordinates
+ and Windows. The advantage over using fl_arc with floating point coordinates
  is that they are faster because they often use the hardware, and they draw
  much nicer small circles, since the small sizes are often hard-coded bitmaps.
  

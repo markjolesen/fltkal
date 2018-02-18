@@ -1,11 +1,11 @@
-// x.h
+// platform.h
 //
-// "$Id: x.H 12307 2017-07-11 13:22:56Z manolo $"
+// "$Id: platform.H 12655 2018-02-09 14:39:42Z AlbrechtS $"
 //
-// X11 header file for the Fast Light Tool Kit (FLTK).
+// Platform header file for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -73,15 +73,15 @@
 // need to call Xlib directly.  These symbols may not exist on non-X
 // systems.
 
-#if !defined(Fl_X_H) && !defined(FL_DOXYGEN) 
-#  define Fl_X_H
+#if !defined(FL_PLATFORM_H) && !defined(FL_DOXYGEN)
+#  define FL_PLATFORM_H
 
 #   include <fl/export.h>
 #   include <fl/typesplt.h>
 #   include <fl/fl_types.h> // for uchar
 class Fl_Window;
 
-#  ifdef WIN32
+#  ifdef _WIN32
 #    include "win32.H"
 #  elif defined(__APPLE__)
 #    include "mac.H"
@@ -90,9 +90,9 @@ class Fl_Window;
 #    include "porting.H"
 #  elif defined(FL_PORTING)
 #    pragma message "FL_PORTING: write a header file based on this file, win32.H, or mac.H to define the FLTK core internals"
-#    include "porting.h"
+#    include "porting.H"
 #  elif defined(__DJGPP__) || defined(USE_ALLEGRO)
-#    include "fd.h"
+#    include "allegro4.h"
 #  else // X11
 #   include <FL/fl_types.h>
 #   include <FL/Enumerations.H>
@@ -203,8 +203,8 @@ extern FL_EXPORT void fl_delete_bitmask(Fl_Bitmask bm);
 extern FL_EXPORT int fl_parse_color(const char* p, uchar& r, uchar& g, uchar& b);
 extern FL_EXPORT void fl_open_callback(void (*)(const char *));
 
-#endif // !Fl_X_H
+#endif // !FL_PLATFORM_H
 
 //
-// End of "$Id: x.H 12307 2017-07-11 13:22:56Z manolo $".
+// End of "$Id: platform.H 12655 2018-02-09 14:39:42Z AlbrechtS $".
 //

@@ -76,7 +76,7 @@
 #include <fl/fl_draw.h>
 #include <fl/drvimg.h>
 #include <fl/fl_math.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 
 FL_EXPORT Fl_Graphics_Driver *fl_graphics_driver; // the current driver of graphics operations
 
@@ -141,7 +141,7 @@ void Fl_Graphics_Driver::copy_offscreen(int x, int y, int w, int h, Fl_Offscreen
   fl_begin_offscreen(pixmap); // does nothing if pixmap was not created by fl_create_offscreen()
   float s = 1;
   if (current == Fl_Surface_Device::surface()) {// pixmap was not created by fl_create_offscreen()
-    // happens, e.g., when drawing images under WIN32
+    // happens, e.g., when drawing images under Windows
     surface = new Fl_Image_Surface(px_width, px_height, 0, pixmap);
     Fl_Surface_Device::push_current(surface);
   }
@@ -269,8 +269,25 @@ void Fl_Graphics_Driver::draw(Fl_Shared_Image *shared, int X, int Y) {
   shared->scaled_image_->draw(X, Y, shared->scaled_image_->w(), shared->scaled_image_->h(), 0, 0);
 }
 
+unsigned Fl_Graphics_Driver::font_desc_size() {
+  return (unsigned)sizeof(Fl_Fontdesc);
+}
+
+bool Fl_Graphics_Driver::overlay_rect_unscaled()
+{
+  return (scale() == int(scale()));
+}
 
 #ifndef FL_DOXYGEN
+Fl_Font_Descriptor::Fl_Font_Descriptor(const char* name, Fl_Fontsize Size) {
+  next = 0;
+#  if HAVE_GL
+  listbase = 0;
+#  endif
+  // OpenGL needs those for its font handling
+  size = Size;
+}
+
 Fl_Scalable_Graphics_Driver::Fl_Scalable_Graphics_Driver() : Fl_Graphics_Driver() {
   scale_ = 1;
   line_width_ = 0;

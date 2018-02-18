@@ -79,7 +79,7 @@
 #include <ctype.h>
 #include <string.h>	// strdup()
 #include <fl/fl.h>
-#include <fl/x.h>
+#include <fl/platform.h>
 #include <fl/textbuf.h>
 #include <fl/textdsp.h>
 #include <fl/win.h>
@@ -2073,7 +2073,7 @@ int Fl_Text_Display::handle_vline(
         double xAbs = (mode==GET_WIDTH) ? startX : startX+mHorizOffset-text_area.x;
         w = ((int(xAbs/tab)+1)*tab) - xAbs;
         if (mode==DRAW_LINE)
-          draw_string( style|BG_ONLY_MASK, static_cast<int>(startX), Y, static_cast<int>(startX+w), 0, 0 );
+          draw_string( style|BG_ONLY_MASK, startX, Y, startX+w, 0, 0 );
         if (mode==FIND_INDEX && startX+w>rightClip) {
           // find x pos inside block
           free(lineStr);
@@ -2085,10 +2085,10 @@ int Fl_Text_Display::handle_vline(
         // draw a text segment
         w = string_width( lineStr+startIndex, i-startIndex, style );
         if (mode==DRAW_LINE)
-          draw_string( style, static_cast<int>(startX), Y, static_cast<int>(startX+w), lineStr+startIndex, i-startIndex );
+          draw_string( style, startX, Y, startX+w, lineStr+startIndex, i-startIndex );
         if (mode==FIND_INDEX && startX+w>rightClip) {
           // find x pos inside block
-	  int di = find_x(lineStr+startIndex, i-startIndex, style, static_cast<int>(-(rightClip-startX))); // STR #2788
+	  int di = find_x(lineStr+startIndex, i-startIndex, style, -(rightClip-startX)); // STR #2788
           free(lineStr);
           IS_UTF8_ALIGNED2(buffer(), (lineStartPos+startIndex+di))
           return lineStartPos + startIndex + di;
@@ -2108,7 +2108,7 @@ int Fl_Text_Display::handle_vline(
     double xAbs = (mode==GET_WIDTH) ? startX : startX+mHorizOffset-text_area.x;
     w = static_cast<int>(((int(xAbs/tab)+1)*tab) - xAbs);
     if (mode==DRAW_LINE)
-      draw_string( style|BG_ONLY_MASK, static_cast<int>(startX), Y, static_cast<int>(startX+w), 0, 0 );
+      draw_string( style|BG_ONLY_MASK, startX, Y, startX+w, 0, 0 );
     if (mode==FIND_INDEX) {
       // find x pos inside block
       free(lineStr);
@@ -2119,10 +2119,10 @@ int Fl_Text_Display::handle_vline(
   } else {
     w = static_cast<int>(string_width( lineStr+startIndex, i-startIndex, style ));
     if (mode==DRAW_LINE)
-      draw_string( style, static_cast<int>(startX), Y, static_cast<int>(startX+w), lineStr+startIndex, i-startIndex );
+      draw_string( style, startX, Y, startX+w, lineStr+startIndex, i-startIndex );
     if (mode==FIND_INDEX) {
       // find x pos inside block
-      int di = find_x(lineStr+startIndex, i-startIndex, style, static_cast<int>(-(rightClip-startX))); // STR #2788
+      int di = find_x(lineStr+startIndex, i-startIndex, style, -(rightClip-startX)); // STR #2788
       free(lineStr);
       IS_UTF8_ALIGNED2(buffer(), (lineStartPos+startIndex+di))
       return lineStartPos + startIndex + di;
@@ -2137,7 +2137,7 @@ int Fl_Text_Display::handle_vline(
   startX += w;
   style = position_style(lineStartPos, lineLen, i);
   if (mode==DRAW_LINE)
-    draw_string( style|BG_ONLY_MASK, static_cast<int>(startX), Y, text_area.x+text_area.w, lineStr, lineLen );
+    draw_string( style|BG_ONLY_MASK, startX, Y, text_area.x+text_area.w, lineStr, lineLen );
 
   free(lineStr);
   IS_UTF8_ALIGNED2(buffer(), (lineStartPos+lineLen))

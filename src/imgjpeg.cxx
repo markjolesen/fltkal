@@ -6,6 +6,7 @@
 //
 // Copyright 2017-2018 The fltkal authors
 // Copyright 1997-2011 by Easy Software Products.
+// Image support by Matthias Melcher, Copyright 2000-2009.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -66,7 +67,6 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Image support by Matthias Melcher, Copyright 2000-2009.
 //
 // Contents:
 //
@@ -91,9 +91,9 @@
 // updated header file for the INT32 data type; the following define
 // from Shane Hill seems to be a usable workaround...
 
-#if defined(WIN32) && defined(__CYGWIN__)
+#if defined(__CYGWIN__)
 #  define XMD_H
-#endif // WIN32 && __CYGWIN__
+#endif // __CYGWIN__
 
 
 extern "C"

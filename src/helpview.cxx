@@ -261,7 +261,7 @@ img->draw()
 */
 
 // We don't put the offscreen buffer in the help view class because
-// we'd need to include x.H in the header...
+// we'd need to include platform.H in the header...
 static Fl_Offscreen fl_help_view_buffer;
 int Fl_Help_View::selection_first = 0;
 int Fl_Help_View::selection_last = 0;

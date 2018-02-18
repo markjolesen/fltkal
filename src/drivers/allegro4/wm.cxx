@@ -67,7 +67,7 @@
 #include "aldrvwin.h"
 #include "aldrvgr.h"
 #include "algfx.h"
-#include <fl/x.h>
+#include <fl/platform.h>
 
 wm::wm()
 {

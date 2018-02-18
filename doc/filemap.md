@@ -169,5 +169,5 @@
 | porting.H                       | N/A         |
 | README.Xcode                    | N/A         |
 | win32.H                         | N/A         |
-| x.H                             | x.h         |
-
+| x.H                             | removed; see platform.h |
+| platform.H                      | platform.h  |

@@ -99,7 +99,7 @@
 #include <FL/filename.H>
 #else
 #include <fl/fl.h>
-#include <fl/x.h> // for fl_open_callback
+#include <fl/platform.h> // for fl_open_callback
 #include <fl/group.h>
 #include <fl/windbl.h>
 #include <fl/fl_ask.h>
