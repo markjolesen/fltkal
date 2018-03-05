@@ -74,7 +74,7 @@
 
 #ifndef Fl_XPM_Image_H
 #define Fl_XPM_Image_H
-#  include "pixmap.h"
+#  include "imgpix.h"
 
 /**
   The Fl_XPM_Image class supports loading, caching,

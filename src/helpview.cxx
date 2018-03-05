@@ -104,7 +104,7 @@
 #include <fl/helpview.h>
 #include <fl/imgshare.h>
 #include <fl/win.h>
-#include <fl/pixmap.h>
+#include <fl/imgpix.h>
 
 #include <stdio.h>
 #include <stdlib.h>

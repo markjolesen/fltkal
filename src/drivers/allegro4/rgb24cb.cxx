@@ -1,4 +1,4 @@
-// alrgbcb.cxx
+// rgb24cb.cxx
 //
 // Convert RGB image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
 //
@@ -66,7 +66,7 @@
 #include <allegro.h>
 #include <fl/drvgr.h>
 
-BITMAP *rgbcb_to_bitmap(
+BITMAP *rgb24cb_to_bitmap(
     Fl_Draw_Image_Cb cb,
     void *data,
     unsigned int const img_width,

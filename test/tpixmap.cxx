@@ -77,7 +77,7 @@
 #include <fl/fl.h>
 #include <fl/windbl.h>
 #include <fl/btn.h>
-#include <fl/pixmap.h>
+#include <fl/imgpix.h>
 #include <fl/btntog.h>
 #endif
 

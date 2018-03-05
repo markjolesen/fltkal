@@ -1,8 +1,8 @@
-// alrgba.cxx
+// rgb16.cxx
 //
-// Convert RGBA image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
+// Convert RGB image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2018 The fltkal authors
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -65,7 +65,7 @@
 //
 #include <allegro.h>
 
-BITMAP *rgba_to_bitmap(
+BITMAP *rgb16_to_bitmap(
     unsigned int const img_width,
     unsigned int const img_height,
     unsigned int const img_stride,
@@ -76,7 +76,7 @@ BITMAP *rgba_to_bitmap(
 
     if (img_stride)
     {
-        delta = (img_stride - img_width);
+        delta = ((img_stride - img_width) / 2);
     }
 
     do
@@ -88,18 +88,29 @@ BITMAP *rgba_to_bitmap(
             break;
         }
 
-        unsigned char const *src = &img_bits[0];
+        clear_to_color(bmp, MASK_COLOR_32);
+
+        unsigned short const *src = reinterpret_cast<unsigned short const *>(&img_bits[0]);
 
         for (unsigned int row = 0; row < img_height; row++)
         {
             unsigned char *dest = bmp->line[row];
-            for (unsigned int index = 0; index < img_width; index++)
+            for (unsigned int index = 0; index < (img_width / 2); index++)
             {
-                *dest++ = src[2];
-                *dest++ = src[1];
-                *dest++ = src[0];
-                *dest++ = src[3];
-                src += 4;
+                static unsigned short const red_mask = 0x7c00;
+                static unsigned short const green_mask =  0x3e0;
+                static unsigned short const blue_mask = 0x1f;
+                unsigned short rgb555 = *src++;
+                unsigned char red = ((red_mask & rgb555) >> 10);
+                unsigned char green = ((green_mask & rgb555) >> 5);
+                unsigned char blue = (blue_mask & rgb555);
+                red <<= 3;
+                green <<= 3;
+                blue <<= 3;
+                *dest++ = red;
+                *dest++ = green;
+                *dest++ = blue;
+                dest++;
             }
             src += delta;
         }

@@ -17,7 +17,7 @@
 | filename.H                      | filename.h  |
 | Fl\_Adjuster.H                  | adjuster.h  |
 | fl\_ask.H                       | fl\_ask.h   |
-| Fl\_Bitmap.H                    | bmp.h       |
+| Fl\_Bitmap.H                    | imgbit.h    |
 | Fl\_BMP\_Image.H                | imgbmp.h    |
 | Fl\_Box.H                       | box.h       |
 | Fl\_Browser\_.H                 | browser\_.h |
@@ -88,7 +88,7 @@
 | Fl\_Overlay\_Window.H           | winovlay.h  |
 | Fl\_Pack.H                      | pack.h      |
 | Fl\_Paged\_Device.H             | N/A         |
-| Fl\_Pixmap.H                    | pixmap.h    |
+| Fl\_Pixmap.H                    | imgpix.h    |
 | Fl\_Plugin.H                    | plugin.h    |
 | Fl\_PNG\_Image.H                | imgpng.h    |
 | Fl\_PNM\_Image.H                | imgpnm.h    |

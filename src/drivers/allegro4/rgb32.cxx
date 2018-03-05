@@ -1,6 +1,6 @@
-// alrgb.cxx
+// rgb32.cxx
 //
-// Convert RGB image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
+// Convert RGBA image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
 //
 // Copyright 2017-2018 The fltkal authors
 //
@@ -65,7 +65,7 @@
 //
 #include <allegro.h>
 
-BITMAP *rgb_to_bitmap(
+BITMAP *rgb32_to_bitmap(
     unsigned int const img_width,
     unsigned int const img_height,
     unsigned int const img_stride,
@@ -88,19 +88,16 @@ BITMAP *rgb_to_bitmap(
             break;
         }
 
-        clear_to_color(bmp, MASK_COLOR_32);
-
         unsigned char const *src = &img_bits[0];
 
         for (unsigned int row = 0; row < img_height; row++)
         {
-            unsigned char *dest = bmp->line[row];
+            uint32_t *dest = reinterpret_cast<uint32_t*>(bmp->line[row]);
             for (unsigned int index = 0; index < img_width; index++)
             {
-                *dest++ = *src++;
-                *dest++ = *src++;
-                *dest++ = *src++;
-                dest++;
+                uint32_t color= makecol32(*src++, *src++, *src++);
+                *dest++= color;
+                src++;
             }
             src += delta;
         }

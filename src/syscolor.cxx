@@ -78,7 +78,7 @@
 #include "flstring.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <fl/pixmap.h>
+#include <fl/imgpix.h>
 #include <fl/imgtiled.h>
 #include "tile.xpm"
 

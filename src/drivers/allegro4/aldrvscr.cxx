@@ -67,6 +67,7 @@
 #include "aldrvwin.h"
 #include <allegro.h>
 #include <fl/fl.h>
+#include <fl/fl_enums.h>
 #include <fl/platform.h>
 
 extern void cursor_create();
@@ -129,7 +130,7 @@ void Fl_Allegro_Screen_Driver::init()
         exit(-1);
     }
 
-    num_screens= 1;
+    num_screens = 1;
     cursor_create();
     show_mouse(screen);
 
@@ -669,51 +670,59 @@ bool Fl_Allegro_Screen_Driver::wait_keyboard(Fl_Window *window)
     return triggered;
 }
 
-wm::hit_type Fl_Allegro_Screen_Driver::hit(Fl_Window* window, int const x, int const y)
+wm::hit_type Fl_Allegro_Screen_Driver::hit(Fl_Window *window, int const x, int const y)
 {
-        Fl_Cursor cursor = window->driver()->get_cursor();
-        wm::hit_type hit = wm_.hit((*window), x, y);
+    wm::hit_type hit = wm_.hit((*window), x, y);
+    Fl_Cursor curwin = window->driver()->get_cursor();
+    Fl_Cursor curnew = curwin;
 
-        switch (hit)
+    switch (hit)
+    {
+    case wm::HIT_MOVE:
+        curnew = FL_CURSOR_MOVE;
+        break;
+    case wm::HIT_EAST:
+        curnew = FL_CURSOR_E;
+        break;
+    case wm::HIT_WEST:
+        curnew = FL_CURSOR_W;
+        break;
+    case wm::HIT_NORTH:
+        curnew = FL_CURSOR_N;
+        break;
+    case wm::HIT_NORTH_EAST:
+        curnew = FL_CURSOR_NE;
+        break;
+    case wm::HIT_NORTH_WEST:
+        curnew = FL_CURSOR_NW;
+        break;
+    case wm::HIT_SOUTH:
+        curnew = FL_CURSOR_S;
+        break;
+    case wm::HIT_SOUTH_EAST:
+        curnew = FL_CURSOR_SE;
+        break;
+    case wm::HIT_SOUTH_WEST:
+        curnew = FL_CURSOR_SW;
+        break;
+    default:
+        break;
+    }
+
+    if (cursor_ != curnew)
+    {
+        if (curnew != curwin)
         {
-        case wm::HIT_MOVE:
-            cursor = FL_CURSOR_MOVE;
-            break;
-        case wm::HIT_EAST:
-            cursor = FL_CURSOR_E;
-            break;
-        case wm::HIT_WEST:
-            cursor = FL_CURSOR_W;
-            break;
-        case wm::HIT_NORTH:
-            cursor = FL_CURSOR_N;
-            break;
-        case wm::HIT_NORTH_EAST:
-            cursor = FL_CURSOR_NE;
-            break;
-        case wm::HIT_NORTH_WEST:
-            cursor = FL_CURSOR_NW;
-            break;
-        case wm::HIT_SOUTH:
-            cursor = FL_CURSOR_S;
-            break;
-        case wm::HIT_SOUTH_EAST:
-            cursor = FL_CURSOR_SE;
-            break;
-        case wm::HIT_SOUTH_WEST:
-            cursor = FL_CURSOR_SW;
-            break;
-        default:
-            break;
+            cursor_set(curnew);
         }
-
-        if (cursor_ != cursor)
+        else
         {
-            cursor_set(cursor);
-            cursor_= cursor;
+            window->driver()->redisplay_cursor();
         }
+        cursor_ = curnew;
+    }
 
-        return hit;
+    return hit;
 }
 
 bool Fl_Allegro_Screen_Driver::wait_mouse(Fl_Window *window)
@@ -757,11 +766,11 @@ bool Fl_Allegro_Screen_Driver::wait_mouse(Fl_Window *window)
         Fl::e_x = x;
         Fl::e_y = y;
 
-        wm::hit_type what= wm::HIT_NONE;
+        wm::hit_type what = wm::HIT_NONE;
 
         if ((FL_WINDOW == window->type() || FL_DOUBLE_WINDOW == window->type()))
         {
-            what= hit(window, Fl::e_x_root, Fl::e_y_root);
+            what = hit(window, Fl::e_x_root, Fl::e_y_root);
         }
 
         int btn = mouse_b;
@@ -870,7 +879,7 @@ double Fl_Allegro_Screen_Driver::wait(double time_to_wait)
         Fl::run_checks();
 
         // idle processing
-        static int in_idle= 0;
+        static int in_idle = 0;
         if (Fl::idle && !in_idle)
         {
             in_idle = 1;

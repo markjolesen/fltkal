@@ -1,6 +1,6 @@
-// alxpm.cxx
+// rgb8.cxx
 //
-// Convert XPM image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
+// Convert RGB image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
 //
 // Copyright 2018 The fltkal authors
 //
@@ -64,44 +64,45 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include <allegro.h>
-#include <fl/pixmap.h>
 
-extern int fl_convert_pixmap(const char *const *cdata, uchar *out, Fl_Color bg);
-
-extern BITMAP *rgba_to_bitmap(unsigned int const img_width, unsigned int const img_height, unsigned int const img_stride, unsigned char const *img_bits);
-
-BITMAP *xpm_to_bitmap(char const **xpm)
+BITMAP *rgb8_to_bitmap(
+    unsigned int const img_width,
+    unsigned int const img_height,
+    unsigned int const img_stride,
+    unsigned char const *img_bits)
 {
     BITMAP *bmp = 0;
-    Fl_Pixmap pxm(xpm);
+    unsigned int delta = 0;
+
+    if (img_stride)
+    {
+        delta = (img_stride - img_width);
+    }
 
     do
     {
+        bmp = create_bitmap_ex(32, img_width, img_height);
 
-        int W = pxm.w();
-
-        if (0 >= W)
+        if (0 == bmp)
         {
             break;
         }
 
-        int H = pxm.h();
+        clear_to_color(bmp, MASK_COLOR_32);
 
-        if (0 >= H)
+        unsigned char const *src = &img_bits[0];
+
+        for (unsigned int row = 0; row < img_height; row++)
         {
-            break;
+            uint32_t *dest = reinterpret_cast<uint32_t*>(bmp->line[row]);
+            for (unsigned int index = 0; index < img_width; index++)
+            {
+                unsigned char grey = *src++;
+                uint32_t color= makecol24(grey, grey, grey);
+                *dest++= color;
+            }
+            src += delta;
         }
-
-        int bytes = (W * H * 4);
-        unsigned char *bits = reinterpret_cast<unsigned char *>(malloc(bytes));
-        int rc = fl_convert_pixmap(pxm.data(), bits, 0xFF00FF00);
-
-        if (rc)
-        {
-            bmp = rgba_to_bitmap(W, H, 0, bits);
-        }
-
-        free(bits);
 
     }
     while (0);

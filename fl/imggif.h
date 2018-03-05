@@ -73,7 +73,7 @@
 
 #ifndef Fl_GIF_Image_H
 #define Fl_GIF_Image_H
-#  include "pixmap.h"
+#  include "imgpix.h"
 
 /**
  The Fl_GIF_Image class supports loading, caching,

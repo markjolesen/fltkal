@@ -76,7 +76,7 @@
 
 #include <fl/fl.h>
 #include <fl/group.h>
-#include <fl/bmp.h>
+#include <fl/imgbit.h>
 #include <stdlib.h>
 
 #define FL_WINDOW 0xF0		///< window type id all subclasses have type() >= this

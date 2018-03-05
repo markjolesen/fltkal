@@ -77,17 +77,12 @@
 #include <fl/fl.h>
 #include <fl/platform.h>
 #include <fl/win.h>
-#include <fl/pixmap.h>
+#include <fl/imgpix.h>
 #include <fl/imgrgb.h>
 #include <fl/drvwin.h>
 #include <fl/fl_draw.h>
 #include <allegro.h>
 
-// ALLEGRO: _mjo deprecated, need to remove
-#include "curwait.xpm"
-#include "curhelp.xpm"
-#include "curnwse.xpm"
-#include "curnesw.xpm"
 #include "curnone.xpm"
 
 // ALLEGRO: cursor set
@@ -130,12 +125,13 @@ enum xpm_index
   xpm_w,
   xpm_wait,
   xpm_we,
+  xpm_none,
   xpm_last
 };
 
 BITMAP* _cursors[xpm_last];
 
-BITMAP* xpm_to_bitmap(char const**);
+BITMAP* xpm_to_bitmap(char const* const*);
 
 extern void cursor_create()
 {
@@ -158,7 +154,8 @@ extern void cursor_create()
     text_xpm,
     w_xpm,
     wait_xpm,
-    we_xpm
+    we_xpm,
+    fl_cursor_none_xpm
   };
 
   for (unsigned slot= 0; slot < xpm_last; slot++)
@@ -190,8 +187,8 @@ extern BITMAP* cursor_get(int &hot_x, int &hot_y, Fl_Cursor const c)
 
   switch(c)
   {
-  /* FL_CURSOR_DEFAULT */
-  /* FL_CURSOR_ARROW */
+  case FL_CURSOR_DEFAULT: break;
+  case FL_CURSOR_ARROW:   break;
   case FL_CURSOR_CROSS:   {bmp= _cursors[xpm_crossh];  hot_x= 15; hot_y= 15; break;}
   case FL_CURSOR_WAIT:    {bmp= _cursors[xpm_wait];    hot_x= 16; hot_y= 15; break;}
   case FL_CURSOR_INSERT:  {bmp= _cursors[xpm_text];    hot_x= 15; hot_y= 14; break;}
@@ -210,7 +207,7 @@ extern BITMAP* cursor_get(int &hot_x, int &hot_y, Fl_Cursor const c)
   case FL_CURSOR_SW:      {bmp= _cursors[xpm_sw];      hot_x= 6;  hot_y= 24; break;}
   case FL_CURSOR_W:       {bmp= _cursors[xpm_w];       hot_x= 6;  hot_y= 15; break;}
   case FL_CURSOR_NW:      {bmp= _cursors[xpm_nw];      hot_x= 8;  hot_y= 7; break;}
-  /* FL_CURSOR_NONE */
+  case FL_CURSOR_NONE:    {bmp= _cursors[xpm_none];    hot_x= 0;  hot_y= 0; break;}
   default: break;
   }
 
@@ -259,7 +256,7 @@ void Fl_Window::default_cursor(Fl_Cursor c) {
   cursor(c);
 }
 
-
+#if 0
 static void fallback_cursor(Fl_Window *w, Fl_Cursor c) {
   const char **xpm;
   int hotx, hoty;
@@ -305,10 +302,10 @@ static void fallback_cursor(Fl_Window *w, Fl_Cursor c) {
 
   w->cursor(&image, hotx, hoty);
 }
+#endif
 
 
 void Fl_Window::cursor(Fl_Cursor c) {
-  int ret;
 
   // the cursor must be set for the top level window, not for subwindows
   Fl_Window *w = window(), *toplevel = this;
@@ -329,11 +326,8 @@ void Fl_Window::cursor(Fl_Cursor c) {
   if (!i)
     return;
 
-  ret = pWindowDriver->set_cursor(c);
-  if (ret)
-    return;
+  pWindowDriver->set_cursor(c);
 
-  fallback_cursor(this, c);
 }
 
 /**

@@ -73,7 +73,7 @@
 
 #ifndef Fl_XBM_Image_H
 #define Fl_XBM_Image_H
-#  include "bmp.h"
+#  include "imgbit.h"
 
 /**
   The Fl_XBM_Image class supports loading, caching,

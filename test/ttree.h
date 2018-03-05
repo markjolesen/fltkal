@@ -87,7 +87,7 @@
 #include <stdio.h>
 #include <fl/fl.h>
 #include <fl/tooltip.h>
-#include <fl/pixmap.h>
+#include <fl/imgpix.h>
 #include <fl/group.h>
 #include <fl/tree.h>
 #include <fl/fl_ask.h>

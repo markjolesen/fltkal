@@ -70,7 +70,7 @@
 
 #include <fl/fl.h>
 #include <fl/adjuster.h>
-#include <fl/bmp.h>
+#include <fl/imgbit.h>
 #include <fl/fl_draw.h>
 
 #include "arrowfas.h"

@@ -74,8 +74,17 @@ class Fl_Allegro_Window_Driver : public Fl_Window_Driver
 
 protected:
 
-    Fl_Cursor cursor_;
-    BITMAP *bmp_store;
+    struct
+    {
+        Fl_Cursor pointer_;
+        struct
+        {
+            BITMAP *bmp_;
+            int hot_x_;
+            int hot_y_;
+        } custom_;
+    } cursor_;
+    BITMAP *bmp_store_;
 
 public:
 
@@ -111,6 +120,8 @@ public:
     virtual void resize(int X, int Y, int W, int H);
 
     virtual int scroll(int src_x, int src_y, int src_w, int src_h, int dest_x, int dest_y, void (*draw_area)(void *, int, int, int, int), void *data);
+
+    virtual void redisplay_cursor() const;
 
     virtual Fl_Cursor get_cursor() const;
 

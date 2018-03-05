@@ -75,7 +75,7 @@
 
 #include <fl/drvsys.h>
 #include <fl/fl.h>
-#include <fl/pixmap.h>
+#include <fl/imgpix.h>
 #include <fl/treepref.h>
 
 #ifdef FL_CFG_WIN_COCOA

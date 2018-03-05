@@ -78,8 +78,8 @@
 
 #include <fl/drvdev.h>
 #include <fl/img.h>
-#include <fl/bmp.h>
-#include <fl/pixmap.h>
+#include <fl/imgbit.h>
+#include <fl/imgpix.h>
 #include <fl/imgrgb.h>
 #include <stdlib.h>
 

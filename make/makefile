@@ -101,7 +101,6 @@ FLTKOBJS=\
 	$(OBJ)/add_idle.o \
 	$(OBJ)/adjuster.o \
 	$(OBJ)/arc.o \
-	$(OBJ)/bmp.o \
 	$(OBJ)/box.o \
 	$(OBJ)/boxoval.o \
 	$(OBJ)/boxshado.o \
@@ -174,11 +173,12 @@ FLTKOBJS=\
 	$(OBJ)/icon2fil.o \
 	$(OBJ)/iconfile.o \
 	$(OBJ)/iconize.o \
+	$(OBJ)/imgbit.o \
 	$(OBJ)/imgbmp.o \
 	$(OBJ)/imgcore.o \
-	$(OBJ)/img.o \
 	$(OBJ)/imggif.o \
 	$(OBJ)/imgjpeg.o \
+	$(OBJ)/img.o \
 	$(OBJ)/imgpix.o \
 	$(OBJ)/imgpng.o \
 	$(OBJ)/imgpnm.o \
@@ -260,12 +260,14 @@ ALLEGRO4DRVOBJS=\
 	$(OBJ)/aldrvsys.o \
 	$(OBJ)/aldrvwin.o \
 	$(OBJ)/algfx.o \
-	$(OBJ)/alrgba.o \
-	$(OBJ)/alrgbcb.o \
-	$(OBJ)/alrgb.o \
-	$(OBJ)/alxbm.o \
-	$(OBJ)/alxpm.o \
+	$(OBJ)/imgconv.o \
+	$(OBJ)/rgb16.o \
+	$(OBJ)/rgb24cb.o \
+	$(OBJ)/rgb24.o \
+	$(OBJ)/rgb32.o \
+	$(OBJ)/rgb8.o \
 	$(OBJ)/timeout.o \
+	$(OBJ)/xbm.o \
 	$(OBJ)/wm.o
     
 ALLEGRO4DRVSRC=$(SRC)/drivers/allegro4

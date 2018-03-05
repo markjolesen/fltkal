@@ -80,7 +80,7 @@
 #include <fl/fl_draw.h>
 #include <fl/widget.h>
 #include <fl/menuitem.h>
-#include <fl/pixmap.h>
+#include <fl/imgpix.h>
 // #include <FL/Fl_Printer.H>
 
 #include <stdio.h>

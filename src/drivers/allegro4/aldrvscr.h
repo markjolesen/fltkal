@@ -82,7 +82,7 @@ private:
 
     bool wait_mouse(Fl_Window *window);
 
-    wm::hit_type hit(Fl_Window* window, int const x, int const y);
+    wm::hit_type hit(Fl_Window *window, int const x, int const y);
 
 protected:
 

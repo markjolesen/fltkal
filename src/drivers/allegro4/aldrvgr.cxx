@@ -64,8 +64,7 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "aldrvgr.h"
-#include <fl/fl.h>
-#include <fl/img.h>
+#include "imgconv.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -77,18 +76,6 @@ struct _XRegion
     int x2;
     int y2;
 };
-
-extern int fl_convert_pixmap(const char *const *cdata, uchar *out, Fl_Color bg);
-
-extern BITMAP *xbm_to_bitmap(unsigned int const img_width, unsigned int const img_height, unsigned char const *img_bits);
-
-extern BITMAP *xpm_to_bitmap(char const **xpm);
-
-extern BITMAP *rgb_to_bitmap(unsigned int const img_width, unsigned int const img_height, unsigned int const img_stride, unsigned char const *img_bits);
-
-extern BITMAP *rgba_to_bitmap(unsigned int const img_width, unsigned int const img_height, unsigned int const img_stride, unsigned char const *img_bits);
-
-extern BITMAP *rgbcb_to_bitmap(Fl_Draw_Image_Cb cb, void *data, unsigned int const img_width, unsigned int const img_height);
 
 Fl_Graphics_Driver *
 Fl_Graphics_Driver::newMainGraphicsDriver()
@@ -632,31 +619,12 @@ bool Fl_Allegro_Graphics_Driver::flip_to_onscreen()
 
 void Fl_Allegro_Graphics_Driver::draw_image(const uchar *buf, int X, int Y, int W, int H, int D, int L)
 {
-    BITMAP *bmp = 0;
-
-    do
-    {
-
-        if (0 >= W)
-        {
-            break;
-        }
-
-        if (0 >= H)
-        {
-            break;
-        }
-
-        if (3 == D)
-        {
-            bmp = rgb_to_bitmap(W, H, L, buf);
-            break;
-        }
-
-        // TODO: _mjo handle other depths
-
-    }
-    while (0);
+    BITMAP *bmp = rgb_data_to_bitmap(
+                      static_cast<unsigned int>(W),
+                      static_cast<unsigned int>(H),
+                      static_cast<unsigned int>(D),
+                      static_cast<unsigned int>(L),
+                      buf);
 
     if (bmp)
     {
@@ -671,31 +639,12 @@ void Fl_Allegro_Graphics_Driver::draw_image(const uchar *buf, int X, int Y, int 
 
 void Fl_Allegro_Graphics_Driver::draw_image(Fl_Draw_Image_Cb cb, void *data, int X, int Y, int W, int H, int D)
 {
-    BITMAP *bmp = 0;
-
-    do
-    {
-
-        if (0 >= W)
-        {
-            break;
-        }
-
-        if (0 >= H)
-        {
-            break;
-        }
-
-        if (3 == D)
-        {
-            bmp = rgbcb_to_bitmap(cb, data, W, H);
-            break;
-        }
-
-        // TODO: _mjo handle other depths
-
-    }
-    while (0);
+    BITMAP *bmp = rgb_staged_to_image(
+                      cb,
+                      data,
+                      static_cast<unsigned int>(W),
+                      static_cast<unsigned int>(H),
+                      static_cast<unsigned int>(D));
 
     if (bmp)
     {
@@ -710,41 +659,7 @@ void Fl_Allegro_Graphics_Driver::draw_image(Fl_Draw_Image_Cb cb, void *data, int
 
 void Fl_Allegro_Graphics_Driver::draw(Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy)
 {
-    BITMAP *bmp = 0;
-
-    do
-    {
-
-        int W = rgb->w(); // WP
-
-        if (0 >= W)
-        {
-            break;
-        }
-
-        int H = rgb->h(); // HP
-
-        if (0 >= H)
-        {
-            break;
-        }
-
-        int D = rgb->d();
-
-        if (3 == D)
-        {
-            bmp = rgb_to_bitmap(W, H, 0, rgb->array);
-            break;
-        }
-
-        if (4 == D)
-        {
-            bmp = rgba_to_bitmap(W, H, 0, rgb->array);
-            break;
-        }
-
-    }
-    while (0);
+    BITMAP *bmp = rgb_image_to_bitmap((*rgb));
 
     if (bmp)
     {
@@ -759,79 +674,22 @@ void Fl_Allegro_Graphics_Driver::draw(Fl_RGB_Image *rgb, int XP, int YP, int WP,
 
 void Fl_Allegro_Graphics_Driver::draw(Fl_Pixmap *pxm, int XP, int YP, int /*WP*/, int /*HP*/, int cx, int cy)
 {
+    BITMAP *bmp = pxm_to_bitmap((*pxm));
 
-    do
+    if (bmp)
     {
-
-        int W = pxm->w(); // WP
-
-        if (0 >= W)
-        {
-            break;
-        }
-
-        int H = pxm->h(); // HP
-
-        if (0 >= H)
-        {
-            break;
-        }
-
-        int bytes = (W * H * 4);
-        unsigned char *bits = reinterpret_cast<unsigned char *>(malloc(bytes));
-        int rc = fl_convert_pixmap(pxm->data(), bits, 0xFF00FF00);
-
-        if (rc)
-        {
-            BITMAP *bmp = rgba_to_bitmap(W, H, 0, bits);
-            if (bmp)
-            {
-                int X = XP + Fl::window_draw_offset_x;
-                int Y = YP + Fl::window_draw_offset_y;
-                masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
-                destroy_bitmap(bmp);
-            }
-        }
-
-        free(bits);
-
+        int X = XP + Fl::window_draw_offset_x;
+        int Y = YP + Fl::window_draw_offset_y;
+        masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
+        destroy_bitmap(bmp);
     }
-    while (0);
 
     return;
 }
 
 void Fl_Allegro_Graphics_Driver::draw(Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy)
 {
-    BITMAP *bmp = 0;
-
-    do
-    {
-        int W = bm->w(); // WP
-
-        if (0 >= W)
-        {
-            break;
-        }
-
-        int H = bm->h(); // HP
-
-        if (0 >= H)
-        {
-            break;
-        }
-
-        // 0 is bitmap
-        if (0 == bm->d())
-        {
-            bmp = xbm_to_bitmap(W, H, bm->array);
-            break;
-        }
-
-        // TODO: _mjo handle other bitmap types
-
-    }
-    while (0);
+    BITMAP *bmp = bitmap_to_bitmap((*bm));
 
     if (bmp)
     {

@@ -78,7 +78,7 @@
 #include <fl/fl_draw.h>
 #include <fl/widget.h>
 #include <fl/menuitem.h>
-#include <fl/bmp.h>
+#include <fl/imgbit.h>
 // #include <fl/Fl_Printer.H>
 
 /** Create a bit mask */

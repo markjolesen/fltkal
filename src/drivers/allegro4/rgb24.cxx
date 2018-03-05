@@ -1,6 +1,6 @@
-// alxbm.cxx
+// rgb24.cxx
 //
-// Convert XBM image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
+// Convert RGB image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
 //
 // Copyright 2017-2018 The fltkal authors
 //
@@ -65,58 +65,42 @@
 //
 #include <allegro.h>
 
-BITMAP *xbm_to_bitmap(
+BITMAP *rgb24_to_bitmap(
     unsigned int const img_width,
     unsigned int const img_height,
+    unsigned int const img_stride,
     unsigned char const *img_bits)
 {
     BITMAP *bmp = 0;
+    unsigned int delta = 0;
+
+    if (img_stride)
+    {
+        delta = (img_stride - img_width);
+    }
 
     do
     {
-        bmp = create_bitmap_ex(8, img_width, img_height);
+        bmp = create_bitmap_ex(32, img_width, img_height);
 
         if (0 == bmp)
         {
             break;
         }
 
-        clear_to_color(bmp, makecol8(255, 0, 255));
+        clear_to_color(bmp, MASK_COLOR_32);
 
         unsigned char const *src = &img_bits[0];
-        unsigned int stride = ((img_width + 7) / 8);
 
         for (unsigned int row = 0; row < img_height; row++)
         {
-            unsigned char *dest = bmp->line[row];
-            for (unsigned int index = 0; index < stride; index++)
+            uint32_t *dest = reinterpret_cast<uint32_t*>(bmp->line[row]);
+            for (unsigned int index = 0; index < img_width; index++)
             {
-                unsigned char byte = src[0];
-                unsigned int pos = 0;
-                if (byte)
-                {
-                    do
-                    {
-                        unsigned int state = (byte >> pos) & 1;
-                        if (state)
-                        {
-                            dest[0] = 0;
-                        }
-                        if (7 == pos)
-                        {
-                            break;
-                        }
-                        dest++;
-                        pos++;
-                    }
-                    while (1);
-                }
-                else
-                {
-                    dest += 8;
-                }
-                src++;
+                uint32_t color= makecol24(*src++, *src++, *src++);
+                *dest++= color;
             }
+            src += delta;
         }
 
     }

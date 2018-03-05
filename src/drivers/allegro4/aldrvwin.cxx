@@ -65,7 +65,10 @@
 //
 #include "aldrvwin.h"
 #include "aldrvgr.h"
+#include "imgconv.h"
+#include <fl/drvwin.h>
 #include <fl/fl.h>
+#include <fl/fl_enums.h>
 #include <fl/platform.h>
 #include <fl/win.h>
 
@@ -86,18 +89,28 @@ void Fl_Window_Driver::default_icons(const Fl_RGB_Image *icons[], int count)
 
 Fl_Allegro_Window_Driver::Fl_Allegro_Window_Driver(Fl_Window *w) :
     Fl_Window_Driver(w),
-    cursor_(FL_CURSOR_DEFAULT),
-    bmp_store(0)
+    cursor_(),
+    bmp_store_(0)
 {
-
+    cursor_.pointer_ = FL_CURSOR_DEFAULT;
+    cursor_.custom_.bmp_ = 0;
+    return;
 }
 
 Fl_Allegro_Window_Driver::~Fl_Allegro_Window_Driver()
 {
 
-    if (bmp_store)
+    if (cursor_.custom_.bmp_)
     {
-        destroy_bitmap(bmp_store);
+        fl_graphics_driver->mouse_hide();
+        set_cursor(FL_CURSOR_DEFAULT);
+        destroy_bitmap(cursor_.custom_.bmp_);
+        fl_graphics_driver->mouse_show();
+    }
+
+    if (bmp_store_)
+    {
+        destroy_bitmap(bmp_store_);
     }
 
     return;
@@ -178,11 +191,10 @@ void Fl_Allegro_Window_Driver::show()
 void Fl_Allegro_Window_Driver::hide()
 {
     hide_common();
-    if (0 == bmp_store)
+    if (0 == bmp_store_)
     {
         Fl::redraw();
-        Fl_Allegro_Graphics_Driver *gr =
-            reinterpret_cast<Fl_Allegro_Graphics_Driver *>(fl_graphics_driver);
+        Fl_Allegro_Graphics_Driver *gr = reinterpret_cast<Fl_Allegro_Graphics_Driver *>(fl_graphics_driver);
         bool buffered = gr->flip_to_offscreen(true);
         Fl::flush();
         if (buffered)
@@ -195,12 +207,12 @@ void Fl_Allegro_Window_Driver::hide()
 void Fl_Allegro_Window_Driver::erase_menu()
 {
 
-    if (bmp_store)
+    if (bmp_store_)
     {
         int bmp_x = pWindow->x();
         int bmp_y = pWindow->y();
         fl_graphics_driver->mouse_hide();
-        blit(bmp_store, screen, 0, 0, bmp_x, bmp_y, bmp_store->w, bmp_store->h);
+        blit(bmp_store_, screen, 0, 0, bmp_x, bmp_y, bmp_store_->w, bmp_store_->h);
         fl_graphics_driver->mouse_show();
     }
 
@@ -217,13 +229,13 @@ void Fl_Allegro_Window_Driver::show_menu()
     int bmp_w = pWindow->w();
     int bmp_h = pWindow->h();
 
-    bmp_store = create_bitmap(bmp_w, bmp_h);
+    bmp_store_ = create_bitmap(bmp_w, bmp_h);
 
-    if (bmp_store)
+    if (bmp_store_)
     {
         fl_graphics_driver->mouse_hide();
-        set_clip_state(bmp_store, 1);
-        blit(screen, bmp_store, bmp_x, bmp_y, 0, 0, bmp_store->w, bmp_store->h);
+        set_clip_state(bmp_store_, 1);
+        blit(screen, bmp_store_, bmp_x, bmp_y, 0, 0, bmp_store_->w, bmp_store_->h);
         fl_graphics_driver->mouse_show();
     }
 
@@ -232,7 +244,7 @@ void Fl_Allegro_Window_Driver::show_menu()
 
 void Fl_Allegro_Window_Driver::resize(int X, int Y, int W, int H)
 {
-    bool has_store = bmp_store ? true : false;
+    bool has_store = bmp_store_ ? true : false;
 
     if (shown() && has_store)
     {
@@ -276,48 +288,12 @@ int Fl_Allegro_Window_Driver::scroll(int src_x, int src_y, int src_w, int src_h,
             int dy = (dest_y + Fl::window_draw_offset_y);
 
             set_clip_state(bmp, 1);
-            Fl_Allegro_Graphics_Driver *gr =
-                reinterpret_cast<Fl_Allegro_Graphics_Driver *>(fl_graphics_driver);
+            Fl_Allegro_Graphics_Driver *gr = reinterpret_cast<Fl_Allegro_Graphics_Driver *>(fl_graphics_driver);
             blit(gr->surface(), bmp, sx, sy, 0, 0, src_w, src_h);
             blit(bmp, gr->surface(), 0, 0, dx, dy, src_w, src_h);
             destroy_bitmap(bmp);
         }
 
-#if 0
-        int x, w, y, h;
-
-        if (src_x <= dest_x)
-        {
-            x = (src_x + src_w);
-            w = (dest_x - src_x);
-        }
-        else
-        {
-            x = dest_x;
-            w = (src_x - dest_x);
-        }
-
-        if (w)
-        {
-            (*draw_area)(data, x, src_y, w, src_h);
-        }
-
-        if (src_y <= dest_y)
-        {
-            y = src_y;
-            h = (dest_y - src_y);
-        }
-        else
-        {
-            y = (src_y + src_h);
-            h = (src_y - dest_y);
-        }
-
-        if (h)
-        {
-            (*draw_area)(data, src_x, y, src_w, h);
-        }
-#endif
         rc = 0;
 
     }
@@ -326,23 +302,72 @@ int Fl_Allegro_Window_Driver::scroll(int src_x, int src_y, int src_w, int src_h,
     return rc;
 }
 
+void Fl_Allegro_Window_Driver::redisplay_cursor() const
+{
+
+    if (0 == cursor_.custom_.bmp_)
+    {
+        cursor_set(cursor_.pointer_);
+    }
+    else
+    {
+        fl_graphics_driver->mouse_hide();
+        set_mouse_sprite(cursor_.custom_.bmp_);
+        set_mouse_sprite_focus(cursor_.custom_.hot_x_, cursor_.custom_.hot_y_);
+        fl_graphics_driver->mouse_show();
+    }
+
+    return;
+}
+
 Fl_Cursor Fl_Allegro_Window_Driver::get_cursor() const
 {
-    return cursor_;
+    return cursor_.pointer_;
 }
 
 int Fl_Allegro_Window_Driver::set_cursor(Fl_Cursor c)
 {
-    if (cursor_ != c)
+
+    if (cursor_.pointer_ != c)
     {
         cursor_set(c);
-        cursor_ = c;
+        cursor_.pointer_ = c;
     }
+
+    if (cursor_.custom_.bmp_)
+    {
+        destroy_bitmap(cursor_.custom_.bmp_);
+        cursor_.custom_.bmp_ = 0;
+    }
+
     return 1;
 }
 
 int Fl_Allegro_Window_Driver::set_cursor(const Fl_RGB_Image *img, int hot_x, int hot_y)
 {
-    return 0;
-}
+    BITMAP *bmp = rgb_image_to_bitmap((*img));
 
+    fl_graphics_driver->mouse_hide();
+
+    cursor_.pointer_ = FL_CURSOR_DEFAULT;
+    set_cursor(FL_CURSOR_DEFAULT);
+
+    if (cursor_.custom_.bmp_)
+    {
+        destroy_bitmap(cursor_.custom_.bmp_);
+        cursor_.custom_.bmp_ = 0;
+    }
+
+    if (bmp)
+    {
+        cursor_.custom_.bmp_ = bmp;
+        cursor_.custom_.hot_x_ = hot_x;
+        cursor_.custom_.hot_y_ = hot_y;
+        set_mouse_sprite(bmp);
+        set_mouse_sprite_focus(hot_x, hot_y);
+    }
+
+    fl_graphics_driver->mouse_show();
+
+    return (bmp ? 1 : 0);
+}
