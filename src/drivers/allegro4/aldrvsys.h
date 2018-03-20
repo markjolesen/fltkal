@@ -190,7 +190,7 @@ inline int Fl_Allegro_System_Driver::chdir(const char *path)
 
 inline int Fl_Allegro_System_Driver::unlink(const char *fname)
 {
-    return unlink(fname);
+    return ::unlink(fname);
 }
 
 inline int Fl_Allegro_System_Driver::mkdir(const char *f, int mode)
@@ -219,7 +219,7 @@ inline int Fl_Allegro_System_Driver::colon_is_drive()
 
 inline int Fl_Allegro_System_Driver::dot_file_hidden()
 {
-    return 1;
+    return 0;
 }
 
 inline int Fl_Allegro_System_Driver::case_insensitive_filenames()
@@ -240,7 +240,7 @@ inline void Fl_Allegro_System_Driver::gettime(time_t *sec, int *usec)
     (*usec) = 0;
 #else
     struct timeval tv;
-    gettimeofday(&tv, NULL);
+    ::gettimeofday(&tv, NULL);
     (*sec) = tv.tv_sec;
     (*usec) = tv.tv_usec;
 #endif

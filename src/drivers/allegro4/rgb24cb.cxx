@@ -89,14 +89,12 @@ BITMAP *rgb24cb_to_bitmap(
         for (unsigned int row = 0; row < img_height; row++)
         {
             (*cb)(data, 0, row, img_width, line);
-            unsigned char *dest = bmp->line[row];
+            uint32_t *dest = reinterpret_cast<uint32_t*>(bmp->line[row]);
             unsigned char *src = &line[0];
             for (unsigned int index = 0; index < img_width; index++)
             {
-                *dest++ = *src++;
-                *dest++ = *src++;
-                *dest++ = *src++;
-                *dest++ = 0xFF;
+                uint32_t color= makecol24(*src++, *src++, *src++);
+                *dest++= color;
             }
         }
 

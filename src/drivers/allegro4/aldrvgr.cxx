@@ -428,7 +428,7 @@ int Fl_Allegro_Graphics_Driver::clip_box(int x, int y, int w, int h, int &X, int
     if (X < r->x1)
     {
         W -= r->x1 - X;
-        if (0 < W)
+        if (0 > W)
         {
             W = 0;
         }
@@ -447,7 +447,7 @@ int Fl_Allegro_Graphics_Driver::clip_box(int x, int y, int w, int h, int &X, int
     if (Y < r->y1)
     {
         H -= (r->y1 - Y);
-        if (0 < H)
+        if (0 > H)
         {
             H = 0;
         }

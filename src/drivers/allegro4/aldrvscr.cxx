@@ -95,7 +95,7 @@ Fl_Allegro_Screen_Driver::Fl_Allegro_Screen_Driver() :
     cursor_(FL_CURSOR_DEFAULT)
 {
     ticks_set(clock_);
-    dclick_.set(0.25);
+    dclick_.set(0.50);
     return;
 }
 

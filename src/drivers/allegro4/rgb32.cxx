@@ -95,7 +95,7 @@ BITMAP *rgb32_to_bitmap(
             uint32_t *dest = reinterpret_cast<uint32_t*>(bmp->line[row]);
             for (unsigned int index = 0; index < img_width; index++)
             {
-                uint32_t color= makecol32(*src++, *src++, *src++);
+                uint32_t color= makecol24(*src++, *src++, *src++);
                 *dest++= color;
                 src++;
             }
