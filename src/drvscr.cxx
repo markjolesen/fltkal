@@ -536,15 +536,6 @@ int Fl_Screen_Driver::parse_color(const char* p, uchar& r, uchar& g, uchar& b)
   return 1;
 }
 
-int Fl_Screen_Driver::run_also_windowless() {
-  return Fl::run();
-}
-
-int Fl_Screen_Driver::wait_also_windowless(double delay) {
-  Fl::wait(delay);
-  return Fl::first_window() != NULL;
-}
-
 //
 // End of "$Id: Fl_Screen_Driver.cxx 12628 2018-01-09 07:26:49Z manolo $".
 //

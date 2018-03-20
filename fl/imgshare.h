@@ -1,6 +1,6 @@
 // imgshare.h
 //
-// "$Id: Fl_Shared_Image.H 12472 2017-10-02 11:18:41Z AlbrechtS $"
+// "$Id: Fl_Shared_Image.H 12776 2018-03-19 17:43:18Z manolo $"
 //
 // Shared image header file for the Fast Light Tool Kit (FLTK).
 //
@@ -83,11 +83,12 @@ typedef Fl_Image *(*Fl_Shared_Handler)(const char *name, uchar *header,
 
 // Shared images class.
 /**
-  This class supports caching, loading, scaling, and drawing of image files.
+  This class supports caching, loading, and drawing of image files.
 
   Most applications will also want to link against the fltk_images library
   and call the fl_register_images() function to support standard image
-  formats such as BMP, GIF, JPEG, and PNG.
+  formats such as BMP, GIF, JPEG, PNG, and SVG (unless the library was built
+  with the option removing SVG support).
 
   Images can be requested (loaded) with Fl_Shared_Image::get(), find(),
   and some other methods. All images are cached in an internal list of
@@ -105,9 +106,6 @@ class FL_EXPORT Fl_Shared_Image : public Fl_Image {
   friend class Fl_PNG_Image;
   friend class Fl_Graphics_Driver;
 
-private:
-  static Fl_RGB_Scaling scaling_algorithm_; // method used to rescale RGB source images
-  Fl_Image *scaled_image_;
 protected:
 
   static Fl_Shared_Image **images_;	// Shared images
@@ -159,7 +157,6 @@ public:
   virtual void desaturate();
   virtual void draw(int X, int Y, int W, int H, int cx = 0, int cy = 0);
   void draw(int X, int Y) { draw(X, Y, w(), h(), 0, 0); }
-  void scale(int width, int height, int proportional = 1, int can_expand = 0);
   virtual void uncache();
 
   static Fl_Shared_Image *find(const char *name, int W = 0, int H = 0);
@@ -169,15 +166,6 @@ public:
   static int		num_images();
   static void		add_handler(Fl_Shared_Handler f);
   static void		remove_handler(Fl_Shared_Handler f);
-  /** Sets what algorithm is used when resizing a source image.
-   The default algorithm is FL_RGB_SCALING_BILINEAR.
-   Drawing an Fl_Shared_Image is sometimes performed by first resizing the source image
-   and then drawing the resized copy. This occurs, e.g., when drawing to screen under GNU/Linux
-   after having called Fl_Shared_Image::scale().
-   This function controls what method is used when the image to be resized is an Fl_RGB_Image.
-   \version 1.3.4
-   */
-  static void scaling_algorithm(Fl_RGB_Scaling algorithm) {scaling_algorithm_ = algorithm; }
 };
 
 //
@@ -191,5 +179,5 @@ FL_EXPORT extern void fl_register_images();
 #endif // !Fl_Shared_Image_H
 
 //
-// End of "$Id: Fl_Shared_Image.H 12472 2017-10-02 11:18:41Z AlbrechtS $"
+// End of "$Id: Fl_Shared_Image.H 12776 2018-03-19 17:43:18Z manolo $"
 //

@@ -1,7 +1,7 @@
 /*
  * typesplt.h
  *
- * "$Id: platform_types.h 12196 2017-03-13 23:31:38Z AlbrechtS $"
+ * Copyright 2016-2018 by Bill Spitzak and others.
  *
  * Copyright 2017-2018 The fltkal authors
  * Copyright 2016 by Bill Spitzak and others.
@@ -164,6 +164,23 @@ typedef struct HGLRC__ *GLContext;
 #include <sys/stat.h>
 struct dirent {char d_name[1];};
 
+#elif defined(__ANDROID__)
+
+#ifdef __cplusplus
+typedef class Fl_Rect_Region *Fl_Region;
+#else
+typedef struct Fl_Rect_Region *Fl_Region;
+#endif
+
+// TODO: the types below have not yet been ported
+typedef unsigned long Fl_Offscreen;
+typedef unsigned long Fl_Bitmask;
+typedef int FL_SOCKET;
+typedef struct __GLXcontextRec *GLContext;
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
+
 #elif defined(FL_PORTING)
 # pragma message "FL_PORTING: define OS-dependent types"
 typedef void* Fl_Offscreen;
@@ -205,5 +222,5 @@ typedef struct __GLXcontextRec *GLContext;
 #endif // FL_DOXYGEN
 
 /*
- * End of "$Id: platform_types.h 12665 2018-02-12 07:18:36Z manolo $".
+ * End of "$Id: platform_types.h 12729 2018-03-10 13:17:41Z matt $".
  */

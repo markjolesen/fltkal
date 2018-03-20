@@ -1,6 +1,6 @@
 // drvimg.cxx
 //
-// "$Id: Fl_Image_Surface.cxx 12469 2017-09-24 08:23:23Z manolo $"
+// "$Id: Fl_Image_Surface.cxx 12737 2018-03-11 14:49:09Z manolo $"
 //
 // Draw-to-image code for the Fast Light Tool Kit (FLTK).
 //
@@ -82,14 +82,13 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
 
 /** Constructor with optional high resolution.
  \param w and \param h set the size of the resulting image. The value of the \p high_res
- parameter controls whether \p w and \p h are interpreted as pixel or drawing units.
+ parameter controls whether \p w and \p h are interpreted as pixel or FLTK units.
  
  \param high_res If zero, the created image surface is sized at \p w x \p h pixels.
- If non-zero, the pixel size of the created image surface follows
- the value of the display scaling factor (see Fl_Graphics_Driver::scale()). This gives
- the created image surface the same number of pixels as an area of the display of size 
- \p w x \p h expressed in drawing units. On the Mac OS platform, the image surface pixel 
- size is always twice as high and wide as \p w and \p h.
+ If non-zero, the pixel size of the created image surface depends on
+ the value of the display scale factor (see Fl_Graphics_Driver::scale()):
+ the resulting image has the same number of pixels as an area of the display of size
+ \p w x \p h expressed in FLTK units.
  If \p highres is non-zero, always use Fl_Image_Surface::highres_image() to get the image data.
 
  \param pixmap Is used internally by FLTK; applications just use its default value.
@@ -146,7 +145,7 @@ Fl_RGB_Image *Fl_Image_Surface::image() {
 
 /** Returns a possibly high resolution image made of all drawings sent to the Fl_Image_Surface object.
  The Fl_Image_Surface object should have been constructed with Fl_Image_Surface(W, H, 1).
- The returned Fl_Shared_Image object is scaled to a size of WxH drawing units and may have a 
+ The returned Fl_Shared_Image object is scaled to a size of WxH FLTK units and may have a 
  pixel size larger than these values.
  The returned object should be deallocated with Fl_Shared_Image::release() after use.
  \version 1.3.4
@@ -154,7 +153,7 @@ Fl_RGB_Image *Fl_Image_Surface::image() {
 Fl_Shared_Image* Fl_Image_Surface::highres_image()
 {
   if (!platform_surface) return NULL;
-  Fl_Shared_Image *s_img = Fl_Shared_Image::get(platform_surface->image());
+  Fl_Shared_Image *s_img = Fl_Shared_Image::get(image());
   int width, height;
   platform_surface->printable_rect(&width, &height);
   s_img->scale(width, height, 1, 1);
@@ -193,14 +192,16 @@ static int find_slot(void) { // return an available slot to memorize an Fl_Image
 
 /**
    Creation of an offscreen graphics buffer.
-   \param w,h     width and height in pixels of the buffer.
+   \param w,h     width and height in FLTK units of the buffer.
    \return    the created graphics buffer.
+ 
+ The pixel size of the created graphics buffer is equal to the number of pixels
+ in an area of the screen containing the current window sized at \p w,h FLTK units.
+ This pixel size varies with the value of the scale factor of this screen.
    */
 Fl_Offscreen fl_create_offscreen(int w, int h) {
   int rank = find_slot();
-  float d = Fl_Graphics_Driver::default_driver().scale();
-  int high_res = d != 1;
-  offscreen_api_surface[rank] = new Fl_Image_Surface(w, h, high_res);
+  offscreen_api_surface[rank] = new Fl_Image_Surface(w, h, 1/*high_res*/);
   return offscreen_api_surface[rank]->offscreen();
 }
 
@@ -237,9 +238,12 @@ void fl_end_offscreen() {
   Fl_Surface_Device::pop_current();
 }
 
-/** Adapts an offscreen buffer to a changed value of the graphical scaling factor.
+/** Adapts an offscreen buffer to a changed value of the scale factor.
  The \p ctx argument must have been created by fl_create_offscreen()
  and the calling context must not be between fl_begin_offscreen() and fl_end_offscreen().
+ The graphical content of the offscreen is preserved. The current scale factor
+ value is given by <tt>Fl_Graphics_Driver::default_driver().scale()</tt>.
+ \version 1.4
  */
 void fl_scale_offscreen(Fl_Offscreen &ctx) {
   int i, w, h;
@@ -249,11 +253,9 @@ void fl_scale_offscreen(Fl_Offscreen &ctx) {
     }
   }
   if (i >= count_offscreens) return;
-  Fl_RGB_Image *rgb = offscreen_api_surface[i]->image();
+  Fl_Shared_Image *shared = offscreen_api_surface[i]->highres_image();
   offscreen_api_surface[i]->printable_rect(&w, &h);
   fl_delete_offscreen(ctx);
-  Fl_Shared_Image *shared = Fl_Shared_Image::get(rgb);
-  shared->scale(w, h, 0, 1);
   ctx = fl_create_offscreen(w, h);
   fl_begin_offscreen(ctx);
   shared->draw(0, 0);
@@ -265,5 +267,5 @@ void fl_scale_offscreen(Fl_Offscreen &ctx) {
 
 
 //
-// End of "$Id: Fl_Image_Surface.cxx 12469 2017-09-24 08:23:23Z manolo $".
+// End of "$Id: Fl_Image_Surface.cxx 12737 2018-03-11 14:49:09Z manolo $".
 //

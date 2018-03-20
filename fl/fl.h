@@ -1,6 +1,6 @@
 // fl.h
 //
-// "$Id: Fl.H 12525 2017-10-25 05:26:49Z manolo $"
+// "$Id: Fl.H 12773 2018-03-18 15:25:08Z AlbrechtS $"
 //
 // Main header file for the Fast Light Tool Kit (FLTK).
 //
@@ -473,8 +473,6 @@ public:
   static int check();
   static int ready();
   static int run();
-  static int run_also_windowless();
-  static int wait_also_windowless(double delay = 1e20);
   /** Returns non-zero when a request for program termination was received and accepted.
    On the MacOS platform, the "Quit xxx" item of the application menu is such a request,
    that is considered accepted when all windows are closed. On other platforms, this function
@@ -758,7 +756,9 @@ int main() {
     Gets which particular mouse button caused the current event.
 
     This returns garbage if the most recent event was not a FL_PUSH or FL_RELEASE event.
-    \retval FL_LEFT_MOUSE \retval FL_MIDDLE_MOUSE \retval FL_RIGHT_MOUSE.
+    \retval FL_LEFT_MOUSE
+    \retval FL_MIDDLE_MOUSE
+    \retval FL_RIGHT_MOUSE.
     \see Fl::event_buttons()
   */
   static int event_button()	{return e_keysym-FL_Button;}
@@ -1483,5 +1483,5 @@ public:
 #endif // !Fl_H
 
 //
-// End of "$Id: Fl.H 12525 2017-10-25 05:26:49Z manolo $".
+// End of "$Id: Fl.H 12773 2018-03-18 15:25:08Z AlbrechtS $".
 //

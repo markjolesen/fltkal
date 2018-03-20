@@ -1,6 +1,6 @@
 // tooltip.h
 //
-// "$Id: Fl_Tooltip.H 11163 2016-02-13 12:57:00Z matt $"
+// "$Id: Fl_Tooltip.H 12748 2018-03-15 09:34:20Z matt $"
 //
 // Tooltip header file for the Fast Light Tool Kit (FLTK).
 //
@@ -86,6 +86,7 @@
 
 */
 class FL_EXPORT Fl_Tooltip {
+  friend class Fl_TooltipBox;
 public:
   /**    Gets the tooltip delay. The default delay is 1.0 seconds.  */
   static float delay() { return delay_; }
@@ -165,10 +166,11 @@ private:
   static int margin_width_;	//!< distance around tooltip text left+right
   static int margin_height_;	//!< distance around tooltip text top+bottom
   static int wrap_width_;	//!< maximum width of tooltip text before it word wraps
+  static const int draw_symbols_; // 1 = draw @-symbols in tooltips, 0 = no
 };
 
 #endif
 
 //
-// End of "$Id: Fl_Tooltip.H 11163 2016-02-13 12:57:00Z matt $".
+// End of "$Id: Fl_Tooltip.H 12748 2018-03-15 09:34:20Z matt $".
 //

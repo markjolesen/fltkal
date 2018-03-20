@@ -1,6 +1,6 @@
 // tooltip.cxx
 //
-// "$Id: Fl_Tooltip.cxx 11565 2016-04-09 15:37:40Z manolo $"
+// "$Id: Fl_Tooltip.cxx 12748 2018-03-15 09:34:20Z matt $"
 //
 // Tooltip source file for the Fast Light Tool Kit (FLTK).
 //
@@ -76,24 +76,22 @@
 #include <fl/drvwin.h>
 
 #include <stdio.h>
-#include <string.h>	// strdup()
+#include <string.h>   // strdup()
 
-float		Fl_Tooltip::delay_ = 1.0f;
-float		Fl_Tooltip::hoverdelay_ = 0.2f;
-Fl_Color	Fl_Tooltip::color_ = fl_color_cube(FL_NUM_RED - 1,
-		                                   FL_NUM_GREEN - 1,
-						   FL_NUM_BLUE - 2);
-Fl_Color	Fl_Tooltip::textcolor_ = FL_BLACK;
-Fl_Font         Fl_Tooltip::font_ = FL_HELVETICA;
-Fl_Fontsize     Fl_Tooltip::size_ = -1;
-int		Fl_Tooltip::margin_width_  = 3;
-int		Fl_Tooltip::margin_height_ = 3;
-int		Fl_Tooltip::wrap_width_    = 400;
+float     Fl_Tooltip::delay_ = 1.0f;
+float     Fl_Tooltip::hoverdelay_ = 0.2f;
+Fl_Color  Fl_Tooltip::color_ = fl_color_cube(FL_NUM_RED - 1,
+                                             FL_NUM_GREEN - 1,
+                                             FL_NUM_BLUE - 2);
+Fl_Color  Fl_Tooltip::textcolor_ = FL_BLACK;
+Fl_Font   Fl_Tooltip::font_ = FL_HELVETICA;
+Fl_Fontsize Fl_Tooltip::size_ = -1;
+int       Fl_Tooltip::margin_width_ = 3;
+int       Fl_Tooltip::margin_height_ = 3;
+int       Fl_Tooltip::wrap_width_ = 400;
+const int Fl_Tooltip::draw_symbols_ = 1;
 
 static const char* tip;
-
-// FIXME: this should be a static class variable: Fl_Tooltip::draw_symbols_
-static const int draw_symbols_ = 1; // 1 = draw @-symbols in tooltips, 0 = no
 
 /**
     This widget creates a tooltip box window, with no caption.
@@ -102,7 +100,6 @@ class Fl_TooltipBox : public Fl_Menu_Window {
 public:
   /** Creates the box window */
   Fl_TooltipBox() : Fl_Menu_Window(0, 0) {
-    type(FL_TOOLTIP_WINDOW); // ALLEGRO:
     set_override();
     set_tooltip_window();
     end();
@@ -138,7 +135,7 @@ void Fl_TooltipBox::layout() {
   fl_font(Fl_Tooltip::font(), Fl_Tooltip::size());
   int ww = Fl_Tooltip::wrap_width();
   int hh = 0;
-  fl_measure(tip, ww, hh, draw_symbols_);
+  fl_measure(tip, ww, hh, Fl_Tooltip::draw_symbols_);
   ww += (Fl_Tooltip::margin_width() * 2);
   hh += (Fl_Tooltip::margin_height() * 2);
 
@@ -172,7 +169,7 @@ void Fl_TooltipBox::draw() {
   int Y = Fl_Tooltip::margin_height();
   int W = w() - (Fl_Tooltip::margin_width()*2);
   int H = h() - (Fl_Tooltip::margin_height()*2);
-  fl_draw(tip, X, Y, W, H, Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_WRAP), 0, draw_symbols_);
+  fl_draw(tip, X, Y, W, H, Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_WRAP), 0, Fl_Tooltip::draw_symbols_);
   driver()->draw_end(); // ALLEGRO:
 }
 
@@ -212,14 +209,14 @@ static void tooltip_timeout(void*) {
 // bugfix: no need to refactor
       if (Fl::system_driver()->use_tooltip_timeout_condition()) condition = (Fl::grab() == NULL);
       if ( condition ) {
-	if (!window) window = new Fl_TooltipBox;
-	// this cast bypasses the normal Fl_Window label() code:
-	((Fl_Widget*)window)->label(tip);
-	window->layout();
-	window->redraw();
-	// printf("tooltip_timeout: Showing window %p with tooltip \"%s\"...\n",
-	//        window, tip ? tip : "(null)");
-	window->show();
+        if (!window) window = new Fl_TooltipBox;
+        // this cast bypasses the normal Fl_Window label() code:
+        ((Fl_Widget *) window)->label(tip);
+        window->layout();
+        window->redraw();
+        // printf("tooltip_timeout: Showing window %p with tooltip \"%s\"...\n",
+        //        window, tip ? tip : "(null)");
+        window->show();
       }
     }
   }
@@ -424,5 +421,5 @@ void Fl_Widget::copy_tooltip(const char *text) {
 }
 
 //
-// End of "$Id: Fl_Tooltip.cxx 11565 2016-04-09 15:37:40Z manolo $".
+// End of "$Id: Fl_Tooltip.cxx 12748 2018-03-15 09:34:20Z matt $".
 //

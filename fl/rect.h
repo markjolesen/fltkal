@@ -1,6 +1,6 @@
 // rect.h
 //
-// "$Id: Fl_Rect.H 12260 2017-06-13 10:35:18Z AlbrechtS $"
+// "$Id: Fl_Rect.H 12743 2018-03-12 20:54:27Z matt $"
 //
 // Fl_Rect header file for the Fast Light Tool Kit (FLTK).
 //
@@ -92,25 +92,25 @@ public:
 
   /** The default constructor creates an empty rectangle (x = y = w = h = 0). */
   Fl_Rect()
-  : x_(0), y_(0), w_(0), h_(0) {}
+          : x_(0), y_(0), w_(0), h_(0) {}
 
   /** This constructor creates a rectangle with x = y = 0 and
     the given width and height. */
   Fl_Rect(int W, int H)
-  : x_(0), y_(0), w_(W), h_(H) {}
+          : x_(0), y_(0), w_(W), h_(H) {}
 
   /** This constructor creates a rectangle with the given x,y coordinates
     and the given width and height. */
   Fl_Rect(int X, int Y, int W, int H)
-  : x_(X), y_(Y), w_(W), h_(H) {}
+          : x_(X), y_(Y), w_(W), h_(H) {}
 
- /** This constructor creates a rectangle based on a widget's position and size. */
+  /** This constructor creates a rectangle based on a widget's position and size. */
   Fl_Rect (const Fl_Widget& widget)
-  : x_(widget.x()), y_(widget.y()), w_(widget.w()), h_(widget.h()) {}
+          : x_(widget.x()), y_(widget.y()), w_(widget.w()), h_(widget.h()) {}
 
- /** This constructor creates a rectangle based on a widget's position and size. */
+  /** This constructor creates a rectangle based on a widget's position and size. */
   Fl_Rect (const Fl_Widget* const widget)
-  : x_(widget->x()), y_(widget->y()), w_(widget->w()), h_(widget->h()) {}
+          : x_(widget->x()), y_(widget->y()), w_(widget->w()), h_(widget->h()) {}
 
   int x() const { return x_; }		///< gets the x coordinate (left edge)
   int y() const { return y_; }		///< gets the y coordinate (top edge)
@@ -130,5 +130,5 @@ public:
 #endif // Fl_Rect_H
 
 //
-// End of "$Id: Fl_Rect.H 12260 2017-06-13 10:35:18Z AlbrechtS $".
+// End of "$Id: Fl_Rect.H 12743 2018-03-12 20:54:27Z matt $".
 //

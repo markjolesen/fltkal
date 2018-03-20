@@ -1,6 +1,6 @@
 // pixmap.h
 //
-// "$Id: Fl_Pixmap.H 12433 2017-09-09 12:35:06Z manolo $"
+// "$Id: Fl_Pixmap.H 12776 2018-03-19 17:43:18Z manolo $"
 //
 // Pixmap header file for the Fast Light Tool Kit (FLTK).
 //
@@ -97,7 +97,6 @@ class FL_EXPORT Fl_Pixmap : public Fl_Image {
 
 protected:
   void measure();
-  virtual int draw_scaled(int X, int Y, int W, int H);
 
 public:
 
@@ -135,5 +134,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Pixmap.H 12433 2017-09-09 12:35:06Z manolo $".
+// End of "$Id: Fl_Pixmap.H 12776 2018-03-19 17:43:18Z manolo $".
 //

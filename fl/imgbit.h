@@ -1,6 +1,6 @@
 // bmp.h
 //
-// "$Id: Fl_Bitmap.H 12433 2017-09-09 12:35:06Z manolo $"
+// "$Id: Fl_Bitmap.H 12776 2018-03-19 17:43:18Z manolo $"
 //
 // Bitmap header file for the Fast Light Tool Kit (FLTK).
 //
@@ -98,9 +98,6 @@ private:
   /** for internal use */
   fl_uintptr_t id_;
   float cache_scale_; // graphics scaling value when id_ was computed
-  
-protected:
-  virtual int draw_scaled(int X, int Y, int W, int H);
 
 public:
   /** The constructors create a new bitmap from the specified bitmap data */
@@ -122,5 +119,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Bitmap.H 12433 2017-09-09 12:35:06Z manolo $".
+// End of "$Id: Fl_Bitmap.H 12776 2018-03-19 17:43:18Z manolo $".
 //

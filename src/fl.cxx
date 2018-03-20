@@ -1,11 +1,11 @@
 // fl.cxx
 //
-// "$Id: Fl.cxx 12517 2017-10-19 10:15:12Z manolo $"
+// "$Id: Fl.cxx 12757 2018-03-16 12:48:27Z AlbrechtS $"
 //
 // Main event handling code for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -210,24 +210,24 @@ int		Fl::damage_,
 		Fl::e_clicks,
 		Fl::e_is_click,
 		Fl::e_keysym,
-                Fl::e_original_keysym,
+		Fl::e_original_keysym,
 		Fl::scrollbar_size_ = 16;
 
 char		*Fl::e_text = (char *)"";
 int		Fl::e_length;
-const char*	Fl::e_clipboard_type = "";
-void *		Fl::e_clipboard_data = NULL;
+const char	*Fl::e_clipboard_type = "";
+void		*Fl::e_clipboard_data = NULL;
 
 Fl_Event_Dispatch Fl::e_dispatch = 0;
 
-unsigned char   Fl::options_[] = { 0, 0 };
-unsigned char   Fl::options_read_ = 0;
+unsigned char	Fl::options_[] = { 0, 0 };
+unsigned char	Fl::options_read_ = 0;
 
 
-Fl_Window *fl_xfocus = NULL;	// which window X thinks has focus
-Fl_Window *fl_xmousewin;// which window X thinks has FL_ENTER
-Fl_Window *Fl::grab_;	// most recent Fl::grab()
-Fl_Window *Fl::modal_;	// topmost modal() window
+Fl_Window	*fl_xfocus = NULL; // which window X thinks has focus
+Fl_Window	*fl_xmousewin;     // which window X thinks has FL_ENTER
+Fl_Window	*Fl::grab_;        // most recent Fl::grab()
+Fl_Window	*Fl::modal_;       // topmost modal() window
 
 #endif // FL_DOXYGEN
 
@@ -569,7 +569,7 @@ void (*Fl::idle)(); // see Fl::add_idle.cxx for the add/remove functions
 
 /**
  Waits a maximum of \p time_to_wait seconds or until "something happens".
- 
+
  See Fl::wait() for the description of operations performed when
  "something happens".
  \return Always 1 on Windows. Otherwise, it is positive
@@ -591,6 +591,13 @@ double Fl::wait(double time_to_wait) {
   (supposedly it would return non-zero on any errors, but FLTK calls
   exit directly for these).  A normal program will end main()
   with return Fl::run();.
+
+  \note Fl::run() and Fl::wait() (but not Fl::wait(double)) both
+  return when all FLTK windows are closed. Therefore, a MacOS FLTK
+  application possessing Fl_Sys_Menu_Bar items able to create new windows
+  and expected to keep running without any open window cannot use
+  these two functions. One solution is to run the event loop as follows:
+  \code    while (!Fl::program_should_quit()) Fl::wait(1e20); \endcode
 */
 int Fl::run() {
   while (Fl_X::first) wait(FOREVER);
@@ -663,6 +670,8 @@ int Fl::ready()
   return screen_driver()->ready();
 }
 
+int Fl::program_should_quit_ = 0;
+
 ////////////////////////////////////////////////////////////////
 // Window list management:
 
@@ -700,7 +709,7 @@ Fl_Window* Fl::first_window() {
 /**
   Returns the next top-level window in the list of shown() windows.
   You can use this call to iterate through all the windows that are shown().
-  \param[in] window	must be shown and not NULL
+  \param[in] window must be shown and not NULL
 */
 Fl_Window* Fl::next_window(const Fl_Window* window) {
   Fl_X* i = Fl_X::i(window)->next;
@@ -1189,16 +1198,16 @@ void fl_fix_focus() {
       if (Fl::modal()) w = Fl::modal();
       if (!w->contains(Fl::belowmouse())) {
         int old_event = Fl::e_number;
-	w->handle(Fl::e_number = FL_ENTER);
-	Fl::e_number = old_event;
-	if (!w->contains(Fl::belowmouse())) Fl::belowmouse(w);
+        w->handle(Fl::e_number = FL_ENTER);
+        Fl::e_number = old_event;
+        if (!w->contains(Fl::belowmouse())) Fl::belowmouse(w);
       } else {
-	// send a FL_MOVE event so the enter/leave state is up to date
-	Fl::e_x = Fl::e_x_root-fl_xmousewin->x();
-	Fl::e_y = Fl::e_y_root-fl_xmousewin->y();
+        // send a FL_MOVE event so the enter/leave state is up to date
+        Fl::e_x = Fl::e_x_root - fl_xmousewin->x();
+        Fl::e_y = Fl::e_y_root - fl_xmousewin->y();
         int old_event = Fl::e_number;
-	w->handle(Fl::e_number = FL_MOVE);
-	Fl::e_number = old_event;
+        w->handle(Fl::e_number = FL_MOVE);
+        Fl::e_number = old_event;
       }
     } else {
       Fl::belowmouse(0);
@@ -1491,7 +1500,7 @@ int Fl::handle_(int e, Fl_Window* window)
     // "close enough".
     for (wi = grab() ? grab() : focus(); wi; wi = wi->parent()) {
       if (send_event(FL_KEYUP, wi, window))
-	return 1;
+        return 1;
     }
     return 0;
 
@@ -1666,7 +1675,7 @@ void Fl_Widget::redraw_label() {
 
       // FIXME:
       // This assumes that measure() returns the correct outline, which it does
-      // not in all possible cases of alignment combinedwith image and symbols.
+      // not in all possible cases of alignment combined with image and symbols.
       switch (align() & 0x0f) {
         case FL_ALIGN_TOP_LEFT:
           window()->damage(FL_DAMAGE_EXPOSE, x(), y()-H, W, H); break;
@@ -1766,8 +1775,8 @@ void Fl_Widget::damage(uchar fl, int X, int Y, int W, int H) {
 //
 
 
-static int		num_dwidgets = 0, alloc_dwidgets = 0;
-static Fl_Widget	**dwidgets = 0;
+static int        num_dwidgets = 0, alloc_dwidgets = 0;
+static Fl_Widget  **dwidgets = 0;
 
 
 /**
@@ -1810,7 +1819,7 @@ void Fl::delete_widget(Fl_Widget *wi) {
   }
 
   if (num_dwidgets >= alloc_dwidgets) {
-    Fl_Widget	**temp;
+    Fl_Widget **temp;
 
     temp = new Fl_Widget *[alloc_dwidgets + 10];
     if (alloc_dwidgets) {
@@ -1871,19 +1880,19 @@ static int max_widget_watch = 0;
 
   Example for a button that is clicked (from its handle() method):
   \code
-    Fl_Widget *wp = this;		// save 'this' in a pointer variable
-    Fl::watch_widget_pointer(wp);	// add the pointer to the watch list
-    set_changed();			// set the changed flag
-    do_callback();			// call the callback
-    if (!wp) {				// the widget has been deleted
+    Fl_Widget *wp = this;           // save 'this' in a pointer variable
+    Fl::watch_widget_pointer(wp);   // add the pointer to the watch list
+    set_changed();                  // set the changed flag
+    do_callback();                  // call the callback
+    if (!wp) {                      // the widget has been deleted
 
       // DO NOT ACCESS THE DELETED WIDGET !
 
-    } else {				// the widget still exists
-      clear_changed();			// reset the changed flag
+    } else {                        // the widget still exists
+      clear_changed();              // reset the changed flag
     }
 
-    Fl::release_widget_pointer(wp);	// remove the pointer from the watch list
+    Fl::release_widget_pointer(wp); // remove the pointer from the watch list
    \endcode
 
    This works, because all widgets call Fl::clear_widget_pointer() in their
@@ -1939,8 +1948,8 @@ void Fl::release_widget_pointer(Fl_Widget *&w)
     }
 #ifdef DEBUG_WATCH
     else { // found widget pointer
-      printf ("release_widget_pointer: (%d/%d) %8p => %8p\n",
-	i+1,num_widget_watch,wp,*wp);
+      printf("release_widget_pointer: (%d/%d) %8p => %8p\n",
+	     i+1, num_widget_watch, wp, *wp);
     }
 #endif //DEBUG_WATCH
   }
@@ -2111,6 +2120,8 @@ Fl_Widget_Tracker::~Fl_Widget_Tracker()
 
 int Fl::use_high_res_GL_ = 0;
 
+int Fl::draw_GL_text_with_textures_ = 1;
+
 int Fl::dnd()
 {
   return Fl::screen_driver()->dnd();
@@ -2119,10 +2130,18 @@ int Fl::dnd()
 #if !defined(FL_DOXYGEN) // FIXME - silence Doxygen warnings
 
 /**
-  Resets marked text.
-
-  \todo Please explain what exactly this does and how to use it.
-*/
+ * Resets marked text.
+ *
+ * In many languages, typing a character involves multiple keystrokes. For
+ * example, the A-Umlaut can be composed of two dots (") on top of the
+ * character, followed by the letter A (on a Mac with U.S. keyboard, you'd
+ * type Alt-U, Shift-A. To inform the user, that the dots may be followed by
+ * another character, the position of the " is marked on screen with a yellow
+ * background color.
+ *
+ * Call this function if character composition needs to be aborted for some
+ * reason. One such example would be the text input widget losing focus.
+ */
 void Fl::reset_marked_text() {
   Fl::screen_driver()->reset_marked_text();
 }
@@ -2166,19 +2185,19 @@ int Fl::clipboard_contains(const char *type)
 
 /**
  Adds file descriptor fd to listen to.
- 
+
  When the fd becomes ready for reading Fl::wait() will call the
  callback and then return. The callback is passed the fd and the
  arbitrary void* argument.
- 
+
  This version takes a when bitfield, with the bits
  FL_READ, FL_WRITE, and FL_EXCEPT defined,
  to indicate when the callback should be done.
- 
+
  There can only be one callback of each type for a file descriptor.
  Fl::remove_fd() gets rid of <I>all</I> the callbacks for a given
  file descriptor.
- 
+
  Under UNIX/Linux/MacOS <I>any</I> file descriptor can be monitored (files,
  devices, pipes, sockets, etc.). Due to limitations in Microsoft Windows,
  Windows applications can only monitor sockets.
@@ -2242,11 +2261,11 @@ FL_EXPORT Window fl_xid_(const Fl_Window *w) {
  @{ */
 
 /** Register a function called for each file dropped onto an application icon.
- 
+
  This function is effective only on the Mac OS X platform.
  \c cb will be called with a single Unix-style file name and path.
  If multiple files were dropped, \c cb will be called multiple times.
- 
+
  This function should be called before \c fl_open_display() is called,
  either directly or indirectly (this happens at the first \c show() of a window),
  to be effective for files dropped on the application icon at launch time.
@@ -2279,5 +2298,5 @@ FL_EXPORT const char* fl_local_alt   = Fl::system_driver()->alt_name();
 FL_EXPORT const char* fl_local_ctrl  = Fl::system_driver()->control_name();
 
 //
-// End of "$Id: Fl.cxx 12517 2017-10-19 10:15:12Z manolo $".
+// End of "$Id: Fl.cxx 12757 2018-03-16 12:48:27Z AlbrechtS $".
 //

@@ -1,6 +1,6 @@
 // win.h
 //
-// "$Id: Fl_Window.H 12262 2017-06-16 09:29:54Z manolo $"
+// "$Id: Fl_Window.H 12726 2018-03-10 00:46:12Z matt $"
 //
 // Window header file for the Fast Light Tool Kit (FLTK).
 //
@@ -124,6 +124,9 @@ private:
   int fullscreen_screen_left;
   int fullscreen_screen_right;
 
+  // TODO: it would make sense to merge the use of Fl_X and Fl_Window_Driver, maybe simply by
+  // TODO: deriving Fl_Window_Driver from Fl_X. However, there are a lot of historic kldges for
+  // TODO: some platforms around Fl_X.
   Fl_X *i; // points at the system-specific stuff, but exists only after the window is mapped
   Fl_Window_Driver *pWindowDriver; // points at the system-specific stuff at window creation time
 
@@ -603,5 +606,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Window.H 12262 2017-06-16 09:29:54Z manolo $".
+// End of "$Id: Fl_Window.H 12726 2018-03-10 00:46:12Z matt $".
 //

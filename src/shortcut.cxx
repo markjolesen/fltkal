@@ -1,11 +1,11 @@
 // shortcut.cxx
 //
-// "$Id: fl_shortcut.cxx 11682 2016-04-23 06:43:04Z manolo $"
+// "$Id: fl_shortcut.cxx 12757 2018-03-16 12:48:27Z AlbrechtS $"
 //
 // Shortcut support routines for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2016 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -158,6 +158,12 @@ int Fl::test_shortcut(unsigned int shortcut) {
     fl_local_shift = "Umschalt"; // German for "Shift"
   \endcode
 
+  \note Due to \b random static initialization order this should always
+    be done from code in main() or called by main() as opposed to static
+    initialization since the default strings in the FLTK library are set by
+    static initializers. Otherwise this \b might result in the wrong order
+    so FLTK's internal initialization overwrites your strings.
+
   The shortcut name will be constructed by adding all modifier names in the
   order defined above plus the name of the key. A '+' character is added to
   each modifier name unless it has a trailing '\' or a trailing '+'.
@@ -167,11 +173,11 @@ int Fl::test_shortcut(unsigned int shortcut) {
     Ctrl+Alt+Shift+Meta+F12
 
   The default values for modifier key names are as given above for all
-  platforms except Mac OS X. Mac OS X uses graphical characters that represent
-  the typical OS X modifier names in menus, e.g. cloverleaf, saucepan, etc.
-  You may, however, redefine Mac OS X modifier names as well.
+  platforms except macOS. macOS uses graphical characters that represent
+  the typical macOS modifier names in menus, e.g. cloverleaf, saucepan, etc.
+  You may, however, redefine macOS modifier names as well.
 
-  \param [in] shortcut the integer value containing the ascii character or extended keystroke plus modifiers
+  \param [in] shortcut the integer value containing the ASCII character or extended keystroke plus modifiers
   \return a pointer to a static buffer containing human readable text for the shortcut
   */
 const char* fl_shortcut_label(unsigned int shortcut) {
@@ -192,7 +198,7 @@ const char* fl_shortcut_label(unsigned int shortcut) {
 */
 
 static char *add_modifier_key(char *p, const char *end, const char *name) {
-  int ln = strlen(name);
+  size_t ln = strlen(name);
   if (p+ln > end) {		// string too long
     if (p+4 <= end) {		// can replace with "..." ?
       strcpy(p,"...");
@@ -212,10 +218,10 @@ static char *add_modifier_key(char *p, const char *end, const char *name) {
   return p;
 }
 
-/** 
+/**
   Get a human-readable string from a shortcut value.
 
-  \param [in] shortcut the integer value containing the ascii character or extended keystroke plus modifiers
+  \param [in] shortcut the integer value containing the ASCII character or extended keystroke plus modifiers
   \param [in] eom if this pointer is set, it will receive a pointer to the end of the modifier text
   \return a pointer to a static buffer containing human readable text for the shortcut
 
@@ -252,10 +258,10 @@ const char* fl_shortcut_label(unsigned int shortcut, const char **eom) {
 /**
   Emulation of XForms named shortcuts.
 
-  Converts ascii shortcut specifications (eg. "^c") 
+  Converts ASCII shortcut specifications (eg. "^c")
   into the FLTK integer equivalent (eg. FL_CTRL+'c')
 
-  These ascii characters are used to specify the various keyboard modifier keys:
+  These ASCII characters are used to specify the various keyboard modifier keys:
   \verbatim
    # - Alt
    + - Shift
@@ -315,18 +321,18 @@ const char* fl_shortcut_label(unsigned int shortcut, const char **eom) {
       key to be modified is a single alpha-numeric character [A-Z,a-z,0-9),
       it's probably best to use the numeric equivalents.
 
-  \todo Fix these silly legacy issues in a future release
-        to support more predictable behavior for the modifier keys.
+  \remarks Don't fix these silly legacy issues in a future release.
+      Nobody is using this anymore.
 */
 unsigned int fl_old_shortcut(const char* s) {
   if (!s || !*s) return 0;
-  if (s[1]==0 && strchr("@!",s[0])) return s[0]; // maintain legacy behavior for "!" and "@"
+  if (s[1]==0 && strchr("@!",s[0])) return (unsigned int)s[0]; // maintain legacy behavior for "!" and "@"
   unsigned int n = 0;
   if (*s == '#') {n |= FL_ALT; s++;}
   if (*s == '+') {n |= FL_SHIFT; s++;}
   if (*s == '^') {n |= FL_CTRL; s++;}
-  if (*s == '!') {n |= FL_META; s++;} 	 // added in 1.3.3
-  if (*s == '@') {n |= FL_COMMAND; s++;} // added in 1.3.3
+  if (*s == '!') {n |= FL_META; s++;}     // added in 1.3.3
+  if (*s == '@') {n |= FL_COMMAND; s++;}  // added in 1.3.3
   if (*s && s[1]) return n | (int)strtol(s,0,0); // allow 0xf00 to get any key
   return n | *s;
 }
@@ -392,7 +398,7 @@ int Fl_Widget::test_shortcut(const char *t, const bool require_alt) {
   unsigned int ls = label_shortcut(t);
   if (c == ls)
     return 1;
-  // On OS X, we need to simulate the upper case keystroke as well
+  // On macOS, we need to simulate the upper case keystroke as well
   if (extra_test && Fl::event_state(FL_ALT) && c<128 && isalpha(c) && (unsigned)toupper(c)==ls)
     return 1;
   return 0;
@@ -422,75 +428,75 @@ int Fl_Widget::test_shortcut() {
 #if defined(FL_CFG_GFX_GDI) || defined(FL_PORTING) || defined(FL_CFG_GFX_ALLEGRO)
 // This table must be in numeric order by fltk (X) keysym number:
 Fl_System_Driver::Keyname Fl_System_Driver::table[] = {
-  {' ', "Space"},
-  {FL_BackSpace, "Backspace"},
-  {FL_Tab,	"Tab"},
+  {' ',           "Space"},
+  {FL_BackSpace,  "Backspace"},
+  {FL_Tab,        "Tab"},
   {0xff0b/*XK_Clear*/, "Clear"},
-  {FL_Enter,	"Enter"}, // X says "Enter"
-  {FL_Pause,	"Pause"},
+  {FL_Enter,      "Enter"}, // X says "Enter"
+  {FL_Pause,      "Pause"},
   {FL_Scroll_Lock, "Scroll_Lock"},
-  {FL_Escape,	"Escape"},
-  {FL_Home,	"Home"},
-  {FL_Left,	"Left"},
-  {FL_Up,	"Up"},
-  {FL_Right,	"Right"},
-  {FL_Down,	"Down"},
-  {FL_Page_Up,	"Page_Up"}, // X says "Prior"
-  {FL_Page_Down,"Page_Down"}, // X says "Next"
-  {FL_End,	"End"},
-  {FL_Print,	"Print"},
-  {FL_Insert,	"Insert"},
-  {FL_Menu,	"Menu"},
-  {FL_Num_Lock,	"Num_Lock"},
-  {FL_KP_Enter,	"KP_Enter"},
-  {FL_Shift_L,	"Shift_L"},
-  {FL_Shift_R,	"Shift_R"},
-  {FL_Control_L,"Control_L"},
-  {FL_Control_R,"Control_R"},
-  {FL_Caps_Lock,"Caps_Lock"},
-  {FL_Meta_L,	"Meta_L"},
-  {FL_Meta_R,	"Meta_R"},
-  {FL_Alt_L,	"Alt_L"},
-  {FL_Alt_R,	"Alt_R"},
-  {FL_Delete,	"Delete"}
+  {FL_Escape,     "Escape"},
+  {FL_Home,       "Home"},
+  {FL_Left,       "Left"},
+  {FL_Up,         "Up"},
+  {FL_Right,      "Right"},
+  {FL_Down,       "Down"},
+  {FL_Page_Up,    "Page_Up"}, // X says "Prior"
+  {FL_Page_Down,  "Page_Down"}, // X says "Next"
+  {FL_End,        "End"},
+  {FL_Print,      "Print"},
+  {FL_Insert,     "Insert"},
+  {FL_Menu,       "Menu"},
+  {FL_Num_Lock,   "Num_Lock"},
+  {FL_KP_Enter,   "KP_Enter"},
+  {FL_Shift_L,    "Shift_L"},
+  {FL_Shift_R,    "Shift_R"},
+  {FL_Control_L,  "Control_L"},
+  {FL_Control_R,  "Control_R"},
+  {FL_Caps_Lock,  "Caps_Lock"},
+  {FL_Meta_L,     "Meta_L"},
+  {FL_Meta_R,     "Meta_R"},
+  {FL_Alt_L,      "Alt_L"},
+  {FL_Alt_R,      "Alt_R"},
+  {FL_Delete,     "Delete"}
 };
 #endif
 
 #if defined(FL_CFG_GFX_QUARTZ)
 // This table must be in numeric order by fltk (X) keysym number:
 Fl_System_Driver::Keyname Fl_System_Driver::table[] = {
-  //             v - this column may contain UTF-8 characters
-  {' ',         "Space"},
-  {FL_BackSpace,"\xe2\x8c\xab"}, // erase to the left
-  {FL_Tab,	"\xe2\x87\xa5"}, // rightwards arrow to bar
-  {0xff0b,      "\xe2\x8c\xa6"}, // erase to the right
-  {FL_Enter,	"\xe2\x86\xa9"}, // leftwards arrow with hook
-  {FL_Pause,	"Pause"},
+  //              v - this column may contain UTF-8 characters
+  {' ',           "Space"},
+  {FL_BackSpace,  "\xe2\x8c\xab"}, // erase to the left
+  {FL_Tab,        "\xe2\x87\xa5"}, // rightwards arrow to bar
+  {0xff0b,        "\xe2\x8c\xa6"}, // erase to the right
+  {FL_Enter,      "\xe2\x86\xa9"}, // leftwards arrow with hook
+  {FL_Pause,      "Pause"},
   {FL_Scroll_Lock, "Scroll_Lock"},
-  {FL_Escape,	"\xe2\x90\x9b"},
-  {FL_Home,	"\xe2\x86\x96"}, // north west arrow
-  {FL_Left,	"\xe2\x86\x90"}, // leftwards arrow
-  {FL_Up,	"\xe2\x86\x91"}, // upwards arrow
-  {FL_Right,	"\xe2\x86\x92"}, // rightwards arrow
-  {FL_Down,	"\xe2\x86\x93"}, // downwards arrow
-  {FL_Page_Up,	"\xe2\x87\x9e"}, // upwards arrow with double stroke
-  {FL_Page_Down,"\xe2\x87\x9f"}, // downwards arrow with double stroke
-  {FL_End,	"\xe2\x86\x98"}, // south east arrow
-  {FL_Print,	"Print"},
-  {FL_Insert,	"Insert"},
-  {FL_Menu,	"Menu"},
-  {FL_Num_Lock,	"Num_Lock"},
-  {FL_KP_Enter,	"\xe2\x8c\xa4"}, // up arrow head between two horizontal bars
-  {FL_Shift_L,	"Shift_L"},
-  {FL_Shift_R,	"Shift_R"},
-  {FL_Control_L,"Control_L"},
-  {FL_Control_R,"Control_R"},
-  {FL_Caps_Lock,"\xe2\x87\xaa"}, // upwards white arrow from bar
-  {FL_Meta_L,	"Meta_L"},
-  {FL_Meta_R,	"Meta_R"},
-  {FL_Alt_L,	"Alt_L"},
-  {FL_Alt_R,	"Alt_R"},
-  {FL_Delete,	"\xe2\x8c\xa7"}  // x in a rectangle box
+  {FL_Escape,     "\xe2\x90\x9b"},
+  {FL_Home,       "\xe2\x86\x96"}, // north west arrow
+  {FL_Left,       "\xe2\x86\x90"}, // leftwards arrow
+  {FL_Up,         "\xe2\x86\x91"}, // upwards arrow
+  {FL_Right,      "\xe2\x86\x92"}, // rightwards arrow
+  {FL_Down,       "\xe2\x86\x93"}, // downwards arrow
+  {FL_Page_Up,    "\xe2\x87\x9e"}, // upwards arrow with double stroke
+  {FL_Page_Down,  "\xe2\x87\x9f"}, // downwards arrow with double stroke
+  {FL_End,        "\xe2\x86\x98"}, // south east arrow
+  {FL_Print,      "Print"},
+  {FL_Insert,     "Insert"},
+  {FL_Menu,       "Menu"},
+  {FL_Num_Lock,   "Num_Lock"},
+  {FL_KP_Enter,   "\xe2\x8c\xa4"}, // up arrow head between two horizontal bars
+  {FL_Shift_L,    "Shift_L"},
+  {FL_Shift_R,    "Shift_R"},
+  {FL_Control_L,  "Control_L"},
+  {FL_Control_R,  "Control_R"},
+  {FL_Caps_Lock,  "\xe2\x87\xaa"}, // upwards white arrow from bar
+  {FL_Meta_L,     "Meta_L"},
+  {FL_Meta_R,     "Meta_R"},
+  {FL_Alt_L,      "Alt_L"},
+  {FL_Alt_R,      "Alt_R"},
+  {FL_Delete,     "\xe2\x8c\xa7"}  // x in a rectangle box
 };
 #endif
 
@@ -525,8 +531,8 @@ const char *Fl_System_Driver::shortcut_add_key_name(unsigned key, char *p, char 
 {
   if (key >= FL_F && key <= FL_F_Last) {
     *p++ = 'F';
-    if (key > FL_F+9) *p++ = (key-FL_F)/10+'0';
-    *p++ = (key-FL_F)%10 + '0';
+    if (key > FL_F+9) *p++ = (char)((key-FL_F)/10+'0');
+    *p++ = (char)((key-FL_F)%10 + '0');
   } else {
     // binary search the table for a match:
     int a = 0;
@@ -560,5 +566,5 @@ const char *Fl_System_Driver::shortcut_add_key_name(unsigned key, char *p, char 
 }
 
 //
-// End of "$Id: fl_shortcut.cxx 11682 2016-04-23 06:43:04Z manolo $".
+// End of "$Id: fl_shortcut.cxx 12757 2018-03-16 12:48:27Z AlbrechtS $".
 //
