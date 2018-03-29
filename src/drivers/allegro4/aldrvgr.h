@@ -88,6 +88,8 @@ public:
         return ((active) ? active : (active = screen));
     };
 
+    void surface_clear();
+
     virtual void draw(const char *str, int n, int x, int y);
 
     virtual void point(int x, int y);
@@ -168,6 +170,11 @@ protected:
 
     virtual void draw(Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy);
 };
+
+inline void Fl_Allegro_Graphics_Driver::surface_clear()
+{
+    clear_to_color(surface(), 0);
+}
 
 inline void Fl_Allegro_Graphics_Driver::mouse_hide()
 {

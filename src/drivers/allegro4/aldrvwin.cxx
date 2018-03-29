@@ -179,6 +179,14 @@ Fl_X *Fl_Allegro_Window_Driver::makeWindow()
     return x;
 }
 
+void Fl_Allegro_Window_Driver::take_focus()
+{
+    if (!shown())
+    {
+        pWindow->show();
+    }
+}
+
 void Fl_Allegro_Window_Driver::show()
 {
     if (!shown())
@@ -251,6 +259,11 @@ void Fl_Allegro_Window_Driver::resize(int X, int Y, int W, int H)
         erase_menu();
     }
 
+    int x1 = pWindow->x();
+    int y1 = pWindow->y();
+    int w1 = pWindow->w();
+    int h1 = pWindow->h();
+
     pWindow->Fl_Group::resize(X, Y, W, H);
 
     if (shown())
@@ -261,7 +274,26 @@ void Fl_Allegro_Window_Driver::resize(int X, int Y, int W, int H)
             // if backing stores are layered, this will copy the layer below it
             show_menu();
         }
-        pWindow->redraw();
+
+        int x2 = pWindow->x();
+        int y2 = pWindow->y();
+        int w2 = pWindow->w();
+        int h2 = pWindow->h();
+
+        if (x1 != x2 || y1 != y2 || w1 != w2 || h1 != h2)
+        {
+            if (false == has_store && (x1 != x2 || y1 != y2))
+            {
+                Fl_Allegro_Graphics_Driver *gr = reinterpret_cast<Fl_Allegro_Graphics_Driver *>(fl_graphics_driver);
+                gr->surface_clear();
+                Fl::redraw();
+            }
+            else
+            {
+                pWindow->redraw();
+            }
+        }
+
     }
 
     return;

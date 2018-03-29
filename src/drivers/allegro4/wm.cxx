@@ -207,7 +207,9 @@ bool wm::handle_push(Fl_Window &window, hit_type const what, int const x, int co
                     *pp = i->next;
                     i->next = Fl_X::first;
                     Fl_X::first = i;
-                    wi->take_focus();
+                    // wi->take_focus();
+                    Fl::focus(wi); // force focus (empty windows)
+                    wi->redraw(); // paint above all other windows
                     break;
                 }
             }

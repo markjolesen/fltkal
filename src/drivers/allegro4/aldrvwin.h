@@ -109,6 +109,8 @@ public:
 
     virtual Fl_X *makeWindow();
 
+    virtual void take_focus();
+
     virtual void show();
 
     virtual void hide();

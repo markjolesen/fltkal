@@ -94,12 +94,12 @@ BITMAP *rgb8_to_bitmap(
 
         for (unsigned int row = 0; row < img_height; row++)
         {
-            uint32_t *dest = reinterpret_cast<uint32_t*>(bmp->line[row]);
+            uint32_t *dest = reinterpret_cast<uint32_t *>(bmp->line[row]);
             for (unsigned int index = 0; index < img_width; index++)
             {
                 unsigned char grey = *src++;
-                uint32_t color= makecol24(grey, grey, grey);
-                *dest++= color;
+                uint32_t color = makecol24(grey, grey, grey);
+                *dest++ = color;
             }
             src += delta;
         }
