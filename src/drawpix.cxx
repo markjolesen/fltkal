@@ -1,11 +1,11 @@
 // drawpix.cxx
 //
-// "$Id: fl_draw_pixmap.cxx 11587 2016-04-12 13:47:38Z manolo $"
+// "$Id: fl_draw_pixmap.cxx 12860 2018-04-19 13:51:17Z manolo $"
 //
 // Pixmap drawing code for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2012 by Bill Spitzak and others.
+// Copyright 1998-2012, 2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -143,11 +143,10 @@ int fl_draw_pixmap(/*const*/ char* const* data, int x,int y,Fl_Color bg) {
 
 #if defined(FL_CFG_SYS_WIN32)
 
-unsigned Fl_WinAPI_System_Driver::win_pixmap_bg_color = 0; // the RGB() of the pixmap background color
 
 // Makes an RGB triplet different from all the colors used in the pixmap
-// and compute win_pixmap_bg_color from this triplet
-void Fl_WinAPI_System_Driver::make_unused_color(uchar &r, uchar &g, uchar &b) {
+// and compute Fl_Graphics_Driver::need_pixmap_bg_color from this triplet
+void Fl_GDI_Graphics_Driver::make_unused_color_(uchar &r, uchar &g, uchar &b) {
   int i;
   r = 2; g = 3; b = 4;
   while (1) {
@@ -158,7 +157,7 @@ void Fl_WinAPI_System_Driver::make_unused_color(uchar &r, uchar &g, uchar &b) {
 	break;
     if (i >= color_count) {
       free((void*)used_colors); used_colors = NULL;
-      win_pixmap_bg_color = RGB(r, g, b);
+      need_pixmap_bg_color = RGB(r, g, b);
       return;
     }
     if (r < 255) {
@@ -180,23 +179,22 @@ void Fl_WinAPI_System_Driver::make_unused_color(uchar &r, uchar &g, uchar &b) {
 int fl_convert_pixmap(const char*const* cdata, uchar* out, Fl_Color bg) {
   int w, h;
   const uchar*const* data = (const uchar*const*)(cdata+1);
-  static int use_extra_transparent_processing = Fl::system_driver()->pixmap_extra_transparent_processing();
   uchar *transparent_c = (uchar *)0; // such that transparent_c[0,1,2] are the RGB of the transparent color
-
+  
   if (!fl_measure_pixmap(cdata, w, h))
     return 0;
-
+  
   if ((chars_per_pixel < 1) || (chars_per_pixel > 2))
     return 0;
-
+  
   typedef uchar uchar4[4];
   uchar4 *colors = new uchar4[1<<(chars_per_pixel*8)];
-
-  if (use_extra_transparent_processing) {
+  
+  if (Fl_Graphics_Driver::need_pixmap_bg_color) {
     color_count = 0;
     used_colors = (UsedColor*)malloc(abs(ncolors) * sizeof(UsedColor));
   }
-
+  
   if (ncolors < 0) {	// FLTK (non standard) compressed colormap
     ncolors = -ncolors;
     const uchar *p = *data++;
@@ -205,14 +203,14 @@ int fl_convert_pixmap(const char*const* cdata, uchar* out, Fl_Color bg) {
     if (*p == ' ') {
       uchar* c = colors[(int)' '];
       Fl::get_color(bg, c[0], c[1], c[2]); c[3] = 0;
-      if (use_extra_transparent_processing) transparent_c = c;
+      if (Fl_Graphics_Driver::need_pixmap_bg_color) transparent_c = c;
       p += 4;
       ncolors--;
     }
     // read all the rest of the colors:
     for (int i=0; i < ncolors; i++) {
       uchar* c = colors[*p++];
-      if (use_extra_transparent_processing) {
+      if (Fl_Graphics_Driver::need_pixmap_bg_color) {
         used_colors[color_count].r = *(p+0);
         used_colors[color_count].g = *(p+1);
         used_colors[color_count].b = *(p+2);
@@ -230,24 +228,24 @@ int fl_convert_pixmap(const char*const* cdata, uchar* out, Fl_Color bg) {
       int ind = *p++;
       uchar* c;
       if (chars_per_pixel>1)
-	ind = (ind<<8)|*p++;
+        ind = (ind<<8)|*p++;
       c = colors[ind];
       // look for "c word", or last word if none:
       const uchar *previous_word = p;
       for (;;) {
-	while (*p && isspace(*p)) p++;
-	uchar what = *p++;
-	while (*p && !isspace(*p)) p++;
-	while (*p && isspace(*p)) p++;
-	if (!*p) {p = previous_word; break;}
-	if (what == 'c') break;
-	previous_word = p;
-	while (*p && !isspace(*p)) p++;
+        while (*p && isspace(*p)) p++;
+        uchar what = *p++;
+        while (*p && !isspace(*p)) p++;
+        while (*p && isspace(*p)) p++;
+        if (!*p) {p = previous_word; break;}
+        if (what == 'c') break;
+        previous_word = p;
+        while (*p && !isspace(*p)) p++;
       }
       int parse = fl_parse_color((const char*)p, c[0], c[1], c[2]);
       c[3] = 255;
       if (parse) {
-        if (use_extra_transparent_processing) {
+        if (Fl_Graphics_Driver::need_pixmap_bg_color) {
           used_colors[color_count].r = c[0];
           used_colors[color_count].g = c[1];
           used_colors[color_count].b = c[2];
@@ -255,36 +253,37 @@ int fl_convert_pixmap(const char*const* cdata, uchar* out, Fl_Color bg) {
         }
       } else {
         // assume "None" or "#transparent" for any errors
-	// "bg" should be transparent...
-	Fl::get_color(bg, c[0], c[1], c[2]);
-        c[3] = 0;
-	if (use_extra_transparent_processing) transparent_c = c;
+        // "bg" should be transparent...
+        Fl::get_color(bg, c[0], c[1], c[2]);
+        uchar **m = fl_graphics_driver->mask_bitmap();
+        c[3] = (m && !*m) ? 255 : 0;
+        if (Fl_Graphics_Driver::need_pixmap_bg_color) transparent_c = c;
       } // if parse
     } // for ncolors
   } // if ncolors
-  if (use_extra_transparent_processing) {
+  if (Fl_Graphics_Driver::need_pixmap_bg_color) {
     if (transparent_c) {
-      Fl::system_driver()->make_unused_color(transparent_c[0], transparent_c[1], transparent_c[2]);
+      fl_graphics_driver->make_unused_color_(transparent_c[0], transparent_c[1], transparent_c[2]);
     } else {
       uchar r, g, b;
-      Fl::system_driver()->make_unused_color(r, g, b);
+      fl_graphics_driver->make_unused_color_(r, g, b);
     }
   }
-
+  
   U32 *q = (U32*)out;
   for (int Y = 0; Y < h; Y++) {
-      const uchar* p = data[Y];
-      if (chars_per_pixel <= 1) {
+    const uchar* p = data[Y];
+    if (chars_per_pixel <= 1) {
       for (int X = 0; X < w; X++)
         memcpy(q++, colors[*p++], 4);
-      } else {
+    } else {
       for (int X = 0; X < w; X++) {
         int ind = (*p++)<<8;
         ind |= *p++;
         memcpy(q++, colors[ind], 4);
-	}
       }
     }
+  }
   delete[] colors;
   return 1;
 }
@@ -308,7 +307,7 @@ int fl_draw_pixmap(const char*const* cdata, int x, int y, Fl_Color bg) {
 
   // build the mask bitmap used by Fl_Pixmap:
   uchar **p = fl_graphics_driver->mask_bitmap();
-  if (p) {
+  if (p && *p) {
     int W = (w+7)/8;
     uchar* bitmap = new uchar[W * h];
     *p = bitmap;
@@ -336,5 +335,5 @@ int fl_draw_pixmap(const char*const* cdata, int x, int y, Fl_Color bg) {
 }
 
 //
-// End of "$Id: fl_draw_pixmap.cxx 11587 2016-04-12 13:47:38Z manolo $".
+// End of "$Id: fl_draw_pixmap.cxx 12860 2018-04-19 13:51:17Z manolo $".
 //

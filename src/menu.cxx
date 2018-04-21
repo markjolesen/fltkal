@@ -1,6 +1,6 @@
 // menu.cxx
 //
-// "$Id: Fl_Menu.cxx 11644 2016-04-17 17:45:44Z matt $"
+// "$Id: Fl_Menu.cxx 12815 2018-03-31 17:17:37Z greg.ercolano $"
 //
 // Menu code for the Fast Light Tool Kit (FLTK).
 //
@@ -253,7 +253,7 @@ void Fl_Menu_Item::draw(int x, int y, int w, int h, const Fl_Menu_* m,
       x += 3;
       w -= 8;
     } else {
-      fl_draw_box(b, x+1, y-(LEADING-2)/2, w-2, h+(LEADING-2), r);
+      fl_draw_box(b, x+1, y-(Fl::menu_linespacing()-2)/2, w-2, h+(Fl::menu_linespacing()-2), r);
     }
   }
 
@@ -399,7 +399,7 @@ menuwindow::menuwindow(const Fl_Menu_Item* m, int X, int Y, int Wp, int Hp,
   if (m) for (; m->text; m = m->next()) {
     int hh; 
     int w1 = m->measure(&hh, button);
-    if (hh+LEADING>itemheight) itemheight = hh+LEADING;
+    if (hh+Fl::menu_linespacing()>itemheight) itemheight = hh+Fl::menu_linespacing();
     if (m->flags&(FL_SUBMENU|FL_SUBMENU_POINTER)) 
       w1 += FL_NORMAL_SIZE;
     if (w1 > W) W = w1;
@@ -437,7 +437,7 @@ menuwindow::menuwindow(const Fl_Menu_Item* m, int X, int Y, int Wp, int Hp,
   //if (X > scr_x+scr_w-W) X = right_edge-W;
   if (X > scr_x+scr_w-W) X = scr_x+scr_w-W;
   x(X); w(W);
-  h((numitems ? itemheight*numitems-LEADING : 0)+2*BW+3);
+  h((numitems ? itemheight*numitems-Fl::menu_linespacing() : 0)+2*BW+3);
   if (selected >= 0) {
     Y = Y+(Hp-itemheight)/2-selected*itemheight-BW;
   } else {
@@ -514,10 +514,10 @@ void menuwindow::drawentry(const Fl_Menu_Item* m, int n, int eraseit) {
   int W = w();
   int ww = W-2*BW-1;
   int yy = BW+1+n*itemheight;
-  int hh = itemheight - LEADING;
+  int hh = itemheight - Fl::menu_linespacing();
 
   if (eraseit && n != selected) {
-    fl_push_clip(xx+1, yy-(LEADING-2)/2, ww-2, hh+(LEADING-2));
+    fl_push_clip(xx+1, yy-(Fl::menu_linespacing()-2)/2, ww-2, hh+(Fl::menu_linespacing()-2));
     draw_box(box(), 0, 0, w(), h(), button ? button->color() : color());
     fl_pop_clip();
   }
@@ -551,9 +551,9 @@ void menuwindow::drawentry(const Fl_Menu_Item* m, int n, int eraseit) {
 
   if (m->flags & FL_MENU_DIVIDER) {
     fl_color(FL_DARK3);
-    fl_xyline(BW-1, yy+hh+(LEADING-2)/2, W-2*BW+2);
+    fl_xyline(BW-1, yy+hh+(Fl::menu_linespacing()-2)/2, W-2*BW+2);
     fl_color(FL_LIGHT3);
-    fl_xyline(BW-1, yy+hh+((LEADING-2)/2+1), W-2*BW+2);
+    fl_xyline(BW-1, yy+hh+((Fl::menu_linespacing()-2)/2+1), W-2*BW+2);
   }
 }
 
@@ -1164,5 +1164,5 @@ const Fl_Menu_Item* Fl_Menu_Item::test_shortcut() const {
 }
 
 //
-// End of "$Id: Fl_Menu.cxx 11644 2016-04-17 17:45:44Z matt $".
+// End of "$Id: Fl_Menu.cxx 12815 2018-03-31 17:17:37Z greg.ercolano $".
 //

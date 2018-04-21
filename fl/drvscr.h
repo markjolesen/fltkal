@@ -1,11 +1,11 @@
 // drvscr.h
 //
-// "$Id: Fl_Screen_Driver.H 12628 2018-01-09 07:26:49Z manolo $"
+// "$Id: Fl_Screen_Driver.H 12794 2018-03-24 17:08:25Z matt $"
 //
 // All screen related calls in a driver style class.
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -174,6 +174,11 @@ public:
   // default implementation may be enough
   virtual int text_display_can_leak() { return 0; }
 
+  // if no keyboard is connected on a touch or pen device, the system on-screen keyboard is requested
+  virtual void request_keyboard() { }
+  // we no longer need the on-screen keyboard; it's up to the system to hide it
+  virtual void release_keyboard() { }
+
   // read raw image from a window or an offscreen buffer
 #if defined(FL_PORTING)
 #  pragma message "FL_PORTING: implement code to read RGB data from screen"
@@ -236,5 +241,5 @@ public:
 #endif // !FL_SCREEN_DRIVER_H
 
 //
-// End of "$Id: Fl_Screen_Driver.H 12628 2018-01-09 07:26:49Z manolo $".
+// End of "$Id: Fl_Screen_Driver.H 12794 2018-03-24 17:08:25Z matt $".
 //

@@ -1,11 +1,11 @@
 // input_.cxx
 //
-// "$Id: Fl_Input_.cxx 11765 2016-05-31 12:09:52Z AlbrechtS $"
+// "$Id: Fl_Input_.cxx 12804 2018-03-26 15:33:22Z matt $"
 //
 // Common input widget routines for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2011 by Bill Spitzak and others.
+// Copyright 1998-2011, 2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -1180,6 +1180,7 @@ Fl_Input_::Fl_Input_(int X, int Y, int W, int H, const char* l)
   shortcut_ = 0;
   set_flag(SHORTCUT_LABEL);
   set_flag(MAC_USE_ACCENTS_MENU);
+  set_flag(NEEDS_KEYBOARD);
   tab_nav(1);
 }
 
@@ -1378,5 +1379,5 @@ unsigned int Fl_Input_::index(int i) const
 }
 
 //
-// End of "$Id: Fl_Input_.cxx 11765 2016-05-31 12:09:52Z AlbrechtS $".
+// End of "$Id: Fl_Input_.cxx 12804 2018-03-26 15:33:22Z matt $".
 //

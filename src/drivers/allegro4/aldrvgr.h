@@ -164,11 +164,11 @@ protected:
 
     virtual void draw_image(Fl_Draw_Image_Cb cb, void *data, int X, int Y, int W, int H, int D = 3);
 
-    virtual void draw(Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy);
+    virtual void draw_rgb(Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy);
 
-    virtual void draw(Fl_Pixmap *pxm, int XP, int YP, int WP, int HP, int cx, int cy);
+    virtual void draw_pixmap(Fl_Pixmap *pxm, int XP, int YP, int WP, int HP, int cx, int cy);
 
-    virtual void draw(Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy);
+    virtual void draw_bitmap(Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy);
 };
 
 inline void Fl_Allegro_Graphics_Driver::surface_clear()

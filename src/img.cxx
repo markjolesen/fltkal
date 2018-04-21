@@ -1,11 +1,11 @@
 // img.cxx
 //
-// "$Id: Fl_Image.cxx 12776 2018-03-19 17:43:18Z manolo $"
+// "$Id: Fl_Image.cxx 12855 2018-04-19 07:46:44Z manolo $"
 //
 // Image drawing code for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -94,8 +94,7 @@ Fl_RGB_Scaling Fl_Image::scaling_algorithm_ = FL_RGB_SCALING_BILINEAR;
  1 to 4 for color images.
  */
 Fl_Image::Fl_Image(int W, int H, int D) :
-  w_(W), h_(H), d_(D), ld_(0), count_(0), data_(0L)
-, pixel_w_(W), pixel_h_(H)
+  w_(W), h_(H), d_(D), ld_(0), count_(0), data_w_(W), data_h_(H), data_(0L)
 {}
 
 /**
@@ -132,11 +131,10 @@ void Fl_Image::draw_empty(int X, int Y) {
 }
 
 /**
-  The copy() method creates a copy of the specified
-  image. If the width and height are provided, the image is
-  resized to the specified size. The image should be deleted (or in
-  the case of Fl_Shared_Image, released) when you are done
-  with it.
+Creates a resized copy of the specified image.
+The image should be deleted (or in the case of Fl_Shared_Image, released)
+when you are done with it.
+ \param W,H  width and height of the returned copied image
 */
 Fl_Image *Fl_Image::copy(int W, int H) {
   return new Fl_Image(W, H, d());
@@ -287,37 +285,43 @@ Fl_RGB_Scaling Fl_Image::RGB_scaling() {
 }
 
 /** Sets the drawing size of the image.
- This function gives the image its own drawing size, independently from its pixel size.
- This can be useful to draw an image on a drawing surface with more than 1 pixel per
- FLTK unit: all pixels of the original image become available to fill an area of the drawing surface
- sized at <tt>width,height</tt> FLTK units.
+ This function controls the values returned by member functions w() and h()
+ which in turn control how the image is drawn: the full image data (whose size
+ is given by data_w() and data_h()) are drawn scaled
+ to an area of the drawing surface sized at w() x h() FLTK units.
+ This can make a difference if the drawing surface has more than 1 pixel per
+ FLTK unit because the image can be drawn at the full resolution of the drawing surface.
  Examples of such drawing surfaces: HiDPI displays, laser printers, PostScript files, PDF printers.
  
- \param width,height   maximum width and height (in FLTK units) to use when drawing the image
- \param proportional   if not null, keep the width and height of the image proportional to those of the original size
- \param can_expand  if null, the width and height of the image will not exceed those of the original size
+ \param width,height   maximum values, in FLTK units, that w() and h() should return
+ \param proportional   if not null, keep the values returned by w() and h() proportional to
+ data_w() and data_h()
+ \param can_expand  if null, the values returned by w() and h() will not be larger than
+ data_w() and data_h(), respectively
+ \note This function generally changes the values returned by the w() and h() member functions.
+ In contrast, the values returned by data_w() and data_h() remain unchanged.
  \version 1.4 (1.3.4 and FL_ABI_VERSION for Fl_Shared_Image only)
  
  Example code: scale an image to fit in a box
  \code
  Fl_Box *b = ...  // a box
- Fl_Image *img = Fl_Shared_Image::get("/path/to/picture.jpeg"); // read a picture file
- img->scale(b->w(), b->h()); // set the drawing size of the image to the size of the box
+ Fl_Image *img = new Fl_PNG_Image("/path/to/picture.png"); // read a picture file
+ // set the drawing size of the image to the size of the box keeping its aspect ratio
+ img->scale(b->w(), b->h());
  b->image(img); // use the image as the box image
- b->align(FL_ALIGN_INSIDE | FL_ALIGN_CENTER | FL_ALIGN_CLIP); // the image is to be drawn centered in the box
  \endcode
  */
 void Fl_Image::scale(int width, int height, int proportional, int can_expand)
 {
-  if ((width <= pixel_w() && height <= pixel_h()) || can_expand) {
+  if ((width <= data_w() && height <= data_h()) || can_expand) {
     w_ = width;
     h_ = height;
   }
   if (fail()) return;
   if (!proportional && can_expand) return;
-  if (!proportional && width <= pixel_w() && height <= pixel_h()) return;
-  float fw = pixel_w() / float(width);
-  float fh = pixel_h() / float(height);
+  if (!proportional && width <= data_w() && height <= data_h()) return;
+  float fw = data_w() / float(width);
+  float fh = data_h() / float(height);
   if (proportional) {
     if (fh > fw) fw = fh;
     else fh = fw;
@@ -326,8 +330,8 @@ void Fl_Image::scale(int width, int height, int proportional, int can_expand)
     if (fw < 1) fw = 1;
     if (fh < 1) fh = 1;
   }
-  w_ = int(pixel_w() / fw);
-  h_ = int(pixel_h() / fh);
+  w_ = int(data_w() / fw);
+  h_ = int(data_h() / fh);
 }
 
 /** Draw the image to the current drawing surface rescaled to a given width and height.
@@ -395,7 +399,7 @@ Fl_RGB_Image::Fl_RGB_Image(const uchar *bits, int W, int H, int D, int LD) :
   alloc_array(0),
   id_(0),
   mask_(0),
-  cache_scale_(1)
+  cache_w_(0), cache_h_(0)
 {
     data((const char **)&array, 1);
     ld(LD);
@@ -418,7 +422,7 @@ Fl_RGB_Image::Fl_RGB_Image(const Fl_Pixmap *pxm, Fl_Color bg):
   alloc_array(0),
   id_(0),
   mask_(0),
-  cache_scale_(1)
+  cache_w_(0), cache_h_(0)
 {
   if (pxm && pxm->w() > 0 && pxm->h() > 0) {
     array = new uchar[w() * h() * d()];
@@ -448,29 +452,29 @@ Fl_Image *Fl_RGB_Image::copy(int W, int H) {
 
   // Optimize the simple copy where the width and height are the same,
   // or when we are copying an empty image...
-  if ((W == pixel_w() && H == pixel_h()) ||
+  if ((W == data_w() && H == data_h()) ||
       !w() || !h() || !d() || !array) {
     if (array) {
       // Make a copy of the image data and return a new Fl_RGB_Image...
-      new_array = new uchar[pixel_w() * pixel_h() * d()];
-      if (ld() && ld()!=pixel_w()*d()) {
+      new_array = new uchar[data_w() * data_h() * d()];
+      if (ld() && ld()!=data_w()*d()) {
         const uchar *src = array;
         uchar *dst = new_array;
-        int dy, dh = h(), wd = pixel_w()*d(), wld = ld();
+        int dy, dh = h(), wd = data_w()*d(), wld = ld();
         for (dy=0; dy<dh; dy++) {
           memcpy(dst, src, wd);
           src += wld;
           dst += wd;
         }
       } else {
-        memcpy(new_array, array, pixel_w() * pixel_h() * d());
+        memcpy(new_array, array, data_w() * data_h() * d());
       }
-      new_image = new Fl_RGB_Image(new_array, pixel_w(), pixel_h(), d());
+      new_image = new Fl_RGB_Image(new_array, data_w(), data_h(), d());
       new_image->alloc_array = 1;
 
       return new_image;
     } else {
-      return new Fl_RGB_Image(array, pixel_w(), pixel_h(), d(), ld());
+      return new Fl_RGB_Image(array, data_w(), data_h(), d(), ld());
     }
   }
   if (W <= 0 || H <= 0) return 0;
@@ -486,7 +490,7 @@ Fl_Image *Fl_RGB_Image::copy(int W, int H) {
   new_image = new Fl_RGB_Image(new_array, W, H, d());
   new_image->alloc_array = 1;
 
-  line_d = ld() ? ld() : pixel_w() * d();
+  line_d = ld() ? ld() : data_w() * d();
 
   if (Fl_Image::RGB_scaling() == FL_RGB_SCALING_NEAREST) {
 
@@ -497,10 +501,10 @@ Fl_Image *Fl_RGB_Image::copy(int W, int H) {
 		xstep, ystep;	// X & Y step increments
 
     // Figure out Bresenham step/modulus values...
-    xmod   = pixel_w() % W;
-    xstep  = (pixel_w() / W) * d();
-    ymod   = pixel_h() % H;
-    ystep  = pixel_h() / H;
+    xmod   = data_w() % W;
+    xstep  = (data_w() / W) * d();
+    ymod   = data_h() % H;
+    ystep  = data_h() / H;
 
     // Scale the image using a nearest-neighbor algorithm...
     for (dy = H, sy = 0, yerr = H, new_ptr = new_array; dy > 0; dy --) {
@@ -525,28 +529,28 @@ Fl_Image *Fl_RGB_Image::copy(int W, int H) {
     }
   } else {
     // Bilinear scaling (FL_RGB_SCALING_BILINEAR)
-    const float xscale = (pixel_w() - 1) / (float) W;
-    const float yscale = (pixel_h() - 1) / (float) H;
+    const float xscale = (data_w() - 1) / (float) W;
+    const float yscale = (data_h() - 1) / (float) H;
     for (dy = 0; dy < H; dy++) {
       float oldy = dy * yscale;
-      if (oldy >= pixel_h())
-        oldy = float(pixel_h() - 1);
+      if (oldy >= data_h())
+        oldy = float(data_h() - 1);
       const float yfract = oldy - (unsigned) oldy;
 
       for (dx = 0; dx < W; dx++) {
         new_ptr = new_array + dy * W * d() + dx * d();
 
         float oldx = dx * xscale;
-        if (oldx >= pixel_w())
-          oldx = float(pixel_w() - 1);
+        if (oldx >= data_w())
+          oldx = float(data_w() - 1);
         const float xfract = oldx - (unsigned) oldx;
 
         const unsigned leftx = (unsigned)oldx;
         const unsigned lefty = (unsigned)oldy;
-        const unsigned rightx = (unsigned)(oldx + 1 >= pixel_w() ? oldx : oldx + 1);
+        const unsigned rightx = (unsigned)(oldx + 1 >= data_w() ? oldx : oldx + 1);
         const unsigned righty = (unsigned)oldy;
         const unsigned dleftx = (unsigned)oldx;
-        const unsigned dlefty = (unsigned)(oldy + 1 >= pixel_h() ? oldy : oldy + 1);
+        const unsigned dlefty = (unsigned)(oldy + 1 >= data_h() ? oldy : oldy + 1);
         const unsigned drightx = (unsigned)rightx;
         const unsigned drighty = (unsigned)dlefty;
 
@@ -689,7 +693,7 @@ void Fl_RGB_Image::desaturate() {
 }
 
 void Fl_RGB_Image::draw(int XP, int YP, int WP, int HP, int cx, int cy) {
-  fl_graphics_driver->draw(this, XP, YP, WP, HP, cx, cy);
+  fl_graphics_driver->draw_rgb(this, XP, YP, WP, HP, cx, cy);
 }
 
 void Fl_RGB_Image::label(Fl_Widget* widget) {
@@ -701,5 +705,5 @@ void Fl_RGB_Image::label(Fl_Menu_Item* m) {
 }
 
 //
-// End of "$Id: Fl_Image.cxx 12776 2018-03-19 17:43:18Z manolo $".
+// End of "$Id: Fl_Image.cxx 12855 2018-04-19 07:46:44Z manolo $".
 //

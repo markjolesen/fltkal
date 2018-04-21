@@ -1,11 +1,11 @@
 // bmp.cxx
 //
-// "$Id: Fl_Bitmap.cxx 12776 2018-03-19 17:43:18Z manolo $"
+// "$Id: Fl_Bitmap.cxx 12834 2018-04-14 13:37:47Z manolo $"
 //
 // Bitmap drawing routines for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2016 by Bill Spitzak and others.
+// Copyright 1998-2016, 2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -165,20 +165,7 @@ Fl_Bitmask fl_create_alphamask(int w, int h, int d, int ld, const uchar *array) 
 }
 
 void Fl_Bitmap::draw(int XP, int YP, int WP, int HP, int cx, int cy) {
-  fl_graphics_driver->draw(this, XP, YP, WP, HP, cx, cy);
-}
-
-int Fl_Bitmap::prepare(int XP, int YP, int WP, int HP, int &cx, int &cy,
-		 int &X, int &Y, int &W, int &H)
-{
-  if (!array) {
-    draw_empty(XP, YP);
-    return 1;
-  }
-  if (fl_graphics_driver->start_image(this, XP,YP,WP,HP,cx,cy,X,Y,W,H)) return 1;
-  if (!id_)
-    id_ = fl_graphics_driver->cache(this);
-  return 0;
+  fl_graphics_driver->draw_bitmap(this, XP, YP, WP, HP, cx, cy);
 }
 
 /**
@@ -210,7 +197,7 @@ Fl_Image *Fl_Bitmap::copy(int W, int H) {
   uchar		*new_array;	// New array for image data
 
   // Optimize the simple copy where the width and height are the same...
-  if (W == pixel_w() && H == pixel_h()) {
+  if (W == data_w() && H == data_h()) {
     new_array = new uchar [H * ((W + 7) / 8)];
     memcpy(new_array, array, H * ((W + 7) / 8));
 
@@ -234,10 +221,10 @@ Fl_Image *Fl_Bitmap::copy(int W, int H) {
 
 
   // Figure out Bresenham step/modulus values...
-  xmod   = pixel_w() % W;
-  xstep  = pixel_w() / W;
-  ymod   = pixel_h() % H;
-  ystep  = pixel_h() / H;
+  xmod   = data_w() % W;
+  xstep  = data_w() / W;
+  ymod   = data_h() % H;
+  ystep  = data_h() / H;
 
   // Allocate memory for the new image...
   new_array = new uchar [H * ((W + 7) / 8)];
@@ -248,7 +235,7 @@ Fl_Image *Fl_Bitmap::copy(int W, int H) {
 
   // Scale the image using a nearest-neighbor algorithm...
   for (dy = H, sy = 0, yerr = H, new_ptr = new_array; dy > 0; dy --) {
-    for (dx = W, xerr = W, old_ptr = array + sy * ((pixel_w() + 7) / 8), sx = 0, new_bit = 1;
+    for (dx = W, xerr = W, old_ptr = array + sy * ((data_w() + 7) / 8), sx = 0, new_bit = 1;
 	 dx > 0;
 	 dx --) {
       old_bit = (uchar)(1 << (sx & 7));
@@ -283,5 +270,5 @@ Fl_Image *Fl_Bitmap::copy(int W, int H) {
 }
 
 //
-// End of "$Id: Fl_Bitmap.cxx 12776 2018-03-19 17:43:18Z manolo $".
+// End of "$Id: Fl_Bitmap.cxx 12834 2018-04-14 13:37:47Z manolo $".
 //

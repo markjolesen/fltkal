@@ -81,6 +81,7 @@
 #include <fl/menubar.h>
 #include <fl/choice.h>
 #include <fl/fl_draw.h>
+#include <fl/slvalue.h>
 // #include <fl/Fl_Simple_Terminal.H>
 // resolve window clash with conio
 #undef window
@@ -264,6 +265,12 @@ void menu_location_cb(Fl_Widget* w, void* data)
 }
 #endif // __APPLE__
 
+void menu_linespacing_cb(Fl_Widget* w, void*) {
+  Fl_Value_Slider *fvs = (Fl_Value_Slider*)w;
+  int val = (int)fvs->value();
+  Fl::menu_linespacing(val);	// takes effect when someone opens a new menu..
+}
+
 #define WIDTH 700
 
 Fl_Menu_* menus[4];
@@ -307,6 +314,20 @@ int main(int argc, char **argv) {
   ch2.value(1);
   menu_location_cb(&ch2, &menubar);
 #endif
+
+  Fl_Value_Slider menu_linespacing_slider(500,150,150,20,"Fl::menu_linespacing()");
+  menu_linespacing_slider.tooltip("Changes the line spacing between all menu items");
+  menu_linespacing_slider.type(1);
+  //menu_linespacing_slider.labelsize(14);
+  menu_linespacing_slider.value(Fl::menu_linespacing());
+  menu_linespacing_slider.color((Fl_Color)46);
+  menu_linespacing_slider.selection_color((Fl_Color)1);
+  //menu_linespacing_slider.textsize(10);
+  menu_linespacing_slider.align(Fl_Align(FL_ALIGN_LEFT));
+  menu_linespacing_slider.range(0.1, 50.0);
+  menu_linespacing_slider.step(1.0);
+  menu_linespacing_slider.callback(menu_linespacing_cb);
+
   window.end();
   
 #ifdef __APPLE__

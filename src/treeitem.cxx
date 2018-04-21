@@ -1,6 +1,6 @@
 // treeitem.cxx
 //
-// "$Id: Fl_Tree_Item.cxx 11841 2016-07-21 00:51:14Z greg.ercolano $"
+// "$Id: Fl_Tree_Item.cxx 12824 2018-04-10 18:37:18Z greg.ercolano $"
 //
 //////////////////////
 // Fl_Tree_Item.cxx
@@ -8,7 +8,7 @@
 //
 // Fl_Tree -- This file is part of the Fl_Tree widget for FLTK
 // Copyright 2017-2018 The fltkal authors
-// Copyright (C) 2009-2010 by Greg Ercolano.
+// Copyright (C) 2009-2010, 2018 by Greg Ercolano.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -506,6 +506,7 @@ int Fl_Tree_Item::reparent(Fl_Tree_Item *newchild, int pos) {
 ///    -  0: Success
 ///    - -1: range error (e.g. if \p 'to' or \p 'from' out of range).
 ///    - (Other return values reserved for future use)
+/// \see move_above(), move_below(), move_into(), move(Fl_Tree_Item*,int,int)
 ///
 int Fl_Tree_Item::move(int to, int from) {
   return _children.move(to, from);
@@ -526,6 +527,8 @@ int Fl_Tree_Item::move(int to, int from) {
 ///     - -5: could not deparent
 ///     - -6: could not reparent at \p 'pos'
 ///     - (Other return values reserved for future use.)
+///
+/// \see move_above(), move_below(), move_into(), move(int,int)
 ///
 int Fl_Tree_Item::move(Fl_Tree_Item *item, int op, int pos) {
   Fl_Tree_Item *from_parent, *to_parent;
@@ -581,6 +584,8 @@ int Fl_Tree_Item::move(Fl_Tree_Item *item, int op, int pos) {
 ///          On error returns a negative value;
 ///          see move(Fl_Tree_Item*,int,int) for possible error codes.
 ///
+/// \see move_below(), move_into(), move(int,int), move(Fl_Tree_Item*,int,int)
+///
 int Fl_Tree_Item::move_above(Fl_Tree_Item *item) {
   return move(item, 0, 0);
 }
@@ -592,6 +597,8 @@ int Fl_Tree_Item::move_above(Fl_Tree_Item *item) {
 ///          On error returns a negative value;
 ///          see move(Fl_Tree_Item*,int,int) for possible error codes.
 ///
+/// \see move_above(), move_into(), move(int,int), move(Fl_Tree_Item*,int,int)
+///
 int Fl_Tree_Item::move_below(Fl_Tree_Item *item) {
   return move(item, 1, 0);
 }
@@ -602,6 +609,8 @@ int Fl_Tree_Item::move_below(Fl_Tree_Item *item) {
 /// \returns 0 on success.<br>
 ///          On error returns a negative value;
 ///          see move(Fl_Tree_Item*,int,int) for possible error codes.
+///
+/// \see move_above(), move_below(), move(int,int), move(Fl_Tree_Item*,int,int)
 ///
 int Fl_Tree_Item::move_into(Fl_Tree_Item *item, int pos) {
   return move(item, 2, pos);
@@ -1486,5 +1495,5 @@ void Fl_Tree_Item::recalc_tree() {
 }
 
 //
-// End of "$Id: Fl_Tree_Item.cxx 11841 2016-07-21 00:51:14Z greg.ercolano $".
+// End of "$Id: Fl_Tree_Item.cxx 12824 2018-04-10 18:37:18Z greg.ercolano $".
 //

@@ -1,10 +1,10 @@
 /*
  * typesplt.h
  *
- * Copyright 2016-2018 by Bill Spitzak and others.
+ * "$Id: platform_types.h 12807 2018-03-26 21:28:18Z matt $"
  *
  * Copyright 2017-2018 The fltkal authors
- * Copyright 2016 by Bill Spitzak and others.
+ * Copyright 2016-2018 by Bill Spitzak and others.
  *
  *                              FLTK License
  *                            December 11, 2001
@@ -181,6 +181,7 @@ typedef struct __GLXcontextRec *GLContext;
 #include <sys/types.h>
 #include <dirent.h>
 
+
 #elif defined(FL_PORTING)
 # pragma message "FL_PORTING: define OS-dependent types"
 typedef void* Fl_Offscreen;
@@ -222,5 +223,5 @@ typedef struct __GLXcontextRec *GLContext;
 #endif // FL_DOXYGEN
 
 /*
- * End of "$Id: platform_types.h 12729 2018-03-10 13:17:41Z matt $".
+ * End of "$Id: platform_types.h 12807 2018-03-26 21:28:18Z matt $".
  */

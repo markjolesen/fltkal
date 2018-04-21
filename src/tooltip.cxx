@@ -100,6 +100,7 @@ class Fl_TooltipBox : public Fl_Menu_Window {
 public:
   /** Creates the box window */
   Fl_TooltipBox() : Fl_Menu_Window(0, 0) {
+    type(FL_TOOLTIP_WINDOW); // ALLEGRO:
     set_override();
     set_tooltip_window();
     end();

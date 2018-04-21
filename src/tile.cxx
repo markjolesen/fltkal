@@ -1,11 +1,11 @@
 // tile.cxx
 //
-// "$Id: Fl_Tile.cxx 12302 2017-07-07 19:16:40Z AlbrechtS $"
+// "$Id: Fl_Tile.cxx 12827 2018-04-12 12:58:10Z AlbrechtS $"
 //
 // Tile widget for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -139,6 +139,7 @@
 #include <fl/fl.h>
 #include <fl/tile.h>
 #include <fl/win.h>
+#include <fl/rect.h>
 
 /**
   Drags the intersection at (\p oldx,\p oldy) to (\p newx,\p newy).
@@ -352,5 +353,5 @@ Fl_Tile::Fl_Tile(int X,int Y,int W,int H,const char*L)
 
 
 //
-// End of "$Id: Fl_Tile.cxx 12302 2017-07-07 19:16:40Z AlbrechtS $".
+// End of "$Id: Fl_Tile.cxx 12827 2018-04-12 12:58:10Z AlbrechtS $".
 //

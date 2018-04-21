@@ -1,11 +1,11 @@
 // drvscr.cxx
 //
-// "$Id: Fl_Screen_Driver.cxx 12628 2018-01-09 07:26:49Z manolo $"
+// "$Id: Fl_Screen_Driver.cxx 12812 2018-03-28 16:27:43Z AlbrechtS $"
 //
 // All screen related calls in a driver style class.
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -448,8 +448,24 @@ int Fl_Screen_Driver::scale_handler(int event)
     int screen = wid->top_window()->driver()->screen_num();
     Fl_Screen_Driver *screen_dr = Fl::screen_driver();
     static float initial_scale = screen_dr->scale(screen);
-    static float scaling_values[] = {0.5, 2.f/3, 0.8, 0.9, 1, 1.1, 1.2, 4.f/3, 1.5, 1.7, 2, 2.4, 3,
-      4, 5.5, 6.5, 7.5, 9.75 };
+#if defined(TEST_SCALING)
+    // test scaling factors: lots of values from 0.3 to 8.0
+    static float scaling_values[] = {
+      0.30000, 0.33661, 0.37768, 0.42376, 0.47547,
+      0.50000, 0.53348, 0.59858, 0.67162, 0.75357,
+      0.84551, 0.94868, 1.00000, 1.06444, 1.19432,
+      1.34005, 1.50000, 1.68702, 1.89287, 2.00000,
+      2.12384, 7.0f/3,  2.38298, 8.0f/3,  3.00000,
+      10.0f/3, 3.75000, 4.00000, 13.0f/3, 14.0f/3,
+      5.00000, 16.0f/3, 17.0f/3, 6.00000, 7.00000,
+      8.00000};
+#else
+    // scaling factors for the standard GUI
+    static float scaling_values[] = {
+      0.5, 2.f/3, 0.8, 0.9, 1.0,
+      1.1, 1.2, 4.f/3, 1.5, 1.7,
+      2.0, 2.4, 3.0};
+#endif
     float f, old_f = screen_dr->scale(screen)/initial_scale;
     if (key == '0' || key == 0xE0) f = 1;
     else {
@@ -537,5 +553,5 @@ int Fl_Screen_Driver::parse_color(const char* p, uchar& r, uchar& g, uchar& b)
 }
 
 //
-// End of "$Id: Fl_Screen_Driver.cxx 12628 2018-01-09 07:26:49Z manolo $".
+// End of "$Id: Fl_Screen_Driver.cxx 12812 2018-03-28 16:27:43Z AlbrechtS $".
 //

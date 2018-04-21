@@ -1,11 +1,11 @@
 // input.cxx
 //
-// "$Id: Fl_Input.cxx 12208 2017-03-17 17:32:00Z AlbrechtS $"
+// "$Id: Fl_Input.cxx 12826 2018-04-10 21:10:53Z AlbrechtS $"
 //
 // Input widget for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2016 by Bill Spitzak and others.
+// Copyright 1998-2016, 2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -516,8 +516,10 @@ int Fl_Input::handle(int event) {
 	this->mark( this->position() );
 	Fl::reset_marked_text();
       }
+      Fl::screen_driver()->release_keyboard();
       break;
     case FL_FOCUS:
+      Fl::screen_driver()->request_keyboard();
       switch (Fl::event_key()) {
         case FL_Right:
           position(0);
@@ -760,5 +762,5 @@ int Fl_Secret_Input::handle(int event) {
 }
 
 //
-// End of "$Id: Fl_Input.cxx 12208 2017-03-17 17:32:00Z AlbrechtS $".
+// End of "$Id: Fl_Input.cxx 12826 2018-04-10 21:10:53Z AlbrechtS $".
 //

@@ -1,6 +1,6 @@
 // tree.h
 //
-// "$Id: Fl_Tree.H 11976 2016-09-24 23:15:48Z AlbrechtS $"
+// "$Id: Fl_Tree.H 12824 2018-04-10 18:37:18Z greg.ercolano $"
 //
 //////////////////////
 // FL/Fl_Tree.H
@@ -8,7 +8,7 @@
 //
 // Fl_Tree -- This file is part of the Fl_Tree widget for FLTK
 // Copyright 2017-2018 The fltkal authors
-// Copyright (C) 2009-2010 by Greg Ercolano.
+// Copyright (C) 2009-2010, 2018 by Greg Ercolano.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -140,6 +140,12 @@
 ///     positioned on the screen with show_item_top(), show_item_middle() and
 ///     show_item_bottom(),<BR>
 ///     item children can be swapped around with Fl_Tree_Item::swap_children(),<BR>
+///     items can be moved around with Fl_Tree_Item::move(),<BR>
+///     an item's children can be walked with Fl_Tree_Item::first() and Fl_Tree_Item::next(),
+///     an item's children can be indexed directly with Fl_Tree_Item::child()
+///     and Fl_Tree_Item::children(),<BR>
+///     items can be moved from one subtree to another with Fl_Tree_Item::deparent()
+///     and Fl_Tree_Item::reparent(),<BR>
 ///     sorting can be controlled when items are add()ed via sortorder().<BR>
 ///     You can walk the entire tree with first() and next().<BR>
 ///     You can walk visible items with first_visible_item()
@@ -294,7 +300,7 @@
 ///    <TD WIDTH=25% ALIGN=CENTER><B>FL_TREE_SELECT_NONE</B></TD>
 ///
 ///  </TR><TR>
-///    <TD ALIGN=CENTER><B>Ctrl-A</B> (GNU/Linux or Windows)<BR><B>Command-A</B> (Mac)</TD>
+///    <TD ALIGN=CENTER><B>Ctrl-A</B> (Linux/Windows)<BR><B>Command-A</B> (Mac)</TD>
 ///    <TD ALIGN=CENTER>Select all items.</TD>
 ///    <TD ALIGN=CENTER>N/A</TD>
 ///    <TD ALIGN=CENTER>N/A</TD>
@@ -574,5 +580,5 @@ public:
 #endif /*FL_TREE_H*/
 
 //
-// End of "$Id: Fl_Tree.H 11976 2016-09-24 23:15:48Z AlbrechtS $".
+// End of "$Id: Fl_Tree.H 12824 2018-04-10 18:37:18Z greg.ercolano $".
 //

@@ -1,6 +1,6 @@
 // fl.cxx
 //
-// "$Id: Fl.cxx 12757 2018-03-16 12:48:27Z AlbrechtS $"
+// "$Id: Fl.cxx 12815 2018-03-31 17:17:37Z greg.ercolano $"
 //
 // Main event handling code for the Fast Light Tool Kit (FLTK).
 //
@@ -211,7 +211,8 @@ int		Fl::damage_,
 		Fl::e_is_click,
 		Fl::e_keysym,
 		Fl::e_original_keysym,
-		Fl::scrollbar_size_ = 16;
+		Fl::scrollbar_size_ = 16,
+		Fl::menu_linespacing_ = 4;	// 4: was a local macro in Fl_Menu.cxx called "LEADING"
 
 char		*Fl::e_text = (char *)"";
 int		Fl::e_length;
@@ -305,6 +306,23 @@ int Fl::scrollbar_size() {
 */
 void Fl::scrollbar_size(int W) {
   scrollbar_size_ = W;
+}
+
+/**
+  Gets the default line spacing used by menus.
+  \returns The default line spacing, in pixels.
+*/
+int Fl::menu_linespacing() {
+  return menu_linespacing_;
+}
+
+/**
+  Sets the default line spacing used by menus.
+  Default is 4.
+  \param[in] H The new default line spacing between menu items, in pixels.
+*/
+void Fl::menu_linespacing(int H) {
+  menu_linespacing_ = H;
 }
 
 
@@ -1075,11 +1093,27 @@ Fl_Widget* fl_oldfocus; // kludge for Fl_Group...
     \e test if the widget wants the focus (by it returning non-zero from
     handle()).
 
+    Widgets can set the NEEDS_KEYBOARD flag to indicate that a keyboard is
+    essential for the widget to function. Touchscreen devices will be sent a
+    request to show and on-screen keyboard if no hardware keyboard is
+    connected.
+
     \see Fl_Widget::take_focus()
 */
-void Fl::focus(Fl_Widget *o) {
-  if (o && !o->visible_focus()) return;
+void Fl::focus(Fl_Widget *o)
+{
   if (grab()) return; // don't do anything while grab is on
+
+  // request an on-screen keyboard on touch screen devices if needed
+  Fl_Widget *prevFocus = Fl::focus();
+  char hideKeyboard = ( prevFocus && (prevFocus->flags()&Fl_Widget::NEEDS_KEYBOARD) );
+  char showKeyboard = (o && (o->flags()&Fl_Widget::NEEDS_KEYBOARD));
+  if (hideKeyboard && !showKeyboard)
+    Fl::screen_driver()->release_keyboard();
+  if (showKeyboard && !hideKeyboard)
+    Fl::screen_driver()->request_keyboard();
+
+  if (o && !o->visible_focus()) return;
   Fl_Widget *p = focus_;
   if (o != p) {
     Fl::compose_reset();
@@ -2298,5 +2332,5 @@ FL_EXPORT const char* fl_local_alt   = Fl::system_driver()->alt_name();
 FL_EXPORT const char* fl_local_ctrl  = Fl::system_driver()->control_name();
 
 //
-// End of "$Id: Fl.cxx 12757 2018-03-16 12:48:27Z AlbrechtS $".
+// End of "$Id: Fl.cxx 12815 2018-03-31 17:17:37Z greg.ercolano $".
 //

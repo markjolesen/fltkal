@@ -1,11 +1,11 @@
 // filedir.cxx
 //
-// "$Id: fl_file_dir.cxx 10550 2015-02-02 17:55:22Z AlbrechtS $"
+// "$Id: fl_file_dir.cxx 12854 2018-04-19 07:20:01Z AlbrechtS $"
 //
 // File chooser widget for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2015 by Bill Spitzak and others.
+// Copyright 1998-2015, 2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -125,8 +125,10 @@ void fl_file_chooser_ok_label(const char *l) {
 }
 
 /** 
-    Shows a file chooser dialog and gets a filename. 
+    Shows a file chooser dialog and gets a filename.
+
     \note \#include <FL/Fl_File_Chooser.H>
+
     \image html Fl_File_Chooser.jpg 
     \image latex  Fl_File_Chooser.jpg "Fl_File_Chooser" width=12cm
     \param[in] message text in title bar
@@ -248,5 +250,5 @@ fl_dir_chooser(const char *message,	// I - Message for titlebar
 
 
 //
-// End of "$Id: fl_file_dir.cxx 10550 2015-02-02 17:55:22Z AlbrechtS $".
+// End of "$Id: fl_file_dir.cxx 12854 2018-04-19 07:20:01Z AlbrechtS $".
 //

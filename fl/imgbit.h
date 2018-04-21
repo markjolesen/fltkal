@@ -1,6 +1,6 @@
 // bmp.h
 //
-// "$Id: Fl_Bitmap.H 12776 2018-03-19 17:43:18Z manolo $"
+// "$Id: Fl_Bitmap.H 12834 2018-04-14 13:37:47Z manolo $"
 //
 // Bitmap header file for the Fast Light Tool Kit (FLTK).
 //
@@ -93,22 +93,20 @@ public:
   int alloc_array;
   
 private:
-  int prepare(int XP, int YP, int WP, int HP, int &cx, int &cy,
-	    int &X, int &Y, int &W, int &H);
   /** for internal use */
   fl_uintptr_t id_;
-  float cache_scale_; // graphics scaling value when id_ was computed
+  int cache_w_, cache_h_; // size of bitmap when cached
 
 public:
   /** The constructors create a new bitmap from the specified bitmap data */
   Fl_Bitmap(const uchar *bits, int W, int H) :
-    Fl_Image(W,H,0), array(bits), alloc_array(0), id_(0), cache_scale_(1) {data((const char **)&array, 1);}
+    Fl_Image(W,H,0), array(bits), alloc_array(0), id_(0), cache_w_(0),cache_h_(0) {data((const char **)&array, 1);}
   /** The constructors create a new bitmap from the specified bitmap data */
   Fl_Bitmap(const char *bits, int W, int H) :
-    Fl_Image(W,H,0), array((const uchar *)bits), alloc_array(0), id_(0), cache_scale_(1) {data((const char **)&array, 1);}
+    Fl_Image(W,H,0), array((const uchar *)bits), alloc_array(0), id_(0), cache_w_(0),cache_h_(0) {data((const char **)&array, 1);}
   virtual ~Fl_Bitmap();
   virtual Fl_Image *copy(int W, int H);
-  Fl_Image *copy() { return copy(w(), h()); }
+  Fl_Image *copy() { return Fl_Image::copy(); }
   virtual void draw(int X, int Y, int W, int H, int cx=0, int cy=0);
   void draw(int X, int Y) {draw(X, Y, w(), h(), 0, 0);}
   virtual void label(Fl_Widget*w);
@@ -119,5 +117,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Bitmap.H 12776 2018-03-19 17:43:18Z manolo $".
+// End of "$Id: Fl_Bitmap.H 12834 2018-04-14 13:37:47Z manolo $".
 //

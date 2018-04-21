@@ -1,11 +1,11 @@
 // group.h
 //
-// "$Id: Fl_Group.H 12302 2017-07-07 19:16:40Z AlbrechtS $"
+// "$Id: Fl_Group.H 12827 2018-04-12 12:58:10Z AlbrechtS $"
 //
 // Group header file for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -75,7 +75,10 @@
 #define Fl_Group_H
 
 #include "widget.h"
-#include "rect.h"
+
+// Don't #include Fl_Rect.H because this would introduce lots
+// of unnecessary dependencies on Fl_Rect.H
+class Fl_Rect;
 
 /**
   The Fl_Group class is the FLTK container widget. It maintains
@@ -277,5 +280,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Group.H 12302 2017-07-07 19:16:40Z AlbrechtS $".
+// End of "$Id: Fl_Group.H 12827 2018-04-12 12:58:10Z AlbrechtS $".
 //

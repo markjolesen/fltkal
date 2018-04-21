@@ -1,6 +1,6 @@
 // imgpix.cxx
 //
-// "$Id: Fl_Pixmap.cxx 12776 2018-03-19 17:43:18Z manolo $"
+// "$Id: Fl_Pixmap.cxx 12834 2018-04-14 13:37:47Z manolo $"
 //
 // Pixmap drawing code for the Fast Light Tool Kit (FLTK).
 //
@@ -94,31 +94,12 @@ void Fl_Pixmap::measure() {
   if (w()<0 && data()) {
     fl_measure_pixmap(data(), W, H);
     w(W); h(H);
-    cache_scale_ = 1;
+    cache_w_ = cache_h_ = 0;
   }
 }
 
 void Fl_Pixmap::draw(int XP, int YP, int WP, int HP, int cx, int cy) {
-  fl_graphics_driver->draw(this, XP, YP, WP, HP, cx, cy);
-}
-
-
-int Fl_Pixmap::prepare(int XP, int YP, int WP, int HP, int &cx, int &cy,
-			   int &X, int &Y, int &W, int &H) {
-  if (w() < 0) measure();
-  if (!data() || !w()) {
-    draw_empty(XP, YP);
-    return 1;
-  }
-  if (WP == -1) {
-    WP = w();
-    HP = h();
-  }
-  if ( fl_graphics_driver->start_image(this, XP,YP,WP,HP,cx,cy,X,Y,W,H) ) return 1;
-  if (!id_) {
-    id_ = fl_graphics_driver->cache(this);
-  }
-  return 0;
+  fl_graphics_driver->draw_pixmap(this, XP, YP, WP, HP, cx, cy);
 }
 
 /**
@@ -205,7 +186,7 @@ Fl_Image *Fl_Pixmap::copy(int W, int H) {
     return new Fl_Pixmap((char *const*)0);
   }
   // Optimize the simple copy where the width and height are the same...
-  if (W == pixel_w() && H == pixel_h()) {
+  if (W == data_w() && H == data_h()) {
     // Make an exact copy of the image and return it...
     new_image = new Fl_Pixmap(data());
     new_image->copy_data();
@@ -237,10 +218,10 @@ Fl_Image *Fl_Pixmap::copy(int W, int H) {
   sprintf(new_info, "%d %d %d %d", W, H, ncolors, chars_per_pixel);
 
   // Figure out Bresenham step/modulus values...
-  xmod   = pixel_w() % W;
-  xstep  = (pixel_w() / W) * chars_per_pixel;
-  ymod   = pixel_h() % H;
-  ystep  = pixel_h() / H;
+  xmod   = data_w() % W;
+  xstep  = (data_w() / W) * chars_per_pixel;
+  ymod   = data_h() % H;
+  ystep  = data_h() / H;
 
   // Allocate memory for the new array...
   if (ncolors < 0) new_data = new char *[H + 2];
@@ -448,5 +429,5 @@ void Fl_Pixmap::desaturate() {
 }
 
 //
-// End of "$Id: Fl_Pixmap.cxx 12776 2018-03-19 17:43:18Z manolo $".
+// End of "$Id: Fl_Pixmap.cxx 12834 2018-04-14 13:37:47Z manolo $".
 //

@@ -214,13 +214,13 @@ public: // run time information about compile time configuration
   /** @{ */
   static bool cfg_win_x11;    ///< X11 window management available, usually on GNU/Linux systems
   static bool cfg_win_cocoa;  ///< Cocoa window management available, usually on OS X systems
-  static bool cfg_win_win32;  ///< WIN32 window management available, on low level Windows
+  static bool cfg_win_win32;  ///< Windows window management available, on low level Windows
   static bool cfg_win_allegro;///< ALLEGRO: window management avaiable
   /** @} */
   /** \defgroup cfg_sys runtime system configuration */
   /** @{ */
   static bool cfg_sys_posix;  ///< Posix system available, usually on GNU/Linux and OS X systems, but also Cygwin
-  static bool cfg_sys_win32;  ///< WIN32 system available, on Windows
+  static bool cfg_sys_win32;  ///< Windows system available, on Windows
   static bool cfg_sys_allegro;///< ALLEGRO: system available
   /** @} */
 
@@ -353,6 +353,7 @@ public:
 
   static int e_original_keysym; // late addition
   static int scrollbar_size_;
+  static int menu_linespacing_;	// STR #2927
 #endif
 
 
@@ -466,6 +467,8 @@ public:
   static int reload_scheme(); // platform dependent
   static int scrollbar_size();
   static void scrollbar_size(int W);
+  static int menu_linespacing();
+  static void menu_linespacing(int H);
 
   // execution:
   static int wait();

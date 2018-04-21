@@ -1,11 +1,11 @@
 // group.cxx
 //
-// "$Id: Fl_Group.cxx 12364 2017-07-28 15:51:05Z manolo $"
+// "$Id: Fl_Group.cxx 12827 2018-04-12 12:58:10Z AlbrechtS $"
 //
 // Group widget for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -76,8 +76,9 @@
 #include <stdio.h>
 #include <fl/fl.h>
 #include <fl/group.h>
-#include <fl/win.h>
 #include <fl/drvwin.h>
+#include <fl/rect.h>
+#include <fl/win.h>
 #include <fl/fl_draw.h>
 #include <stdlib.h>
 
@@ -87,16 +88,19 @@ Fl_Group* Fl_Group::current_;
 // multiple children are stored in an allocated array:
 
 /**
-  Returns a pointer to the array of children. <I>This pointer is only
-  valid until the next time a child is added or removed.</I>
+  Returns a pointer to the array of children.
+
+  \note	This pointer is only valid until the next time a child
+	is added or removed.
 */
 Fl_Widget*const* Fl_Group::array() const {
   return children_ <= 1 ? (Fl_Widget**)(&array_) : array_;
 }
 
 /**
-  Searches the child array for the widget and returns the index. Returns children()
-  if the widget is NULL or not found.
+  Searches the child array for the widget and returns the index.
+
+  Returns children() if the widget is NULL or not found.
 */
 int Fl_Group::find(const Fl_Widget* o) const {
   Fl_Widget*const* a = array();
@@ -144,7 +148,7 @@ extern Fl_Widget* fl_oldfocus; // set by Fl::focus
 // windows so they are relative to that window.
 
 static int send(Fl_Widget* o, int event) {
-  if (o->type() < FL_WINDOW) return o->handle(event);
+  if (!o->as_window()) return o->handle(event);
   switch ( event )
   {
   case FL_DND_ENTER: /* FALLTHROUGH */
@@ -642,20 +646,26 @@ void Fl_Group::init_sizes() {
   \note You should never need to use this \e protected method directly,
 	unless you have special needs to rearrange the children of a
 	Fl_Group. Fl_Tile uses this to rearrange its widget positions.
-
-  \returns	Array of Fl_Rect's with widget positions and sizes. The
-		returned array is only valid until init_sizes() is called
-		or widgets are added to or removed from the group.
-
-  \note	The returned array should be considered read-only. Do not change
+	The returned array should be considered read-only. Do not change
 	its contents. If you need to rearrange children in a group, do
 	so by resizing the children and call init_sizes().
+
+  \#include \<FL/Fl_Rect.H\> if you want to access the bounds() array in
+  your derived class. Fl_Rect.H is intentionally not included by
+  Fl_Group.H to avoid unnecessary dependencies.
+
+  \returns Array of Fl_Rect's with widget positions and sizes. The
+	returned array is only valid until init_sizes() is called
+	or widgets are added to or removed from the group.
 
   \see init_sizes()
 
   \since FLTK 1.4.0
 
-  \internal If you change this be sure to fix Fl_Tile which also uses this array!
+  \internal Notes to developers:
+    - If you change this be sure to fix Fl_Tile which also uses this array!
+    - Do not #include Fl_Rect.H in Fl_Group.H because this would introduce
+      lots of unnecessary dependencies on Fl_Rect.H.
 */
 Fl_Rect* Fl_Group::bounds() {
   if (!bounds_) {
@@ -743,14 +753,14 @@ int* Fl_Group::sizes()
 */
 void Fl_Group::resize(int X, int Y, int W, int H) {
 
-  int dx = X-x();
-  int dy = Y-y();
-  int dw = W-w();
-  int dh = H-h();
+  int dx = X - x();
+  int dy = Y - y();
+  int dw = W - w();
+  int dh = H - h();
 
   Fl_Rect* p = bounds(); // save initial sizes and positions
 
-  Fl_Widget::resize(X,Y,W,H); // make new xywh values visible for children
+  Fl_Widget::resize(X, Y, W, H); // make new xywh values visible for children
 
   if ((!resizable() || (dw==0 && dh==0 )) && !Fl_Window_Driver::is_a_rescale()) {
 
@@ -758,7 +768,7 @@ void Fl_Group::resize(int X, int Y, int W, int H) {
       Fl_Widget*const* a = array();
       for (int i=children_; i--;) {
 	Fl_Widget* o = *a++;
-	o->resize(o->x()+dx, o->y()+dy, o->w(), o->h());
+	o->resize(o->x() + dx, o->y() + dy, o->w(), o->h());
       }
     }
 
@@ -768,48 +778,62 @@ void Fl_Group::resize(int X, int Y, int W, int H) {
     dx = X - p->x();
     dw = W - p->w();
     dy = Y - p->y();
-    dh = H - p++->h();
-    if (as_window()) dx = dy = 0;
+    dh = H - p->h();
+    if (as_window())
+      dx = dy = 0;
+    p++;
+
+    // Developer note:
+    // The following code uses T = top, L = left, R = right, and B = bottom
+    // widget bounds. T and L are equivalent to x() and y(), whereas
+    // R = x() + w() and B = y() + h(), respectively, i.e. the next pixel
+    // beyond the widget border.
+    // RL, RR, RT, and RB are those values of the resizable widget.
 
     // get initial size of resizable():
-    int IX = p->x();
-    int IR = p->r();
-    int IY = p->y();
-    int IB = p++->b();
+    int RL = p->x();
+    int RR = RL + p->w();
+    int RT = p->y();
+    int RB = RT + p->h();
+    p++;
 
+    // resize children
     Fl_Widget*const* a = array();
-    for (int i=children_; i--;) {
+
+    for (int i = children_; i--; p++) {
+
       Fl_Widget* o = *a++;
-#if 1
-      int XX = p->x();
-      if (XX >= IR) XX += dw;
-      else if (XX > IX) XX = IX+((XX-IX)*(IR+dw-IX)+(IR-IX)/2)/(IR-IX);
-      int R = p->r();
-      if (R >= IR) R += dw;
-      else if (R > IX) R = IX+((R-IX)*(IR+dw-IX)+(IR-IX)/2)/(IR-IX);
+      int L = p->x();
+      int R = L + p->w();
+      int T = p->y();
+      int B = T + p->h();
 
-      int YY = p->y();
-      if (YY >= IB) YY += dh;
-      else if (YY > IY) YY = IY+((YY-IY)*(IB+dh-IY)+(IB-IY)/2)/(IB-IY);
-      int B = p++->b();
-      if (B >= IB) B += dh;
-      else if (B > IY) B = IY+((B-IY)*(IB+dh-IY)+(IB-IY)/2)/(IB-IY);
-#else // much simpler code from Francois Ostiguy:
-      int XX = p->x();
-      if (XX >= IR) XX += dw;
-      else if (XX > IX) XX += dw * (XX-IX)/(IR-IX);
-      int R = p->r();
-      if (R >= IR) R += dw;
-      else if (R > IX) R = R + dw * (R-IX)/(IR-IX);
+#if 0 // old widget resizing code: used up to FLTK 1.3.x, deactivated 29 Mar 2018
+      // FIXME: This should be removed before the release of FLTK 1.4.0
 
-      int YY = p->y();
-      if (YY >= IB) YY += dh;
-      else if (YY > IY) YY = YY + dh*(YY-IY)/(IB-IY);
-      int B = p++->b();
-      if (B >= IB) B += dh;
-      else if (B > IY) B = B + dh*(B-IY)/(IB-IY);
-#endif
-      o->resize(XX+dx, YY+dy, R-XX, B-YY);
+      if (L >= RR) L += dw;
+      else if (L > RL) L = RL+((L-RL)*(RR+dw-RL)+(RR-RL)/2)/(RR-RL);
+      if (R >= RR) R += dw;
+      else if (R > RL) R = RL+((R-RL)*(RR+dw-RL)+(RR-RL)/2)/(RR-RL);
+      if (T >= RB) T += dh;
+      else if (T > RT) T = RT+((T-RT)*(RB+dh-RT)+(RB-RT)/2)/(RB-RT);
+      if (B >= RB) B += dh;
+      else if (B > RT) B = RT+((B-RT)*(RB+dh-RT)+(RB-RT)/2)/(RB-RT);
+
+#else // much simpler code from Francois Ostiguy: since FLTK 1.4.0
+
+      if (L >= RR) L += dw;
+      else if (L > RL) L += dw * (L-RL) / (RR-RL);
+      if (R >= RR) R += dw;
+      else if (R > RL) R += dw * (R-RL) / (RR-RL);
+      if (T >= RB) T += dh;
+      else if (T > RT) T += dh * (T-RT) / (RB-RT);
+      if (B >= RB) B += dh;
+      else if (B > RT) B += dh * (B-RT) / (RB-RT);
+
+#endif // old / new (1.4.0++) widget resizing code
+
+      o->resize(L+dx, T+dy, R-L, B-T);
     }
   }
 }
@@ -944,5 +968,5 @@ void Fl_Group::draw_outside_label(const Fl_Widget& widget) const {
 
 
 //
-// End of "$Id: Fl_Group.cxx 12364 2017-07-28 15:51:05Z manolo $".
+// End of "$Id: Fl_Group.cxx 12827 2018-04-12 12:58:10Z AlbrechtS $".
 //

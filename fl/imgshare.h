@@ -1,11 +1,11 @@
 // imgshare.h
 //
-// "$Id: Fl_Shared_Image.H 12776 2018-03-19 17:43:18Z manolo $"
+// "$Id: Fl_Shared_Image.H 12786 2018-03-23 17:03:24Z manolo $"
 //
 // Shared image header file for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -152,7 +152,7 @@ public:
   void		reload();
 
   virtual Fl_Image *copy(int W, int H);
-  Fl_Image *copy() { return copy(w(), h()); }
+  Fl_Image *copy() { return Fl_Image::copy(); }
   virtual void color_average(Fl_Color c, float i);
   virtual void desaturate();
   virtual void draw(int X, int Y, int W, int H, int cx = 0, int cy = 0);
@@ -179,5 +179,5 @@ FL_EXPORT extern void fl_register_images();
 #endif // !Fl_Shared_Image_H
 
 //
-// End of "$Id: Fl_Shared_Image.H 12776 2018-03-19 17:43:18Z manolo $"
+// End of "$Id: Fl_Shared_Image.H 12786 2018-03-23 17:03:24Z manolo $"
 //

@@ -1,11 +1,11 @@
 // fl_ask.cxx
 //
-// "$Id: fl_ask.cxx 11843 2016-07-22 10:30:34Z greg.ercolano $"
+// "$Id: fl_ask.cxx 12853 2018-04-18 18:28:46Z greg.ercolano $"
 //
 // Standard dialog functions for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2011 by Bill Spitzak and others.
+// Copyright 1998-2011, 2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -415,12 +415,17 @@ int fl_ask(const char *fmt, ...) {
 
 /** Shows a dialog displaying the printf style \p fmt message,
     this dialog features up to 3 customizable choice buttons
+    which are specified in order of *right-to-left* in the dialog, e.g.
+    \image html  fl_choice_left_middle_right.png
+    \image latex fl_choice_left_middle_right.png  "fl_choice() button ordering" width=4cm
 
    \note Common dialog boxes are application modal. No more than one common dialog box
     can be open at any time. Requests for additional dialog boxes are ignored.
    \note \#include <FL/fl_ask.H>
 
    Three choices with printf() style formatting:
+   \image html  fl_choice_three_fmt.png
+   \image latex fl_choice_three_fmt.png  "fl_choice() three choices with printf formatting" width=4cm
    \code
        int num_msgs = GetNumberOfMessages();
        switch ( fl_choice("What to do with %d messages?", "Send", "Save", "Delete", num_msgs) ) {
@@ -435,11 +440,11 @@ int fl_ask(const char *fmt, ...) {
    \image html  fl_choice_three.png
    \image latex fl_choice_three.png  "fl_choice() three choices" width=4cm
    \code
-       switch ( fl_choice("How many musketeers?", "One", "Two", "Three") ) {
-         case 0: .. // One
-         case 1: .. // Two (default)
-         case 2: .. // Three
-       }
+   switch ( fl_choice("How many bedrooms?", "Zero", "One", "Two") ) {
+     case 0: .. // "Zero"
+     case 1: .. // "One" (default)
+     case 2: .. // "Two"
+   }
    \endcode
 
    Two choice example:
@@ -460,12 +465,12 @@ int fl_ask(const char *fmt, ...) {
    \endcode
 
    \param[in] fmt can be used as an sprintf-like format and variables for the message text
-   \param[in] b0 text label of button 0
-   \param[in] b1 text label of button 1 (can be 0)
-   \param[in] b2 text label of button 2 (can be 0)
-   \retval 0 if the first button with \p b0 text is pushed or another dialog box is still open
-   \retval 1 if the second button with \p b1 text is pushed
-   \retval 2 if the third button with \p b2 text is pushed
+   \param[in] b0 text label for right button 0
+   \param[in] b1 text label for middle button 1 (can be 0)
+   \param[in] b2 text label for left button 2 (can be 0)
+   \retval 0 if the button with \p b0 text is pushed or another dialog box is still open
+   \retval 1 if the button with \p b1 text is pushed
+   \retval 2 if the button with \p b2 text is pushed
  */
 int fl_choice(const char*fmt,const char *b0,const char *b1,const char *b2,...){
 
@@ -627,5 +632,5 @@ void fl_message_title_default(const char *title) {
 /** @} */
 
 //
-// End of "$Id: fl_ask.cxx 11843 2016-07-22 10:30:34Z greg.ercolano $".
+// End of "$Id: fl_ask.cxx 12853 2018-04-18 18:28:46Z greg.ercolano $".
 //

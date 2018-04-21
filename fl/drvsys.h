@@ -1,12 +1,12 @@
 // drvsys.h
 //
-// "$Id: Fl_System_Driver.H 12549 2017-11-10 12:56:00Z AlbrechtS $"
+// "$Id: Fl_System_Driver.H 12851 2018-04-18 15:03:51Z manolo $"
 //
 // A base class for platform specific system calls
 // for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 2010-2017 by Bill Spitzak and others.
+// Copyright 2010-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -225,9 +225,6 @@ public:
   virtual void* thread_message() {return NULL;}
   // implement to support Fl_File_Icon
   virtual int file_type(const char *filename);
-  // the default implementations of pixmap_extra_transparent_processing() and make_unused_color() and are most probably enough
-  virtual int pixmap_extra_transparent_processing() {return 0;}
-  virtual void make_unused_color(unsigned char &r, unsigned char &g, unsigned char &b) {}
   // implement to return the user's home directory name
   virtual const char *home_directory_name() { return ""; }
   // the default implementation is most probably enough
@@ -282,5 +279,5 @@ public:
 #endif // FL_SYSTEM_DRIVER_H
 
 //
-// End of "$Id: Fl_System_Driver.H 12549 2017-11-10 12:56:00Z AlbrechtS $".
+// End of "$Id: Fl_System_Driver.H 12851 2018-04-18 15:03:51Z manolo $".
 //

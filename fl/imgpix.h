@@ -1,11 +1,11 @@
 // pixmap.h
 //
-// "$Id: Fl_Pixmap.H 12776 2018-03-19 17:43:18Z manolo $"
+// "$Id: Fl_Pixmap.H 12851 2018-04-18 15:03:51Z manolo $"
 //
 // Pixmap header file for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -92,8 +92,6 @@ class FL_EXPORT Fl_Pixmap : public Fl_Image {
   void copy_data();
   void delete_data();
   void set_data(const char * const *p);
-  int prepare(int XP, int YP, int WP, int HP, int &cx, int &cy,
-			 int &X, int &Y, int &W, int &H);
 
 protected:
   void measure();
@@ -106,8 +104,7 @@ private:
   // for internal use
   fl_uintptr_t id_;
   fl_uintptr_t mask_;
-  Fl_Color pixmap_bg_color;
-  float cache_scale_; // graphics scaling value when id_ was computed
+  int cache_w_, cache_h_; // size of pixmap when cached
 
 public:
 
@@ -121,7 +118,7 @@ public:
   explicit Fl_Pixmap(const uchar* const * D) : Fl_Image(-1,0,1), alloc_data(0), id_(0), mask_(0) {set_data((const char*const*)D); measure();}
   virtual ~Fl_Pixmap();
   virtual Fl_Image *copy(int W, int H);
-  Fl_Image *copy() { return copy(w(), h()); }
+  Fl_Image *copy() { return Fl_Image::copy(); }
   virtual void color_average(Fl_Color c, float i);
   virtual void desaturate();
   virtual void draw(int X, int Y, int W, int H, int cx=0, int cy=0);
@@ -134,5 +131,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Pixmap.H 12776 2018-03-19 17:43:18Z manolo $".
+// End of "$Id: Fl_Pixmap.H 12851 2018-04-18 15:03:51Z manolo $".
 //

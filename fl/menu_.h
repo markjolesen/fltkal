@@ -1,11 +1,11 @@
 // menu_.h
 //
-// "$Id: Fl_Menu_.H 11802 2016-07-09 17:14:22Z AlbrechtS $"
+// "$Id: Fl_Menu_.H 12816 2018-03-31 17:29:23Z greg.ercolano $"
 //
 // Menu base class header file for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2016 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -99,6 +99,10 @@
       the Fl_Menu_ widget's callback is invoked with any userdata
       configured for it. The callback can determine which item
       was picked using value(), mvalue(), item_pathname(), etc.
+
+  The line spacing between menu items can be controlled with the global setting
+  Fl::menu_linespacing().
+
 */
 class FL_EXPORT Fl_Menu_ : public Fl_Widget {
 
@@ -236,5 +240,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Menu_.H 11802 2016-07-09 17:14:22Z AlbrechtS $".
+// End of "$Id: Fl_Menu_.H 12816 2018-03-31 17:29:23Z greg.ercolano $".
 //

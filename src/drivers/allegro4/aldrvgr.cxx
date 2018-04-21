@@ -320,7 +320,8 @@ void Fl_Allegro_Graphics_Driver::circle(double x, double y, double rad)
     return;
 }
 
-// Fl_Pico_Graphics_Driver::arc(int xi, int yi, int w, int h, double a1, double a2)
+// Fl_Pico_Graphics_Driver::arc
+// Fl_Android_Graphics_driver::arc
 void Fl_Allegro_Graphics_Driver::arc(int xi, int yi, int w, int h, double a1, double a2)
 {
     xi += Fl::window_draw_offset_x;
@@ -350,26 +351,336 @@ void Fl_Allegro_Graphics_Driver::arc(int xi, int yi, int w, int h, double a1, do
     a2 = a2 / 180 * M_PI;
     double step = (a2 - a1) / segs;
 
-    double sina1 = sin(a1);
-    double cosa1 = cos(a1);
-    int nx = x + sina1 * rx;
-    int ny = y - cosa1 * ry;
-
+    int nx = x + cos(a1) * rx;
+    int ny = y - sin(a1) * ry;
     for (i = segs; i > 0; i--)
     {
         a1 += step;
         px = nx;
         py = ny;
-        int nx = x + sina1 * rx;
-        int ny = y - cosa1 * ry;
+        nx = x + cos(a1) * rx;
+        ny = y - sin(a1) * ry;
         ::line(surface(), px, py, nx, ny, color);
     }
 
     return;
 }
 
-void Fl_Allegro_Graphics_Driver::pie(int x, int y, int w, int h, double a1, double a2)
+// Fl_Android_Graphics_driver::pie
+void Fl_Allegro_Graphics_Driver::pie(int xi, int yi, int w, int h, double b1, double b2)
 {
+    // quick access to bounding box size
+    double rx = w / 2.0;
+    double ry = h / 2.0;
+    double x = xi + rx;
+    double y = yi + ry;
+
+
+    double a1 = b1 / 180 * M_PI;
+    double a2 = b2 / 180 * M_PI;
+
+    // invert to make b1 always the smaller value
+    if (b1 > b2)
+    {
+        b1 -= 360.0;
+    }
+    if (b1 == b2)
+    {
+        return;
+    }
+
+    // make the top the zero degree origin, turning CCW
+    b1 -= 90.0;
+    b2 -= 90.0;
+
+    // find the delta between angles
+    double delta = b2 - b1;
+    if (delta >= 360.0)
+    {
+        b1 = 0.0;
+        b2 = 360.0;
+        delta = 360.0;
+    }
+
+    // make sure that b2 is always in the range [0.0..360.0]
+    if (b2 > 360.0)
+    {
+        b2 -= 360.0;    // FIXME: fmod(...)
+    }
+    if (b2 < 0.0)
+    {
+        b2 += 360.0;
+    }
+    b1 = b2 - delta;
+    // now b1 is [-360...360] and b2 is [0..360] and b1<b2;
+
+    a1 = b1 / 180 * M_PI;
+    a2 = b2 / 180 * M_PI;
+    double b1o = b1;
+    bool flipped = false;
+    if (a1 < 0.0)
+    {
+        a1 += 2 * M_PI;
+        b1 += 360.0;
+        flipped = true;
+    }
+
+    //  Fl_Android_Application::log_e(" %g %g %d", b1, b2, flipped);
+
+    double a1Slope = tan(a1);
+    double a2Slope = tan(a2);
+
+    // draw the pie line by line
+    for (double iy = y - ry; iy <= y + ry; iy++)
+    {
+        double a = acos((iy - y) / ry);
+        double aL = M_PI - a; // 0..PI
+        double aR = a + M_PI; // 2PI..PI
+        double sinALrx = sin(aL) * rx;
+
+        //    fl_color(FL_RED);
+
+        if (aL < 0.5 * M_PI)
+        {
+            // rasterize top left quadrant
+            bool loInside = false, hiInside = false;
+            double loLeft = 0.0, loRight = 0.0;
+            double hiLeft = 0.0, hiRight = 0.0;
+            if (b1 >= 0 && b1 < 90)
+            {
+                loInside = true;
+                loLeft = -sinALrx;
+                loRight = a1Slope * (iy - y);
+            }
+            if (b2 >= 0 && b2 < 90)
+            {
+                hiInside = true;
+                if (aL < a2)
+                {
+                    hiLeft = -sinALrx;
+                }
+                else
+                {
+                    hiLeft = a2Slope * (iy - y);
+                }
+            }
+            if (loInside && hiInside && !flipped)
+            {
+                //        fl_color(FL_GREEN);
+                if (a1 < aL)
+                {
+                    xyline(x + hiLeft, iy, x + loRight);
+                }
+            }
+            else
+            {
+                if ((!loInside) && (!hiInside))
+                {
+                    //          fl_color(FL_MAGENTA);
+                    if ((b1o <= 0.0 && b2 >= 90.0) || (b1o <= (0.0 - 360.0) && b2 >= (90.0 - 360.0)))
+                    {
+                        xyline(x - sinALrx, iy, x);
+                    }
+                }
+                else
+                {
+                    if (loInside)
+                    {
+                        //            fl_color(FL_BLUE);
+                        if (a1 < aL)
+                        {
+                            xyline(x + loLeft, iy, x + loRight);
+                        }
+                    }
+                    if (hiInside)
+                    {
+                        //            fl_color(FL_YELLOW);
+                        xyline(x + hiLeft, iy, x);
+                    }
+                }
+            }
+        }
+        else
+        {
+            // rasterize bottom left quadrant
+            bool loInside = false, hiInside = false;
+            double loLeft = 0.0, loRight = 0.0;
+            double hiLeft = 0.0, hiRight = 0.0;
+            if (b1 >= 90 && b1 < 180)
+            {
+                loInside = true;
+                if (aL >= a1)
+                {
+                    loLeft = -sinALrx;
+                }
+                else
+                {
+                    loLeft = a1Slope * (iy - y);
+                }
+            }
+            if (b2 >= 90 && b2 < 180)
+            {
+                hiInside = true;
+                hiLeft = -sinALrx;
+                hiRight = a2Slope * (iy - y);
+            }
+            if (loInside && hiInside && !flipped)
+            {
+                //        fl_color(FL_GREEN);
+                if (a2 > aL)
+                {
+                    xyline(x + loLeft, iy, x + hiRight);
+                }
+            }
+            else
+            {
+                if ((!loInside) && (!hiInside))
+                {
+                    //          fl_color(FL_MAGENTA);
+                    if ((b1o <= 90.0 && b2 >= 180.0) || (b1o <= (90.0 - 360.0) && b2 >= (180.0 - 360.0)))
+                    {
+                        xyline(x - sinALrx, iy, x);
+                    }
+                }
+                else
+                {
+                    if (loInside)
+                    {
+                        //            fl_color(FL_BLUE);
+                        xyline(x + loLeft, iy, x);
+                    }
+                    if (hiInside)
+                    {
+                        //            fl_color(FL_YELLOW);
+                        if (a2 > aL)
+                        {
+                            xyline(x + hiLeft, iy, x + hiRight);
+                        }
+                    }
+                }
+            }
+        }
+        if (aR < 1.5 * M_PI)
+        {
+            // rasterize bottom right quadrant
+            bool loInside = false, hiInside = false;
+            double loLeft = 0.0, loRight = 0.0;
+            double hiLeft = 0.0, hiRight = 0.0;
+            if (b1 >= 180 && b1 < 270)
+            {
+                loInside = true;
+                loLeft = sinALrx;
+                loRight = a1Slope * (iy - y);
+            }
+            if (b2 >= 180 && b2 < 270)
+            {
+                hiInside = true;
+                if (aR < a2)
+                {
+                    hiLeft = sinALrx;
+                }
+                else
+                {
+                    hiLeft = a2Slope * (iy - y);
+                }
+            }
+            if (loInside && hiInside && !flipped)
+            {
+                //        fl_color(FL_GREEN);
+                if (a1 < aR)
+                {
+                    xyline(x + hiLeft, iy, x + loRight);
+                }
+            }
+            else
+            {
+                if ((!loInside) && (!hiInside))
+                {
+                    //          fl_color(FL_MAGENTA);
+                    if ((b1o <= 180.0 && b2 >= 270.0) || (b1o <= (180.0 - 360.0) && b2 >= (270.0 - 360.0)))
+                    {
+                        xyline(x + sinALrx, iy, x);
+                    }
+                }
+                else
+                {
+                    if (loInside)
+                    {
+                        //            fl_color(FL_BLUE);
+                        if (a1 < aR)
+                        {
+                            xyline(x + loLeft, iy, x + loRight);
+                        }
+                    }
+                    if (hiInside)
+                    {
+                        //            fl_color(FL_YELLOW);
+                        xyline(x + hiLeft, iy, x);
+                    }
+                }
+            }
+        }
+        else
+        {
+            // rasterize top right quadrant
+            bool loInside = false, hiInside = false;
+            double loLeft = 0.0, loRight = 0.0;
+            double hiLeft = 0.0, hiRight = 0.0;
+            if (b1 >= 270 && b1 < 360)
+            {
+                loInside = true;
+                if (aR >= a1)
+                {
+                    loLeft = sinALrx;
+                }
+                else
+                {
+                    loLeft = a1Slope * (iy - y);
+                }
+            }
+            if (b2 >= 270 && b2 < 360)
+            {
+                hiInside = true;
+                hiLeft = sinALrx;
+                hiRight = a2Slope * (iy - y);
+            }
+            if (loInside && hiInside && !flipped)
+            {
+                //        fl_color(FL_GREEN);
+                if (a2 > aR)
+                {
+                    xyline(x + loLeft, iy, x + hiRight);
+                }
+            }
+            else
+            {
+                if ((!loInside) && (!hiInside))
+                {
+                    //          fl_color(FL_MAGENTA);
+                    if ((b1o <= 270.0 && b2 >= 360.0) || (b1o <= (270.0 - 360.0) && b2 >= (360.0 - 360.0)))
+                    {
+                        xyline(x + sinALrx, iy, x);
+                    }
+                }
+                else
+                {
+                    if (loInside)
+                    {
+                        //            fl_color(FL_BLUE);
+                        xyline(x + loLeft, iy, x);
+                    }
+                    if (hiInside)
+                    {
+                        //            fl_color(FL_YELLOW);
+                        if (a2 > aR)
+                        {
+                            xyline(x + hiLeft, iy, x + hiRight);
+                        }
+                    }
+                }
+            }
+        }
+    }
     return;
 }
 
@@ -657,7 +968,7 @@ void Fl_Allegro_Graphics_Driver::draw_image(Fl_Draw_Image_Cb cb, void *data, int
     return;
 }
 
-void Fl_Allegro_Graphics_Driver::draw(Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy)
+void Fl_Allegro_Graphics_Driver::draw_rgb(Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy)
 {
     BITMAP *bmp = rgb_image_to_bitmap((*rgb));
 
@@ -672,7 +983,7 @@ void Fl_Allegro_Graphics_Driver::draw(Fl_RGB_Image *rgb, int XP, int YP, int WP,
     return;
 }
 
-void Fl_Allegro_Graphics_Driver::draw(Fl_Pixmap *pxm, int XP, int YP, int /*WP*/, int /*HP*/, int cx, int cy)
+void Fl_Allegro_Graphics_Driver::draw_pixmap(Fl_Pixmap *pxm, int XP, int YP, int /*WP*/, int /*HP*/, int cx, int cy)
 {
     BITMAP *bmp = pxm_to_bitmap((*pxm));
 
@@ -687,7 +998,7 @@ void Fl_Allegro_Graphics_Driver::draw(Fl_Pixmap *pxm, int XP, int YP, int /*WP*/
     return;
 }
 
-void Fl_Allegro_Graphics_Driver::draw(Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy)
+void Fl_Allegro_Graphics_Driver::draw_bitmap(Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy)
 {
     BITMAP *bmp = bitmap_to_bitmap((*bm));
 

@@ -1,9 +1,9 @@
 // texted.cxx
 //
-// "$Id: Fl_Text_Editor.cxx 11827 2016-07-20 00:55:06Z greg.ercolano $"
+// "$Id: Fl_Text_Editor.cxx 12804 2018-03-26 15:33:22Z matt $"
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 2001-2010 by Bill Spitzak and others.
+// Copyright 2001-2010, 2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -126,6 +126,7 @@ Fl_Text_Editor::Fl_Text_Editor(int X, int Y, int W, int H,  const char* l)
   insert_mode_ = 1;
   key_bindings = 0;
   set_flag(MAC_USE_ACCENTS_MENU);
+  set_flag(NEEDS_KEYBOARD);
 
   // handle the default key bindings
   add_default_key_bindings(&key_bindings);
@@ -852,5 +853,5 @@ int Fl_Text_Editor::tab_nav() const {
 }
 
 //
-// End of "$Id: Fl_Text_Editor.cxx 11827 2016-07-20 00:55:06Z greg.ercolano $".
+// End of "$Id: Fl_Text_Editor.cxx 12804 2018-03-26 15:33:22Z matt $".
 //

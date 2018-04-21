@@ -1,11 +1,11 @@
 // img.h
 //
-// "$Id: Fl_Image.H 12776 2018-03-19 17:43:18Z manolo $"
+// "$Id: Fl_Image.H 12811 2018-03-28 13:00:12Z manolo $"
 //
 // Image header file for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -101,6 +101,13 @@ enum Fl_RGB_Scaling {
  in FLTK. This class keeps track of common image data such as the pixels, 
  colormap, width, height, and depth. Virtual methods are used to provide 
  type-specific image handling.
+ 
+ Each image possesses two (width, height) pairs. 1) The width and height of the
+ image raw data are returned by data_w() and data_h(). These values are set
+ when the image is created and remain unchanged. 2) The width and height
+ of the area filled by the image when it gets drawn are returned by w() and h().
+ The values are equal to data_w() and data_h() when the image is created,
+ and can be changed by the scale() member function.
   
  Since the Fl_Image class does not support image
  drawing by itself, calling the draw() method results in
@@ -115,7 +122,7 @@ public:
     
 private:
   int w_, h_, d_, ld_, count_;
-  int pixel_w_, pixel_h_;
+  int data_w_, data_h_;
   const char * const *data_;
   static Fl_RGB_Scaling RGB_scaling_; // method used when copying RGB images
   static Fl_RGB_Scaling scaling_algorithm_; // method used to rescale RGB source images before drawing
@@ -126,13 +133,17 @@ private:
 protected:
 
   /**
-   Sets the current image width in pixels.
+   Sets the width of the image data.
+   This protected function sets both image widths: the width of the image data returned by data_w() and
+   the image drawing width in FLTK units returned by w().
    */
-  void w(int W) {w_ = W; pixel_w_ = W;}
+  void w(int W) {w_ = W; data_w_ = W;}
   /**
-   Sets the current image height in pixels.
+   Sets the height of the image data.
+   This protected function sets both image heights: the height of the image data returned by data_h() and
+   the image drawing height in FLTK units returned by h().
    */
-  void h(int H) {h_ = H; pixel_h_ = H;}
+  void h(int H) {h_ = H; data_h_ = H;}
   /**
    Sets the current image depth.
    */
@@ -163,24 +174,24 @@ public:
 
   /** 
    Returns the current image width in FLTK units.
-   The values of w() and pixel_w() are identical unless scale() has been called
+   The values of w() and data_w() are identical unless scale() has been called
    after which they may differ.
    */
   int w() const {return w_;}
   /**
    Returns the current image height in FLTK units.
-   The values of h() and pixel_h() are identical unless scale() has been called
+   The values of h() and data_h() are identical unless scale() has been called
    after which they may differ.
    */
   int h() const {return h_;}
   /**
-   Returns the image width in pixels.
+   Returns the width of the image data.
    */
-  int pixel_w() {return pixel_w_;}
+  int data_w() const {return data_w_;}
   /**
-   Returns the image height in pixels.
+   Returns the height of the image data.
    */
-  int pixel_h() {return pixel_h_;}
+  int data_h() const {return data_h_;}
   /**
    Returns the current image depth.
    The return value will be 0 for bitmaps, 1 for
@@ -209,13 +220,11 @@ public:
   virtual ~Fl_Image();
   virtual Fl_Image *copy(int W, int H);
   /**
-   The copy() method creates a copy of the specified
-   image. If the width and height are provided, the image is
-   resized to the specified size. The image should be deleted (or in
-   the case of Fl_Shared_Image, released) when you are done
-   with it.
+   Creates a copy of the specified image.
+   The image should be deleted (or in the case of Fl_Shared_Image, released)
+   when you are done with it.
    */
-  Fl_Image *copy() { return copy(w(), h()); }
+  Fl_Image *copy() { Fl_Image *img = copy(data_w(), data_h()); img->scale(w(), h(), 0, 1); return img;}
   virtual void color_average(Fl_Color c, float i);
   /**
    The inactive() method calls
@@ -305,15 +314,15 @@ private:
   // These two variables are used to cache the image and mask for the main display graphics driver
   fl_uintptr_t id_;
   fl_uintptr_t mask_;
-  float cache_scale_; // graphics scaling value when id_ was computed
-  
+  int cache_w_, cache_h_; // size of image when cached
+
 public:
 
   Fl_RGB_Image(const uchar *bits, int W, int H, int D=3, int LD=0);
   Fl_RGB_Image(const Fl_Pixmap *pxm, Fl_Color bg=FL_GRAY);
   virtual ~Fl_RGB_Image();
   virtual Fl_Image *copy(int W, int H);
-  Fl_Image *copy() { return copy(w(), h()); }
+  Fl_Image *copy() { return Fl_Image::copy(); }
   virtual void color_average(Fl_Color c, float i);
   virtual void desaturate();
   virtual void draw(int X, int Y, int W, int H, int cx=0, int cy=0);
@@ -342,5 +351,5 @@ public:
 #endif // !Fl_Image_H
 
 //
-// End of "$Id: Fl_Image.H 12776 2018-03-19 17:43:18Z manolo $".
+// End of "$Id: Fl_Image.H 12811 2018-03-28 13:00:12Z manolo $".
 //

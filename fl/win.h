@@ -81,9 +81,10 @@
 
 #define FL_WINDOW 0xF0		///< window type id all subclasses have type() >= this
 #define FL_DOUBLE_WINDOW 0xF1   ///< double window type id
-#define FL_MENU_WINDOW          (FL_DOUBLE_WINDOW + 1) // ALLEGRO:
-#define FL_MENU_TITLE_WINDOW    (FL_DOUBLE_WINDOW + 2) // ALLEGRO:
-#define FL_TOOLTIP_WINDOW       (FL_DOUBLE_WINDOW + 3) // ALLEGRO:
+#define FL_CHILD_WINDOW         (FL_DOUBLE_WINDOW + 1) // ALLEGRO:
+#define FL_MENU_WINDOW          (FL_DOUBLE_WINDOW + 2) // ALLEGRO:
+#define FL_MENU_TITLE_WINDOW    (FL_DOUBLE_WINDOW + 3) // ALLEGRO:
+#define FL_TOOLTIP_WINDOW       (FL_DOUBLE_WINDOW + 4) // ALLEGRO:
 
 class Fl_X;
 class Fl_Window_Driver;

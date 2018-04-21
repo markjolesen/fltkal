@@ -1,9 +1,9 @@
 // textdsp.cxx
 //
-// "$Id: Fl_Text_Display.cxx 12570 2017-11-23 19:34:33Z greg.ercolano $"
+// "$Id: Fl_Text_Display.cxx 12849 2018-04-18 13:20:15Z AlbrechtS $"
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 2001-2017 by Bill Spitzak and others.
+// Copyright 2001-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -1062,7 +1062,7 @@ void Fl_Text_Display::overstrike(const char* text) {
   /* find which characters to remove, and if necessary generate additional
    padding to make up for removed control characters at the end */
   indent = startIndent;
-  for ( p = startPos; ; p=buffer()->next_char(p) ) {
+  for ( p = startPos; ; p = buf->next_char(p) ) {
     if ( p == buf->length() )
       break;
     ch = buf->char_at( p );
@@ -1070,11 +1070,11 @@ void Fl_Text_Display::overstrike(const char* text) {
       break;
     indent++;
     if ( indent == endIndent ) {
-      p++;
+      p = buf->next_char(p);
       break;
     } else if ( indent > endIndent ) {
       if ( ch != '\t' ) {
-        p++;
+        p = buf->next_char(p);
         paddedText = new char [ textLen + FL_TEXT_MAX_EXP_CHAR_LEN + 1 ];
         strcpy( paddedText, text );
         for ( i = 0; i < indent - endIndent; i++ )
@@ -2106,7 +2106,7 @@ int Fl_Text_Display::handle_vline(
     // draw a single Tab space
     double tab = col_to_x(mBuffer->tab_distance());
     double xAbs = (mode==GET_WIDTH) ? startX : startX+mHorizOffset-text_area.x;
-    w = static_cast<int>(((int(xAbs/tab)+1)*tab) - xAbs);
+    w = ((int(xAbs/tab)+1)*tab) - xAbs;
     if (mode==DRAW_LINE)
       draw_string( style|BG_ONLY_MASK, startX, Y, startX+w, 0, 0 );
     if (mode==FIND_INDEX) {
@@ -2117,7 +2117,7 @@ int Fl_Text_Display::handle_vline(
       return lineStartPos + startIndex + ( rightClip-startX>w ? 1 : 0 );
     }
   } else {
-    w = static_cast<int>(string_width( lineStr+startIndex, i-startIndex, style ));
+    w = string_width( lineStr+startIndex, i-startIndex, style );
     if (mode==DRAW_LINE)
       draw_string( style, startX, Y, startX+w, lineStr+startIndex, i-startIndex );
     if (mode==FIND_INDEX) {
@@ -2130,7 +2130,7 @@ int Fl_Text_Display::handle_vline(
   }
   if (mode==GET_WIDTH) {
     free(lineStr);
-    return static_cast<int>(startX+w);
+    return startX+w;
   }
 
   // clear the rest of the line
@@ -4167,5 +4167,5 @@ double Fl_Text_Display::col_to_x(double col) const
 
 
 //
-// End of "$Id: Fl_Text_Display.cxx 12570 2017-11-23 19:34:33Z greg.ercolano $".
+// End of "$Id: Fl_Text_Display.cxx 12849 2018-04-18 13:20:15Z AlbrechtS $".
 //
