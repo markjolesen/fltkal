@@ -628,6 +628,14 @@ bool Fl_Allegro_Screen_Driver::wait_keyboard(Fl_Window *window)
 
         if (sym)
         {
+            (void)readkey();
+            if (FL_Escape == sym)
+            {
+                while (window->parent())
+                {
+                    window = window->window();
+                }
+            }
             Fl::e_keysym = sym;
             Fl::e_number = FL_KEYBOARD;
             Fl::handle(FL_KEYBOARD, window);
@@ -761,10 +769,6 @@ bool Fl_Allegro_Screen_Driver::wait_mouse(Fl_Window *window)
 
         Fl::e_x_root = x;
         Fl::e_y_root = y;
-        x -= window->x();
-        y -= window->y();
-        Fl::e_x = x;
-        Fl::e_y = y;
 
         wm::hit_type what = wm::HIT_NONE;
 
@@ -787,6 +791,39 @@ bool Fl_Allegro_Screen_Driver::wait_mouse(Fl_Window *window)
             Fl::e_keysym = (FL_Button | FL_RIGHT_MOUSE);
         }
 
+        if (FL_CHILD_WINDOW == window->type())
+        {
+            Fl_Window *w = window;
+            do
+            {
+                wm::hit_type what2 = wm_.hit((*w), Fl::e_x_root, Fl::e_y_root);
+                if (wm::HIT_NONE != what2)
+                {
+                    if (w != window)
+                    {
+                        window = w;
+                    }
+                    break;
+                }
+                Fl_Group *g = w->parent();
+                if (0 == g)
+                {
+                    break;
+                }
+                w = g->as_window();
+                if (0 == w)
+                {
+                    break;
+                }
+            }
+            while (1);
+        }
+
+        x -= window->x();
+        y -= window->y();
+        Fl::e_x = x;
+        Fl::e_y = y;
+
         if (btn)
         {
             if (false == grab_bounce_)
@@ -802,7 +839,12 @@ bool Fl_Allegro_Screen_Driver::wait_mouse(Fl_Window *window)
                 }
                 else
                 {
-                    bool handled = wm_.handle_push((*window), what, Fl::e_x_root, Fl::e_y_root);
+                    bool handled = wm_.handle_push(
+                                       (*window),
+                                       what,
+                                       Fl::e_x_root,
+                                       Fl::e_y_root);
+
                     if (handled)
                     {
                         break;
@@ -817,6 +859,7 @@ bool Fl_Allegro_Screen_Driver::wait_mouse(Fl_Window *window)
                         Fl::e_clicks = 0;
                         Fl::e_is_click = Fl::e_keysym;
                     }
+
                     btn_state_ = btn;
                     Fl::handle(FL_PUSH, window);
                     triggered = true;

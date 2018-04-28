@@ -128,6 +128,26 @@ void Fl_Allegro_Window_Driver::draw_begin()
     Fl::window_draw_offset_x = pWindow->x();
     Fl::window_draw_offset_y = pWindow->y();
 
+    if (FL_CHILD_WINDOW == pWindow->type())
+    {
+        Fl_Group *p = pWindow->parent();
+        Fl_Window *w = p->as_window();
+        while (w)
+        {
+            Fl::window_draw_offset_x += w->x();
+            Fl::window_draw_offset_y += w->y();
+            p = w->parent();
+            if (p)
+            {
+                w = p->as_window();
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
     if (FL_DAMAGE_ALL & pWindow->damage())
     {
         if (FL_WINDOW == pWindow->type() ||
@@ -156,6 +176,7 @@ int Fl_Allegro_Window_Driver::decorated_h()
 
 Fl_X *Fl_Allegro_Window_Driver::makeWindow()
 {
+    bool takefocus = true;
     Fl_Group::current(0);
     Fl_X *x = new Fl_X;
     i(x);
@@ -165,9 +186,21 @@ Fl_X *Fl_Allegro_Window_Driver::makeWindow()
     x->next = Fl_X::first;
     Fl_X::first = x;
 
-    if (title_bar_height > pWindow->y())
+    if (FL_WINDOW == pWindow->type() ||
+            FL_DOUBLE_WINDOW == pWindow->type())
     {
-        pWindow->position(pWindow->x(), title_bar_height);
+        if (0 == pWindow->parent())
+        {
+            if (title_bar_height > pWindow->y())
+            {
+                pWindow->position(pWindow->x(), title_bar_height);
+            }
+        }
+        else
+        {
+            pWindow->type(FL_CHILD_WINDOW);
+            takefocus = false;
+        }
     }
 
     pWindow->set_visible();
@@ -175,7 +208,12 @@ Fl_X *Fl_Allegro_Window_Driver::makeWindow()
     int old_event = Fl::e_number;
     pWindow->handle(Fl::e_number = FL_SHOW);
     Fl::e_number = old_event;
-    pWindow->take_focus();
+
+    if (takefocus)
+    {
+        pWindow->take_focus();
+    }
+
     return x;
 }
 
