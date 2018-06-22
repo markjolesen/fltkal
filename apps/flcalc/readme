@@ -1,0 +1,46 @@
+flcalc version 0.4 alpha -- see changes below
+
+This is a project I've quickly put together mainly for my own use,
+not being able to find another program that exactly fitted my needs.
+It is licensed under the GPL so feel free to modify/improve and redistribute.
+
+Installation :
+
+As it comes this source code is known to compile on linux using autotools.
+The source should compile on compatible systems (*bsd etc) but this has
+not been tested.  
+
+To compile under linux you must first have FLTK installed you your machine.
+The easiest way of doing this is via your package management system, see your
+distributions documentation for instructions on how to use this.  Alternatively 
+do to www.fltk.org and follow install instructions there.
+
+To compile simply type "make" in a terminal, this will create the file flcalc
+in the same directory.  Move this file to somewhere in the path if you want
+easy access to it.
+
+To compile on windows, first download and install mingw and fltk source.  Compile
+the fltk source. Once you have the system installed, from the MSYS windows go to
+the flcalc directory, rename Makefile.mingw Makefile and type make.
+
+Notes:
+
+This is the fourth alpha version of this small program, which is why it does not
+install itself, and why the code is not fully portable as is.  This project is
+mainly for my personal use and is released as open source purely to make it
+available to anyone else who may find it useful.  I may or may not develop
+it further but any constructive comments are welcome at andylegalle@googlemail.com
+
+flcalc uses the FLTK toolkit : www.fltk.org
+flcalc is a front-end for the muParser library : muparser.sourceforge.net
+
+Change Log :
+
+0.4a : Now includes makefile for freebsd, tested on freebsd 7.2 amd64 with fltk-thread port
+       installed. This is my personal workstation so this will probally be the last release 
+       of flcalc unless I have any requests.  zip file now contains everything in one file.
+
+0.3a : Makefile for mingw on windows and windows binary
+0.2a : Fixed a missing include to allow compilation on newer versions of gcc
+
+

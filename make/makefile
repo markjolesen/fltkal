@@ -243,6 +243,7 @@ FLTKOBJS=\
 	$(OBJ)/windbl.o \
 	$(OBJ)/winmenu.o \
 	$(OBJ)/winovlay.o \
+	$(OBJ)/winscr.o \
 	$(OBJ)/winsngl.o \
 	$(OBJ)/wizard.o 
     

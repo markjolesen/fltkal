@@ -13,12 +13,12 @@
 
 fltkal is a DOS fork of the Fast Light Toolkit (FLTK) using Allegro4 and DJGPP.
 The fork required renaming files to 8.3 conventions. Other than that, however,
-the API is compatible with the 1.3.x and 1.4.x branch.
+the API is compatible with the 1.4.x branch.
 
-API Documentation can be found on the [FLTK web site](http://fltk.org/doc-1.3/)
+API Documentation can be found on the [FLTK web site](http://fltk.org/doc-1.4/)
 
 ```
-http://fltk.org/doc-1.3/
+http://fltk.org/doc-1.4/
 ```
 
 Header [file mappings](doc/filemap.md) can be found here
