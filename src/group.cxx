@@ -1,6 +1,6 @@
 // group.cxx
 //
-// "$Id: Fl_Group.cxx 12827 2018-04-12 12:58:10Z AlbrechtS $"
+// "$Id: Fl_Group.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // Group widget for the Fast Light Tool Kit (FLTK).
 //
@@ -76,7 +76,7 @@
 #include <stdio.h>
 #include <fl/fl.h>
 #include <fl/group.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 #include <fl/rect.h>
 #include <fl/win.h>
 #include <fl/fl_draw.h>
@@ -968,5 +968,5 @@ void Fl_Group::draw_outside_label(const Fl_Widget& widget) const {
 
 
 //
-// End of "$Id: Fl_Group.cxx 12827 2018-04-12 12:58:10Z AlbrechtS $".
+// End of "$Id: Fl_Group.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

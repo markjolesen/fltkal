@@ -1,6 +1,6 @@
 // drvcopy.cxx
 //
-// "$Id: Fl_Copy_Surface.cxx 11703 2016-04-27 16:42:20Z manolo $"
+// "$Id: Fl_Copy_Surface.cxx 12968 2018-06-23 16:47:40Z matt $"
 //
 // Copy-to-clipboard code for the Fast Light Tool Kit (FLTK).
 //
@@ -70,22 +70,14 @@
 
 #include <fl/drvcopy.h>
 
-#if defined(FL_PORTING)
-# pragma message "FL_PORTING: optionally implement class Fl_XXX_Copy_Surface_Driver for your platform"
-
-Fl_Copy_Surface_Driver *Fl_Copy_Surface_Driver::newCopySurfaceDriver(int w, int h)
-{
-  return NULL;
-}
-
-#endif
-
-/** the constructor */
+/** the constructor
+\param w, h Width and height of the drawing surface in FLTK units */
 Fl_Copy_Surface::Fl_Copy_Surface(int w, int h) : Fl_Widget_Surface(NULL) {
   platform_surface = Fl_Copy_Surface_Driver::newCopySurfaceDriver(w, h);
   if (platform_surface) driver(platform_surface->driver());
 }
 
+/** the destructor */
 Fl_Copy_Surface::~Fl_Copy_Surface() { delete platform_surface; }
 
 void Fl_Copy_Surface::origin(int x, int y) {platform_surface->origin(x, y);}
@@ -120,5 +112,5 @@ int Fl_Copy_Surface::printable_rect(int *w, int *h)  {
 }
 
 //
-// End of "$Id: Fl_Copy_Surface.cxx 11703 2016-04-27 16:42:20Z manolo $".
+// End of "$Id: Fl_Copy_Surface.cxx 12968 2018-06-23 16:47:40Z matt $".
 //

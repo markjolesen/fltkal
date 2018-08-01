@@ -1,6 +1,6 @@
 // imgcore.cxx
 //
-// "$Id: fl_images_core.cxx 12500 2017-10-15 12:34:24Z AlbrechtS $"
+// "$Id: fl_images_core.cxx 12970 2018-06-23 20:50:22Z matt $"
 //
 // FLTK images library core.
 //
@@ -102,7 +102,7 @@ static Fl_Image	*fl_check_images(const char *name, uchar *header, int headerlen)
 
 /**
 \brief Register the image formats.
- *
+
  This function is provided in the fltk_images library and 
  registers all of the "extra" image file formats that are not part
  of the core FLTK library.
@@ -166,5 +166,5 @@ fl_check_images(const char *name,		// I - Filename
 
 
 //
-// End of "$Id: fl_images_core.cxx 12500 2017-10-15 12:34:24Z AlbrechtS $".
+// End of "$Id: fl_images_core.cxx 12970 2018-06-23 20:50:22Z matt $".
 //

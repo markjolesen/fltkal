@@ -1,6 +1,6 @@
 // fnabs.cxx
 //
-// "$Id: filename_absolute.cxx 12558 2017-11-12 18:00:45Z AlbrechtS $"
+// "$Id: filename_absolute.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Filename expansion routines for the Fast Light Tool Kit (FLTK).
 //
@@ -76,7 +76,7 @@
 
 #include <fl/filename.h>
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <stdlib.h>
 #include "flstring.h"
 
@@ -100,6 +100,12 @@ int fl_filename_absolute(char *to, int tolen, const char *from) {
   return Fl::system_driver()->filename_absolute(to, tolen, from);
 }
 
+
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
 
 int Fl_System_Driver::filename_absolute(char *to, int tolen, const char *from) {
   if (isdirsep(*from) || *from == '|') {
@@ -139,6 +145,12 @@ int Fl_System_Driver::filename_absolute(char *to, int tolen, const char *from) {
   delete[] temp;
   return 1;
 }
+
+/**
+ \}
+ \endcond
+ */
+
 
 /** Makes a filename relative to the current working directory.
     \code
@@ -188,6 +200,12 @@ fl_filename_relative(char       *to,	// O - Relative filename
   return Fl::system_driver()->filename_relative(to, tolen, from, base);
 }
 
+
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
 int                                             // O - 0 if no change, 1 if changed
 Fl_System_Driver::filename_relative(char *to,	// O - Relative filename
                      int        tolen,          // I - Size of "to" buffer
@@ -259,6 +277,11 @@ Fl_System_Driver::filename_relative(char *to,	// O - Relative filename
   return 1;
 }
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: filename_absolute.cxx 12558 2017-11-12 18:00:45Z AlbrechtS $".
+// End of "$Id: filename_absolute.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

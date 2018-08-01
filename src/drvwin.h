@@ -1,6 +1,6 @@
 // drvwin.h
 //
-// "$Id: Fl_Window_Driver.H 12619 2018-01-04 15:23:18Z manolo $"
+// "$Id: Fl_Window_Driver.H 12983 2018-06-27 12:26:49Z manolo $"
 //
 // A base class for platform specific window handling code
 // for the Fast Light Tool Kit (FLTK).
@@ -84,18 +84,21 @@
 
 class Fl_X;
 class Fl_Image;
-class Fl_Shared_Image;
 class Fl_RGB_Image;
 
 /**
  \brief A base class for platform specific window handling code.
+
  This class is only for internal use by the FLTK library.
- Each supported platform implements several of the virtual methods of this class.
+ 
+ When porting FLTK to a new platform, many mothods in this class provide
+ a minimal default implementation. Some methods must be overridden to make
+ sure that the Graphics Driver will draw into the bitmap associated with
+ this window.
 */
 class FL_EXPORT Fl_Window_Driver
 {
   friend class Fl_Window;
-  friend class Fl_X;
 private:
   static bool is_a_rescale_; // true when a top-level window is being rescaled
 
@@ -168,8 +171,8 @@ public:
   void resize_after_scale_change(int ns, float old_f, float new_f);
 
   // --- window data
-  virtual int decorated_w() = 0;
-  virtual int decorated_h() = 0;
+  virtual int decorated_w() { return w(); } // default, should be overidden by driver
+  virtual int decorated_h() { return h(); }
 
   // --- window management
   virtual void take_focus();
@@ -229,17 +232,20 @@ public:
   static void default_icons(const Fl_RGB_Image *icons[], int count);
 
   // --- window printing/drawing helper
-  virtual void capture_titlebar_and_borders(Fl_Shared_Image*& top, Fl_Shared_Image*& left,
-                                            Fl_Shared_Image*& bottom, Fl_Shared_Image*& right);
-#if defined(FL_PORTING)
-# pragma message "FL_PORTING: implement scrolling of the screen contents"
-#endif
+  virtual void capture_titlebar_and_borders(Fl_RGB_Image*& top, Fl_RGB_Image*& left,
+                                            Fl_RGB_Image*& bottom, Fl_RGB_Image*& right);
   virtual int scroll(int src_x, int src_y, int src_w, int src_h, int dest_x, int dest_y,
                      void (*draw_area)(void*, int,int,int,int), void* data) { return 0; }
+  static inline Fl_Window_Driver* driver(const Fl_Window *win) {return win->pWindowDriver;}
 };
 
 #endif // FL_WINDOW_DRIVER_H
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: Fl_Window_Driver.H 12619 2018-01-04 15:23:18Z manolo $".
+// End of "$Id: Fl_Window_Driver.H 12983 2018-06-27 12:26:49Z manolo $".
 //

@@ -1,11 +1,11 @@
 // windbl.cxx
 //
-// "$Id: Fl_Double_Window.cxx 12364 2017-07-28 15:51:05Z manolo $"
+// "$Id: Fl_Double_Window.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // Double-buffered window code for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2016 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -76,7 +76,7 @@
 #include <fl/windbl.h>
 //#include <FL/Fl_Printer.H>
 #include <fl/fl_draw.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 
 // On systems that support double buffering "naturally" the base
 // Fl_Window class will probably do double-buffer and this subclass
@@ -107,15 +107,15 @@ void Fl_Double_Window::resize(int X,int Y,int W,int H) {
   int oh = h();
   Fl_Window::resize(X,Y,W,H);
   Fl_X *myi = Fl_X::i(this);
-  if (myi && driver()->other_xid && (ow < w() || oh < h() || Fl_Window_Driver::is_a_rescale()))
-    driver()->destroy_double_buffer();
+  if (myi && Fl_Window_Driver::driver(this)->other_xid && (ow < w() || oh < h() || Fl_Window_Driver::is_a_rescale()))
+    Fl_Window_Driver::driver(this)->destroy_double_buffer();
 }
 
 
 void Fl_Double_Window::hide() {
   Fl_X *myi = Fl_X::i(this);
-  if (myi && driver()->other_xid) {
-    driver()->destroy_double_buffer();
+  if (myi && Fl_Window_Driver::driver(this)->other_xid) {
+    Fl_Window_Driver::driver(this)->destroy_double_buffer();
   }
   Fl_Window::hide();
 }
@@ -123,7 +123,7 @@ void Fl_Double_Window::hide() {
 
 void Fl_Double_Window::flush()
 {
-  driver()->flush_double();
+  Fl_Window_Driver::driver(this)->flush_double();
 }
 
 
@@ -137,5 +137,5 @@ Fl_Double_Window::~Fl_Double_Window() {
 }
 
 //
-// End of "$Id: Fl_Double_Window.cxx 12364 2017-07-28 15:51:05Z manolo $".
+// End of "$Id: Fl_Double_Window.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

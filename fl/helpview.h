@@ -1,6 +1,6 @@
 // helpview.h
 //
-// "$Id: Fl_Help_View.H 12392 2017-08-18 15:46:20Z AlbrechtS $"
+// "$Id: Fl_Help_View.H 12903 2018-05-06 10:20:45Z manolo $"
 //
 // Help Viewer widget definitions.
 //
@@ -85,6 +85,7 @@
 #include "fl_draw.h"
 #include "filename.h"
 
+class Fl_Shared_Image;
 //
 // Fl_Help_Func type - link callback function for files...
 //
@@ -434,5 +435,5 @@ public:
 #endif // !Fl_Help_View_H
 
 //
-// End of "$Id: Fl_Help_View.H 12392 2017-08-18 15:46:20Z AlbrechtS $".
+// End of "$Id: Fl_Help_View.H 12903 2018-05-06 10:20:45Z manolo $".
 //

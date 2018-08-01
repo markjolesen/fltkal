@@ -1,6 +1,6 @@
 // widgsurf.h
 //
-// "$Id: Fl_Widget_Surface.H 12196 2017-03-13 23:31:38Z AlbrechtS $"
+// "$Id: Fl_Widget_Surface.H 12894 2018-05-04 15:11:47Z manolo $"
 //
 // Drivers code for the Fast Light Tool Kit (FLTK).
 //
@@ -99,7 +99,7 @@ public:
   virtual void untranslate(void) {}
   void draw(Fl_Widget* widget, int delta_x = 0, int delta_y = 0);
   virtual void draw_decorated_window(Fl_Window *win, int x_offset = 0, int y_offset = 0);
-  virtual void print_window_part(Fl_Window *win, int x, int y, int w, int h, int delta_x = 0, int delta_y = 0);
+  void print_window_part(Fl_Window *win, int x, int y, int w, int h, int delta_x = 0, int delta_y = 0);
   virtual int printable_rect(int *w, int *h);
   virtual void origin(int x, int y);
   virtual void origin(int *x, int *y);
@@ -108,5 +108,5 @@ public:
 #endif /* Fl_Widget_Surface_h */
 
 //
-// End of "$Id: Fl_Widget_Surface.H 12196 2017-03-13 23:31:38Z AlbrechtS $".
+// End of "$Id: Fl_Widget_Surface.H 12894 2018-05-04 15:11:47Z manolo $".
 //

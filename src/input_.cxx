@@ -1,6 +1,6 @@
 // input_.cxx
 //
-// "$Id: Fl_Input_.cxx 12804 2018-03-26 15:33:22Z matt $"
+// "$Id: Fl_Input_.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Common input widget routines for the Fast Light Tool Kit (FLTK).
 //
@@ -71,7 +71,7 @@
 #include <fl/fl.h>
 #include <fl/input_.h>
 #include <fl/win.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 #include <fl/fl_draw.h>
 #include <fl/fl_ask.h>
 #include <fl/fl_math.h>
@@ -1379,5 +1379,5 @@ unsigned int Fl_Input_::index(int i) const
 }
 
 //
-// End of "$Id: Fl_Input_.cxx 12804 2018-03-26 15:33:22Z matt $".
+// End of "$Id: Fl_Input_.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

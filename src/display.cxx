@@ -1,6 +1,6 @@
 // display.cxx
 //
-// "$Id: Fl_display.cxx 11163 2016-02-13 12:57:00Z matt $"
+// "$Id: Fl_display.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Display function for the Fast Light Tool Kit (FLTK).
 //
@@ -72,7 +72,7 @@
 // Using setenv makes programs that are exec'd use the same display.
 
 #include <fl/fl.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 
 /**
  \brief Sets the X display to use for all windows.  
@@ -89,5 +89,5 @@ void Fl::display(const char *d)
 }
 
 //
-// End of "$Id: Fl_display.cxx 11163 2016-02-13 12:57:00Z matt $".
+// End of "$Id: Fl_display.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

@@ -1,6 +1,6 @@
 // fl.cxx
 //
-// "$Id: Fl.cxx 12815 2018-03-31 17:17:37Z greg.ercolano $"
+// "$Id: Fl.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Main event handling code for the Fast Light Tool Kit (FLTK).
 //
@@ -72,9 +72,9 @@
 
 #include <fl/fl.h>
 #include <fl/platform.h>
-#include <fl/drvscr.h>
-#include <fl/drvwin.h>
-#include <fl/drvsys.h>
+#include "drvscr.h"
+#include "drvwin.h"
+#include "drvsys.h"
 #include <fl/win.h>
 #include <fl/tooltip.h>
 #include <fl/fl_draw.h>
@@ -771,10 +771,10 @@ void Fl::flush() {
     damage_ = 0;
     for (Fl_X* i = Fl_X::first; i; i = i->next) {
       Fl_Window* wi = i->w;
-      if (wi->driver()->wait_for_expose_value) {damage_ = 1; continue;}
+      if (Fl_Window_Driver::driver(wi)->wait_for_expose_value) {damage_ = 1; continue;}
       if (!wi->visible_r()) continue;
       if (wi->damage()) {
-        wi->driver()->flush();
+        Fl_Window_Driver::driver(wi)->flush();
         wi->clear_damage();
       }
       // destroy damage regions for windows that don't use them:
@@ -818,7 +818,8 @@ static void _flush(Fl_X *i)
 
         if (wi->damage())
         {
-            wi->driver()->flush();
+            // wi->driver()->flush();
+            Fl_Window_Driver::driver(wi)->flush();
             wi->clear_damage();
         }
 
@@ -1126,7 +1127,7 @@ void Fl::focus(Fl_Widget *o)
       while (w1) { win=w1; w1=win->window(); }
       if (win) {
         if (fl_xfocus != win) {
-          win->driver()->take_focus();
+          Fl_Window_Driver::driver(win)->take_focus();
           fl_xfocus = win;
         }
       }
@@ -2161,20 +2162,17 @@ int Fl::dnd()
   return Fl::screen_driver()->dnd();
 }
 
-#if !defined(FL_DOXYGEN) // FIXME - silence Doxygen warnings
-
 /**
- * Resets marked text.
- *
- * In many languages, typing a character involves multiple keystrokes. For
- * example, the A-Umlaut can be composed of two dots (") on top of the
- * character, followed by the letter A (on a Mac with U.S. keyboard, you'd
- * type Alt-U, Shift-A. To inform the user, that the dots may be followed by
- * another character, the position of the " is marked on screen with a yellow
- * background color.
- *
- * Call this function if character composition needs to be aborted for some
- * reason. One such example would be the text input widget losing focus.
+ Resets marked text.
+
+ In many languages, typing a character can involve multiple keystrokes. For
+ example, the Ä can be composed of two dots (¨) on top of the
+ character, followed by the letter A (on a Mac with U.S. keyboard, you'd
+ type Alt-U, Shift-A. To inform the user that the dots may be followed by
+ another character, the ¨ is underlined).
+
+ Call this function if character composition needs to be aborted for some
+ reason. One such example would be the text input widget losing focus.
  */
 void Fl::reset_marked_text() {
   Fl::screen_driver()->reset_marked_text();
@@ -2183,13 +2181,11 @@ void Fl::reset_marked_text() {
 /**
   Sets window coordinates and height of insertion point.
 
-  \todo Please explain what exactly this does and how to use it.
+ \see Fl::compose(int& del) for a detailed description.
 */
 void Fl::insertion_point_location(int x, int y, int height) {
   Fl::screen_driver()->insertion_point_location(x, y, height);
 }
-
-#endif // !defined(FL_DOXYGEN) // FIXME - silence Doxygen warnings
 
 int Fl::event_key(int k) {
   return system_driver()->event_key(k);
@@ -2292,7 +2288,7 @@ FL_EXPORT Window fl_xid_(const Fl_Window *w) {
   return temp ? temp->xid : 0;
 }
 /** \addtogroup group_macosx
- @{ */
+ \{ */
 
 /** Register a function called for each file dropped onto an application icon.
 
@@ -2324,6 +2320,12 @@ int Fl::get_font_sizes(Fl_Font fnum, int*& sizep) {
   return Fl_Graphics_Driver::default_driver().get_font_sizes(fnum, sizep);
 }
 
+/** Current value of the GUI scaling factor for screen number \p n */
+float Fl::screen_scale(int n) {
+  return Fl::screen_driver()->scale(n);
+}
+
+
 // Pointers you can use to change FLTK to another language.
 // Note: Similar pointers are defined in FL/fl_ask.H and src/fl_ask.cxx
 FL_EXPORT const char* fl_local_shift = Fl::system_driver()->shift_name();
@@ -2332,5 +2334,5 @@ FL_EXPORT const char* fl_local_alt   = Fl::system_driver()->alt_name();
 FL_EXPORT const char* fl_local_ctrl  = Fl::system_driver()->control_name();
 
 //
-// End of "$Id: Fl.cxx 12815 2018-03-31 17:17:37Z greg.ercolano $".
+// End of "$Id: Fl.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

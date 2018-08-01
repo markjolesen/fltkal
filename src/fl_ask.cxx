@@ -1,6 +1,6 @@
 // fl_ask.cxx
 //
-// "$Id: fl_ask.cxx 12853 2018-04-18 18:28:46Z greg.ercolano $"
+// "$Id: fl_ask.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Standard dialog functions for the Fast Light Tool Kit (FLTK).
 //
@@ -93,7 +93,7 @@
 #include <fl/input.h>
 #include <fl/inphid.h>
 #include <fl/platform.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 #include <fl/fl_draw.h>
 
 static Fl_Window *message_form;
@@ -632,5 +632,5 @@ void fl_message_title_default(const char *title) {
 /** @} */
 
 //
-// End of "$Id: fl_ask.cxx 12853 2018-04-18 18:28:46Z greg.ercolano $".
+// End of "$Id: fl_ask.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

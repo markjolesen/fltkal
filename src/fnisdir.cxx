@@ -1,6 +1,6 @@
 // fnisdir.cxx
 //
-// "$Id: filename_isdir.cxx 11609 2016-04-15 07:33:26Z manolo $"
+// "$Id: filename_isdir.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Directory detection routines for the Fast Light Tool Kit (FLTK).
 //
@@ -71,22 +71,9 @@
 // Used by fl_file_chooser
 
 #include "flstring.h"
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/filename.h>
 #include <fl/fl.h>
-
-/*
- * filename_isdir_quick() is a private function that checks for a
- * trailing slash and assumes that the passed name is a directory if
- * it finds one.  This function is used by Fl_File_Browser and
- * Fl_File_Chooser to avoid extra stat() calls, but is not supported
- * outside of FLTK...
- */
-int Fl_System_Driver::filename_isdir_quick(const char* n) {
-  // Do a quick optimization for filenames with a trailing slash...
-  if (*n && n[strlen(n) - 1] == '/') return 1;
-  return filename_isdir(n);
-}
 
 /**
    Determines if a file exists and is a directory from its filename.
@@ -102,6 +89,27 @@ int Fl_System_Driver::filename_isdir_quick(const char* n) {
 int fl_filename_isdir(const char* n) {
   return Fl::system_driver()->filename_isdir(n);
 }
+
+
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
+
+/**
+ filename_isdir_quick() is a private function that checks for a
+ trailing slash and assumes that the passed name is a directory if
+ it finds one.  This function is used by Fl_File_Browser and
+ Fl_File_Chooser to avoid extra stat() calls, but is not supported
+ outside of FLTK...
+ */
+int Fl_System_Driver::filename_isdir_quick(const char* n) {
+    // Do a quick optimization for filenames with a trailing slash...
+    if (*n && n[strlen(n) - 1] == '/') return 1;
+    return filename_isdir(n);
+}
+
 
 int Fl_System_Driver::filename_isdir(const char* n) {
   struct stat	s;
@@ -120,6 +128,11 @@ int Fl_System_Driver::filename_isdir(const char* n) {
   return !stat(n, &s) && (s.st_mode & S_IFDIR);
 }
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: filename_isdir.cxx 11609 2016-04-15 07:33:26Z manolo $".
+// End of "$Id: filename_isdir.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

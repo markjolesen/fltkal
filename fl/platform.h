@@ -1,6 +1,6 @@
 // platform.h
 //
-// "$Id: platform.H 12655 2018-02-09 14:39:42Z AlbrechtS $"
+// "$Id: platform.H 12969 2018-06-23 17:04:18Z matt $"
 //
 // Platform header file for the Fast Light Tool Kit (FLTK).
 //
@@ -85,12 +85,8 @@ class Fl_Window;
 #    include "win32.H"
 #  elif defined(__APPLE__)
 #    include "mac.H"
-#  elif defined(USE_SDL)
-#    pragma message "FL_PORTING: write a header file based on this file, win32.H, or mac.H to define the FLTK core internals"
-#    include "porting.H"
-#  elif defined(FL_PORTING)
-#    pragma message "FL_PORTING: write a header file based on this file, win32.H, or mac.H to define the FLTK core internals"
-#    include "porting.H"
+#  elif defined(__ANDROID__)
+#    include "android.H"
 #  elif defined(__DJGPP__) || defined(USE_ALLEGRO)
 #    include "allegro4.h"
 #  else // X11
@@ -206,5 +202,5 @@ extern FL_EXPORT void fl_open_callback(void (*)(const char *));
 #endif // !FL_PLATFORM_H
 
 //
-// End of "$Id: platform.H 12655 2018-02-09 14:39:42Z AlbrechtS $".
+// End of "$Id: platform.H 12969 2018-06-23 17:04:18Z matt $".
 //

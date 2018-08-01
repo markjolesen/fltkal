@@ -1,6 +1,6 @@
 // drvwin.cxx
 //
-// "$Id: Fl_Window_Driver.cxx 12367 2017-07-30 16:21:57Z manolo $"
+// "$Id: Fl_Window_Driver.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // A base class for platform specific window handling code
 // for the Fast Light Tool Kit (FLTK).
@@ -70,7 +70,7 @@
 //
 
 
-#include <fl/drvwin.h>
+#include "drvwin.h"
 #include <fl/winovlay.h>
 #include <fl/fl_draw.h>
 #include <fl/fl.h>
@@ -78,12 +78,19 @@
 
 extern void fl_throw_focus(Fl_Widget *o);
 
+
+/**
+ Create a new Window Driver.
+
+ This calls should be derived into a new class that manages desktop windows
+ on the target platform.
+ */
 Fl_Window_Driver::Fl_Window_Driver(Fl_Window *win) :
-pWindow(win),
-wait_for_expose_value(0),
-other_xid(0)
+pWindow(win)
 {
   shape_data_ = NULL;
+  wait_for_expose_value = 0;
+  other_xid = 0;
 }
 
 
@@ -116,14 +123,31 @@ void Fl_Window_Driver::flush_Fl_Window() { pWindow->Fl_Window::flush(); }
 
 void Fl_Window_Driver::flush_menu() { pWindow->Fl_Window::flush(); }
 
+/**
+ Draw the window content.
+ A new driver can add code before or after drawing an individua window.
+ */
 void Fl_Window_Driver::draw() { pWindow->draw(); }
 
+/**
+ Prepare this window for rendering.
+ A new driver may prepare bitmaps and clipping areas for calls to the
+ Graphics driver.
+ */
 void Fl_Window_Driver::make_current() { }
 
+/**
+ Make the window visble and raise it to the top.
+ */
 void Fl_Window_Driver::show() { }
 
 void Fl_Window_Driver::show_menu() { pWindow->Fl_Window::show(); }
 
+/**
+ Change the window title.
+ A new drive should provide an interface to change the title of the window
+ in the title bar.
+ */
 void Fl_Window_Driver::label(const char *name, const char *mininame) {}
 
 void Fl_Window_Driver::take_focus()
@@ -216,7 +240,7 @@ void Fl_Window_Driver::shape_pixmap_(Fl_Image* pixmap) {
   delete rgba;
 }
 
-void Fl_Window_Driver::capture_titlebar_and_borders(Fl_Shared_Image*& top, Fl_Shared_Image*& left, Fl_Shared_Image*& bottom, Fl_Shared_Image*& right) {
+void Fl_Window_Driver::capture_titlebar_and_borders(Fl_RGB_Image*& top, Fl_RGB_Image*& left, Fl_RGB_Image*& bottom, Fl_RGB_Image*& right) {
   top = left = bottom = right = NULL;
 }
 
@@ -302,7 +326,7 @@ void Fl_Window_Driver::wait_for_expose() {
 }
 
 int Fl_Window_Driver::screen_num() {
-  if (pWindow->parent()) return pWindow->top_window()->driver()->screen_num();
+  if (pWindow->parent()) return Fl_Window_Driver::driver(pWindow->top_window())->screen_num();
   return Fl::screen_num(x(), y(), w(), h());
 }
 
@@ -311,12 +335,10 @@ bool Fl_Window_Driver::is_a_rescale_ = false;
 void Fl_Window_Driver::resize_after_scale_change(int ns, float old_f, float new_f) {
   screen_num(ns);
   Fl_Graphics_Driver::default_driver().scale(new_f);
-  int X = static_cast<int>(pWindow->x()*old_f/new_f);
-  int Y = static_cast<int>(pWindow->y()*old_f/new_f);
+  int X = pWindow->x()*old_f/new_f, Y = pWindow->y()*old_f/new_f;
   int W, H;
   if (pWindow->fullscreen_active()) {
-    W = static_cast<int>(pWindow->w() * old_f/new_f);
-    H = static_cast<int>(pWindow->h() * old_f/new_f);
+    W = pWindow->w() * old_f/new_f; H = pWindow->h() * old_f/new_f;
   } else {
     W = pWindow->w(); H = pWindow->h();
     int sX, sY, sW, sH;
@@ -333,6 +355,11 @@ void Fl_Window_Driver::resize_after_scale_change(int ns, float old_f, float new_
   is_a_rescale_ = false;
 }
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: Fl_Window_Driver.cxx 12367 2017-07-30 16:21:57Z manolo $".
+// End of "$Id: Fl_Window_Driver.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

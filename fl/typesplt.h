@@ -1,7 +1,7 @@
 /*
  * typesplt.h
  *
- * "$Id: platform_types.h 12807 2018-03-26 21:28:18Z matt $"
+ * "$Id: platform_types.h 12969 2018-06-23 17:04:18Z matt $"
  *
  * Copyright 2017-2018 The fltkal authors
  * Copyright 2016-2018 by Bill Spitzak and others.
@@ -124,6 +124,12 @@ typedef opaque GLContext; /**< an OpenGL graphics context, into which all OpenGL
 typedef intptr_t fl_intptr_t;
 typedef uintptr_t fl_uintptr_t;
 
+#elif defined(__ANDROID__)
+
+#include <sys/stat.h>
+typedef intptr_t fl_intptr_t;
+typedef uintptr_t fl_uintptr_t;
+
 #else /* ! _WIN64 */
 
 typedef long fl_intptr_t;
@@ -177,27 +183,8 @@ typedef unsigned long Fl_Offscreen;
 typedef unsigned long Fl_Bitmask;
 typedef int FL_SOCKET;
 typedef struct __GLXcontextRec *GLContext;
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
-
-
-#elif defined(FL_PORTING)
-# pragma message "FL_PORTING: define OS-dependent types"
-typedef void* Fl_Offscreen;
-typedef void* Fl_Bitmask;
-typedef void *Fl_Region;
-typedef int FL_SOCKET;
-typedef void *GLContext;
-# pragma message "FL_PORTING: define struct dirent and implement scandir() for the platform"
-struct dirent {char d_name[1];};
-# pragma message "FL_PORTING: define struct stat and implement Fl_XXX_System_Driver::stat() for the platform"
-struct stat { /* the FLTK source code uses part of the stat() API */
-  unsigned st_mode;
-  unsigned st_size;
-};
-#define        S_IFDIR  0040000  /* directory */
-#define        S_IFREG  0100000  /* regular */
 
 #else /* X11 */
 
@@ -223,5 +210,5 @@ typedef struct __GLXcontextRec *GLContext;
 #endif // FL_DOXYGEN
 
 /*
- * End of "$Id: platform_types.h 12807 2018-03-26 21:28:18Z matt $".
+ * End of "$Id: platform_types.h 12969 2018-06-23 17:04:18Z matt $".
  */

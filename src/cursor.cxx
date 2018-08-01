@@ -1,6 +1,6 @@
 // cursor.cxx
 //
-// "$Id: fl_cursor.cxx 11652 2016-04-18 14:31:07Z manolo $"
+// "$Id: fl_cursor.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // Mouse cursor support for the Fast Light Tool Kit (FLTK).
 //
@@ -79,7 +79,7 @@
 #include <fl/win.h>
 #include <fl/imgpix.h>
 #include <fl/imgrgb.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 #include <fl/fl_draw.h>
 #include <allegro.h>
 
@@ -385,5 +385,5 @@ void Fl_Window::default_cursor(Fl_Cursor c, Fl_Color, Fl_Color) {
 
 
 //
-// End of "$Id: fl_cursor.cxx 11652 2016-04-18 14:31:07Z manolo $".
+// End of "$Id: fl_cursor.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

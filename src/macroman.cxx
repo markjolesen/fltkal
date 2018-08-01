@@ -1,6 +1,6 @@
 // macroman.cxx
 //
-// "$Id: fl_encoding_mac_roman.cxx 11600 2016-04-13 14:19:13Z manolo $"
+// "$Id: fl_encoding_mac_roman.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Convert Mac Roman encoded text to the local encoding.
 //
@@ -70,7 +70,7 @@
 
 #include "cfg_lib.h"
 #include <fl/fl_draw.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/fl.h>
 #include <fl/fl_enums.h>
 #include <stdlib.h>
@@ -128,6 +128,12 @@ static uchar roman2latin[128] = {
 static char *buf = 0;
 static int n_buf = 0;
 
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
+
 const char *Fl_System_Driver::local_to_mac_roman(const char *t, int n)
 {
   if (n==-1) n = (int) strlen(t);
@@ -170,6 +176,11 @@ const char *Fl_System_Driver::mac_roman_to_local(const char *t, int n)
   return buf;
 }
 
+/**
+ \}
+ \endcond
+ */
+
 const char *fl_local_to_mac_roman(const char *t, int n) {
   return Fl::system_driver()->local_to_mac_roman(t, n);
 }
@@ -179,5 +190,5 @@ const char *fl_mac_roman_to_local(const char *t, int n) {
 }
 
 //
-// End of "$Id: fl_encoding_mac_roman.cxx 11600 2016-04-13 14:19:13Z manolo $".
+// End of "$Id: fl_encoding_mac_roman.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

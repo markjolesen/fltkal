@@ -1,6 +1,6 @@
 // visual.cxx
 //
-// "$Id: Fl_visual.cxx 11443 2016-03-27 17:37:07Z manolo $"
+// "$Id: Fl_visual.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Visual support for the Fast Light Tool Kit (FLTK).
 //
@@ -71,7 +71,7 @@
 // Set the default visual according to passed switches:
 
 #include <fl/fl.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 
 /** \fn  Fl::visual(int flags)
     Selects a visual so that your graphics are drawn correctly.  This is
@@ -114,5 +114,5 @@ int Fl::visual(int flags)
 
 
 //
-// End of "$Id: Fl_visual.cxx 11443 2016-03-27 17:37:07Z manolo $".
+// End of "$Id: Fl_visual.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

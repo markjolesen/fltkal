@@ -1,6 +1,6 @@
 // iconize.cxx
 //
-// "$Id: Fl_Window_iconize.cxx 11411 2016-03-23 18:00:37Z manolo $"
+// "$Id: Fl_Window_iconize.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // Window minification code for the Fast Light Tool Kit (FLTK).
 //
@@ -69,7 +69,7 @@
 //
 
 #include <fl/win.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 
 void Fl_Window::iconize() {
   if (!shown()) {
@@ -81,5 +81,5 @@ void Fl_Window::iconize() {
 }
 
 //
-// End of "$Id: Fl_Window_iconize.cxx 11411 2016-03-23 18:00:37Z manolo $".
+// End of "$Id: Fl_Window_iconize.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

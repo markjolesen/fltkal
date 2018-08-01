@@ -1,6 +1,6 @@
 // imgpix.cxx
 //
-// "$Id: Fl_Pixmap.cxx 12834 2018-04-14 13:37:47Z manolo $"
+// "$Id: Fl_Pixmap.cxx 12909 2018-05-09 12:27:38Z manolo $"
 //
 // Pixmap drawing code for the Fast Light Tool Kit (FLTK).
 //
@@ -429,5 +429,5 @@ void Fl_Pixmap::desaturate() {
 }
 
 //
-// End of "$Id: Fl_Pixmap.cxx 12834 2018-04-14 13:37:47Z manolo $".
+// End of "$Id: Fl_Pixmap.cxx 12909 2018-05-09 12:27:38Z manolo $".
 //

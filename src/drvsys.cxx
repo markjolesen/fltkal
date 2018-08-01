@@ -1,6 +1,6 @@
 // drvsys.cxx
 //
-// "$Id: Fl_System_Driver.cxx 12198 2017-03-14 17:51:20Z manolo $"
+// "$Id: Fl_System_Driver.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // A base class for platform specific system calls.
 //
@@ -68,8 +68,13 @@
 //
 //
 
+/**
+ \cond DriverDev
+ \defgroup DriverDeveloper Driver Developer Documentation
+ \{
+ */
 
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/fl.h>
 #include <fl/iconfile.h>
 #include <fl/fl_utf8.h>
@@ -88,11 +93,55 @@ const int Fl_System_Driver::fl_YValue =      0x0002;
 const int Fl_System_Driver::fl_XNegative =   0x0010;
 const int Fl_System_Driver::fl_YNegative =   0x0020;
 
+// This default key table is used for all system drivers that don't define
+// and/or use their own table. It is defined here "static" and assigned
+// in the constructor to avoid static initialization race conditions.
+//
+// As of June 2018 these platforms are Windows and Android. X11 does not
+// use a key table at all.
+// Platforms that use their own key tables must assign them in their
+// constructors (which overwrites the pointer and size).
+
+static Fl_System_Driver::Keyname default_key_table[] = {
+  {' ',           "Space"},
+  {FL_BackSpace,  "Backspace"},
+  {FL_Tab,        "Tab"},
+  {0xff0b/*XK_Clear*/, "Clear"},
+  {FL_Enter,      "Enter"}, // X says "Enter"
+  {FL_Pause,      "Pause"},
+  {FL_Scroll_Lock, "Scroll_Lock"},
+  {FL_Escape,     "Escape"},
+  {FL_Home,       "Home"},
+  {FL_Left,       "Left"},
+  {FL_Up,         "Up"},
+  {FL_Right,      "Right"},
+  {FL_Down,       "Down"},
+  {FL_Page_Up,    "Page_Up"}, // X says "Prior"
+  {FL_Page_Down,  "Page_Down"}, // X says "Next"
+  {FL_End,        "End"},
+  {FL_Print,      "Print"},
+  {FL_Insert,     "Insert"},
+  {FL_Menu,       "Menu"},
+  {FL_Num_Lock,   "Num_Lock"},
+  {FL_KP_Enter,   "KP_Enter"},
+  {FL_Shift_L,    "Shift_L"},
+  {FL_Shift_R,    "Shift_R"},
+  {FL_Control_L,  "Control_L"},
+  {FL_Control_R,  "Control_R"},
+  {FL_Caps_Lock,  "Caps_Lock"},
+  {FL_Meta_L,     "Meta_L"},
+  {FL_Meta_R,     "Meta_R"},
+  {FL_Alt_L,      "Alt_L"},
+  {FL_Alt_R,      "Alt_R"},
+  {FL_Delete,     "Delete"}
+};
 
 Fl_System_Driver::Fl_System_Driver()
 {
+  // initialize default key table (used in fl_shortcut.cxx)
+  key_table = default_key_table;
+  key_table_size = sizeof(default_key_table)/sizeof(*default_key_table);
 }
-
 
 Fl_System_Driver::~Fl_System_Driver()
 {
@@ -156,15 +205,15 @@ void Fl_System_Driver::fatal(const char *format, va_list args) {
  */
 
 /*
- *    XParseGeometry parses strings of the form
- *   "=<width>x<height>{+-}<xoffset>{+-}<yoffset>", where
- *   width, height, xoffset, and yoffset are unsigned integers.
- *   Example:  "=80x24+300-49"
- *   The equal sign is optional.
- *   It returns a bitmask that indicates which of the four values
- *   were actually found in the string.  For each value found,
- *   the corresponding argument is updated;  for each value
- *   not found, the corresponding argument is left unchanged.
+    XParseGeometry parses strings of the form
+   "=<width>x<height>{+-}<xoffset>{+-}<yoffset>", where
+   width, height, xoffset, and yoffset are unsigned integers.
+   Example:  "=80x24+300-49"
+   The equal sign is optional.
+   It returns a bitmask that indicates which of the four values
+   were actually found in the string.  For each value found,
+   the corresponding argument is updated;  for each value
+   not found, the corresponding argument is left unchanged.
  */
 
 static int ReadInteger(char* string, char** NextString)
@@ -497,6 +546,11 @@ void Fl_System_Driver::gettime(time_t *sec, int *usec) {
   *usec = 0;
 }
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: Fl_System_Driver.cxx 12198 2017-03-14 17:51:20Z manolo $".
+// End of "$Id: Fl_System_Driver.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

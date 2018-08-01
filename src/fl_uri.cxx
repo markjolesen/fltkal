@@ -1,6 +1,6 @@
 // fl_uri.cxx
 //
-// "$Id: fl_open_uri.cxx 11682 2016-04-23 06:43:04Z manolo $"
+// "$Id: fl_open_uri.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // fl_open_uri() code for FLTK.
 //
@@ -79,51 +79,51 @@
 #include "cfg_lib.h"
 #include <fl/filename.h>
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "flstring.h"
 
 /** \addtogroup filenames
- @{ */
+ \{ */
 
 /**
- * Opens the specified Uniform Resource Identifier (URI).
- * Uses an operating-system dependent program or interface. For URIs
- * using the "ftp", "http", or "https" schemes, the system default web
- * browser is used to open the URI, while "mailto" and "news" URIs are
- * typically opened using the system default mail reader and "file" URIs
- * are opened using the file system navigator.
- *
- * On success, the (optional) msg buffer is filled with the command that
- * was run to open the URI; on Windows, this will always be "open uri".
- *
- * On failure, the msg buffer is filled with an English error message.
- *
- * \note
- * \b Platform \b Specific \b Issues: \b Windows \n
- * With "file:" based URIs on Windows, you may encounter issues with
- * anchors being ignored. Example: "file:///c:/some/index.html#anchor"
- * may open in the browser without the "#anchor" suffix. The behavior
- * seems to vary across different Windows versions. Workaround: open a link
- * to a separate html file that redirects to the desired "file:" URI.
- *
- * \b Example
- * \code
- * #include <FL/filename.H>
- * [..]
- * char errmsg[512];
- * if ( !fl_open_uri("http://google.com/", errmsg, sizeof(errmsg)) ) {
- *     char warnmsg[768];
- *     sprintf(warnmsg, "Error: %s", errmsg);
- *     fl_alert(warnmsg);
- * }
- * \endcode
- *
- * @param uri The URI to open
- * @param msg Optional buffer which contains the command or error message
- * @param msglen Length of optional buffer
- * @return 1 on success, 0 on failure
+ Opens the specified Uniform Resource Identifier (URI).
+ Uses an operating-system dependent program or interface. For URIs
+ using the "ftp", "http", or "https" schemes, the system default web
+ browser is used to open the URI, while "mailto" and "news" URIs are
+ typically opened using the system default mail reader and "file" URIs
+ are opened using the file system navigator.
+
+ On success, the (optional) msg buffer is filled with the command that
+ was run to open the URI; on Windows, this will always be "open uri".
+
+ On failure, the msg buffer is filled with an English error message.
+
+ \note
+ \b Platform \b Specific \b Issues: \b Windows \n
+ With "file:" based URIs on Windows, you may encounter issues with
+ anchors being ignored. Example: "file:///c:/some/index.html#anchor"
+ may open in the browser without the "#anchor" suffix. The behavior
+ seems to vary across different Windows versions. Workaround: open a link
+ to a separate html file that redirects to the desired "file:" URI.
+
+ \b Example
+ \code
+ #include <FL/filename.H>
+ [..]
+ char errmsg[512];
+ if ( !fl_open_uri("http://google.com/", errmsg, sizeof(errmsg)) ) {
+     char warnmsg[768];
+     sprintf(warnmsg, "Error: %s", errmsg);
+     fl_alert(warnmsg);
+ }
+ \endcode
+
+ \param uri The URI to open
+ \param msg Optional buffer which contains the command or error message
+ \param msglen Length of optional buffer
+ \return 1 on success, 0 on failure
  */
 int fl_open_uri(const char *uri, char *msg, int msglen) {
   // Supported URI schemes...
@@ -289,5 +289,5 @@ int main(int argc, char **argv) {
 #endif // TEST
 
 //
-// End of "$Id: fl_open_uri.cxx 11682 2016-04-23 06:43:04Z manolo $".
+// End of "$Id: fl_open_uri.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

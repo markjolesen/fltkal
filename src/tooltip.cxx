@@ -1,6 +1,6 @@
 // tooltip.cxx
 //
-// "$Id: Fl_Tooltip.cxx 12748 2018-03-15 09:34:20Z matt $"
+// "$Id: Fl_Tooltip.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Tooltip source file for the Fast Light Tool Kit (FLTK).
 //
@@ -72,8 +72,8 @@
 #include <fl/fl_draw.h>
 #include <fl/winmenu.h>
 #include <fl/fl.h>
-#include <fl/drvsys.h>
-#include <fl/drvwin.h>
+#include "drvsys.h"
+#include "drvwin.h"
 
 #include <stdio.h>
 #include <string.h>   // strdup()
@@ -162,7 +162,7 @@ void Fl_TooltipBox::layout() {
 }
 
 void Fl_TooltipBox::draw() {
-  driver()->draw_begin(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_begin(); // ALLEGRO:
   draw_box(FL_BORDER_BOX, 0, 0, w(), h(), Fl_Tooltip::color());
   fl_color(Fl_Tooltip::textcolor());
   fl_font(Fl_Tooltip::font(), Fl_Tooltip::size());
@@ -171,7 +171,7 @@ void Fl_TooltipBox::draw() {
   int W = w() - (Fl_Tooltip::margin_width()*2);
   int H = h() - (Fl_Tooltip::margin_height()*2);
   fl_draw(tip, X, Y, W, H, Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_WRAP), 0, Fl_Tooltip::draw_symbols_);
-  driver()->draw_end(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_end(); // ALLEGRO:
 }
 
 static char recent_tooltip;
@@ -422,5 +422,5 @@ void Fl_Widget::copy_tooltip(const char *text) {
 }
 
 //
-// End of "$Id: Fl_Tooltip.cxx 12748 2018-03-15 09:34:20Z matt $".
+// End of "$Id: Fl_Tooltip.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

@@ -1,6 +1,6 @@
 // filechn.cxx
 //
-// "$Id: Fl_Native_File_Chooser.cxx 12363 2017-07-28 14:06:18Z manolo $"
+// "$Id: Fl_Native_File_Chooser.cxx 12970 2018-06-23 20:50:22Z matt $"
 //
 // FLTK native OS file chooser widget
 //
@@ -75,14 +75,6 @@
 #if defined(USE_ALLEGRO)
 Fl_Native_File_Chooser::Fl_Native_File_Chooser(int val) {
   platform_fnfc = new Fl_Native_File_Chooser_FLTK_Driver(val); // do this to use FLTK's default file chooser
-}
-#endif
-
-#ifdef FL_PORTING
-#  pragma message "Implement a native file chooser (see Fl_Native_File_Chooser_Driver), or use FLTK's chooser, or don't use any chooser"
-Fl_Native_File_Chooser::Fl_Native_File_Chooser(int val) {
-  //platform_fnfc = new Fl_Native_File_Chooser_FLTK_Driver(val); // do this to use FLTK's default file chooser
-  platform_fnfc = 0; // do this so class Fl_Native_File_Chooser does nothing
 }
 #endif
 
@@ -307,6 +299,12 @@ int Fl_Native_File_Chooser::show() {
   return platform_fnfc ? platform_fnfc->show() : 1;
 }
 
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
+
 // COPY A STRING WITH 'new'
 //    Value can be NULL
 //
@@ -357,6 +355,11 @@ void Fl_Native_File_Chooser_Driver::chrcat(char *s, char c) {
   strcat(s, tmp);
 }
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: Fl_Native_File_Chooser.cxx 12363 2017-07-28 14:06:18Z manolo $".
+// End of "$Id: Fl_Native_File_Chooser.cxx 12970 2018-06-23 20:50:22Z matt $".
 //

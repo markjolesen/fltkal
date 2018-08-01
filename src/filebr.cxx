@@ -1,6 +1,6 @@
 // filebr.cxx
 //
-// "$Id: Fl_File_Browser.cxx 12050 2016-10-19 08:40:41Z manolo $"
+// "$Id: Fl_File_Browser.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Fl_File_Browser routines.
 //
@@ -85,7 +85,7 @@
 
 #include <fl/filebr.h>
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/fl_draw.h>
 #include <fl/filename.h>
 #include <fl/img.h>	// icon
@@ -513,5 +513,5 @@ Fl_File_Browser::filter(const char *pattern)	// I - Pattern string
 
 
 //
-// End of "$Id: Fl_File_Browser.cxx 12050 2016-10-19 08:40:41Z manolo $".
+// End of "$Id: Fl_File_Browser.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

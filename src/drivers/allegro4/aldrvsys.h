@@ -65,7 +65,7 @@
 //
 #if !defined(FL_ALLEGRO_SYSTEM_DRIVER_H)
 
-#include <fl/drvsys.h>
+#include "../..//drvsys.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>

@@ -1,6 +1,6 @@
 // vertex.cxx
 //
-// "$Id: fl_vertex.cxx 12381 2017-08-14 17:10:26Z AlbrechtS $"
+// "$Id: fl_vertex.cxx 12970 2018-06-23 20:50:22Z matt $"
 //
 // Portable drawing routines for the Fast Light Tool Kit (FLTK).
 //
@@ -88,6 +88,12 @@
 #include <fl/fl.h>
 #include <fl/fl_math.h>
 #include <stdlib.h>
+
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
 
 /** see fl_push_matrix() */
 void Fl_Graphics_Driver::push_matrix() {
@@ -179,6 +185,11 @@ double Fl_Graphics_Driver::transform_dy(double x, double y) {
   return x*m.b + y*m.d;
 }
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: fl_vertex.cxx 12381 2017-08-14 17:10:26Z AlbrechtS $".
+// End of "$Id: fl_vertex.cxx 12970 2018-06-23 20:50:22Z matt $".
 //

@@ -1,6 +1,6 @@
 // shortcut.cxx
 //
-// "$Id: fl_shortcut.cxx 12757 2018-03-16 12:48:27Z AlbrechtS $"
+// "$Id: fl_shortcut.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Shortcut support routines for the Fast Light Tool Kit (FLTK).
 //
@@ -88,7 +88,7 @@
 #include <fl/fl.h>
 #include <fl/widget.h>
 #include <fl/btn.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/fl_draw.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -424,108 +424,11 @@ int Fl_Widget::test_shortcut() {
   return test_shortcut(label());
 }
 
-// ALLEGRO:
-#if defined(FL_CFG_GFX_GDI) || defined(FL_PORTING) || defined(FL_CFG_GFX_ALLEGRO)
-// This table must be in numeric order by fltk (X) keysym number:
-Fl_System_Driver::Keyname Fl_System_Driver::table[] = {
-  {' ',           "Space"},
-  {FL_BackSpace,  "Backspace"},
-  {FL_Tab,        "Tab"},
-  {0xff0b/*XK_Clear*/, "Clear"},
-  {FL_Enter,      "Enter"}, // X says "Enter"
-  {FL_Pause,      "Pause"},
-  {FL_Scroll_Lock, "Scroll_Lock"},
-  {FL_Escape,     "Escape"},
-  {FL_Home,       "Home"},
-  {FL_Left,       "Left"},
-  {FL_Up,         "Up"},
-  {FL_Right,      "Right"},
-  {FL_Down,       "Down"},
-  {FL_Page_Up,    "Page_Up"}, // X says "Prior"
-  {FL_Page_Down,  "Page_Down"}, // X says "Next"
-  {FL_End,        "End"},
-  {FL_Print,      "Print"},
-  {FL_Insert,     "Insert"},
-  {FL_Menu,       "Menu"},
-  {FL_Num_Lock,   "Num_Lock"},
-  {FL_KP_Enter,   "KP_Enter"},
-  {FL_Shift_L,    "Shift_L"},
-  {FL_Shift_R,    "Shift_R"},
-  {FL_Control_L,  "Control_L"},
-  {FL_Control_R,  "Control_R"},
-  {FL_Caps_Lock,  "Caps_Lock"},
-  {FL_Meta_L,     "Meta_L"},
-  {FL_Meta_R,     "Meta_R"},
-  {FL_Alt_L,      "Alt_L"},
-  {FL_Alt_R,      "Alt_R"},
-  {FL_Delete,     "Delete"}
-};
-#endif
-
-#if defined(FL_CFG_GFX_QUARTZ)
-// This table must be in numeric order by fltk (X) keysym number:
-Fl_System_Driver::Keyname Fl_System_Driver::table[] = {
-  //              v - this column may contain UTF-8 characters
-  {' ',           "Space"},
-  {FL_BackSpace,  "\xe2\x8c\xab"}, // erase to the left
-  {FL_Tab,        "\xe2\x87\xa5"}, // rightwards arrow to bar
-  {0xff0b,        "\xe2\x8c\xa6"}, // erase to the right
-  {FL_Enter,      "\xe2\x86\xa9"}, // leftwards arrow with hook
-  {FL_Pause,      "Pause"},
-  {FL_Scroll_Lock, "Scroll_Lock"},
-  {FL_Escape,     "\xe2\x90\x9b"},
-  {FL_Home,       "\xe2\x86\x96"}, // north west arrow
-  {FL_Left,       "\xe2\x86\x90"}, // leftwards arrow
-  {FL_Up,         "\xe2\x86\x91"}, // upwards arrow
-  {FL_Right,      "\xe2\x86\x92"}, // rightwards arrow
-  {FL_Down,       "\xe2\x86\x93"}, // downwards arrow
-  {FL_Page_Up,    "\xe2\x87\x9e"}, // upwards arrow with double stroke
-  {FL_Page_Down,  "\xe2\x87\x9f"}, // downwards arrow with double stroke
-  {FL_End,        "\xe2\x86\x98"}, // south east arrow
-  {FL_Print,      "Print"},
-  {FL_Insert,     "Insert"},
-  {FL_Menu,       "Menu"},
-  {FL_Num_Lock,   "Num_Lock"},
-  {FL_KP_Enter,   "\xe2\x8c\xa4"}, // up arrow head between two horizontal bars
-  {FL_Shift_L,    "Shift_L"},
-  {FL_Shift_R,    "Shift_R"},
-  {FL_Control_L,  "Control_L"},
-  {FL_Control_R,  "Control_R"},
-  {FL_Caps_Lock,  "\xe2\x87\xaa"}, // upwards white arrow from bar
-  {FL_Meta_L,     "Meta_L"},
-  {FL_Meta_R,     "Meta_R"},
-  {FL_Alt_L,      "Alt_L"},
-  {FL_Alt_R,      "Alt_R"},
-  {FL_Delete,     "\xe2\x8c\xa7"}  // x in a rectangle box
-};
-#endif
-
-#if defined(FL_CFG_GFX_XLIB) && !defined(FL_DOXYGEN)
-#include "drivers/X11/Fl_X11_System_Driver.H"
-#include <X11/Xlib.h>
-
-Fl_System_Driver::Keyname Fl_System_Driver::table[] = {};
-
-const char *Fl_X11_System_Driver::shortcut_add_key_name(unsigned key, char *p, char *buf, const char **eom)
-{
-  const char* q;
-  if (key == FL_Enter || key == '\r') q="Enter";  // don't use Xlib's "Return":
-  else if (key > 32 && key < 0x100) q = 0;
-  else q = XKeysymToString(key);
-  if (!q) {
-    p += fl_utf8encode(fl_toupper(key), p);
-    *p = 0;
-    return buf;
-  }
-  if (p > buf) {
-    strcpy(p,q);
-    return buf;
-  } else {
-    if (eom) *eom = q;
-    return q;
-  }
-}
-#endif
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
 
 const char *Fl_System_Driver::shortcut_add_key_name(unsigned key, char *p, char *buf, const char **eom)
 {
@@ -536,20 +439,20 @@ const char *Fl_System_Driver::shortcut_add_key_name(unsigned key, char *p, char 
   } else {
     // binary search the table for a match:
     int a = 0;
-    int b = sizeof(table)/sizeof(*table);
+    int b = key_table_size;
     while (a < b) {
       int c = (a+b)/2;
-      if (table[c].key == key) {
+      if (key_table[c].key == key) {
         if (p > buf) {
-          strcpy(p,table[c].name);
+          strcpy(p,key_table[c].name);
           return buf;
         } else {
-          const char *sp = table[c].name;
+          const char *sp = key_table[c].name;
           if (eom) *eom = sp;
           return sp;
         }
       }
-      if (table[c].key < key) a = c+1;
+      if (key_table[c].key < key) a = c+1;
       else b = c;
     }
     if (key >= FL_KP && key <= FL_KP_Last) {
@@ -565,6 +468,11 @@ const char *Fl_System_Driver::shortcut_add_key_name(unsigned key, char *p, char 
   return buf;
 }
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: fl_shortcut.cxx 12757 2018-03-16 12:48:27Z AlbrechtS $".
+// End of "$Id: fl_shortcut.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

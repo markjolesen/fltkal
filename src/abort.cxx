@@ -1,6 +1,6 @@
 // abort.cxx
 //
-// "$Id: Fl_abort.cxx 11452 2016-03-28 15:22:20Z manolo $"
+// "$Id: Fl_abort.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Warning/error message code for the Fast Light Tool Kit (FLTK).
 //
@@ -71,7 +71,7 @@
 // You can also override this by redefining all of these.
 
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <stdarg.h>
 
 void (*Fl::warning)(const char* format, ...) = Fl_System_Driver::warning;
@@ -79,5 +79,5 @@ void (*Fl::error)(const char* format, ...) = Fl_System_Driver::error;
 void (*Fl::fatal)(const char* format, ...) = Fl_System_Driver::fatal;
 
 //
-// End of "$Id: Fl_abort.cxx 11452 2016-03-28 15:22:20Z manolo $".
+// End of "$Id: Fl_abort.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

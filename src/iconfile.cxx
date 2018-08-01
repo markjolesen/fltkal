@@ -1,6 +1,6 @@
 // iconfile.cxx
 //
-// "$Id: Fl_File_Icon.cxx 11581 2016-04-11 13:07:08Z manolo $"
+// "$Id: Fl_File_Icon.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Fl_File_Icon routines.
 //
@@ -89,7 +89,7 @@
 #include <fl/fl_utf8.h>
 #include "flstring.h"
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/iconfile.h>
 #include <fl/widget.h>
 #include <fl/fl_draw.h>
@@ -100,6 +100,13 @@
 //
 
 Fl_File_Icon	*Fl_File_Icon::first_ = (Fl_File_Icon *)0;
+
+
+// Registers the FL_ICON_LABEL drawing function
+Fl_Labeltype fl_define_FL_ICON_LABEL() {
+  Fl::set_labeltype(_FL_ICON_LABEL, Fl_File_Icon::labeltype, 0);
+  return _FL_ICON_LABEL;
+}
 
 
 /**
@@ -446,8 +453,7 @@ Fl_File_Icon::draw(int      x,		// I - Upper-lefthand X
 */
 void Fl_File_Icon::label(Fl_Widget *w)	// I - Widget to label
 {
-  Fl::set_labeltype(_FL_ICON_LABEL, labeltype, 0);
-  w->label(_FL_ICON_LABEL, (const char*)this);
+  w->label(FL_ICON_LABEL, (const char*)this);
 }
 
 
@@ -476,5 +482,5 @@ Fl_File_Icon::labeltype(const Fl_Label *o,	// I - Label data
 
 
 //
-// End of "$Id: Fl_File_Icon.cxx 11581 2016-04-11 13:07:08Z manolo $".
+// End of "$Id: Fl_File_Icon.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

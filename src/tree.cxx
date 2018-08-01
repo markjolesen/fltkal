@@ -1,6 +1,6 @@
 // tree.cxx
 //
-// "$Id: Fl_Tree.cxx 11987 2016-09-26 19:31:29Z greg.ercolano $"
+// "$Id: Fl_Tree.cxx 12970 2018-06-23 20:50:22Z matt $"
 //
 //////////////////////
 // Fl_Tree.cxx
@@ -398,7 +398,7 @@ int Fl_Tree::handle(int e) {
 	    }
 	    case 'a':
 	    case 'A': {
-	      if ( is_command ) {					// ^A (Win or GNU/linux); Meta-A (mac)
+	      if ( is_command ) {					// ^A (win/linux), Meta-A (mac)
 		switch ( _prefs.selectmode() ) {
 		  case FL_TREE_SELECT_NONE:
 		  case FL_TREE_SELECT_SINGLE:
@@ -2621,10 +2621,10 @@ Fl_Tree_Reason Fl_Tree::callback_reason() const {
 }
 
 /**
- * Read a preferences database into the tree widget.
- * A preferences database is a hierarchical collection of data which can be
- * directly loaded into the tree view for inspection.
- * \param[in] prefs the Fl_Preferences database
+ Read a preferences database into the tree widget.
+ A preferences database is a hierarchical collection of data which can be
+ directly loaded into the tree view for inspection.
+ \param[in] prefs the Fl_Preferences database
  */
 void Fl_Tree::load(Fl_Preferences &prefs) {
   int i, j, n, pn = (int) strlen(prefs.path());
@@ -2690,5 +2690,5 @@ void Fl_Tree::recalc_tree() {
 }
 
 //
-// End of "$Id: Fl_Tree.cxx 11987 2016-09-26 19:31:29Z greg.ercolano $".
+// End of "$Id: Fl_Tree.cxx 12970 2018-06-23 20:50:22Z matt $".
 //

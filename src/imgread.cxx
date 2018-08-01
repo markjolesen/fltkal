@@ -1,6 +1,6 @@
 // imgread.cxx
 //
-// "$Id: fl_read_image.cxx 11547 2016-04-06 22:20:32Z AlbrechtS $"
+// "$Id: fl_read_image.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // X11 image reading routines for the Fast Light Tool Kit (FLTK).
 //
@@ -70,7 +70,7 @@
 
 #include <fl/fl.h>
 #include <fl/platform.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 
 /**
  Reads an RGB(A) image from the current window or off-screen buffer.
@@ -141,5 +141,5 @@ uchar *fl_read_image(uchar *p, int X, int Y, int w, int h, int alpha) {
 }
 
 //
-// End of "$Id: fl_read_image.cxx 11547 2016-04-06 22:20:32Z AlbrechtS $".
+// End of "$Id: fl_read_image.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

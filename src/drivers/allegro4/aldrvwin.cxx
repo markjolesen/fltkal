@@ -66,7 +66,7 @@
 #include "aldrvwin.h"
 #include "aldrvgr.h"
 #include "imgconv.h"
-#include <fl/drvwin.h>
+#include "../../drvwin.h"
 #include <fl/fl.h>
 #include <fl/fl_enums.h>
 #include <fl/platform.h>
@@ -118,6 +118,7 @@ Fl_Allegro_Window_Driver::~Fl_Allegro_Window_Driver()
 
 int Fl_Allegro_Window_Driver::decorated_w()
 {
+    return w();
 }
 
 void Fl_Allegro_Window_Driver::draw_begin()
@@ -172,6 +173,7 @@ void Fl_Allegro_Window_Driver::draw_end()
 
 int Fl_Allegro_Window_Driver::decorated_h()
 {
+    return h();
 }
 
 Fl_X *Fl_Allegro_Window_Driver::makeWindow()

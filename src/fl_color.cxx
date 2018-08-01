@@ -1,6 +1,6 @@
 // fl_color.cxx
 //
-// "$Id: fl_color.cxx 11680 2016-04-23 04:39:14Z manolo $"
+// "$Id: fl_color.cxx 12970 2018-06-23 20:50:22Z matt $"
 //
 // Color functions for the Fast Light Tool Kit (FLTK).
 //
@@ -91,7 +91,7 @@ unsigned fl_cmap[256] = {
 // -----------------------------------------------------------------------------
 
 /** \addtogroup  fl_attributes
- @{ */
+ \{ */
 
 /**
  Returns the RGB value(s) for the given FLTK color index.
@@ -217,9 +217,9 @@ Fl_Color fl_contrast(Fl_Color fg, Fl_Color bg) {
   else return FL_WHITE;
 }
 /**
- @}
+ \}
  */
 
 //
-// End of "$Id: fl_color.cxx 11680 2016-04-23 04:39:14Z manolo $".
+// End of "$Id: fl_color.cxx 12970 2018-06-23 20:50:22Z matt $".
 //

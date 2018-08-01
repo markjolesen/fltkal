@@ -1,6 +1,6 @@
 // scrlarea.cxx
 //
-// "$Id: fl_scroll_area.cxx 11525 2016-04-04 08:18:26Z manolo $"
+// "$Id: fl_scroll_area.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // Scrolling routines for the Fast Light Tool Kit (FLTK).
 //
@@ -72,7 +72,7 @@
 // a "callback" which is called to draw rectangular areas that are moved
 // into the drawing area.
 
-#include <fl/drvwin.h>
+#include "drvwin.h"
 
 // scroll a rectangle and redraw the newly exposed portions:
 /**
@@ -124,7 +124,7 @@ void fl_scroll(int X, int Y, int W, int H, int dx, int dy,
     clip_h = H-src_h;
   }
 
-  int retval = Fl_Window::current()->driver()->scroll(src_x, src_y, src_w, src_h,
+  int retval = Fl_Window_Driver::driver(Fl_Window::current())->scroll(src_x, src_y, src_w, src_h,
                                                       dest_x, dest_y, draw_area, data);
   if (retval) {
     draw_area(data,X,Y,W,H);
@@ -135,5 +135,5 @@ void fl_scroll(int X, int Y, int W, int H, int dx, int dy,
 }
 
 //
-// End of "$Id: fl_scroll_area.cxx 11525 2016-04-04 08:18:26Z manolo $".
+// End of "$Id: fl_scroll_area.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

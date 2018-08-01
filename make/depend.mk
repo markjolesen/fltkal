@@ -7,7 +7,7 @@ $(OBJ)/numsort.o: ../src/numsort.c ../fl/typesplt.h ../fl/filename.h \
 $(OBJ)/scandir.o: ../src/scandir.c ../src/config.h
 $(OBJ)/abort.o: ../src/abort.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvsys.h ../fl/filename.h ../fl/pref.h
+ ../src/drvsys.h ../fl/filename.h ../fl/pref.h
 $(OBJ)/add_idle.o: ../src/add_idle.cxx ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h
@@ -116,7 +116,7 @@ $(OBJ)/choice.o: ../src/choice.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
 $(OBJ)/clock.o: ../src/clock.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/clock.h ../fl/widget.h ../fl/fl.h ../fl/clockrnd.h ../fl/clock.h \
- ../fl/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/fl_draw.h \
+ ../src/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/pref.h ../fl/img.h ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h \
  ../fl/imgrgb.h ../fl/fl_math.h
@@ -136,7 +136,7 @@ $(OBJ)/colorfn.o: ../src/colorfn.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h 
  ../fl/imgpix.h ../fl/imgrgb.h ../fl/colorfn.h ../src/config.h
 $(OBJ)/compose.o: ../src/compose.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
+ ../src/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
  ../fl/fl_types.h ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h ../fl/widget.h ../fl/fl.h \
  ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h \
@@ -151,7 +151,7 @@ $(OBJ)/cursor.o: ../src/cursor.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h ../fl/win.h \
  ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h \
- ../fl/imgpix.h ../fl/imgrgb.h ../fl/drvwin.h ../fl/winovlay.h \
+ ../fl/imgpix.h ../fl/imgrgb.h ../src/drvwin.h ../fl/winovlay.h \
  ../fl/windbl.h ../fl/win.h ../fl/fl_draw.h ../fl/fl_enums.h \
  ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h \
  ../src/curnone.xpm ../src/cursors/crossh.xpm ../src/cursors/e.xpm \
@@ -179,7 +179,7 @@ $(OBJ)/diamond.o: ../src/diamond.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h 
  ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h
 $(OBJ)/display.o: ../src/display.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
+ ../src/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
  ../fl/fl_types.h ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h ../fl/widget.h ../fl/fl.h \
  ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h \
@@ -196,7 +196,7 @@ $(OBJ)/dlghelp.o: ../src/dlghelp.cxx ../src/../fl/dlghelp.h ../fl/fl.h \
  ../fl/fl_ask.h
 $(OBJ)/drawpix.o: ../src/drawpix.cxx ../src/cfg_lib.h ../src/config.h ../fl/fl.h \
  ../fl/export.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h \
- ../fl/fl_types.h ../fl/fl_enums.h ../fl/drvsys.h ../fl/filename.h \
+ ../fl/fl_types.h ../fl/fl_enums.h ../src/drvsys.h ../fl/filename.h \
  ../fl/pref.h ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h \
  ../fl/win.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
  ../fl/img.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
@@ -216,7 +216,7 @@ $(OBJ)/drvgr.o: ../src/drvgr.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../src/cfg_lib.h ../src/config.h ../fl/drvgr.h ../fl/drvdev.h \
  ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/widget.h ../fl/fl.h \
- ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/drvscr.h \
+ ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../src/drvscr.h \
  ../fl/fl_types.h ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/group.h ../fl/scrlbar.h ../fl/slider.h \
  ../fl/valuator.h ../fl/textbuf.h ../fl/fl_draw.h ../fl/drvimg.h \
@@ -229,21 +229,21 @@ $(OBJ)/drvimg.o: ../src/drvimg.cxx ../fl/drvimg.h ../fl/widgsurf.h \
  ../fl/img.h ../fl/img.h ../fl/imgshare.h ../fl/drvgr.h ../fl/imgpix.h \
  ../fl/imgrgb.h
 $(OBJ)/drvscr.o: ../src/drvscr.cxx ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
- ../fl/export.h ../fl/export.h ../fl/drvscr.h ../fl/fl_types.h ../fl/fl.h \
- ../fl/typesplt.h ../fl/fl_utf8.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h ../fl/fl_enums.h \
- ../fl/drvgr.h ../fl/img.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
- ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h \
- ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h ../fl/platform.h \
- ../fl/allegro4.h ../fl/win.h ../fl/group.h ../fl/input.h ../fl/input_.h \
- ../fl/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h \
- ../fl/drvimg.h ../fl/widgsurf.h ../fl/imgshare.h ../fl/box.h \
- ../fl/tooltip.h ../fl/widget.h
-$(OBJ)/drvsys.o: ../src/drvsys.cxx ../fl/drvsys.h ../fl/fl.h ../fl/export.h \
+ ../fl/export.h ../fl/export.h ../src/drvscr.h ../fl/fl_types.h \
+ ../fl/fl.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/fl_types.h \
+ ../fl/fl_enums.h ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h \
+ ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h ../fl/widget.h ../fl/fl.h \
+ ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h \
+ ../fl/scrlbar.h ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h \
+ ../fl/platform.h ../fl/allegro4.h ../fl/win.h ../fl/group.h \
+ ../fl/input.h ../fl/input_.h ../src/drvwin.h ../fl/winovlay.h \
+ ../fl/windbl.h ../fl/win.h ../fl/drvimg.h ../fl/widgsurf.h \
+ ../fl/imgshare.h ../fl/box.h ../fl/tooltip.h ../fl/widget.h
+$(OBJ)/drvsys.o: ../src/drvsys.cxx ../src/drvsys.h ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/filename.h ../fl/pref.h ../fl/iconfile.h \
  ../fl/fl.h ../fl/fl_utf8.h ../src/flstring.h ../src/config.h
-$(OBJ)/drvwin.o: ../src/drvwin.cxx ../fl/drvwin.h ../fl/export.h ../fl/win.h \
+$(OBJ)/drvwin.o: ../src/drvwin.cxx ../src/drvwin.h ../fl/export.h ../fl/win.h \
  ../fl/fl.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h \
  ../fl/fl_types.h ../fl/fl_enums.h ../fl/group.h ../fl/widget.h \
  ../fl/fl.h ../fl/imgbit.h ../fl/img.h ../fl/winovlay.h ../fl/windbl.h \
@@ -261,7 +261,7 @@ $(OBJ)/filebr.o: ../src/filebr.cxx ../fl/filebr.h ../fl/browser.h \
  ../fl/export.h ../fl/fl_types.h ../fl/typesplt.h ../fl/fl.h \
  ../fl/export.h ../fl/fl_utf8.h ../fl/scrlbar.h ../fl/slider.h \
  ../fl/valuator.h ../fl/fl.h ../fl/img.h ../fl/iconfile.h \
- ../fl/filename.h ../fl/drvsys.h ../fl/filename.h ../fl/pref.h \
+ ../fl/filename.h ../src/drvsys.h ../fl/filename.h ../fl/pref.h \
  ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h \
  ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/imgbit.h ../fl/imgpix.h \
  ../fl/imgrgb.h ../src/flstring.h ../src/config.h
@@ -274,7 +274,7 @@ $(OBJ)/filech2.o: ../src/filech2.cxx ../fl/filech.h ../fl/fl.h ../fl/export.h \
  ../fl/scrlbar.h ../fl/slider.h ../fl/valuator.h ../fl/iconfile.h \
  ../fl/filename.h ../fl/box.h ../fl/btnk.h ../fl/btnlt.h ../fl/btn.h \
  ../fl/inpfile.h ../fl/input.h ../fl/input_.h ../fl/btnret.h \
- ../fl/fl_ask.h ../fl/drvsys.h ../fl/filename.h ../fl/platform.h \
+ ../fl/fl_ask.h ../src/drvsys.h ../fl/filename.h ../fl/platform.h \
  ../fl/fl_types.h ../fl/allegro4.h ../fl/win.h ../fl/imgshare.h \
  ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h \
  ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h \
@@ -322,12 +322,12 @@ $(OBJ)/filefltk.o: ../src/filefltk.cxx ../fl/filechn.h ../fl/export.h \
  ../fl/slider.h ../fl/valuator.h ../fl/iconfile.h ../fl/filename.h \
  ../fl/box.h ../fl/btnk.h ../fl/btnlt.h ../fl/btn.h ../fl/inpfile.h \
  ../fl/input.h ../fl/input_.h ../fl/btnret.h ../fl/fl_ask.h \
- ../fl/iconfile.h ../fl/drvsys.h ../fl/filename.h
+ ../fl/iconfile.h ../src/drvsys.h ../fl/filename.h
 $(OBJ)/fl_arg.o: ../src/fl_arg.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/win.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
- ../fl/img.h ../fl/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h \
- ../fl/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/tooltip.h \
+ ../fl/img.h ../src/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h \
+ ../src/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/tooltip.h \
  ../fl/widget.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
  ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/imgpix.h \
  ../fl/imgrgb.h ../src/flstring.h ../src/config.h
@@ -337,7 +337,7 @@ $(OBJ)/fl_ask.o: ../src/fl_ask.cxx ../src/flstring.h ../fl/export.h \
  ../fl/box.h ../fl/widget.h ../fl/fl.h ../fl/btn.h ../fl/btnret.h \
  ../fl/btn.h ../fl/win.h ../fl/group.h ../fl/imgbit.h ../fl/img.h \
  ../fl/input.h ../fl/input_.h ../fl/inphid.h ../fl/input.h \
- ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h ../fl/drvscr.h \
+ ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h ../src/drvscr.h \
  ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/texted.h \
  ../fl/textdsp.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
  ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h \
@@ -361,13 +361,13 @@ $(OBJ)/fl.o: ../src/fl.cxx ../src/cfg_lib.h ../src/config.h ../fl/fl.h \
  ../fl/export.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h \
  ../fl/fl_types.h ../fl/fl_enums.h ../fl/platform.h ../fl/fl_types.h \
  ../fl/allegro4.h ../fl/win.h ../fl/group.h ../fl/widget.h ../fl/fl.h \
- ../fl/imgbit.h ../fl/img.h ../fl/drvscr.h ../fl/drvdev.h ../fl/plugin.h \
+ ../fl/imgbit.h ../fl/img.h ../src/drvscr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/pref.h ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h \
  ../fl/group.h ../fl/scrlbar.h ../fl/slider.h ../fl/valuator.h \
- ../fl/textbuf.h ../fl/drvwin.h ../fl/winovlay.h ../fl/windbl.h \
- ../fl/win.h ../fl/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/tooltip.h \
- ../fl/widget.h ../fl/fl_draw.h ../src/flstring.h
+ ../fl/textbuf.h ../src/drvwin.h ../fl/winovlay.h ../fl/windbl.h \
+ ../fl/win.h ../src/drvsys.h ../fl/filename.h ../fl/pref.h \
+ ../fl/tooltip.h ../fl/widget.h ../fl/fl_draw.h ../src/flstring.h
 $(OBJ)/fl_draw.o: ../src/fl_draw.cxx ../fl/fl_utf8.h ../fl/export.h \
  ../fl/fl_types.h ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/fl_enums.h ../fl/fl_draw.h ../fl/fl_enums.h \
@@ -387,7 +387,7 @@ $(OBJ)/fl_gleam.o: ../src/fl_gleam.cxx ../fl/fl.h ../fl/export.h \
  ../fl/fl.h ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h
 $(OBJ)/fl_grab.o: ../src/fl_grab.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
+ ../src/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
  ../fl/fl_types.h ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h ../fl/widget.h ../fl/fl.h \
  ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h \
@@ -406,28 +406,28 @@ $(OBJ)/fl_rect.o: ../src/fl_rect.cxx ../fl/platform.h ../fl/export.h \
 $(OBJ)/fl_uri.o: ../src/fl_uri.cxx ../src/cfg_lib.h ../src/config.h \
  ../fl/filename.h ../fl/export.h ../fl/typesplt.h ../fl/fl.h \
  ../fl/export.h ../fl/fl_utf8.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvsys.h ../fl/pref.h ../src/flstring.h
+ ../src/drvsys.h ../fl/pref.h ../src/flstring.h
 $(OBJ)/fl_utf8.o: ../src/fl_utf8.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/fl_utf8.h \
+ ../src/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/fl_utf8.h \
  ../src/utf8priv.h ../src/xutf8/wcwidth.c
 $(OBJ)/fnabs.o: ../src/fnabs.cxx ../fl/filename.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl.h ../fl/export.h ../fl/fl_utf8.h \
- ../fl/fl_types.h ../fl/fl_enums.h ../fl/drvsys.h ../fl/pref.h \
+ ../fl/fl_types.h ../fl/fl_enums.h ../src/drvsys.h ../fl/pref.h \
  ../src/flstring.h ../src/config.h
-$(OBJ)/fnexpand.o: ../src/fnexpand.cxx ../fl/drvsys.h ../fl/fl.h ../fl/export.h \
+$(OBJ)/fnexpand.o: ../src/fnexpand.cxx ../src/drvsys.h ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/filename.h ../fl/pref.h
-$(OBJ)/fnext.o: ../src/fnext.cxx ../fl/drvsys.h ../fl/fl.h ../fl/export.h \
+$(OBJ)/fnext.o: ../src/fnext.cxx ../src/drvsys.h ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/filename.h ../fl/pref.h
 $(OBJ)/fnisdir.o: ../src/fnisdir.cxx ../src/flstring.h ../fl/export.h \
- ../src/config.h ../fl/drvsys.h ../fl/fl.h ../fl/typesplt.h \
+ ../src/config.h ../src/drvsys.h ../fl/fl.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/filename.h ../fl/pref.h
 $(OBJ)/fnlist.o: ../src/fnlist.cxx ../fl/filename.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl.h ../fl/export.h ../fl/fl_utf8.h \
- ../fl/fl_types.h ../fl/fl_enums.h ../fl/drvsys.h ../fl/pref.h \
+ ../fl/fl_types.h ../fl/fl_enums.h ../src/drvsys.h ../fl/pref.h \
  ../fl/fl_utf8.h ../src/flstring.h ../src/config.h
 $(OBJ)/fnmatch.o: ../src/fnmatch.cxx ../fl/filename.h ../fl/export.h \
  ../fl/typesplt.h
@@ -435,7 +435,7 @@ $(OBJ)/fnsetext.o: ../src/fnsetext.cxx ../fl/filename.h ../fl/export.h \
  ../fl/typesplt.h ../src/flstring.h ../fl/export.h ../src/config.h
 $(OBJ)/group.o: ../src/group.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/drvwin.h ../fl/win.h \
+ ../fl/group.h ../fl/widget.h ../fl/fl.h ../src/drvwin.h ../fl/win.h \
  ../fl/imgbit.h ../fl/img.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h \
  ../fl/rect.h ../fl/widget.h ../fl/fl_draw.h ../fl/fl_enums.h \
  ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h \
@@ -452,7 +452,7 @@ $(OBJ)/helpview.o: ../src/helpview.cxx ../fl/helpview.h ../fl/fl.h \
 $(OBJ)/hotspot.o: ../src/hotspot.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/win.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
- ../fl/img.h ../fl/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h
+ ../fl/img.h ../src/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h
 $(OBJ)/icon2fil.o: ../src/icon2fil.cxx ../fl/fl_utf8.h ../fl/export.h \
  ../fl/fl_types.h ../src/flstring.h ../fl/export.h ../src/config.h \
  ../fl/fl_math.h ../fl/iconfile.h ../fl/fl.h ../fl/typesplt.h \
@@ -463,14 +463,14 @@ $(OBJ)/icon2fil.o: ../src/icon2fil.cxx ../fl/fl_utf8.h ../fl/export.h \
 $(OBJ)/iconfile.o: ../src/iconfile.cxx ../fl/fl_utf8.h ../fl/export.h \
  ../fl/fl_types.h ../src/flstring.h ../fl/export.h ../src/config.h \
  ../fl/fl.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/fl_enums.h \
- ../fl/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/iconfile.h ../fl/fl.h \
- ../fl/widget.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
+ ../src/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/iconfile.h \
+ ../fl/fl.h ../fl/widget.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
  ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/widget.h \
  ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h
 $(OBJ)/iconize.o: ../src/iconize.cxx ../fl/win.h ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
- ../fl/img.h ../fl/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h
+ ../fl/img.h ../src/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h
 $(OBJ)/imgbit.o: ../src/imgbit.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h \
@@ -508,7 +508,7 @@ $(OBJ)/imgpix.o: ../src/imgpix.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/widget.h ../fl/menuitem.h ../src/flstring.h ../src/config.h
 $(OBJ)/imgpng.o: ../src/imgpng.cxx ../src/config.h ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
- ../fl/fl_enums.h ../fl/drvsys.h ../fl/filename.h ../fl/pref.h \
+ ../fl/fl_enums.h ../src/drvsys.h ../fl/filename.h ../fl/pref.h \
  ../fl/imgpng.h ../fl/img.h ../fl/widget.h ../fl/fl.h ../fl/imgshare.h \
  ../fl/fl_utf8.h
 $(OBJ)/imgpnm.o: ../src/imgpnm.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
@@ -519,10 +519,10 @@ $(OBJ)/imgread.o: ../src/imgread.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h 
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h ../fl/win.h \
  ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h \
- ../fl/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/texted.h \
- ../fl/textdsp.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
- ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h \
- ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h
+ ../src/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
+ ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h ../fl/fl_enums.h \
+ ../fl/drvgr.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h \
+ ../fl/scrlbar.h ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h
 $(OBJ)/imgshare.o: ../src/imgshare.cxx ../fl/fl_utf8.h ../fl/export.h \
  ../fl/fl_types.h ../src/flstring.h ../fl/export.h ../src/config.h \
  ../fl/fl.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/fl_enums.h \
@@ -554,7 +554,7 @@ $(OBJ)/inpcho.o: ../src/inpcho.cxx ../fl/inpcho.h ../fl/fl.h ../fl/export.h \
  ../fl/imgpix.h ../fl/imgrgb.h
 $(OBJ)/inpfile.o: ../src/inpfile.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/inpfile.h \
+ ../src/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/inpfile.h \
  ../fl/input.h ../fl/input_.h ../fl/widget.h ../fl/fl.h ../fl/win.h \
  ../fl/group.h ../fl/imgbit.h ../fl/img.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h \
@@ -563,7 +563,7 @@ $(OBJ)/inpfile.o: ../src/inpfile.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h 
 $(OBJ)/input_.o: ../src/input_.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/input_.h ../fl/widget.h ../fl/fl.h ../fl/win.h ../fl/group.h \
- ../fl/imgbit.h ../fl/img.h ../fl/drvscr.h ../fl/drvdev.h ../fl/plugin.h \
+ ../fl/imgbit.h ../fl/img.h ../src/drvscr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/pref.h ../fl/fl_types.h ../fl/texted.h ../fl/textdsp.h \
  ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h \
  ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h \
@@ -574,7 +574,7 @@ $(OBJ)/input.o: ../src/input.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h ../fl/win.h \
  ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h \
- ../fl/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/drvscr.h \
+ ../src/drvsys.h ../fl/filename.h ../fl/pref.h ../src/drvscr.h \
  ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/texted.h \
  ../fl/textdsp.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
  ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h \
@@ -602,14 +602,14 @@ $(OBJ)/latin1.o: ../src/latin1.cxx ../src/cfg_lib.h ../src/config.h \
  ../fl/typesplt.h ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/pref.h ../fl/export.h ../fl/img.h ../fl/fl_enums.h ../fl/widget.h \
  ../fl/fl.h ../fl/fl_utf8.h ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h \
- ../fl/imgrgb.h ../fl/fl.h ../fl/drvsys.h ../fl/filename.h ../fl/pref.h \
+ ../fl/imgrgb.h ../fl/fl.h ../src/drvsys.h ../fl/filename.h ../fl/pref.h \
  ../src/flstring.h
 $(OBJ)/macroman.o: ../src/macroman.cxx ../src/cfg_lib.h ../src/config.h \
  ../fl/fl_draw.h ../fl/fl_enums.h ../fl/export.h ../fl/fl_types.h \
  ../fl/typesplt.h ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/pref.h ../fl/export.h ../fl/img.h ../fl/fl_enums.h ../fl/widget.h \
  ../fl/fl.h ../fl/fl_utf8.h ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h \
- ../fl/imgrgb.h ../fl/drvsys.h ../fl/fl.h ../fl/filename.h ../fl/pref.h \
+ ../fl/imgrgb.h ../src/drvsys.h ../fl/fl.h ../fl/filename.h ../fl/pref.h \
  ../src/flstring.h
 $(OBJ)/menuadd.o: ../src/menuadd.cxx ../fl/menu_.h ../fl/widget.h \
  ../fl/fl_enums.h ../fl/export.h ../fl/fl_types.h ../fl/typesplt.h \
@@ -627,9 +627,9 @@ $(OBJ)/menu_.o: ../src/menu_.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../src/flstring.h ../src/config.h
 $(OBJ)/menu.o: ../src/menu.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvwin.h ../fl/win.h ../fl/group.h ../fl/widget.h ../fl/fl.h \
+ ../src/drvwin.h ../fl/win.h ../fl/group.h ../fl/widget.h ../fl/fl.h \
  ../fl/imgbit.h ../fl/img.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h \
- ../fl/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/winmenu.h \
+ ../src/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/winmenu.h \
  ../fl/winsngl.h ../fl/menu_.h ../fl/menuitem.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/pref.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../src/flstring.h \
@@ -650,9 +650,9 @@ $(OBJ)/overlay.o: ../src/overlay.cxx ../fl/platform.h ../fl/export.h \
  ../fl/fl_enums.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
  ../fl/img.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
  ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/imgpix.h \
- ../fl/imgrgb.h ../fl/drvscr.h ../fl/texted.h ../fl/textdsp.h \
+ ../fl/imgrgb.h ../src/drvscr.h ../fl/texted.h ../fl/textdsp.h \
  ../fl/fl_draw.h ../fl/group.h ../fl/scrlbar.h ../fl/slider.h \
- ../fl/valuator.h ../fl/textbuf.h ../fl/imgshare.h
+ ../fl/valuator.h ../fl/textbuf.h
 $(OBJ)/pack.o: ../src/pack.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/pack.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/fl_draw.h \
@@ -667,8 +667,8 @@ $(OBJ)/plastic.o: ../src/plastic.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h 
  ../src/flstring.h ../src/config.h
 $(OBJ)/pref.o: ../src/pref.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/plugin.h ../fl/pref.h \
- ../fl/fl_utf8.h ../src/flstring.h ../src/config.h
+ ../src/drvsys.h ../fl/filename.h ../fl/pref.h ../fl/plugin.h \
+ ../fl/pref.h ../fl/fl_utf8.h ../src/flstring.h ../src/config.h
 $(OBJ)/progress.o: ../src/progress.cxx ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/progress.h ../fl/widget.h ../fl/fl.h \
@@ -681,8 +681,8 @@ $(OBJ)/roller.o: ../src/roller.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h \
  ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/imgbit.h ../fl/img.h \
  ../fl/imgpix.h ../fl/imgrgb.h ../fl/fl_math.h
-$(OBJ)/scrlarea.o: ../src/scrlarea.cxx ../fl/drvwin.h ../fl/export.h ../fl/win.h \
- ../fl/fl.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h \
+$(OBJ)/scrlarea.o: ../src/scrlarea.cxx ../src/drvwin.h ../fl/export.h \
+ ../fl/win.h ../fl/fl.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h \
  ../fl/fl_types.h ../fl/fl_enums.h ../fl/group.h ../fl/widget.h \
  ../fl/fl.h ../fl/imgbit.h ../fl/img.h ../fl/winovlay.h ../fl/windbl.h \
  ../fl/win.h
@@ -704,23 +704,24 @@ $(OBJ)/scrxywh.o: ../src/scrxywh.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h 
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h ../fl/win.h \
  ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h \
- ../fl/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/texted.h \
- ../fl/textdsp.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
- ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h \
- ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h ../src/config.h
+ ../src/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
+ ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h ../fl/fl_enums.h \
+ ../fl/drvgr.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h \
+ ../fl/scrlbar.h ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h \
+ ../src/config.h
 $(OBJ)/set_font.o: ../src/set_font.cxx ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h \
  ../fl/win.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
  ../fl/img.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h \
  ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/imgpix.h \
- ../fl/imgrgb.h ../fl/drvscr.h ../fl/texted.h ../fl/textdsp.h \
+ ../fl/imgrgb.h ../src/drvscr.h ../fl/texted.h ../fl/textdsp.h \
  ../fl/fl_draw.h ../fl/group.h ../fl/scrlbar.h ../fl/slider.h \
  ../fl/valuator.h ../fl/textbuf.h ../src/flstring.h ../src/config.h
 $(OBJ)/shortcut.o: ../src/shortcut.cxx ../src/cfg_lib.h ../src/config.h \
  ../fl/fl.h ../fl/export.h ../fl/typesplt.h ../fl/fl_utf8.h \
  ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h ../fl/widget.h \
- ../fl/fl.h ../fl/btn.h ../fl/drvsys.h ../fl/filename.h ../fl/pref.h \
+ ../fl/fl.h ../fl/btn.h ../src/drvsys.h ../fl/filename.h ../fl/pref.h \
  ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h \
  ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/widget.h ../fl/imgbit.h \
  ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../src/flstring.h
@@ -751,12 +752,12 @@ $(OBJ)/symbols.o: ../src/symbols.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h 
  ../src/flstring.h ../src/config.h
 $(OBJ)/syscolor.o: ../src/syscolor.cxx ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
- ../fl/fl_enums.h ../fl/drvscr.h ../fl/drvdev.h ../fl/plugin.h \
+ ../fl/fl_enums.h ../src/drvscr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/pref.h ../fl/fl_types.h ../fl/texted.h ../fl/textdsp.h \
  ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h \
  ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h \
  ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h ../fl/slider.h \
- ../fl/valuator.h ../fl/textbuf.h ../fl/drvsys.h ../fl/filename.h \
+ ../fl/valuator.h ../fl/textbuf.h ../src/drvsys.h ../fl/filename.h \
  ../fl/pref.h ../fl/fl_draw.h ../fl/platform.h ../fl/allegro4.h \
  ../fl/win.h ../fl/group.h ../fl/fl_math.h ../fl/fl_utf8.h \
  ../src/flstring.h ../src/config.h ../fl/imgtiled.h ../src/tile.xpm
@@ -801,7 +802,7 @@ $(OBJ)/textdsp.o: ../src/textdsp.cxx ../fl/fl_utf8.h ../fl/export.h \
  ../fl/textbuf.h ../fl/textdsp.h ../fl/fl_draw.h ../fl/fl_enums.h \
  ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h \
  ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h \
- ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h ../fl/drvscr.h \
+ ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h ../src/drvscr.h \
  ../fl/texted.h ../fl/textdsp.h
 $(OBJ)/texted.o: ../src/texted.cxx ../src/flstring.h ../fl/export.h \
  ../src/config.h ../fl/fl.h ../fl/typesplt.h ../fl/fl_utf8.h \
@@ -810,7 +811,7 @@ $(OBJ)/texted.o: ../src/texted.cxx ../src/flstring.h ../fl/export.h \
  ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h ../fl/fl_enums.h \
  ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h \
  ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h \
- ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h ../fl/drvscr.h \
+ ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h ../src/drvscr.h \
  ../fl/fl_types.h ../fl/fl_ask.h
 $(OBJ)/tile.o: ../src/tile.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
@@ -822,8 +823,8 @@ $(OBJ)/tooltip.o: ../src/tooltip.cxx ../fl/tooltip.h ../fl/fl.h ../fl/export.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/pref.h ../fl/img.h ../fl/widget.h ../fl/imgbit.h ../fl/img.h \
  ../fl/imgpix.h ../fl/imgrgb.h ../fl/winmenu.h ../fl/winsngl.h \
- ../fl/win.h ../fl/group.h ../fl/drvsys.h ../fl/filename.h ../fl/pref.h \
- ../fl/drvwin.h ../fl/win.h ../fl/winovlay.h ../fl/windbl.h
+ ../fl/win.h ../fl/group.h ../src/drvsys.h ../fl/filename.h ../fl/pref.h \
+ ../src/drvwin.h ../fl/win.h ../fl/winovlay.h ../fl/windbl.h
 $(OBJ)/treearr.o: ../src/treearr.cxx ../fl/treearr.h ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/treeitem.h ../fl/widget.h ../fl/fl.h ../fl/img.h \
@@ -847,7 +848,7 @@ $(OBJ)/treeitem.o: ../src/treeitem.cxx ../fl/widget.h ../fl/fl_enums.h \
  ../fl/tree.h ../fl/group.h ../fl/scrlbar.h ../fl/slider.h \
  ../fl/valuator.h
 $(OBJ)/treepref.o: ../src/treepref.cxx ../src/cfg_lib.h ../src/config.h \
- ../fl/drvsys.h ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
+ ../src/drvsys.h ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
  ../fl/filename.h ../fl/pref.h ../fl/imgpix.h ../fl/img.h ../fl/widget.h \
  ../fl/fl.h ../fl/treepref.h
@@ -862,7 +863,7 @@ $(OBJ)/vertex.o: ../src/vertex.cxx ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/fl.h ../fl/fl_math.h
 $(OBJ)/visual.o: ../src/visual.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h \
- ../fl/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
+ ../src/drvscr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h \
  ../fl/fl_types.h ../fl/texted.h ../fl/textdsp.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h ../fl/widget.h ../fl/fl.h \
  ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h ../fl/group.h \
@@ -879,15 +880,15 @@ $(OBJ)/widgsurf.o: ../src/widgsurf.cxx ../fl/widgsurf.h ../fl/drvdev.h \
  ../fl/fl_enums.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
  ../fl/img.h ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h \
  ../fl/imgpix.h ../fl/imgrgb.h ../fl/platform.h ../fl/fl_types.h \
- ../fl/allegro4.h ../fl/imgshare.h ../fl/drvwin.h ../fl/winovlay.h \
- ../fl/windbl.h ../fl/win.h ../fl/drvscr.h ../fl/texted.h ../fl/textdsp.h \
- ../fl/fl_draw.h ../fl/group.h ../fl/scrlbar.h ../fl/slider.h \
- ../fl/valuator.h ../fl/textbuf.h
+ ../fl/allegro4.h ../fl/imgshare.h ../src/drvwin.h ../fl/winovlay.h \
+ ../fl/windbl.h ../fl/win.h ../src/drvscr.h ../fl/texted.h \
+ ../fl/textdsp.h ../fl/fl_draw.h ../fl/group.h ../fl/scrlbar.h \
+ ../fl/slider.h ../fl/valuator.h ../fl/textbuf.h
 $(OBJ)/win.o: ../src/win.cxx ../src/config.h ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h \
  ../fl/win.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
- ../fl/img.h ../fl/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h \
+ ../fl/img.h ../src/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h \
  ../fl/imgrgb.h ../fl/tooltip.h ../fl/widget.h ../fl/fl_draw.h \
  ../fl/fl_enums.h ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h \
  ../fl/pref.h ../fl/img.h ../fl/imgpix.h ../src/flstring.h
@@ -897,22 +898,22 @@ $(OBJ)/windbl.o: ../src/windbl.cxx ../fl/fl.h ../fl/export.h ../fl/typesplt.h \
  ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h \
  ../fl/windbl.h ../fl/win.h ../fl/fl_draw.h ../fl/fl_enums.h \
  ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h \
- ../fl/imgpix.h ../fl/imgrgb.h ../fl/drvwin.h ../fl/winovlay.h \
+ ../fl/imgpix.h ../fl/imgrgb.h ../src/drvwin.h ../fl/winovlay.h \
  ../fl/windbl.h
 $(OBJ)/winmenu.o: ../src/winmenu.cxx ../fl/winmenu.h ../fl/winsngl.h ../fl/win.h \
  ../fl/fl.h ../fl/export.h ../fl/typesplt.h ../fl/fl_utf8.h \
  ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h ../fl/group.h \
- ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h ../fl/drvwin.h \
+ ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h ../src/drvwin.h \
  ../fl/win.h ../fl/winovlay.h ../fl/windbl.h
 $(OBJ)/winovlay.o: ../src/winovlay.cxx ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h \
  ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h \
- ../fl/drvwin.h ../fl/win.h
+ ../src/drvwin.h ../fl/win.h
 $(OBJ)/winscr.o: ../src/winscr.cxx ../fl/win.h ../fl/fl.h ../fl/export.h \
  ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h ../fl/fl_types.h \
  ../fl/fl_enums.h ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h \
- ../fl/img.h
+ ../fl/img.h ../src/drvwin.h ../fl/winovlay.h ../fl/windbl.h ../fl/win.h
 $(OBJ)/winsngl.o: ../src/winsngl.cxx ../fl/winsngl.h ../fl/win.h ../fl/fl.h \
  ../fl/export.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h \
  ../fl/fl_types.h ../fl/fl_enums.h ../fl/group.h ../fl/widget.h \
@@ -943,32 +944,25 @@ $(OBJ)/aldrvimg.o: ../src/drivers/allegro4/aldrvimg.cxx \
  ../fl/img.h ../fl/img.h ../fl/imgshare.h ../fl/drvgr.h ../fl/imgpix.h \
  ../fl/imgrgb.h ../fl/fl_draw.h ../fl/fl_enums.h
 $(OBJ)/aldrvscr.o: ../src/drivers/allegro4/aldrvscr.cxx \
- ../src/drivers/allegro4/aldrvscr.h ../fl/drvscr.h ../fl/drvdev.h \
- ../fl/plugin.h ../fl/pref.h ../fl/export.h ../fl/export.h \
- ../fl/fl_types.h ../fl/fl.h ../fl/typesplt.h ../fl/fl_utf8.h \
- ../fl/fl_types.h ../fl/fl_enums.h ../fl/texted.h ../fl/textdsp.h \
- ../fl/fl_draw.h ../fl/fl_enums.h ../fl/drvgr.h ../fl/img.h \
- ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h \
- ../fl/imgrgb.h ../fl/group.h ../fl/scrlbar.h ../fl/slider.h \
- ../fl/valuator.h ../fl/textbuf.h ../src/drivers/allegro4/wm.h \
- ../fl/win.h ../fl/group.h ../src/drivers/allegro4/timeout.h \
- ../src/drivers/allegro4/ticker.h ../src/drivers/allegro4/ticks.h \
- ../src/drivers/allegro4/aldrvwin.h ../fl/drvwin.h ../fl/winovlay.h \
- ../fl/windbl.h ../fl/win.h ../fl/platform.h ../fl/allegro4.h
+ ../src/drivers/allegro4/aldrvscr.h ../fl/fl_enums.h ../fl/export.h \
+ ../fl/fl_types.h ../fl/typesplt.h ../src/drivers/allegro4/wm.h \
+ ../fl/win.h ../fl/fl.h ../fl/export.h ../fl/fl_utf8.h ../fl/fl_enums.h \
+ ../fl/group.h ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h \
+ ../src/drivers/allegro4/timeout.h ../src/drivers/allegro4/ticker.h \
+ ../src/drivers/allegro4/ticks.h ../src/drivers/allegro4/aldrvwin.h \
+ ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h
 $(OBJ)/aldrvsys.o: ../src/drivers/allegro4/aldrvsys.cxx \
- ../src/drivers/allegro4/aldrvsys.h ../fl/drvsys.h ../fl/fl.h \
- ../fl/export.h ../fl/typesplt.h ../fl/fl_utf8.h ../fl/export.h \
- ../fl/fl_types.h ../fl/fl_enums.h ../fl/filename.h ../fl/pref.h \
- ../fl/widget.h ../fl/fl.h
+ ../src/drivers/allegro4/aldrvsys.h ../fl/widget.h ../fl/fl_enums.h \
+ ../fl/export.h ../fl/fl_types.h ../fl/typesplt.h ../fl/fl.h \
+ ../fl/export.h ../fl/fl_utf8.h
 $(OBJ)/aldrvwin.o: ../src/drivers/allegro4/aldrvwin.cxx \
  ../src/drivers/allegro4/aldrvwin.h ../fl/fl_enums.h ../fl/export.h \
- ../fl/fl_types.h ../fl/typesplt.h ../fl/drvwin.h ../fl/export.h \
- ../fl/win.h ../fl/fl.h ../fl/fl_utf8.h ../fl/fl_enums.h ../fl/group.h \
- ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h ../fl/winovlay.h \
- ../fl/windbl.h ../fl/win.h ../src/drivers/allegro4/aldrvgr.h \
- ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/img.h \
- ../fl/imgpix.h ../fl/imgrgb.h ../src/drivers/allegro4/imgconv.h \
- ../fl/platform.h ../fl/fl_types.h ../fl/allegro4.h
+ ../fl/fl_types.h ../fl/typesplt.h ../src/drivers/allegro4/aldrvgr.h \
+ ../fl/drvgr.h ../fl/drvdev.h ../fl/plugin.h ../fl/pref.h ../fl/export.h \
+ ../fl/img.h ../fl/fl_enums.h ../fl/widget.h ../fl/fl.h ../fl/fl_utf8.h \
+ ../fl/imgbit.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h \
+ ../src/drivers/allegro4/imgconv.h ../fl/fl.h ../fl/platform.h \
+ ../fl/fl_types.h ../fl/allegro4.h ../fl/win.h ../fl/group.h
 $(OBJ)/algfx.o: ../src/drivers/allegro4/algfx.cxx \
  ../src/drivers/allegro4/algfx.h
 $(OBJ)/imgconv.o: ../src/drivers/allegro4/imgconv.cxx \
@@ -995,8 +989,7 @@ $(OBJ)/wm.o: ../src/drivers/allegro4/wm.cxx ../src/drivers/allegro4/wm.h \
  ../fl/win.h ../fl/fl.h ../fl/export.h ../fl/typesplt.h ../fl/fl_utf8.h \
  ../fl/export.h ../fl/fl_types.h ../fl/fl_enums.h ../fl/group.h \
  ../fl/widget.h ../fl/fl.h ../fl/imgbit.h ../fl/img.h \
- ../src/drivers/allegro4/aldrvwin.h ../fl/fl_enums.h ../fl/drvwin.h \
- ../fl/winovlay.h ../fl/windbl.h ../fl/win.h \
+ ../src/drivers/allegro4/aldrvwin.h ../fl/fl_enums.h \
  ../src/drivers/allegro4/aldrvgr.h ../fl/drvgr.h ../fl/drvdev.h \
  ../fl/plugin.h ../fl/pref.h ../fl/img.h ../fl/imgpix.h ../fl/imgrgb.h \
  ../src/drivers/allegro4/algfx.h ../fl/platform.h ../fl/fl_types.h \

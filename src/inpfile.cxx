@@ -1,6 +1,6 @@
 // inpfile.cxx
 //
-// "$Id: Fl_File_Input.cxx 11575 2016-04-10 18:36:47Z manolo $"
+// "$Id: Fl_File_Input.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // File_Input header file for the Fast Light Tool Kit (FLTK).
 //
@@ -70,7 +70,7 @@
 //
 
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/inpfile.h>
 #include <fl/win.h>
 #include <fl/fl_draw.h>
@@ -332,5 +332,5 @@ Fl_File_Input::handle_button(int event)		// I - Event
 
 
 //
-// End of "$Id: Fl_File_Input.cxx 11575 2016-04-10 18:36:47Z manolo $".
+// End of "$Id: Fl_File_Input.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

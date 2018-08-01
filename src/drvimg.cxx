@@ -1,6 +1,6 @@
 // drvimg.cxx
 //
-// "$Id: Fl_Image_Surface.cxx 12737 2018-03-11 14:49:09Z manolo $"
+// "$Id: Fl_Image_Surface.cxx 12968 2018-06-23 16:47:40Z matt $"
 //
 // Draw-to-image code for the Fast Light Tool Kit (FLTK).
 //
@@ -89,13 +89,14 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
  the value of the display scale factor (see Fl_Graphics_Driver::scale()):
  the resulting image has the same number of pixels as an area of the display of size
  \p w x \p h expressed in FLTK units.
- If \p highres is non-zero, always use Fl_Image_Surface::highres_image() to get the image data.
 
- \param pixmap Is used internally by FLTK; applications just use its default value.
+ \param off If not null, the image surface is constructed around a pre-existing
+ Fl_Offscreen. The caller is responsible for both construction and destruction of this Fl_Offscreen object.
+ Is mostly intended for internal use by FLTK.
  \version 1.3.4 (1.3.3 without the \p highres parameter)
  */
-Fl_Image_Surface::Fl_Image_Surface(int w, int h, int high_res, Fl_Offscreen pixmap) : Fl_Widget_Surface(NULL) {
-  platform_surface = Fl_Image_Surface_Driver::newImageSurfaceDriver(w, h, high_res, pixmap);
+Fl_Image_Surface::Fl_Image_Surface(int w, int h, int high_res, Fl_Offscreen off) : Fl_Widget_Surface(NULL) {
+  platform_surface = Fl_Image_Surface_Driver::newImageSurfaceDriver(w, h, high_res, off);
   if (platform_surface) driver(platform_surface->driver());
 }
 
@@ -122,7 +123,8 @@ void Fl_Image_Surface::untranslate() {
 }
 
 /** Returns the Fl_Offscreen object associated to the image surface.
- The returned Fl_Offscreen object is deleted when the Fl_Image_Surface object is deleted.
+ The returned Fl_Offscreen object is deleted when the Fl_Image_Surface object is deleted,
+ unless the Fl_Image_Surface was constructed with non-null Fl_Offscreen argument.
  */
 Fl_Offscreen Fl_Image_Surface::offscreen() { 
   return platform_surface ? platform_surface->offscreen : (Fl_Offscreen)0;
@@ -140,6 +142,7 @@ Fl_RGB_Image *Fl_Image_Surface::image() {
   if (need_push) Fl_Surface_Device::push_current(platform_surface);
   Fl_RGB_Image *img = platform_surface->image();
   if (need_push) Fl_Surface_Device::pop_current();
+  img->scale(platform_surface->width, platform_surface->height, 1, 1);
   return img;
 }
 
@@ -148,7 +151,8 @@ Fl_RGB_Image *Fl_Image_Surface::image() {
  The returned Fl_Shared_Image object is scaled to a size of WxH FLTK units and may have a 
  pixel size larger than these values.
  The returned object should be deallocated with Fl_Shared_Image::release() after use.
- \version 1.3.4
+ Deprecated: use image() instead.
+ \version 1.4 (1.3.4 for MacOS platform only)
  */
 Fl_Shared_Image* Fl_Image_Surface::highres_image()
 {
@@ -160,13 +164,28 @@ Fl_Shared_Image* Fl_Image_Surface::highres_image()
   return s_img;
 }
 
-/** Allows to delete the Fl_Image_Surface object while keeping its underlying Fl_Offscreen.
- This member function is intended for internal use by the FLTK library.
- */
-Fl_Offscreen Fl_Image_Surface::get_offscreen_before_delete() {
+// Allows to delete the Fl_Image_Surface object while keeping its underlying Fl_Offscreen
+Fl_Offscreen Fl_Image_Surface::get_offscreen_before_delete_() {
   Fl_Offscreen keep = platform_surface->offscreen;
   platform_surface->offscreen = 0;
   return keep;
+}
+
+/** Adapts the Fl_Image_Surface object to the new value of the GUI scale factor.
+ The Fl_Image_Surface object must not be the current drawing surface.
+ This function is useful only for an object constructed with non-zero \p high_res parameter.
+ \version 1.4
+ */
+void Fl_Image_Surface::rescale() {
+  Fl_RGB_Image *rgb = image();
+  int w, h;
+  printable_rect(&w, &h);
+  delete platform_surface;
+  platform_surface = Fl_Image_Surface_Driver::newImageSurfaceDriver(w, h, 1, 0);
+  Fl_Surface_Device::push_current(this);
+  rgb->draw(0,0);
+  Fl_Surface_Device::pop_current();
+  delete rgb;
 }
 
 // implementation of the fl_XXX_offscreen() functions
@@ -198,6 +217,17 @@ static int find_slot(void) { // return an available slot to memorize an Fl_Image
  The pixel size of the created graphics buffer is equal to the number of pixels
  in an area of the screen containing the current window sized at \p w,h FLTK units.
  This pixel size varies with the value of the scale factor of this screen.
+ \note Work with the fl_XXX_offscreen() functions is equivalent to work with
+ an Fl_Image_Surface object, as follows :
+ <table>
+ <tr> <th>Fl_Offscreen-based approach</th><th>Fl_Image_Surface-based approach</th> </tr>
+ <tr> <td>Fl_Offscreen off = fl_create_offscreen(w, h)</td><td>Fl_Image_Surface *surface = new Fl_Image_Surface(w, h, 1)</td> </tr>
+ <tr> <td>fl_begin_offscreen(off)</td><td>Fl_Surface_Device::push_current(surface)</td> </tr>
+ <tr> <td>fl_end_offscreen()</td><td>Fl_Surface_Device::pop_current()</td> </tr>
+ <tr> <td>fl_copy_offscreen(x,y,w,h, off, sx,sy)</td><td>fl_copy_offscreen(x,y,w,h, surface->offscreen(), sx,sy)</td> </tr>
+ <tr> <td>fl_rescale_offscreen(off)</td><td>surface->rescale()</td> </tr>
+ <tr> <td>fl_delete_offscreen(off)</td><td>delete surface</td> </tr>
+ </table>
    */
 Fl_Offscreen fl_create_offscreen(int w, int h) {
   int rank = find_slot();
@@ -222,6 +252,7 @@ void fl_delete_offscreen(Fl_Offscreen ctx) {
 
 /**  Send all subsequent drawing commands to this offscreen buffer.
    \param ctx     the offscreen buffer.
+   \note The \p ctx argument must have been created by fl_create_offscreen().
    */
 void fl_begin_offscreen(Fl_Offscreen ctx) {
   for (int i = 0; i < count_offscreens; i++) {
@@ -245,27 +276,21 @@ void fl_end_offscreen() {
  value is given by <tt>Fl_Graphics_Driver::default_driver().scale()</tt>.
  \version 1.4
  */
-void fl_scale_offscreen(Fl_Offscreen &ctx) {
-  int i, w, h;
+void fl_rescale_offscreen(Fl_Offscreen &ctx) {
+  int i;
   for (i = 0; i < count_offscreens; i++) {
     if (offscreen_api_surface[i] && offscreen_api_surface[i]->offscreen() == ctx) {
       break;
     }
   }
   if (i >= count_offscreens) return;
-  Fl_Shared_Image *shared = offscreen_api_surface[i]->highres_image();
-  offscreen_api_surface[i]->printable_rect(&w, &h);
-  fl_delete_offscreen(ctx);
-  ctx = fl_create_offscreen(w, h);
-  fl_begin_offscreen(ctx);
-  shared->draw(0, 0);
-  fl_end_offscreen();
-  shared->release();
+  offscreen_api_surface[i]->rescale();
+  ctx = offscreen_api_surface[i]->offscreen();
 }
 
 /** @} */
 
 
 //
-// End of "$Id: Fl_Image_Surface.cxx 12737 2018-03-11 14:49:09Z manolo $".
+// End of "$Id: Fl_Image_Surface.cxx 12968 2018-06-23 16:47:40Z matt $".
 //

@@ -1,6 +1,6 @@
 // menu.cxx
 //
-// "$Id: Fl_Menu.cxx 12815 2018-03-31 17:17:37Z greg.ercolano $"
+// "$Id: Fl_Menu.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Menu code for the Fast Light Tool Kit (FLTK).
 //
@@ -75,8 +75,8 @@
 // Fl_Menu_ widget.
 
 #include <fl/fl.h>
-#include <fl/drvwin.h>
-#include <fl/drvsys.h>
+#include "drvwin.h"
+#include "drvsys.h"
 #include <fl/winmenu.h>
 #include <fl/menu_.h>
 #include <fl/fl_draw.h>
@@ -195,8 +195,6 @@ public:
   void position(int x, int y);
   int is_inside(int x, int y);
 };
-
-#define LEADING 4 // extra vertical leading
 
 extern char fl_draw_shortcut;
 
@@ -558,13 +556,13 @@ void menuwindow::drawentry(const Fl_Menu_Item* m, int n, int eraseit) {
 }
 
 void menutitle::draw() {
-  driver()->draw_begin(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_begin(); // ALLEGRO:
   menu->draw(0, 0, w(), h(), button, 2);
-  driver()->draw_end(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_end(); // ALLEGRO:
 }
 
 void menuwindow::draw() {
-  driver()->draw_begin(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_begin(); // ALLEGRO:
   if (damage() != FL_DAMAGE_CHILD) {	// complete redraw
     fl_draw_box(box(), 0, 0, w(), h(), button ? button->color() : color());
     if (menu) {
@@ -578,7 +576,7 @@ void menuwindow::draw() {
     }
   }	    
   drawn_selected = selected;
-  driver()->draw_end(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_end(); // ALLEGRO:
 }
 
 void menuwindow::set_selected(int n) {
@@ -1164,5 +1162,5 @@ const Fl_Menu_Item* Fl_Menu_Item::test_shortcut() const {
 }
 
 //
-// End of "$Id: Fl_Menu.cxx 12815 2018-03-31 17:17:37Z greg.ercolano $".
+// End of "$Id: Fl_Menu.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

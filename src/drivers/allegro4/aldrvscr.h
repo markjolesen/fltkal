@@ -65,7 +65,7 @@
 //
 #if !defined(FL_ALLEGRO_SCREEN_DRIVER_H)
 
-#include <fl/drvscr.h>
+#include "../../drvscr.h"
 #include <fl/fl_enums.h>
 #include <time.h>
 #include "wm.h"

@@ -1,6 +1,6 @@
 // winmenu.cxx
 //
-// "$Id: Fl_Menu_Window.cxx 11441 2016-03-27 07:47:52Z manolo $"
+// "$Id: Fl_Menu_Window.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // Menu window code for the Fast Light Tool Kit (FLTK).
 //
@@ -76,20 +76,20 @@
 // can be used to dismiss the menus.
 
 #include <fl/winmenu.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 
 void Fl_Menu_Window::show() {
-  driver()->show_menu();
+  Fl_Window_Driver::driver(this)->show_menu();
 }
 
 void Fl_Menu_Window::flush() {
   if (!shown()) return;
-  driver()->flush_menu();
+  Fl_Window_Driver::driver(this)->flush_menu();
 }
 
 /** Erases the window, does nothing if HAVE_OVERLAY is not defined in config.h */
 void Fl_Menu_Window::erase() {
-  driver()->erase_menu();
+  Fl_Window_Driver::driver(this)->erase_menu();
 }
 
 // Fix the colormap flashing on Maximum Impact Graphics by erasing the
@@ -119,5 +119,5 @@ Fl_Menu_Window::Fl_Menu_Window(int X, int Y, int W, int H, const char *l)
 
 
 //
-// End of "$Id: Fl_Menu_Window.cxx 11441 2016-03-27 07:47:52Z manolo $".
+// End of "$Id: Fl_Menu_Window.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

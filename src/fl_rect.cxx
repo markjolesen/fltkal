@@ -1,6 +1,6 @@
 // fl_rect.cxx
 //
-// "$Id: fl_rect.cxx 12114 2016-11-16 19:56:22Z manolo $"
+// "$Id: fl_rect.cxx 12970 2018-06-23 20:50:22Z matt $"
 //
 // Rectangle drawing routines for the Fast Light Tool Kit (FLTK).
 //
@@ -85,6 +85,12 @@
 // all driver code is now in drivers/XXX/Fl_XXX_Graphics_Driver_xyz.cxx
 // -----------------------------------------------------------------------------
 
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
+
 /** see fl_restore_clip() */
 void Fl_Graphics_Driver::restore_clip() {
   fl_clip_state_number++;
@@ -104,7 +110,12 @@ Fl_Region Fl_Graphics_Driver::clip_region() {
   return rstack[rstackptr];
 }
 
+/**
+ \}
+ \endcond
+ */
+
 
 //
-// End of "$Id: fl_rect.cxx 12114 2016-11-16 19:56:22Z manolo $".
+// End of "$Id: fl_rect.cxx 12970 2018-06-23 20:50:22Z matt $".
 //

@@ -1,6 +1,6 @@
 // win.cxx
 //
-// "$Id: Fl_Window.cxx 12263 2017-06-16 15:07:53Z manolo $"
+// "$Id: Fl_Window.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // Window widget class for the Fast Light Tool Kit (FLTK).
 //
@@ -76,7 +76,7 @@
 #include "config.h"
 #include <fl/fl.h>
 #include <fl/platform.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 #include <fl/imgrgb.h>
 #include <fl/win.h>
 #include <fl/tooltip.h>
@@ -693,6 +693,11 @@ void Fl_Window::size_range(int minw, int minh, int maxw, int maxh, int dw, int d
   pWindowDriver->size_range();
 }
 
+/** The number of the screen containing the mapped window */
+int Fl_Window::screen_num() {
+  return pWindowDriver->screen_num();
+}
+
 //
-// End of "$Id: Fl_Window.cxx 12263 2017-06-16 15:07:53Z manolo $".
+// End of "$Id: Fl_Window.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

@@ -1,6 +1,6 @@
 // fnext.cxx
 //
-// "$Id: filename_ext.cxx 11556 2016-04-08 16:00:26Z manolo $"
+// "$Id: filename_ext.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Filename extension routines for the Fast Light Tool Kit (FLTK).
 //
@@ -68,7 +68,7 @@
 //
 //
 
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/fl.h>
 
 /** Gets the extension of a filename.
@@ -86,6 +86,21 @@ const char *fl_filename_ext(const char *buf) {
   return Fl::system_driver()->filename_ext(buf);
 }
 
+
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
+
+/**
+ Default implementation to find a filename extension.
+
+ The default implementation assumes that the last `.` character separates
+ the extension form the basename of a file.
+
+ \see fl_filename_ext(const char*)
+ */
 const char *Fl_System_Driver::filename_ext(const char *buf) {
   const char *q = 0;
   const char *p = buf;
@@ -96,6 +111,11 @@ const char *Fl_System_Driver::filename_ext(const char *buf) {
   return q ? q : p;
 }
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: filename_ext.cxx 11556 2016-04-08 16:00:26Z manolo $".
+// End of "$Id: filename_ext.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

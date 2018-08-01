@@ -1,6 +1,6 @@
 // fnexpand.cxx
 //
-// "$Id: filename_expand.cxx 11553 2016-04-07 16:54:20Z manolo $"
+// "$Id: filename_expand.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Filename expansion routines for the Fast Light Tool Kit (FLTK).
 //
@@ -68,7 +68,7 @@
 //
 //
 
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/fl.h>
 
 /** Expands a filename containing shell variables and tilde (~).
@@ -98,5 +98,5 @@ int fl_filename_expand(char *to,int tolen, const char *from) {
 }
 
 //
-// End of "$Id: filename_expand.cxx 11553 2016-04-07 16:54:20Z manolo $".
+// End of "$Id: filename_expand.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

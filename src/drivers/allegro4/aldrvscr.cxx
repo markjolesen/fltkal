@@ -681,7 +681,7 @@ bool Fl_Allegro_Screen_Driver::wait_keyboard(Fl_Window *window)
 wm::hit_type Fl_Allegro_Screen_Driver::hit(Fl_Window *window, int const x, int const y)
 {
     wm::hit_type hit = wm_.hit((*window), x, y);
-    Fl_Cursor curwin = window->driver()->get_cursor();
+    Fl_Cursor curwin = Fl_Window_Driver::driver(window)->get_cursor();
     Fl_Cursor curnew = curwin;
 
     switch (hit)
@@ -725,7 +725,7 @@ wm::hit_type Fl_Allegro_Screen_Driver::hit(Fl_Window *window, int const x, int c
         }
         else
         {
-            window->driver()->redisplay_cursor();
+            Fl_Window_Driver::driver(window)->redisplay_cursor();
         }
         cursor_ = curnew;
     }

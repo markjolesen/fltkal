@@ -17,7 +17,7 @@
 //
 
 #include <fl/win.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 
 void Fl_Window::border(int b) {
   if (b) {

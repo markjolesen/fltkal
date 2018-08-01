@@ -1,6 +1,6 @@
 // drvsys.h
 //
-// "$Id: Fl_System_Driver.H 12851 2018-04-18 15:03:51Z manolo $"
+// "$Id: Fl_System_Driver.H 12976 2018-06-26 14:12:43Z manolo $"
 //
 // A base class for platform specific system calls
 // for the Fast Light Tool Kit (FLTK).
@@ -98,12 +98,18 @@ class Fl_Widget;
   */
 class FL_EXPORT Fl_System_Driver {
   friend class Fl;
+public:
+  struct Keyname {
+    unsigned int key;
+    const char* name;
+  };
 protected:
   // implement once for each platform
   static Fl_System_Driver *newSystemDriver();
   Fl_System_Driver();
-  struct Keyname {unsigned int key; const char* name;};
-  static Keyname table[];
+  // key_table and key_table_size are used in fl_shortcut to translate key names
+  Keyname *key_table;
+  int key_table_size;
 public:
   virtual ~Fl_System_Driver();
   // These flags are useful after calling XParseGeometry(). They indicate which of its arguments
@@ -278,6 +284,11 @@ public:
 
 #endif // FL_SYSTEM_DRIVER_H
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: Fl_System_Driver.H 12851 2018-04-18 15:03:51Z manolo $".
+// End of "$Id: Fl_System_Driver.H 12976 2018-06-26 14:12:43Z manolo $".
 //

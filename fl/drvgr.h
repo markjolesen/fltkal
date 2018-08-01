@@ -1,6 +1,6 @@
 // drvgr.h
 //
-// "$Id: Fl_Graphics_Driver.H 12858 2018-04-19 10:39:46Z manolo $"
+// "$Id: Fl_Graphics_Driver.H 12991 2018-07-10 10:51:02Z manolo $"
 //
 // Definition of classes Fl_Graphics_Driver, Fl_Surface_Device, Fl_Display_Device
 // for the Fast Light Tool Kit (FLTK).
@@ -68,6 +68,11 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 //
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
 
 /** \file Fl_Graphics_Driver.H
  \brief declaration of class Fl_Graphics_Driver.
@@ -84,8 +89,8 @@
 #include <stdlib.h>
 
 class Fl_Graphics_Driver;
-class Fl_Shared_Image;
 class Fl_Font_Descriptor;
+class Fl_Image_Surface;
 /** \brief Points to the driver that currently receives all graphics requests */
 FL_EXPORT extern Fl_Graphics_Driver *fl_graphics_driver;
 
@@ -103,6 +108,7 @@ struct Fl_Fontdesc;
 
 #define FL_REGION_STACK_SIZE 10
 #define FL_MATRIX_STACK_SIZE 32
+
 /**
  An abstract class subclassed for each graphics driver FLTK uses.
  Typically, FLTK applications do not use directly objects from this class. Rather, they perform
@@ -110,24 +116,20 @@ struct Fl_Fontdesc;
  Drawing operations are functionally presented in \ref drawing and as function lists
  in the \ref fl_drawings and \ref fl_attributes modules.
  
- \p <tt>Fl_Surface_Device::surface()->driver()</tt>
+ <tt>Fl_Surface_Device::surface()->driver()</tt>
  gives at any time the graphics driver used by all drawing operations. 
  For compatibility with older FLTK versions, the \ref fl_graphics_driver global variable gives the same result.
  Its value changes when
  drawing operations are directed to another drawing surface by Fl_Surface_Device::push_current() /
  Fl_Surface_Device::pop_current() / Fl_Surface_Device::set_current().
 
- \p The Fl_Graphics_Driver class is of interest if one wants to perform new kinds of drawing operations.
- An example would be to draw to a PDF file. This would involve creating a new Fl_Graphics_Driver derived
- class. This new class should implement all virtual methods of the Fl_Graphics_Driver class
- to support all FLTK drawing functions.
- 
- \p The Fl_Graphics_Driver class is essential for developers of the FLTK library.
+ The Fl_Graphics_Driver class is essential for developers of the FLTK library.
  Each platform supported by FLTK requires to create a derived class of Fl_Graphics_Driver that
  implements all its virtual member functions according to the platform.
  */
 class FL_EXPORT Fl_Graphics_Driver {
   friend class Fl_Surface_Device;
+  friend class Fl_Display_Device;
   friend class Fl_Screen_Driver;
   friend class Fl_Window_Driver;
   friend class Fl_Pixmap;
@@ -195,16 +197,8 @@ private:
   // some platforms may need to reimplement this
   virtual void set_current_();
   float scale_; // scale between FLTK and drawing coordinates: drawing = FLTK * scale_
-protected:
-  /** Sets the current value of the scaling factor */
-  virtual void scale(float f) { scale_ = f; }
 public:
-  // The following functions create the various graphics drivers that are required
-  // for core operations. They must be implemented as members of Fl_Graphics_Driver,
-  // but located in the device driver module that is linked to the core library
-  /** Instantiate the graphics driver adequate to draw to the platform's display driver.
-   Each platform implements this method its own way.
-   */
+  /** Creates the graphics driver that is used for core operations. */
   static Fl_Graphics_Driver *newMainGraphicsDriver();
   /** A 2D coordinate transformation matrix */
   struct matrix {double a, b, c, d, x, y;};
@@ -215,6 +209,8 @@ public:
   } driver_feature;
 
 protected:
+  /** Sets the current value of the scaling factor */
+  virtual void scale(float f) { scale_ = f; }
   int fl_clip_state_number; ///< For internal use by FLTK
   static const matrix m0; ///< For internal use by FLTK
   Fl_Font font_; ///< current font
@@ -299,6 +295,7 @@ protected:
     pwidth = &(rgb->cache_w_);
     pheight = &(rgb->cache_h_);
   }
+  static Fl_Offscreen get_offscreen_and_delete_image_surface(Fl_Image_Surface*);
   /** For internal library use only */
   static void draw_empty(Fl_Image* img, int X, int Y) {img->draw_empty(X, Y);}
 
@@ -476,9 +473,6 @@ public:
   virtual void font_name(int num, const char *name) {}
   /** Support function for fl_overlay_rect() and scaled GUI.
    Defaut implementation may be enough */
-  virtual bool overlay_rect_unscaled();
-  /** Support function for fl_overlay_rect() and scaled GUI.
-   Defaut implementation may be enough */
   virtual void overlay_rect(int x, int y, int w , int h) { loop(x, y, x+w-1, y, x+w-1, y+h-1, x, y+h-1); }
 
   // ALLEGRO: 
@@ -629,6 +623,11 @@ protected:
 
 #endif // FL_GRAPHICS_DRIVER_H
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: Fl_Graphics_Driver.H 12858 2018-04-19 10:39:46Z manolo $".
+// End of "$Id: Fl_Graphics_Driver.H 12991 2018-07-10 10:51:02Z manolo $".
 //

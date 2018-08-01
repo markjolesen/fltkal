@@ -1,6 +1,6 @@
 // drawpix.cxx
 //
-// "$Id: fl_draw_pixmap.cxx 12860 2018-04-19 13:51:17Z manolo $"
+// "$Id: fl_draw_pixmap.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Pixmap drawing code for the Fast Light Tool Kit (FLTK).
 //
@@ -86,7 +86,7 @@
 
 #include "cfg_lib.h"
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #if defined(FL_CFG_SYS_WIN32)
 #include "drivers/WinAPI/Fl_WinAPI_System_Driver.H"
 #endif
@@ -335,5 +335,5 @@ int fl_draw_pixmap(const char*const* cdata, int x, int y, Fl_Color bg) {
 }
 
 //
-// End of "$Id: fl_draw_pixmap.cxx 12860 2018-04-19 13:51:17Z manolo $".
+// End of "$Id: fl_draw_pixmap.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

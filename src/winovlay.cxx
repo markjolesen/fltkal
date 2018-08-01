@@ -1,6 +1,6 @@
 // winovlay.cxx
 //
-// "$Id: Fl_Overlay_Window.cxx 12347 2017-07-24 06:32:26Z manolo $"
+// "$Id: Fl_Overlay_Window.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // Overlay window code for the Fast Light Tool Kit (FLTK).
 //
@@ -75,7 +75,7 @@
 
 #include <fl/fl.h>
 #include <fl/winovlay.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 
 
 Fl_Overlay_Window::Fl_Overlay_Window(int W, int H, const char *l)
@@ -103,7 +103,7 @@ void Fl_Overlay_Window::hide() {
 
 void Fl_Overlay_Window::flush()
 {
-  driver()->flush_overlay();
+  Fl_Window_Driver::driver(this)->flush_overlay();
 }
 
 void Fl_Overlay_Window::resize(int X, int Y, int W, int H) {
@@ -120,7 +120,7 @@ Fl_Overlay_Window::~Fl_Overlay_Window() {
 }
 
 int Fl_Overlay_Window::can_do_overlay() {
-  return driver()->can_do_overlay();
+  return Fl_Window_Driver::driver(this)->can_do_overlay();
 }
 
 /**
@@ -130,9 +130,9 @@ int Fl_Overlay_Window::can_do_overlay() {
  calling show().
  */
 void Fl_Overlay_Window::redraw_overlay() {
-  driver()->redraw_overlay();
+  Fl_Window_Driver::driver(this)->redraw_overlay();
 }
 
 //
-// End of "$Id: Fl_Overlay_Window.cxx 12347 2017-07-24 06:32:26Z manolo $".
+// End of "$Id: Fl_Overlay_Window.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

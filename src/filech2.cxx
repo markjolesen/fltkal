@@ -1,6 +1,6 @@
 // filech2.cxx
 //
-// "$Id: Fl_File_Chooser2.cxx 12301 2017-07-07 18:28:10Z AlbrechtS $"
+// "$Id: Fl_File_Chooser2.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // More Fl_File_Chooser routines.
 //
@@ -396,7 +396,7 @@
 //
 
 #include <fl/filech.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/fl.h>
 #include <fl/filename.h>
 #include <fl/fl_ask.h>
@@ -1690,5 +1690,5 @@ unquote_pathname(char       *dst,	// O - Destination string
 }
 
 //
-// End of "$Id: Fl_File_Chooser2.cxx 12301 2017-07-07 18:28:10Z AlbrechtS $".
+// End of "$Id: Fl_File_Chooser2.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

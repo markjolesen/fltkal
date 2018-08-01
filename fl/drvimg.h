@@ -1,6 +1,6 @@
 // drvimg.h
 //
-// "$Id: Fl_Image_Surface.H 12125 2016-11-30 07:09:48Z manolo $"
+// "$Id: Fl_Image_Surface.H 12982 2018-06-27 12:00:40Z manolo $"
 //
 // Draw-to-image code for the Fast Light Tool Kit (FLTK).
 //
@@ -80,7 +80,8 @@
 /** 
  \brief Directs all graphics requests to an Fl_Image.
  
- After creation of an Fl_Image_Surface object, call set_current() on it, and all
+ After creation of an Fl_Image_Surface object, make it the current drawing
+ surface calling Fl_Surface_Device::push_current(), and all
  subsequent graphics requests will be recorded in the image. It's possible to 
  draw widgets (using Fl_Image_Surface::draw()) or to use any of the 
  \ref fl_drawings or the \ref fl_attributes. Finally, call image() on the object
@@ -96,7 +97,7 @@
  Fl_Image_Surface *image_surface = new Fl_Image_Surface(g->w(), g->h());
  
  // direct all further graphics requests to the image
- image_surface->set_current();
+ Fl_Surface_Device::push_current(image_surface);
 
  // draw a white background
  fl_color(FL_WHITE); 
@@ -107,21 +108,19 @@
 
  // get the resulting image
  Fl_RGB_Image* image = image_surface->image();
+
+ // direct graphics requests back to their previous destination
+ Fl_Surface_Device::pop_current();
  
  // delete the image_surface object, but not the image itself
  delete image_surface;
-
- // direct graphics requests back to the screen
- Fl_Display_Device::display_device()->set_current();
  \endcode
 */
 class FL_EXPORT Fl_Image_Surface : public Fl_Widget_Surface {
-  friend FL_EXPORT Fl_Offscreen fl_create_offscreen(int w, int h);
-  friend FL_EXPORT void fl_begin_offscreen(Fl_Offscreen ctx);
-  friend FL_EXPORT void fl_end_offscreen(void);
-  friend FL_EXPORT void fl_delete_offscreen(Fl_Offscreen ctx);
+  friend class Fl_Graphics_Driver;
 private:
   class Fl_Image_Surface_Driver *platform_surface;
+  Fl_Offscreen get_offscreen_before_delete_();
 protected:
   void translate(int x, int y);
   void untranslate();
@@ -134,10 +133,16 @@ public:
   void origin(int *x, int *y);
   void origin(int x, int y);
   int printable_rect(int *w, int *h);
-  Fl_Offscreen get_offscreen_before_delete();
   Fl_Offscreen offscreen();
+  void rescale();
 };
 
+
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
 
 /** A base class describing the interface between FLTK and draw-to-image operations.
  This class is only for internal use by the FLTK library.
@@ -150,7 +155,8 @@ protected:
   int width;
   int height;
   Fl_Offscreen offscreen;
-  Fl_Image_Surface_Driver(int w, int h, int high_res, Fl_Offscreen off) : Fl_Widget_Surface(NULL), width(w), height(h), offscreen(off) {}
+  int external_offscreen;
+  Fl_Image_Surface_Driver(int w, int h, int high_res, Fl_Offscreen off) : Fl_Widget_Surface(NULL), width(w), height(h), offscreen(off) {external_offscreen = (off != 0);}
   virtual ~Fl_Image_Surface_Driver() {}
   virtual void set_current() {}
   virtual void translate(int x, int y) {}
@@ -164,8 +170,13 @@ protected:
   static Fl_Image_Surface_Driver *newImageSurfaceDriver(int w, int h, int high_res, Fl_Offscreen off);
 };
 
+/**
+ \}
+ \endcond
+ */
+
 #endif // Fl_Image_Surface_H
 
 //
-// End of "$Id: Fl_Image_Surface.H 12125 2016-11-30 07:09:48Z manolo $".
+// End of "$Id: Fl_Image_Surface.H 12982 2018-06-27 12:00:40Z manolo $".
 //

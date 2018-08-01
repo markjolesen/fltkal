@@ -1,11 +1,11 @@
 // fl_draw.h
 //
-// "$Id: fl_draw.H 12726 2018-03-10 00:46:12Z matt $"
+// "$Id: fl_draw.H 12935 2018-05-24 19:48:41Z greg.ercolano $"
 //
 // Portable drawing function header file for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -355,6 +355,9 @@ inline void fl_yxline(int x, int y, int y1, int x2, int y3) {fl_graphics_driver-
  \param[in] a1,a2 start and end angles of arc measured in degrees
  counter-clockwise from 3 o'clock. \p a2 must be greater
  than or equal to \p a1.
+
+ \image html  fl_pie_arc_diagram.png "fl_pie() and fl_arc()"
+ \image latex fl_pie_arc_diagram.png "fl_pie() and fl_arc()" width=4cm
  */
 inline void fl_arc(int x, int y, int w, int h, double a1, double a2) {fl_graphics_driver->arc(x,y,w,h,a1,a2); }
 /**
@@ -368,6 +371,9 @@ inline void fl_arc(int x, int y, int w, int h, double a1, double a2) {fl_graphic
  \param[in] a1,a2 start and end angles of arc measured in degrees
  counter-clockwise from 3 o'clock. \p a2 must be greater
  than or equal to \p a1.
+
+ \image html  fl_pie_arc_diagram.png "fl_pie() and fl_arc()"
+ \image latex fl_pie_arc_diagram.png "fl_pie() and fl_arc()" width=4cm
  */
 inline void fl_pie(int x, int y, int w, int h, double a1, double a2) {fl_graphics_driver->pie(x,y,w,h,a1,a2); }
 /** fl_chord declaration is a place holder - the function does not yet exist */
@@ -454,6 +460,9 @@ inline void fl_curve(double X0, double Y0, double X1, double Y1, double X2, doub
  counter-clockwise from 3 o'clock. If \p end is less than \p start
  then it draws the arc in a clockwise direction.
 
+ \image html  fl_arc_xyr_diagram.png "fl_arc(x,y,r,a1,a2)"
+ \image latex fl_arc_xyr_diagram.png "fl_arc(x,y,r,a1,a2)" width=6cm
+
  Examples:
  \code
     // Draw an arc of points
@@ -474,7 +483,7 @@ inline void fl_curve(double X0, double Y0, double X1, double Y1, double X2, doub
  */
 inline void fl_arc(double x, double y, double r, double start, double end) {fl_graphics_driver->arc(x,y,r,start,end); }
 /**
- fl_circle() is equivalent to fl_arc(x,y,r,0,360), but may be faster.
+ fl_circle(x,y,r) is equivalent to fl_arc(x,y,r,0,360), but may be faster.
  
  It must be the \e only thing in the path: if you want a circle as part of
  a complex polygon you must use fl_arc()
@@ -564,7 +573,7 @@ FL_EXPORT Fl_Offscreen fl_create_offscreen(int w, int h);
 FL_EXPORT void fl_begin_offscreen(Fl_Offscreen b);
 FL_EXPORT void fl_end_offscreen(void);
 FL_EXPORT void fl_delete_offscreen(Fl_Offscreen bitmap);
-FL_EXPORT void fl_scale_offscreen(Fl_Offscreen &ctx);
+FL_EXPORT void fl_rescale_offscreen(Fl_Offscreen &ctx);
 
 /** @} */
 
@@ -876,5 +885,5 @@ FL_EXPORT int fl_add_symbol(const char* name, void (*drawit)(Fl_Color), int scal
 #endif
 
 //
-// End of "$Id: fl_draw.H 12726 2018-03-10 00:46:12Z matt $".
+// End of "$Id: fl_draw.H 12935 2018-05-24 19:48:41Z greg.ercolano $".
 //

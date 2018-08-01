@@ -1,6 +1,6 @@
 // syscolor.cxx
 //
-// "$Id: Fl_get_system_colors.cxx 11577 2016-04-10 19:37:18Z manolo $"
+// "$Id: Fl_get_system_colors.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // System color support for the Fast Light Tool Kit (FLTK).
 //
@@ -69,8 +69,8 @@
 //
 
 #include <fl/fl.h>
-#include <fl/drvscr.h>
-#include <fl/drvsys.h>
+#include "drvscr.h"
+#include "drvsys.h"
 #include <fl/fl_draw.h>
 #include <fl/platform.h>
 #include <fl/fl_math.h>
@@ -376,5 +376,5 @@ int Fl::reload_scheme() {
 
 
 //
-// End of "$Id: Fl_get_system_colors.cxx 11577 2016-04-10 19:37:18Z manolo $".
+// End of "$Id: Fl_get_system_colors.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

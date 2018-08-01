@@ -1,6 +1,6 @@
 // win.h
 //
-// "$Id: Fl_Window.H 12726 2018-03-10 00:46:12Z matt $"
+// "$Id: Fl_Window.H 12926 2018-05-22 17:00:27Z manolo $"
 //
 // Window header file for the Fast Light Tool Kit (FLTK).
 //
@@ -583,8 +583,6 @@ public:
    */
   int decorated_h() const;
 
-  Fl_Window_Driver *driver() const { return pWindowDriver; }
-
   // Note: Doxygen docs in Fl_Widget.H to avoid redundancy.
   virtual Fl_Window* as_window() { return this; }
 
@@ -601,11 +599,11 @@ public:
   void shape(const Fl_Image* img);
   void shape(const Fl_Image& b) ;
   int is_shaped();
-
+  int screen_num();
 };
 
 #endif
 
 //
-// End of "$Id: Fl_Window.H 12726 2018-03-10 00:46:12Z matt $".
+// End of "$Id: Fl_Window.H 12926 2018-05-22 17:00:27Z manolo $".
 //

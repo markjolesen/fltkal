@@ -1,6 +1,6 @@
 // hotspot.cxx
 //
-// "$Id: Fl_Window_hotspot.cxx 11412 2016-03-23 20:16:23Z manolo $"
+// "$Id: Fl_Window_hotspot.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // Common hotspot routines for the Fast Light Tool Kit (FLTK).
 //
@@ -70,7 +70,7 @@
 
 #include <fl/fl.h>
 #include <fl/win.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 
 void Fl_Window::hotspot(int X, int Y, int offscreen) {
   int mx,my;
@@ -116,5 +116,5 @@ void Fl_Window::hotspot(const Fl_Widget *o, int offscreen) {
 }
 
 //
-// End of "$Id: Fl_Window_hotspot.cxx 11412 2016-03-23 20:16:23Z manolo $".
+// End of "$Id: Fl_Window_hotspot.cxx 12974 2018-06-26 13:43:18Z manolo $".
 //

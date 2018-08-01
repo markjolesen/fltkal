@@ -1,11 +1,11 @@
 // filename.h
 /*
- * "$Id: filename.H 11555 2016-04-08 15:48:28Z manolo $"
+ * "$Id: filename.H 12970 2018-06-23 20:50:22Z matt $"
  *
  * Filename header file for the Fast Light Tool Kit (FLTK).
  *
 // Copyright 2017-2018 The fltkal authors
- * Copyright 1998-2010 by Bill Spitzak and others.
+ * Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -177,5 +177,5 @@ FL_EXPORT void fl_decode_uri(char *uri);
 /** @} */
 
 /*
- * End of "$Id: filename.H 11555 2016-04-08 15:48:28Z manolo $".
+ * End of "$Id: filename.H 12970 2018-06-23 20:50:22Z matt $".
  */

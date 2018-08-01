@@ -1,6 +1,6 @@
 // textdsp.cxx
 //
-// "$Id: Fl_Text_Display.cxx 12849 2018-04-18 13:20:15Z AlbrechtS $"
+// "$Id: Fl_Text_Display.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Copyright 2017-2018 The fltkal authors
 // Copyright 2001-2018 by Bill Spitzak and others.
@@ -83,7 +83,7 @@
 #include <fl/textbuf.h>
 #include <fl/textdsp.h>
 #include <fl/win.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 
 #undef min
 #undef max
@@ -231,6 +231,7 @@ Fl_Text_Display::Fl_Text_Display(int X, int Y, int W, int H, const char* l)
   color(FL_BACKGROUND2_COLOR, FL_SELECTION_COLOR);
   box(FL_DOWN_FRAME);
   set_flag(SHORTCUT_LABEL);
+  clear_flag(NEEDS_KEYBOARD);
 
   end();
 }
@@ -4167,5 +4168,5 @@ double Fl_Text_Display::col_to_x(double col) const
 
 
 //
-// End of "$Id: Fl_Text_Display.cxx 12849 2018-04-18 13:20:15Z AlbrechtS $".
+// End of "$Id: Fl_Text_Display.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

@@ -1,6 +1,6 @@
 // texted.cxx
 //
-// "$Id: Fl_Text_Editor.cxx 12804 2018-03-26 15:33:22Z matt $"
+// "$Id: Fl_Text_Editor.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Copyright 2017-2018 The fltkal authors
 // Copyright 2001-2010, 2018 by Bill Spitzak and others.
@@ -75,7 +75,7 @@
 #include <fl/fl.h>
 #include <fl/win.h>
 #include <fl/texted.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 #include <fl/fl_ask.h>
 
 /* Keyboard Control Matrix
@@ -853,5 +853,5 @@ int Fl_Text_Editor::tab_nav() const {
 }
 
 //
-// End of "$Id: Fl_Text_Editor.cxx 12804 2018-03-26 15:33:22Z matt $".
+// End of "$Id: Fl_Text_Editor.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

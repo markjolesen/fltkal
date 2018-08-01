@@ -1,6 +1,6 @@
 // drvscr.h
 //
-// "$Id: Fl_Screen_Driver.H 12794 2018-03-24 17:08:25Z matt $"
+// "$Id: Fl_Screen_Driver.H 12975 2018-06-26 14:04:09Z manolo $"
 //
 // All screen related calls in a driver style class.
 //
@@ -68,6 +68,12 @@
 //
 //
 
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
+
 #ifndef FL_SCREEN_DRIVER_H
 #define FL_SCREEN_DRIVER_H
 
@@ -93,10 +99,13 @@ class Fl_RGB_Image;
 class Fl_Group;
 class Fl_Input;
 
-/** A base class describing the interface between FLTK and screen-related operations.
-This class is only for internal use by the FLTK library.
-Each supported platform implements several of the virtual methods of this class.
-*/
+/**
+ A base class describing the interface between FLTK and screen-related operations.
+
+ This class is only for internal use by the FLTK library.
+ 
+ Each supported platform implements several of the virtual methods of this class.
+ */
 class FL_EXPORT Fl_Screen_Driver {
 
 protected:
@@ -180,9 +189,6 @@ public:
   virtual void release_keyboard() { }
 
   // read raw image from a window or an offscreen buffer
-#if defined(FL_PORTING)
-#  pragma message "FL_PORTING: implement code to read RGB data from screen"
-#endif
   /* Member function read_win_rectangle() supports the public function
    fl_read_image() which captures pixel data either from
    the current window or from an offscreen buffer.
@@ -223,7 +229,7 @@ public:
   static int scale_handler(int event);
   virtual void init_workarea() {}
   virtual float desktop_scale_factor() {return 1;}
-  void use_startup_scale_factor();
+  float use_startup_scale_factor();
   enum APP_SCALING_CAPABILITY {
     NO_APP_SCALING = 0, ///< The platform does not support rescaling.
     SYSTEMWIDE_APP_SCALING, ///< The platform supports rescaling with the same factor for all screens.
@@ -240,6 +246,11 @@ public:
 
 #endif // !FL_SCREEN_DRIVER_H
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: Fl_Screen_Driver.H 12794 2018-03-24 17:08:25Z matt $".
+// End of "$Id: Fl_Screen_Driver.H 12975 2018-06-26 14:04:09Z manolo $".
 //

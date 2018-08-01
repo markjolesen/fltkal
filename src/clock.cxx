@@ -1,6 +1,6 @@
 // clock.cxx
 //
-// "$Id: Fl_Clock.cxx 12237 2017-05-15 15:30:52Z AlbrechtS $"
+// "$Id: Fl_Clock.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Clock widget for the Fast Light Tool Kit (FLTK).
 //
@@ -71,7 +71,7 @@
 #include <fl/fl.h>
 #include <fl/clock.h>
 #include <fl/clockrnd.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/fl_draw.h>
 #include <fl/fl_math.h>
 #include <time.h>
@@ -310,5 +310,5 @@ Fl_Round_Clock::Fl_Round_Clock(int X,int Y,int W,int H, const char *L)
 
 
 //
-// End of "$Id: Fl_Clock.cxx 12237 2017-05-15 15:30:52Z AlbrechtS $".
+// End of "$Id: Fl_Clock.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

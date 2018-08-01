@@ -1,6 +1,6 @@
 // filechn.h
 //
-// "$Id: Fl_Native_File_Chooser.H 11681 2016-04-23 06:27:31Z manolo $"
+// "$Id: Fl_Native_File_Chooser.H 12970 2018-06-23 20:50:22Z matt $"
 //
 // FLTK native OS file chooser widget
 //
@@ -219,6 +219,12 @@ public:
   int show() ;
   };
 
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
+
 /** Represents the interface between FLTK and a native file chooser.
  This class is only for internal use by the FLTK library.
  A platform that wants to provide a native file chooser implements all virtual methods
@@ -310,9 +316,14 @@ public:
   virtual int show() ;
 };
 
+/**
+ \}
+ \endcond
+ */
+
 
 #endif /*FL_NATIVE_FILE_CHOOSER_H*/
 
 //
-// End of "$Id: Fl_Native_File_Chooser.H 11681 2016-04-23 06:27:31Z manolo $".
+// End of "$Id: Fl_Native_File_Chooser.H 12970 2018-06-23 20:50:22Z matt $".
 //

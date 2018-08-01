@@ -1,6 +1,6 @@
 // input.cxx
 //
-// "$Id: Fl_Input.cxx 12826 2018-04-10 21:10:53Z AlbrechtS $"
+// "$Id: Fl_Input.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Input widget for the Fast Light Tool Kit (FLTK).
 //
@@ -79,8 +79,8 @@
 #include <fl/fl.h>
 #include <fl/platform.h>
 #include <fl/win.h>
-#include <fl/drvsys.h>
-#include <fl/drvscr.h>
+#include "drvsys.h"
+#include "drvscr.h"
 #include <fl/input.h>
 #include <fl/fl_draw.h>
 #include <fl/fl_ask.h>
@@ -516,10 +516,8 @@ int Fl_Input::handle(int event) {
 	this->mark( this->position() );
 	Fl::reset_marked_text();
       }
-      Fl::screen_driver()->release_keyboard();
       break;
     case FL_FOCUS:
-      Fl::screen_driver()->request_keyboard();
       switch (Fl::event_key()) {
         case FL_Right:
           position(0);
@@ -738,12 +736,14 @@ Fl_Multiline_Input::Fl_Multiline_Input(int X,int Y,int W,int H,const char *l)
 Fl_Output::Fl_Output(int X,int Y,int W,int H, const char *l)
 : Fl_Input(X, Y, W, H, l) {
   type(FL_NORMAL_OUTPUT);
+  clear_flag(NEEDS_KEYBOARD);
 }
 
 
 Fl_Multiline_Output::Fl_Multiline_Output(int X,int Y,int W,int H,const char *l)
 : Fl_Output(X,Y,W,H,l) {
   type(FL_MULTILINE_OUTPUT);
+  clear_flag(NEEDS_KEYBOARD);
 }
 
 
@@ -762,5 +762,5 @@ int Fl_Secret_Input::handle(int event) {
 }
 
 //
-// End of "$Id: Fl_Input.cxx 12826 2018-04-10 21:10:53Z AlbrechtS $".
+// End of "$Id: Fl_Input.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

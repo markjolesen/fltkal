@@ -1,6 +1,6 @@
 // filefltk.cxx
 //
-// "$Id: Fl_Native_File_Chooser_FLTK.cxx 11931 2016-09-11 08:09:00Z manolo $"
+// "$Id: Fl_Native_File_Chooser_FLTK.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // FLTK native file chooser widget wrapper for GTK's GtkFileChooserDialog 
 //
@@ -69,10 +69,16 @@
 // Copyright 2012 IMM
 //
 
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
+
 #include <fl/filechn.h>
 #include <fl/filech.h>
 #include <fl/iconfile.h>
-#include <fl/drvsys.h> // for struct stat
+#include "drvsys.h" // for struct stat
 #include <string.h>
 
 
@@ -357,6 +363,11 @@ const char* Fl_Native_File_Chooser_FLTK_Driver::preset_file() const {
 int Fl_Native_File_Chooser_FLTK_Driver::exist_dialog() {
   return fl_choice("%s", fl_cancel, fl_ok, NULL, Fl_Native_File_Chooser::file_exists_message);
 }
+
+/**
+ \}
+ \endcond
+ */
 
 //
 // End of "$Id: Fl_Native_File_Chooser_FLTK.cxx 11931 2016-09-11 08:09:00Z manolo $".

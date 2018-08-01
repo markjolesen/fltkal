@@ -1,6 +1,6 @@
 // bmp.cxx
 //
-// "$Id: Fl_Bitmap.cxx 12834 2018-04-14 13:37:47Z manolo $"
+// "$Id: Fl_Bitmap.cxx 12909 2018-05-09 12:27:38Z manolo $"
 //
 // Bitmap drawing routines for the Fast Light Tool Kit (FLTK).
 //
@@ -270,5 +270,5 @@ Fl_Image *Fl_Bitmap::copy(int W, int H) {
 }
 
 //
-// End of "$Id: Fl_Bitmap.cxx 12834 2018-04-14 13:37:47Z manolo $".
+// End of "$Id: Fl_Bitmap.cxx 12909 2018-05-09 12:27:38Z manolo $".
 //

@@ -1,6 +1,6 @@
 // fl_grab.cxx
 //
-// "$Id: Fl_grab.cxx 11443 2016-03-27 17:37:07Z manolo $"
+// "$Id: Fl_grab.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Grab/release code for the Fast Light Tool Kit (FLTK).
 //
@@ -69,7 +69,7 @@
 //
 
 #include <fl/fl.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 
 ////////////////////////////////////////////////////////////////
 // "Grab" is done while menu systems are up.  This has several effects:
@@ -86,5 +86,5 @@ void Fl::grab(Fl_Window *win)
 
 
 //
-// End of "$Id: Fl_grab.cxx 11443 2016-03-27 17:37:07Z manolo $".
+// End of "$Id: Fl_grab.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

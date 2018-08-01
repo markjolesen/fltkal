@@ -1,6 +1,6 @@
 // scrxywh.cxx
 //
-// "$Id: screen_xywh.cxx 12264 2017-06-17 06:53:44Z manolo $"
+// "$Id: screen_xywh.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Screen/monitor bounding box API for the Fast Light Tool Kit (FLTK).
 //
@@ -70,7 +70,7 @@
 
 #include <fl/fl.h>
 #include <fl/platform.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 #include "config.h"
 
 
@@ -243,5 +243,5 @@ void Fl::screen_work_area(int &X, int &Y, int &W, int &H)
 
 
 //
-// End of "$Id: screen_xywh.cxx 12264 2017-06-17 06:53:44Z manolo $".
+// End of "$Id: screen_xywh.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

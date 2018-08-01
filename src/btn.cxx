@@ -1,6 +1,6 @@
 // btn.cxx
 //
-// "$Id: Fl_Button.cxx 10386 2014-10-19 20:17:17Z AlbrechtS $"
+// "$Id: Fl_Button.cxx 12992 2018-07-20 05:21:14Z greg.ercolano $"
 //
 // Button widget for the Fast Light Tool Kit (FLTK).
 //
@@ -216,6 +216,7 @@ int Fl_Button::handle(int event) {
       if (when() & FL_WHEN_RELEASE) do_callback();
       return 1;
     }
+    /* FALLTHROUGH */
   default:
     return 0;
   }
@@ -300,5 +301,5 @@ Fl_Toggle_Button::Fl_Toggle_Button(int X,int Y,int W,int H,const char *L)
 
 
 //
-// End of "$Id: Fl_Button.cxx 10386 2014-10-19 20:17:17Z AlbrechtS $".
+// End of "$Id: Fl_Button.cxx 12992 2018-07-20 05:21:14Z greg.ercolano $".
 //

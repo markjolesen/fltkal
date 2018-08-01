@@ -1,7 +1,7 @@
 /*
  * cfg_lib.h
  *
- * "$Id: config_lib.h 11716 2016-05-08 06:42:57Z manolo $"
+ * "$Id: config_lib.h 12969 2018-06-23 17:04:18Z matt $"
  *
  * Configuration file for the Fast Light Tool Kit (FLTK).
  *
@@ -82,13 +82,11 @@
 # ifdef HAVE_GL
 #  define FL_CFG_GFX_OPENGL
 # endif
-#elif defined(WIN32)
+#elif defined(_WIN32)
 # define FL_CFG_GFX_GDI
 # ifdef HAVE_GL
 #  define FL_CFG_GFX_OPENGL
 # endif
-#elif defined(FL_PORTING)
-# pragma message "FL_PORTING: please choose a core graphics library"
 #elif defined(USE_X11) /* X11 */
 # define FL_CFG_GFX_XLIB
 # ifdef HAVE_GL
@@ -106,10 +104,8 @@
 
 #ifdef __APPLE__ /* default configurations */
 # define FL_CFG_PRN_QUARTZ
-#elif defined(WIN32)
+#elif defined(_WIN32)
 # define FL_CFG_PRN_WIN32
-#elif defined(FL_PORTING)
-# pragma message "FL_PORTING: please choose a printer driver"
 #elif defined(USE_X11) /* X11 */
 # define FL_CFG_PRN_PS
 #endif
@@ -122,10 +118,8 @@
 
 #ifdef __APPLE__ /* default configurations */
 # define FL_CFG_WIN_COCOA
-#elif defined(WIN32)
+#elif defined(_WIN32)
 # define FL_CFG_WIN_WIN32
-#elif defined(FL_PORTING)
-# pragma message "FL_PORTING: please choose a window management library"
 #elif defined(USE_X11) /* X11 */
 # define FL_CFG_WIN_X11
 #elif defined(USE_ALLEGRO)
@@ -140,10 +134,8 @@
 
 #ifdef __APPLE__ /* default configurations */
 # define FL_CFG_SYS_POSIX
-#elif defined(WIN32)
+#elif defined(_WIN32)
 # define FL_CFG_SYS_WIN32
-#elif defined(FL_PORTING)
-# pragma message "FL_PORTING: please choose a system library"
 #elif defined(USE_X11) /* X11 */
 # define FL_CFG_SYS_POSIX
 #elif defined(USE_ALLEGRO)

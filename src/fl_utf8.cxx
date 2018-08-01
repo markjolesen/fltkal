@@ -1,6 +1,6 @@
 // fl_utf8.cxx
 //
-// "$Id: fl_utf8.cxx 12549 2017-11-10 12:56:00Z AlbrechtS $"
+// "$Id: fl_utf8.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Unicode to UTF-8 conversion functions.
 //
@@ -71,7 +71,7 @@
 //
 
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/filename.h>
 #include <stdarg.h>
 #include <fl/fl_utf8.h>
@@ -667,7 +667,7 @@ void fl_make_path_for_file( const char *path ) {
 
 #if ERRORS_TO_CP1252
 /* Codes 0x80..0x9f from the Microsoft CP1252 character set, translated
- * to Unicode:
+ to Unicode:
  */
 static unsigned short cp1252[32] = {
   0x20ac, 0x0081, 0x201a, 0x0192, 0x201e, 0x2026, 0x2020, 0x2021,
@@ -1387,5 +1387,5 @@ unsigned fl_utf8from_mb(char* dst, unsigned dstlen, const char* src, unsigned sr
 /** @} */
 
 //
-// End of "$Id: fl_utf8.cxx 12549 2017-11-10 12:56:00Z AlbrechtS $".
+// End of "$Id: fl_utf8.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

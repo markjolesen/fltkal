@@ -1,6 +1,6 @@
 // drvdev.h
 //
-// "$Id: Fl_Device.H 12226 2017-04-25 12:42:22Z manolo $"
+// "$Id: Fl_Device.H 12980 2018-06-27 09:27:04Z manolo $"
 //
 // Definition of classes Fl_Surface_Device, Fl_Display_Device
 // for the Fast Light Tool Kit (FLTK).
@@ -95,7 +95,7 @@ class Fl_Widget;
  A drawing surface other than the computer's display, is typically used as follows:
  <ol><li> Create \c surface, an object from a particular Fl_Surface_Device derived class (e.g., Fl_Copy_Surface, Fl_Printer).
  <li> Call \c Fl_Surface_Device::push_current(surface); to redirect all graphics requests to \c surface which becomes the new
- current drawing surface (not necessary with class Fl_Printer because it is done by Fl_Printer::start_job()).
+ current drawing surface (not necessary with class Fl_Printer because it is done by Fl_Printer::begin_job()).
  <li> At this point all of the \ref fl_drawings (e.g., fl_rect()) or the \ref fl_attributes or \ref drawing_images functions
  (e.g., fl_draw_image(), Fl_Image::draw()) operate on the new current drawing surface.
  Certain drawing surfaces allow additional ways to draw to them (e.g., Fl_Printer::print_widget(), Fl_Image_Surface::draw()).
@@ -105,6 +105,17 @@ class Fl_Widget;
  </ol>
  For back-compatibility, it is also possible to use the Fl_Surface_Device::set_current() member function
  to change the current drawing surface, once to the new surface, once to the previous one.
+
+ Class Fl_Surface_Device can also be derived to define new kinds of graphical output
+ usable with FLTK drawing functions.
+ An example would be to draw to an SVG file. This would require to create a new class,
+ say SVG_Surface, derived from class Fl_Surface_Device, and another new class,
+ say SVG_Graphics_Driver, derived from class Fl_Graphics_Driver.
+ Class SVG_Graphics_Driver should implement all virtual methods of the Fl_Graphics_Driver class
+ to support all FLTK drawing functions and have them draw into SVG files. Alternatively,
+ class SVG_Graphics_Driver could implement only some virtual methods, and only part of
+ the FLTK drawing API would be usable when drawing to SVG files
+ (see examples/SVG_File_Surface.cxx for a small, working implementation of this procedure).
  */
 class FL_EXPORT Fl_Surface_Device {
   /** The graphics driver in use by this surface. */
@@ -112,9 +123,8 @@ class FL_EXPORT Fl_Surface_Device {
   static Fl_Surface_Device *surface_; // the surface that currently receives graphics requests
   static Fl_Surface_Device *default_surface(); // create surface if none exists yet
   /* Some drawing surfaces (e.g., Fl_XXX_Image_Surface_Driver) re-implement this.
-   Gets called each time a surface ceases to be the current drawing surface.
-   The next_current argument gives the drawing surface that will become current next */
-  virtual void end_current_(Fl_Surface_Device *next_current) {}
+   Gets called each time a surface ceases to be the current drawing surface. */
+  virtual void end_current_() {}
 protected:
   /** Constructor that sets the graphics driver to use for the created surface. */
   Fl_Surface_Device(Fl_Graphics_Driver *graphics_driver) {pGraphicsDriver = graphics_driver; }
@@ -176,5 +186,5 @@ public:
 #endif // Fl_Device_H
 
 //
-// End of "$Id: Fl_Device.H 12226 2017-04-25 12:42:22Z manolo $".
+// End of "$Id: Fl_Device.H 12980 2018-06-27 09:27:04Z manolo $".
 //

@@ -1,6 +1,6 @@
 // widgsurf.cxx
 //
-// "$Id: Fl_Widget_Surface.cxx 12573 2017-11-30 13:55:19Z manolo $"
+// "$Id: Fl_Widget_Surface.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Drivers code for the Fast Light Tool Kit (FLTK).
 //
@@ -73,8 +73,8 @@
 #include <fl/fl.h>
 #include <fl/platform.h>
 #include <fl/imgshare.h>
-#include <fl/drvwin.h>
-#include <fl/drvscr.h>
+#include "drvwin.h"
+#include "drvscr.h"
 
 
 /** The constructor.
@@ -86,15 +86,15 @@ Fl_Widget_Surface::Fl_Widget_Surface(Fl_Graphics_Driver *d) : Fl_Surface_Device(
 }
 
 /**
- @brief Draws the widget on the drawing surface.
- *
+ \brief Draws the widget on the drawing surface.
+
  The widget's position on the surface is determined by the last call to origin()
  and by the optional delta_x and delta_y arguments.
  Its dimensions are in points unless there was a previous call to scale().
- @param[in] widget Any FLTK widget (e.g., standard, custom, window).
- @param[in] delta_x Optional horizontal offset for positioning the widget relatively
+ \param[in] widget Any FLTK widget (e.g., standard, custom, window).
+ \param[in] delta_x Optional horizontal offset for positioning the widget relatively
  to the current origin of graphics functions.
- @param[in] delta_y Same as above, vertically.
+ \param[in] delta_y Same as above, vertically.
  */
 void Fl_Widget_Surface::draw(Fl_Widget* widget, int delta_x, int delta_y)
 {
@@ -164,10 +164,10 @@ void Fl_Widget_Surface::translate(int x, int y)
 }
 
 /**
- @brief Computes the page coordinates of the current origin of graphics functions.
- *
- @param[out] x If non-null, *x is set to the horizontal page offset of graphics origin.
- @param[out] y Same as above, vertically.
+ \brief Computes the page coordinates of the current origin of graphics functions.
+
+ \param[out] x If non-null, *x is set to the horizontal page offset of graphics origin.
+ \param[out] y Same as above, vertically.
  */
 void Fl_Widget_Surface::origin(int *x, int *y)
 {
@@ -176,15 +176,15 @@ void Fl_Widget_Surface::origin(int *x, int *y)
 }
 
 /**
- @brief Sets the position in page coordinates of the origin of graphics functions.
+ \brief Sets the position in page coordinates of the origin of graphics functions.
  
  Arguments should be expressed relatively to the result of a previous printable_rect() call.
  That is, <tt>printable_rect(&w, &h); origin(w/2, 0);</tt> sets the graphics origin at the
  top center of the page printable area.
  Origin() calls are not affected by rotate() calls.
  Successive origin() calls don't combine their effects.
- @param[in] x Horizontal position in page coordinates of the desired origin of graphics functions.
- @param[in] y Same as above, vertically.
+ \param[in] x Horizontal position in page coordinates of the desired origin of graphics functions.
+ \param[in] y Same as above, vertically.
  */
 void Fl_Widget_Surface::origin(int x, int y) {
   x_offset = x;
@@ -192,15 +192,15 @@ void Fl_Widget_Surface::origin(int x, int y) {
 }
 
 /**
- @brief Prints a rectangular part of an on-screen window.
+ Draws a rectangular part of an on-screen window.
  
- @param win The window from where to capture.
- @param x The rectangle left
- @param y The rectangle top
- @param w The rectangle width
- @param h The rectangle height
- @param delta_x Optional horizontal offset from current graphics origin where to print the captured rectangle.
- @param delta_y As above, vertically.
+ \param win The window from where to capture. Can be an Fl_Gl_Window. Sub-windows that intersect the rectangle are also captured.
+ \param x The rectangle left
+ \param y The rectangle top
+ \param w The rectangle width
+ \param h The rectangle height
+ \param delta_x Optional horizontal offset from current graphics origin where to print the captured rectangle.
+ \param delta_y As above, vertically.
  */
 void Fl_Widget_Surface::print_window_part(Fl_Window *win, int x, int y, int w, int h, int delta_x, int delta_y)
 {
@@ -208,23 +208,24 @@ void Fl_Widget_Surface::print_window_part(Fl_Window *win, int x, int y, int w, i
   Fl_Window *save_front = Fl::first_window();
   win->show();
   Fl::check();
-  win->driver()->flush(); // makes the window current
+  Fl_Window_Driver::driver(win)->flush(); // makes the window current
   Fl_RGB_Image *img = Fl_Screen_Driver::traverse_to_gl_subwindows(win, x, y, w, h, NULL);
-  Fl_Shared_Image *shared = Fl_Shared_Image::get(img);
-  shared->scale(w, h, 1, 1);
+  if (img) img->scale(w, h, 1, 1);
   if (save_front != win) save_front->show();
   Fl_Surface_Device::pop_current();
-  shared->draw(delta_x, delta_y);
-  shared->release();
+  if (img) {
+    img->draw(delta_x, delta_y);
+    delete img;
+  }
 }
 
 /**
- @brief Computes the width and height of the printable area of the page.
+ Computes the width and height of the drawable area of the drawing surface.
  
- Values are in the same unit as that used by FLTK drawing functions,
- are unchanged by calls to origin(), but are changed by scale() calls.
- Values account for the user-selected paper type and print orientation.
- @return 0 if OK, non-zero if any error
+ Values are in the same unit as that used by FLTK drawing functions and are unchanged by calls to origin().
+ If the object is derived from class Fl_Paged_Device, values account for the user-selected paper type and print orientation
+ and are changed by scale() calls.
+ \return 0 if OK, non-zero if any error
  */
 int Fl_Widget_Surface::printable_rect(int *w, int *h) {return 1;}
 
@@ -236,31 +237,31 @@ int Fl_Widget_Surface::printable_rect(int *w, int *h) {return 1;}
  */
 void Fl_Widget_Surface::draw_decorated_window(Fl_Window *win, int x_offset, int y_offset)
 {
-  Fl_Shared_Image *top=0, *left=0, *bottom=0, *right=0;
+  Fl_RGB_Image *top=0, *left=0, *bottom=0, *right=0;
   if (win->border() && !win->parent()) {
-    win->driver()->capture_titlebar_and_borders(top, left, bottom, right);
+    Fl_Window_Driver::driver(win)->capture_titlebar_and_borders(top, left, bottom, right);
   }
   int wsides = left ? left->w() : 0;
   int toph = top ? top->h() : 0;
   if (top) {
     top->draw(x_offset, y_offset);
-    top->release();
+    delete top;
   }
   if (left) {
     left->draw(x_offset, y_offset + toph);
-    left->release();
+    delete left;
   }
   if (right) {
     right->draw(x_offset + wsides + win->w(), y_offset + toph);
-    right->release();
+    delete right;
   }
   if (bottom) {
     bottom->draw(x_offset, y_offset + toph + win->h());
-    bottom->release();
+    delete bottom;
   }
   this->draw(win, x_offset + wsides, y_offset + toph);
 }
 
 //
-// End of "$Id: Fl_Widget_Surface.cxx 12573 2017-11-30 13:55:19Z manolo $".
+// End of "$Id: Fl_Widget_Surface.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

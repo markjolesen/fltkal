@@ -1,6 +1,6 @@
 // set_font.cxx
 //
-// "$Id: fl_set_font.cxx 11968 2016-09-23 13:56:07Z manolo $"
+// "$Id: fl_set_font.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Font utilities for the Fast Light Tool Kit (FLTK).
 //
@@ -74,7 +74,7 @@
 #include <fl/fl.h>
 #include <fl/platform.h>
 #include <fl/fl_draw.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 #include "flstring.h"
 #include <stdlib.h>
 
@@ -125,5 +125,5 @@ const char* Fl::get_font(Fl_Font fnum) {
 }
 
 //
-// End of "$Id: fl_set_font.cxx 11968 2016-09-23 13:56:07Z manolo $".
+// End of "$Id: fl_set_font.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

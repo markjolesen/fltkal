@@ -1,6 +1,6 @@
 // tabs.cxx
 //
-// "$Id: Fl_Tabs.cxx 12270 2017-06-21 20:00:28Z AlbrechtS $"
+// "$Id: Fl_Tabs.cxx 12925 2018-05-22 09:34:13Z AlbrechtS $"
 //
 // Tab widget for the Fast Light Tool Kit (FLTK).
 //
@@ -98,7 +98,7 @@ int Fl_Tabs::tab_positions() {
     clear_tab_positions();
     if (nc) {
       tab_pos   = (int*)malloc((nc+1)*sizeof(int));
-      tab_width = (int*)malloc((nc+1)*sizeof(int));
+      tab_width = (int*)malloc((nc)*sizeof(int));
     }
     tab_count = nc;
   }
@@ -602,5 +602,5 @@ void Fl_Tabs::clear_tab_positions() {
 }
 
 //
-// End of "$Id: Fl_Tabs.cxx 12270 2017-06-21 20:00:28Z AlbrechtS $".
+// End of "$Id: Fl_Tabs.cxx 12925 2018-05-22 09:34:13Z AlbrechtS $".
 //

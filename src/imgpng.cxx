@@ -1,6 +1,6 @@
 // imgpng.cxx
 //
-// "$Id: Fl_PNG_Image.cxx 12439 2017-09-10 11:38:23Z AlbrechtS $"
+// "$Id: Fl_PNG_Image.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Fl_PNG_Image routines.
 //
@@ -82,7 +82,7 @@
 
 #include "config.h"
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/imgpng.h>
 #include <fl/imgshare.h>
 #include <fl/fl_utf8.h>
@@ -286,5 +286,5 @@ void Fl_PNG_Image::load_png_(const char *name_png, const unsigned char *buffer_p
 
 
 //
-// End of "$Id: Fl_PNG_Image.cxx 12439 2017-09-10 11:38:23Z AlbrechtS $".
+// End of "$Id: Fl_PNG_Image.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

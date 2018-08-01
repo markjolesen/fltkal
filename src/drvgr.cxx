@@ -1,6 +1,6 @@
 // drvgr.cxx
 //
-// "$Id: Fl_Graphics_Driver.cxx 12858 2018-04-19 10:39:46Z manolo $"
+// "$Id: Fl_Graphics_Driver.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Fl_Graphics_Driver class for the Fast Light Tool Kit (FLTK).
 //
@@ -71,7 +71,7 @@
 #include <fl/fl.h>
 #include "cfg_lib.h"
 #include <fl/drvgr.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 #include <fl/img.h>
 #include <fl/fl_draw.h>
 #include <fl/drvimg.h>
@@ -154,7 +154,6 @@ void Fl_Graphics_Driver::copy_offscreen(int x, int y, int w, int h, Fl_Offscreen
   uchar *img = fl_read_image(NULL, px, py, pw, ph, 0);
   if (surface) {
     Fl_Surface_Device::pop_current();
-    surface->get_offscreen_before_delete(); // so deleting surface does not touch pixmap
     delete surface;
   } else fl_end_offscreen();
   if (img) {
@@ -245,11 +244,6 @@ unsigned Fl_Graphics_Driver::font_desc_size() {
   return (unsigned)sizeof(Fl_Fontdesc);
 }
 
-bool Fl_Graphics_Driver::overlay_rect_unscaled()
-{
-  return (scale() == int(scale()));
-}
-
 /** Converts \p width and \p height from FLTK units to drawing units.
  The conversion performed consists in multiplying \p width and \p height by
  scale() and in slightly modifying that to help support tiled images. */
@@ -259,8 +253,8 @@ void Fl_Graphics_Driver::cache_size(Fl_Image *img, int &width, int &height)
     width  = width * scale();
     height = height * scale();
   } else {
-    width  = (width+1) * scale();
-    height = (height+1) * scale();
+    width  = (width+1) * scale() - 1;
+    height = (height+1) * scale() - 1;
   }
 }
 
@@ -377,8 +371,20 @@ void Fl_Graphics_Driver::draw_rgb(Fl_RGB_Image *img, int XP, int YP, int WP, int
   }
 }
 
+/** Accessor to private member function of Fl_Image_Surface */
+Fl_Offscreen Fl_Graphics_Driver::get_offscreen_and_delete_image_surface(Fl_Image_Surface* surface) {
+  Fl_Offscreen off = surface->get_offscreen_before_delete_();
+  delete surface;
+  return off;
+}
+
+/**
+ \}
+ \endcond
+ */
 
 #ifndef FL_DOXYGEN
+
 Fl_Font_Descriptor::Fl_Font_Descriptor(const char* name, Fl_Fontsize Size) {
   next = 0;
 #  if HAVE_GL
@@ -397,10 +403,12 @@ void Fl_Scalable_Graphics_Driver::rect(int x, int y, int w, int h)
   if (int(scale()) == scale()) {
     rect_unscaled(x * scale(), y * scale(), w * scale(), h * scale());
   } else {
-    xyline(x, y, x+w-1);
-    yxline(x, y, y+h-1);
-    yxline(x+w-1, y, y+h-1);
-    xyline(x, y+h-1, x+w-1);
+    if (w > 0 && h > 0) {
+      xyline(x, y, x+w-1);
+      yxline(x, y, y+h-1);
+      yxline(x+w-1, y, y+h-1);
+      xyline(x, y+h-1, x+w-1);
+    }
   }
 }
 
@@ -629,8 +637,8 @@ void Fl_Scalable_Graphics_Driver::unscale_clip(Fl_Region r) {
   }
 }
 
-#endif // !FL_DOXYGEN
+#endif
 
 //
-// End of "$Id: Fl_Graphics_Driver.cxx 12776 2018-03-19 17:43:18Z manolo $".
+// End of "$Id: Fl_Graphics_Driver.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

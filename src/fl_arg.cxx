@@ -1,6 +1,6 @@
 // fl_arg.cxx
 //
-// "$Id: Fl_arg.cxx 11988 2016-09-26 19:35:20Z manolo $"
+// "$Id: Fl_arg.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Optional argument initialization code for the Fast Light Tool Kit (FLTK).
 //
@@ -68,13 +68,13 @@
 //
 //
 
-// OPTIONAL initialization code for a program using fltk.
+// OPTIONAL initialization code for a program using FLTK.
 // You do not need to call this!  Feel free to make up your own switches.
 
 #include <fl/fl.h>
 #include <fl/win.h>
-#include <fl/drvwin.h>
-#include <fl/drvsys.h>
+#include "drvwin.h"
+#include "drvsys.h"
 #include <fl/tooltip.h>
 #include <fl/filename.h>
 #include <fl/fl_draw.h>
@@ -406,5 +406,5 @@ void Fl::args(int argc, char **argv) {
 }
 
 //
-// End of "$Id: Fl_arg.cxx 11988 2016-09-26 19:35:20Z manolo $".
+// End of "$Id: Fl_arg.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

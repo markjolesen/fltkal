@@ -1,6 +1,6 @@
 // fl.h
 //
-// "$Id: Fl.H 12773 2018-03-18 15:25:08Z AlbrechtS $"
+// "$Id: Fl.H 12930 2018-05-24 10:58:47Z manolo $"
 //
 // Main header file for the Fast Light Tool Kit (FLTK).
 //
@@ -192,6 +192,8 @@ public:
 
   static Fl_Screen_Driver *screen_driver();
   static Fl_System_Driver *system_driver();
+  static void reset_marked_text(); // resets marked text
+  static void insertion_point_location(int x, int y, int height); // sets window coordinates & height of insertion point
 
 public: // run time information about compile time configuration
   /** \defgroup cfg_gfx runtime graphics driver configuration */
@@ -256,8 +258,6 @@ public: // should be private!
   static Fl_Window* grab_;
   static int compose_state; // used for dead keys (Windows) or marked text (MacOS)
   static void call_screen_init(); // recompute screen number and dimensions
-  static void reset_marked_text(); // resets marked text
-  static void insertion_point_location(int x, int y, int height); // sets window coordinates & height of insertion point
 #endif // FL_DOXYGEN
 
 
@@ -1067,6 +1067,7 @@ int main() {
   static void screen_work_area(int &X, int &Y, int &W, int &H, int mx, int my); // via screen driver
   static void screen_work_area(int &X, int &Y, int &W, int &H, int n); // via screen driver
   static void screen_work_area(int &X, int &Y, int &W, int &H); // via screen driver
+  static float screen_scale(int n); // via screen driver
 /**   @} */
 
 
@@ -1486,5 +1487,5 @@ public:
 #endif // !Fl_H
 
 //
-// End of "$Id: Fl.H 12773 2018-03-18 15:25:08Z AlbrechtS $".
+// End of "$Id: Fl.H 12930 2018-05-24 10:58:47Z manolo $".
 //

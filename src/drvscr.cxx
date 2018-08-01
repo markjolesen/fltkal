@@ -1,6 +1,6 @@
 // drvscr.cxx
 //
-// "$Id: Fl_Screen_Driver.cxx 12812 2018-03-28 16:27:43Z AlbrechtS $"
+// "$Id: Fl_Screen_Driver.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // All screen related calls in a driver style class.
 //
@@ -69,7 +69,7 @@
 //
 
 #include <fl/drvdev.h>
-#include <fl/drvscr.h>
+#include "drvscr.h"
 #include <fl/img.h>
 #include <fl/fl.h>
 #include <fl/platform.h> // for fl_window
@@ -77,7 +77,7 @@
 #include <fl/group.h>
 #include <fl/win.h>
 #include <fl/input.h>
-#include <fl/drvwin.h>
+#include "drvwin.h"
 #include <fl/drvimg.h>
 #include <fl/box.h>
 #include <fl/tooltip.h>
@@ -244,11 +244,11 @@ Fl_RGB_Image *Fl_Screen_Driver::traverse_to_gl_subwindows(Fl_Group *g, int x, in
     if (!pi) return full_img;
     full_img = pi->rectangle_capture(g, x, y, w, h);
   }
-  else if ( g->as_window() && (!full_img || (g->window() && g->window()->as_gl_window())) ) {
-    // the starting window or one inside a GL window
-    if (full_img) g->as_window()->make_current();
+  else if ( g->as_window() ) {
+    if (Fl_Window::current() != g) g->as_window()->make_current();
     full_img = Fl::screen_driver()->read_win_rectangle(x, y, w, h);
   }
+  float full_img_scale =  (full_img && w > 0 ? float(full_img->data_w())/w : 1);
   int n = g->children();
   for (int i = 0; i < n; i++) {
     Fl_Widget *c = g->child(i);
@@ -258,25 +258,15 @@ Fl_RGB_Image *Fl_Screen_Driver::traverse_to_gl_subwindows(Fl_Group *g, int x, in
       if (x < c->x()) origin_x = c->x();
       int origin_y = y;
       if (y < c->y()) origin_y = c->y();
-      int width = c->w();
-      if (origin_x + width > c->x() + c->w()) width = c->x() + c->w() - origin_x;
-      if (origin_x + width > x + w) width = x + w - origin_x;
-      int height = c->w();
-      if (origin_y + height > c->y() + c->h()) height = c->y() + c->h() - origin_y;
-      if (origin_y + height > y + h) height = y + h - origin_y;
+      int maxi = x + w; if (maxi > c->x() + c->w()) maxi = c->x() + c->w();
+      int width = maxi - origin_x;
+      maxi = y + h; if (maxi > c->y() + c->h()) maxi = c->y() + c->h();
+      int height = maxi - origin_y;
       if (width > 0 && height > 0) {
         Fl_RGB_Image *img = traverse_to_gl_subwindows(c->as_window(),  origin_x - c->x(),
                                                       origin_y - c->y(), width, height, full_img);
         if (img == full_img) continue;
-        int top;
-        if (c->as_gl_window()) {
-          top = origin_y - y;
-        } else {
-          top = full_img->h() - (origin_y - y + img->h());
-        }
-        int nscreen = c->as_window()->driver()->screen_num();
-        float s = Fl::screen_driver()->scale(nscreen);
-        write_image_inside(full_img, img, (origin_x - x) * s, top * s);
+        write_image_inside(full_img, img, (origin_x - x) * full_img_scale, (origin_y - y) * full_img_scale);
         delete img;
       }
     }
@@ -358,14 +348,14 @@ int Fl_Screen_Driver::input_widget_handle_key(int key, unsigned mods, unsigned s
 void Fl_Screen_Driver::rescale_all_windows_from_screen(int screen, float f)
 {
   float old_f = this->scale(screen);
-  if (f == old_f) return;
+  //if (f == old_f) return;
   this->scale(screen, f);
   Fl_Graphics_Driver *d = Fl_Display_Device::display_device()->driver();
   d->scale(f);
   int i = 0, count = 0; // count top-level windows, except transient scale-displaying window
   Fl_Window *win = Fl::first_window();
   while (win) {
-    if (!win->parent() && (win->driver()->screen_num() == screen || rescalable() == SYSTEMWIDE_APP_SCALING) &&
+    if (!win->parent() && (Fl_Window_Driver::driver(win)->screen_num() == screen || rescalable() == SYSTEMWIDE_APP_SCALING) &&
         win->user_data() != &Fl_Screen_Driver::transient_scale_display) count++;
     win = Fl::next_window(win);
   }
@@ -373,14 +363,14 @@ void Fl_Screen_Driver::rescale_all_windows_from_screen(int screen, float f)
   win = Fl::first_window(); // memorize all top-level windows
   while (win) {
     if (!win->parent() && win->user_data() != &Fl_Screen_Driver::transient_scale_display &&
-        (win->driver()->screen_num() == screen  || rescalable() == SYSTEMWIDE_APP_SCALING) ) {
+        (Fl_Window_Driver::driver(win)->screen_num() == screen  || rescalable() == SYSTEMWIDE_APP_SCALING) ) {
       win_array[i++] = win;
     }
     win = Fl::next_window(win);
   }
   for (i = count - 1; i >= 0; i--) { // rescale all top-level windows, finishing with front one
     win = win_array[i];
-    win->driver()->resize_after_scale_change(screen, old_f, f);
+    Fl_Window_Driver::driver(win)->resize_after_scale_change(screen, old_f, f);
     win->wait_for_expose();
   }
   delete[] win_array;
@@ -429,8 +419,8 @@ void Fl_Screen_Driver::transient_scale_display(float f, int nscreen)
   win->user_data((void*)&transient_scale_display); // prevent this window from being rescaled later
   win->set_output();
   win->set_non_modal();
-  win->driver()->screen_num(nscreen);
-  win->driver()->force_position(1);
+  Fl_Window_Driver::driver(win)->screen_num(nscreen);
+  Fl_Window_Driver::driver(win)->force_position(1);
   win->show();
   Fl::add_timeout(1, del_transient_window, win); // delete after 1 sec
 }
@@ -445,7 +435,7 @@ int Fl_Screen_Driver::scale_handler(int event)
     if (Fl::grab()) return 0; // don't rescale when menu windows are on
     Fl_Widget *wid = Fl::focus();
     if (!wid) return 0;
-    int screen = wid->top_window()->driver()->screen_num();
+    int screen = Fl_Window_Driver::driver(wid->top_window())->screen_num();
     Fl_Screen_Driver *screen_dr = Fl::screen_driver();
     static float initial_scale = screen_dr->scale(screen);
 #if defined(TEST_SCALING)
@@ -491,7 +481,7 @@ int Fl_Screen_Driver::scale_handler(int event)
 
 
 // use the startup time scaling value
-void Fl_Screen_Driver::use_startup_scale_factor()
+float Fl_Screen_Driver::use_startup_scale_factor()
 {
   float factor;
   char *p = 0;
@@ -504,9 +494,7 @@ void Fl_Screen_Driver::use_startup_scale_factor()
   else {
     factor = desktop_scale_factor();
   }
-  if (factor) {
-    for (int i = 0; i < screen_count(); i++)  scale(i, factor);
-  }
+  return factor;
 }
 
 
@@ -516,9 +504,10 @@ void Fl_Screen_Driver::open_display()
   static bool been_here = false;
   if (!been_here) {
     been_here = true;
-    screen_count(); // initialize, but ignore return value
+    int scount = screen_count(); // keep here
     if (rescalable()) {
-      use_startup_scale_factor();
+      float factor = use_startup_scale_factor();
+      if (factor) for (int i = 0; i < scount; i++)  scale(i, factor);
       Fl::add_handler(Fl_Screen_Driver::scale_handler);
       int mx, my;
       int ns = Fl::screen_driver()->get_mouse(mx, my);
@@ -552,6 +541,11 @@ int Fl_Screen_Driver::parse_color(const char* p, uchar& r, uchar& g, uchar& b)
   return 1;
 }
 
+/**
+ \}
+ \endcond
+ */
+
 //
-// End of "$Id: Fl_Screen_Driver.cxx 12812 2018-03-28 16:27:43Z AlbrechtS $".
+// End of "$Id: Fl_Screen_Driver.cxx 12975 2018-06-26 14:04:09Z manolo $".
 //

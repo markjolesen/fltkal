@@ -1,6 +1,6 @@
 // fnlist.cxx
 //
-// "$Id: filename_list.cxx 11668 2016-04-19 22:45:22Z matt $"
+// "$Id: filename_list.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Filename list routines for the Fast Light Tool Kit (FLTK).
 //
@@ -72,7 +72,7 @@
 
 #include <fl/filename.h>
 #include <fl/fl.h>
-#include <fl/drvsys.h>
+#include "drvsys.h"
 #include <fl/fl_utf8.h>
 #include "flstring.h"
 #include <stdlib.h>
@@ -145,5 +145,5 @@ void fl_filename_free_list(struct dirent ***list, int n)
 }
 
 //
-// End of "$Id: filename_list.cxx 11668 2016-04-19 22:45:22Z matt $".
+// End of "$Id: filename_list.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //
