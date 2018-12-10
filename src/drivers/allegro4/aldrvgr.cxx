@@ -64,6 +64,7 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "aldrvgr.h"
+#include <fl/fl.h>
 #include "imgconv.h"
 #include <stdlib.h>
 #include <string.h>
@@ -85,8 +86,10 @@ Fl_Graphics_Driver::newMainGraphicsDriver()
 
 Fl_Allegro_Graphics_Driver::Fl_Allegro_Graphics_Driver() :
     Fl_Graphics_Driver(),
-    active(0),
-    backing(0)
+    ft_(),
+    hidden_count_(0),
+    active_(0),
+    backing_(0)
 {
     return;
 }
@@ -98,6 +101,7 @@ Fl_Allegro_Graphics_Driver::~Fl_Allegro_Graphics_Driver()
 
 void Fl_Allegro_Graphics_Driver::draw(const char *str, int n, int x, int y)
 {
+
     if (n > 0)
     {
         x += Fl::window_draw_offset_x;
@@ -105,15 +109,9 @@ void Fl_Allegro_Graphics_Driver::draw(const char *str, int n, int x, int y)
         unsigned char r, g, b;
         Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
         int color = makecol(r, g, b);
-        char *buf = reinterpret_cast<char *>(::malloc((n + 1)));
-        if (buf)
-        {
-            ::memcpy(buf, str, n);
-            buf[n] = 0;
-            ::textout_ex(surface(), ::font, buf, x, (y - 8), color, -1);
-            ::free(buf);
-        }
+        ft_.draw(surface(), str, n, x, y, font_, size_, color);
     }
+
     return;
 }
 
@@ -316,7 +314,7 @@ void Fl_Allegro_Graphics_Driver::circle(double x, double y, double rad)
     unsigned char r, g, b;
     Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
     int color = makecol(r, g, b);
-    ::circle(surface(), x, y, rad, color);
+    ::circle(surface(), static_cast<int>(x), static_cast<int>(y), static_cast<int>(rad), color);
     return;
 }
 
@@ -340,7 +338,7 @@ void Fl_Allegro_Graphics_Driver::arc(int xi, int yi, int w, int h, double a1, do
     double x = xi + rx;
     double y = yi + ry;
     double circ = M_PI * 0.5 * (rx + ry);
-    int i, segs = circ * (a2 - a1) / 1000; // every line is about three pixels long
+    int i, segs = static_cast<int>(circ * (a2 - a1) / 1000); // every line is about three pixels long
     if (segs < 3)
     {
         segs = 3;
@@ -351,15 +349,18 @@ void Fl_Allegro_Graphics_Driver::arc(int xi, int yi, int w, int h, double a1, do
     a2 = a2 / 180 * M_PI;
     double step = (a2 - a1) / segs;
 
-    int nx = x + cos(a1) * rx;
-    int ny = y - sin(a1) * ry;
+    double sina1 = sin(a1);
+    double cosa1 = cos(a1);
+    int nx = static_cast<int>(x + sina1 * rx);
+    int ny = static_cast<int>(y - cosa1 * ry);
+
     for (i = segs; i > 0; i--)
     {
         a1 += step;
         px = nx;
         py = ny;
-        nx = x + cos(a1) * rx;
-        ny = y - sin(a1) * ry;
+        int nx = static_cast<int>(x + sina1 * rx);
+        int ny = static_cast<int>(y - cosa1 * ry);
         ::line(surface(), px, py, nx, ny, color);
     }
 
@@ -855,7 +856,11 @@ void Fl_Allegro_Graphics_Driver::restore_clip()
 
 double Fl_Allegro_Graphics_Driver::width(const char *str, int n)
 {
-    return (8 * n);
+    double width;
+
+    width = ft_.width(str, n, font_, size_);
+
+    return width;
 }
 
 bool Fl_Allegro_Graphics_Driver::flip_to_offscreen(bool clear)
@@ -865,16 +870,16 @@ bool Fl_Allegro_Graphics_Driver::flip_to_offscreen(bool clear)
     do
     {
 
-        if (backing == active)
+        if (backing_ == active_)
         {
             break;
         }
 
-        if (0 == backing)
+        if (0 == backing_)
         {
             int depth = bitmap_color_depth(screen);
-            backing = create_bitmap_ex(depth, SCREEN_W, SCREEN_H);
-            if (0 == backing)
+            backing_ = create_bitmap_ex(depth, SCREEN_W, SCREEN_H);
+            if (0 == backing_)
             {
                 break;
             }
@@ -886,16 +891,16 @@ bool Fl_Allegro_Graphics_Driver::flip_to_offscreen(bool clear)
         if (clear)
         {
             // TODO: get background color from somewhere
-            clear_to_color(backing, 0);
+            clear_to_color(backing_, 0);
         }
         else
         {
             mouse_hide();
-            blit(screen, backing, 0, 0, 0, 0, backing->w, backing->h);
+            blit(::screen, backing_, 0, 0, 0, 0, backing_->w, backing_->h);
             mouse_show();
         }
 
-        active = backing;
+        active_ = backing_;
         activated = true;
 
     }
@@ -911,14 +916,14 @@ bool Fl_Allegro_Graphics_Driver::flip_to_onscreen()
     do
     {
 
-        if (screen == active)
+        if (::screen == active_)
         {
             break;
         }
 
         mouse_hide();
-        blit(backing, screen, 0, 0, 0, 0, backing->w, backing->h);
-        active = screen;
+        blit(backing_, ::screen, 0, 0, 0, 0, backing_->w, backing_->h);
+        active_ = ::screen;
         activated = true;
         mouse_show();
 
@@ -1032,5 +1037,24 @@ void Fl_Allegro_Graphics_Driver::nca_draw_frame(
         ::textout_centre_ex(surface(), ::font, title, nca_x + (nca_w / 2), nca_y + 8, white, -1);
     }
 
+    return;
+}
+
+int Fl_Allegro_Graphics_Driver::height()
+{
+    int height2 = ft_.height(font_, size_);
+    return height2;
+}
+
+int Fl_Allegro_Graphics_Driver::descent()
+{
+    int descent2 = ft_.descent(font_, size_);
+    return descent2;
+}
+
+void Fl_Allegro_Graphics_Driver::font(Fl_Font font, Fl_Fontsize fsize)
+{
+    font_ = font;
+    size_ = fsize;
     return;
 }

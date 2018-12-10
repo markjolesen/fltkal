@@ -66,6 +66,7 @@
 #include "aldrvscr.h"
 #include "aldrvwin.h"
 #include <allegro.h>
+#include "utf8proc.h"
 #include <fl/fl.h>
 #include <fl/fl_enums.h>
 #include <fl/platform.h>
@@ -103,6 +104,7 @@ Fl_Allegro_Screen_Driver::~Fl_Allegro_Screen_Driver()
 {
     cursor_destroy();
     set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+    allegro_exit();
     return;
 }
 
@@ -390,182 +392,182 @@ static inline int keyboard_get_altcode(int const scancode)
 
     switch (scancode)
     {
-    case (KEY_0 << 8):
+    case (KEY_0):
     {
         sym = '0';
         break;
     }
-    case (KEY_1 << 8):
+    case (KEY_1):
     {
         sym = '1';
         break;
     }
-    case (KEY_2 << 8):
+    case (KEY_2):
     {
         sym = '2';
         break;
     }
-    case (KEY_3 << 8):
+    case (KEY_3):
     {
         sym = '3';
         break;
     }
-    case (KEY_4 << 8):
+    case (KEY_4):
     {
         sym = '4';
         break;
     }
-    case (KEY_5 << 8):
+    case (KEY_5):
     {
         sym = '5';
         break;
     }
-    case (KEY_6 << 8):
+    case (KEY_6):
     {
         sym = '6';
         break;
     }
-    case (KEY_7 << 8):
+    case (KEY_7):
     {
         sym = '7';
         break;
     }
-    case (KEY_8 << 8):
+    case (KEY_8):
     {
         sym = '8';
         break;
     }
-    case (KEY_9 << 8):
+    case (KEY_9):
     {
         sym = '9';
         break;
     }
-    case (KEY_A << 8):
+    case (KEY_A):
     {
         sym = 'A';
         break;
     }
-    case (KEY_B << 8):
+    case (KEY_B):
     {
         sym = 'B';
         break;
     }
-    case (KEY_C << 8):
+    case (KEY_C):
     {
         sym = 'C';
         break;
     }
-    case (KEY_D << 8):
+    case (KEY_D):
     {
         sym = 'D';
         break;
     }
-    case (KEY_E << 8):
+    case (KEY_E):
     {
         sym = 'E';
         break;
     }
-    case (KEY_F << 8):
+    case (KEY_F):
     {
         sym = 'F';
         break;
     }
-    case (KEY_G << 8):
+    case (KEY_G):
     {
         sym = 'G';
         break;
     }
-    case (KEY_H << 8):
+    case (KEY_H):
     {
         sym = 'H';
         break;
     }
-    case (KEY_I << 8):
+    case (KEY_I):
     {
         sym = 'I';
         break;
     }
-    case (KEY_J << 8):
+    case (KEY_J):
     {
         sym = 'J';
         break;
     }
-    case (KEY_K << 8):
+    case (KEY_K):
     {
         sym = 'K';
         break;
     }
-    case (KEY_L << 8):
+    case (KEY_L):
     {
         sym = 'L';
         break;
     }
-    case (KEY_M << 8):
+    case (KEY_M):
     {
         sym = 'M';
         break;
     }
-    case (KEY_N << 8):
+    case (KEY_N):
     {
         sym = 'N';
         break;
     }
-    case (KEY_O << 8):
+    case (KEY_O):
     {
         sym = 'O';
         break;
     }
-    case (KEY_P << 8):
+    case (KEY_P):
     {
         sym = 'P';
         break;
     }
-    case (KEY_Q << 8):
+    case (KEY_Q):
     {
         sym = 'Q';
         break;
     }
-    case (KEY_R << 8):
+    case (KEY_R):
     {
         sym = 'R';
         break;
     }
-    case (KEY_S << 8):
+    case (KEY_S):
     {
         sym = 'S';
         break;
     }
-    case (KEY_T << 8):
+    case (KEY_T):
     {
         sym = 'T';
         break;
     }
-    case (KEY_U << 8):
+    case (KEY_U):
     {
         sym = 'U';
         break;
     }
-    case (KEY_V << 8):
+    case (KEY_V):
     {
         sym = 'V';
         break;
     }
-    case (KEY_W << 8):
+    case (KEY_W):
     {
         sym = 'W';
         break;
     }
-    case (KEY_X << 8):
+    case (KEY_X):
     {
         sym = 'X';
         break;
     }
-    case (KEY_Y << 8):
+    case (KEY_Y):
     {
         sym = 'Y';
         break;
     }
-    case (KEY_Z << 8):
+    case (KEY_Z):
     {
         sym = 'Z';
         break;
@@ -579,8 +581,8 @@ static inline int keyboard_get_altcode(int const scancode)
 
 bool Fl_Allegro_Screen_Driver::wait_keyboard(Fl_Window *window)
 {
+    static char buf[7];
     int triggered = false;
-    char buf[2];
     int sym = 0;
 
     do
@@ -645,8 +647,8 @@ bool Fl_Allegro_Screen_Driver::wait_keyboard(Fl_Window *window)
 
         if (keypressed())
         {
-            int scan = readkey();
-            sym = (0xff & scan);
+            int scan;
+            int sym = ureadkey(&scan);
             if (0 == sym)
             {
                 sym = keyboard_get_altcode(scan);
@@ -661,11 +663,13 @@ bool Fl_Allegro_Screen_Driver::wait_keyboard(Fl_Window *window)
                 sym += ('A' - 1);
                 Fl::e_state |= FL_CTRL;
             }
+            Fl::e_length = utf8proc_encode_char(sym, reinterpret_cast<utf8proc_uint8_t *>(buf));
+            buf[Fl::e_length] = 0;
+            if (0 == Fl::e_length)
+            {
+                break;
+            }
             Fl::e_keysym = sym;
-            buf[0] = sym;
-            buf[1] = 0;
-            Fl::e_text = buf;
-            Fl::e_length = 1;
             Fl::e_number = FL_KEYBOARD;
             Fl::handle(FL_KEYBOARD, window);
             triggered = true;

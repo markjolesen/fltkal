@@ -65,7 +65,7 @@
 //
 #if !defined(FL_ALLEGRO_SYSTEM_DRIVER_H)
 
-#include "../..//drvsys.h"
+#include "../../drvsys.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -84,6 +84,12 @@ public:
     Fl_Allegro_System_Driver();
 
     virtual ~Fl_Allegro_System_Driver();
+
+    virtual void newUUID(char *uuidBuffer);
+
+    virtual char *preference_rootnode(Fl_Preferences *prefs, Fl_Preferences::Root root, const char *vendor, const char *application);
+
+    virtual char const *preference_ext() const;
 
     virtual char *getenv(const char *v);
 

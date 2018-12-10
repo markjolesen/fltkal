@@ -73,13 +73,16 @@ UNAME:= $(shell uname)
 endif
 
 ifeq ($(UNAME), DOS)
+FREETYPE=/source/freetype
+FREETYPEINC=$(FREETYPE)/include
 ALLEGRO=/source/allegro
 ALLEGROLIB=$(ALLEGRO)/lib/djgpp
 ALLEGROINC=$(ALLEGRO)/include
-INCLUDES=-I.. -I$(ALLEGROINC) -I../zlib -I../png -I../jpeg
+INCLUDES=-I.. -I$(ALLEGROINC) -I$(FREETYPEINC) -I../zlib -I../png -I../jpeg
 REDIRCOMMAND=redir -o $(basename $@).err -eo
 else
-INCLUDES=-I..
+FREETYPEINC=/usr/include/freetype2/
+INCLUDES=-I.. -I$(FREETYPEINC)
 endif
 
 DEFINES=-DFL_LIBRARY -DUSE_ALLEGRO
@@ -243,7 +246,6 @@ FLTKOBJS=\
 	$(OBJ)/windbl.o \
 	$(OBJ)/winmenu.o \
 	$(OBJ)/winovlay.o \
-	$(OBJ)/winscr.o \
 	$(OBJ)/winsngl.o \
 	$(OBJ)/wizard.o 
     
@@ -261,6 +263,8 @@ ALLEGRO4DRVOBJS=\
 	$(OBJ)/aldrvsys.o \
 	$(OBJ)/aldrvwin.o \
 	$(OBJ)/algfx.o \
+	$(OBJ)/fontdir.o \
+	$(OBJ)/fontft.o \
 	$(OBJ)/imgconv.o \
 	$(OBJ)/rgb16.o \
 	$(OBJ)/rgb24cb.o \
@@ -268,8 +272,10 @@ ALLEGRO4DRVOBJS=\
 	$(OBJ)/rgb32.o \
 	$(OBJ)/rgb8.o \
 	$(OBJ)/timeout.o \
-	$(OBJ)/xbm.o \
-	$(OBJ)/wm.o
+	$(OBJ)/utf8proc.o \
+	$(OBJ)/util.o \
+	$(OBJ)/wm.o \
+	$(OBJ)/xbm.o 
     
 ALLEGRO4DRVSRC=$(SRC)/drivers/allegro4
 
@@ -309,6 +315,7 @@ depend.mk :
 	$(CC) $(DEPFLAGS) $(XUTF8SRC)/*.c >> depend.mk
 	sed -i "s/c:.*\.ver//" depend.mk
 	sed -i -re "s/(.*)\.o/$$\(OBJ\)\/\1.o/" depend.mk
-	
+	sed -i -re "s/\/usr\/include\/freetype2\//$$\(FREETYPEINC\)\//" depend.mk
+
 -include depend.mk    
     

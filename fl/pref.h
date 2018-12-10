@@ -191,7 +191,18 @@ public:
 
   char getUserdataPath( char *path, int pathlen );
 
+  char const* getFileName() const {return rootNode->getFileName();} // ALLEGRO:
+
   void flush();
+
+  typedef bool (*enum_cb)(
+    void *user_data,
+    char const *path,
+    char const *key,
+    char const *value,
+    unsigned int const index); // ALLEGRO:
+
+  void enumerate(enum_cb cb, void *user_data) const; // ALLEGRO:
 
   // char export( const char *filename, Type fileFormat );
   // char import( const char *filename );
@@ -292,6 +303,7 @@ public:  // older Sun compilers need this (public definition of the following cl
     void deleteAllEntries();
     int nEntry() { return nEntry_; }
     Entry &entry(int i) { return entry_[i]; }
+    void enumerate(Fl_Preferences::enum_cb cb, void *user_data) const; // ALLEGRO:
   };
   friend class Node;
 
@@ -307,6 +319,7 @@ public:  // older Sun compilers need this (public definition of the following cl
     int read();
     int write();
     char getPath( char *path, int pathlen );
+    char const* getFileName() const {return filename_;}
   };
   friend class RootNode;
 

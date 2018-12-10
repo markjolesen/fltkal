@@ -216,6 +216,7 @@ public:
   // implement to support Fl_Preferences
   virtual char *preference_rootnode(Fl_Preferences *prefs, Fl_Preferences::Root root, const char *vendor,
                                     const char *application) {return NULL;}
+  virtual char const* preference_ext() const {return "prefs";} // ALLEGRO:
   // the default implementation of preferences_need_protection_check() may be enough
   virtual int preferences_need_protection_check() {return 0;}
   // implement to support Fl_Plugin_Manager::load()

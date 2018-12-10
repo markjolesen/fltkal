@@ -1,6 +1,6 @@
-// ticks.h
+// util.h
 //
-// Time wrapper for the Fast Light Tool Kit (FLTK)
+// Utility code for the Fast Light Tool Kit (FLTK)
 //
 // Copyright 2018 The fltkal authors
 //
@@ -63,123 +63,15 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-#if !defined(__TICKS_H__)
+#if !defined(__UTIL_H__)
 
-#include <time.h>
-#include <math.h>
+#include <fl/pref.h>
 
-/**
-Abstract time type
-*/
-#if defined(__DJGPP__)
-typedef uclock_t ticks_t;
-#else
-typedef struct timespec ticks_t;
-#endif
+extern char const *filename_extract(char const *path);
 
-/**
-Set a time type to the current time
-\param[in,out] ticks time object to intialize
-\returns none
-*/
-inline void ticks_set(ticks_t &ticks)
-{
-#if defined(__DJGPP__)
-    ticks = uclock();
-#else
-    clock_gettime(CLOCK_REALTIME, &ticks);
-#endif
-    return;
-}
+extern char *program_path();
 
-/**
-Set a time type in seconds
-\param[in] seconds time in seconds
-\param[out] ticks time object to initialize
-\returns none
-*/
-inline void ticks_convert(ticks_t &ticks, double const seconds)
-{
-#if !defined(__DJGPP__)
+extern Fl_Preferences *fltkcfg();
 
-    if (0 < seconds)
-    {
-        double integral;
-        double fract = modf(seconds, &integral);
-
-        ticks.tv_sec = integral;
-        ticks.tv_nsec = (fract * 1000000000L);
-    }
-    else
-    {
-        ticks.tv_sec = 0;
-        ticks.tv_nsec = 0;
-    }
-
-#else
-
-    ticks = static_cast<ticks_t>((UCLOCKS_PER_SEC * seconds));
-
-#endif
-    return;
-}
-
-/**
-Subtract time
-\param[out] result time object to place result in
-\param[in] begin begining time object
-\param[in] end ending time object
-\returns none
-*/
-inline void ticks_subtract(ticks_t &result, ticks_t const &begin, ticks_t const &end)
-{
-#if !defined(__DJGPP__)
-    long sec_diff = (end.tv_sec - begin.tv_sec);
-    long nsec_diff = (end.tv_nsec - begin.tv_nsec);
-
-    if (0 < nsec_diff)
-    {
-        result.tv_sec = sec_diff;
-        result.tv_nsec = nsec_diff;
-    }
-    else
-    {
-        result.tv_sec = sec_diff - 1;
-        result.tv_nsec = nsec_diff + 1000000000L;
-    }
-#else
-    result = (end - begin);
-#endif
-
-    return;
-}
-
-/**
-Elapse a time object
-\param[in,out] ticks time object to elapse
-\param[in] elapsed elapsed time to subtract from ticks
-\returns none
-*/
-inline void ticks_elapse(ticks_t &ticks, ticks_t const &elapsed)
-{
-#if !defined(__DJGPP__)
-    long sec_diff = (ticks.tv_sec - elapsed.tv_sec);
-    long nsec_diff = (ticks.tv_nsec - elapsed.tv_nsec);
-
-    if (0 > nsec_diff)
-    {
-        sec_diff--;
-        nsec_diff += 1000000000L;
-    }
-
-    ticks.tv_sec = sec_diff;
-    ticks.tv_nsec = nsec_diff;
-#else
-    ticks -= elapsed;
-#endif
-
-    return;
-}
-
-#define __TICKS_H__
+#define __UTIL_H__
 #endif

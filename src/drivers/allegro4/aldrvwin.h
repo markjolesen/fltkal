@@ -65,8 +65,8 @@
 //
 #if !defined(FL_ALLEGRO_WINDOW_DRIVER_H)
 
+#include "../../drvwin.h"
 #include <fl/fl_enums.h>
-#include "../..//drvwin.h"
 #include <allegro.h>
 
 class Fl_Allegro_Window_Driver : public Fl_Window_Driver

@@ -1,6 +1,6 @@
-// ticks.h
+// fontft.h
 //
-// Time wrapper for the Fast Light Tool Kit (FLTK)
+// FreeType font for the Fast Light Tool Kit (FLTK)
 //
 // Copyright 2018 The fltkal authors
 //
@@ -63,123 +63,128 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-#if !defined(__TICKS_H__)
+#if !defined(__FONTFT_H__)
 
-#include <time.h>
-#include <math.h>
+#include "fontdir.h"
+#include <allegro.h>
+#include <stdlib.h>
 
-/**
-Abstract time type
-*/
-#if defined(__DJGPP__)
-typedef uclock_t ticks_t;
-#else
-typedef struct timespec ticks_t;
-#endif
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include FT_CACHE_H
 
-/**
-Set a time type to the current time
-\param[in,out] ticks time object to intialize
-\returns none
-*/
-inline void ticks_set(ticks_t &ticks)
+class fontft
 {
-#if defined(__DJGPP__)
-    ticks = uclock();
-#else
-    clock_gettime(CLOCK_REALTIME, &ticks);
-#endif
-    return;
+
+public:
+
+    fontft();
+
+    virtual ~fontft();
+
+    char const *get_face(Fl_Font const font) const;
+
+    char const *get_path(Fl_Font const font) const;
+
+    unsigned int get_font_count() const;
+
+    unsigned int get_font_sizes(Fl_Font const font, int *&sizep) const;
+
+    FT_Library get_library() const;
+
+    FT_Size get_size(Fl_Font const font, int const height) const;
+
+    int ascent(Fl_Font const font, int const height) const;
+
+    int descent(Fl_Font const font, int const height) const;
+
+    int height(Fl_Font const font, int const height) const;
+
+    int width(
+        char const *text,
+        unsigned int const len,
+        Fl_Font const font,
+        int const height) const;
+
+    void draw(
+        BITMAP *surface,
+        char const *text,
+        unsigned int const len,
+        int const x,
+        int const y,
+        Fl_Font const font,
+        int const height,
+        int const alcolor) const;
+
+private:
+
+    FT_Library lib_;
+    FTC_Manager manager_;
+    FTC_CMapCache cmap_cache_;
+    FTC_ImageCache image_cache_;
+    fontdir dir_;
+
+    fontft(fontft const &);
+
+    fontft &operator=(fontft const &);
+
+    void draw(
+        BITMAP *surface,
+        FT_Bitmap *bitmap,
+        int const x,
+        int const y,
+        int const alcolor) const;
+
+};
+
+inline char const *fontft::get_face(Fl_Font const font) const
+{
+    return dir_.get_face(font);
 }
 
-/**
-Set a time type in seconds
-\param[in] seconds time in seconds
-\param[out] ticks time object to initialize
-\returns none
-*/
-inline void ticks_convert(ticks_t &ticks, double const seconds)
+inline char const *fontft::get_path(Fl_Font const font) const
 {
-#if !defined(__DJGPP__)
-
-    if (0 < seconds)
-    {
-        double integral;
-        double fract = modf(seconds, &integral);
-
-        ticks.tv_sec = integral;
-        ticks.tv_nsec = (fract * 1000000000L);
-    }
-    else
-    {
-        ticks.tv_sec = 0;
-        ticks.tv_nsec = 0;
-    }
-
-#else
-
-    ticks = static_cast<ticks_t>((UCLOCKS_PER_SEC * seconds));
-
-#endif
-    return;
+    return dir_.get_path(font);
 }
 
-/**
-Subtract time
-\param[out] result time object to place result in
-\param[in] begin begining time object
-\param[in] end ending time object
-\returns none
-*/
-inline void ticks_subtract(ticks_t &result, ticks_t const &begin, ticks_t const &end)
+inline unsigned int fontft::get_font_count() const
 {
-#if !defined(__DJGPP__)
-    long sec_diff = (end.tv_sec - begin.tv_sec);
-    long nsec_diff = (end.tv_nsec - begin.tv_nsec);
-
-    if (0 < nsec_diff)
-    {
-        result.tv_sec = sec_diff;
-        result.tv_nsec = nsec_diff;
-    }
-    else
-    {
-        result.tv_sec = sec_diff - 1;
-        result.tv_nsec = nsec_diff + 1000000000L;
-    }
-#else
-    result = (end - begin);
-#endif
-
-    return;
+    return dir_.get_count();
 }
 
-/**
-Elapse a time object
-\param[in,out] ticks time object to elapse
-\param[in] elapsed elapsed time to subtract from ticks
-\returns none
-*/
-inline void ticks_elapse(ticks_t &ticks, ticks_t const &elapsed)
+inline FT_Library fontft::get_library() const
 {
-#if !defined(__DJGPP__)
-    long sec_diff = (ticks.tv_sec - elapsed.tv_sec);
-    long nsec_diff = (ticks.tv_nsec - elapsed.tv_nsec);
-
-    if (0 > nsec_diff)
-    {
-        sec_diff--;
-        nsec_diff += 1000000000L;
-    }
-
-    ticks.tv_sec = sec_diff;
-    ticks.tv_nsec = nsec_diff;
-#else
-    ticks -= elapsed;
-#endif
-
-    return;
+    return lib_;
 }
 
-#define __TICKS_H__
+inline int fontft::ascent(Fl_Font const font, int const height) const
+{
+    int ascent = 8;
+    FT_Size size = get_size(font, height);
+    if (size)
+    {
+        ascent = ((abs(size->metrics.ascender) + 63) >> 6);
+    }
+    return ascent;
+}
+
+inline int fontft::descent(Fl_Font const font, int const height) const
+{
+    int descent = 0;
+    FT_Size size = get_size(font, height);
+    if (size)
+    {
+        descent = ((abs(size->metrics.descender) + 63) >> 6);
+    }
+    return descent;
+}
+
+inline int fontft::height(Fl_Font const font, int const height) const
+{
+    int ascent2 = ascent(font, height);
+    int descent2 = descent(font, height);
+    return (ascent2 + descent2);
+}
+
+#define __FONTFT_H__
 #endif

@@ -66,16 +66,17 @@
 #if !defined(FL_ALLEGRO_GRAPHICS_DRIVER_H)
 
 #include <fl/drvgr.h>
-#include <allegro.h>
+#include "fontft.h"
 
 class FL_EXPORT Fl_Allegro_Graphics_Driver : public Fl_Graphics_Driver
 {
 
 private:
 
-    unsigned int hidden_count;
-    BITMAP *active;
-    BITMAP *backing;
+    fontft ft_;
+    unsigned int hidden_count_;
+    BITMAP *active_;
+    BITMAP *backing_;
 
 public:
 
@@ -85,7 +86,7 @@ public:
 
     BITMAP *surface()
     {
-        return ((active) ? active : (active = screen));
+        return ((active_) ? active_ : (active_ = ::screen));
     };
 
     void surface_clear();
@@ -158,6 +159,18 @@ public:
         unsigned int const title_bar_height,
         char const *title);
 
+    virtual int height();
+
+    virtual int descent();
+
+    virtual void font(Fl_Font font, Fl_Fontsize fsize);
+
+    virtual Fl_Font set_fonts(char const *name);
+
+    virtual char const *get_font_name(Fl_Font fnum, int *ap);
+
+    virtual int get_font_sizes(Fl_Font fnum, int *&sizep);
+
 protected:
 
     virtual void draw_image(const uchar *buf, int X, int Y, int W, int H, int D = 3, int L = 0);
@@ -179,16 +192,32 @@ inline void Fl_Allegro_Graphics_Driver::surface_clear()
 inline void Fl_Allegro_Graphics_Driver::mouse_hide()
 {
     scare_mouse();
-    hidden_count++;
+    hidden_count_++;
 }
 
 inline void Fl_Allegro_Graphics_Driver::mouse_show()
 {
-    if (hidden_count)
+    if (hidden_count_)
     {
         unscare_mouse();
-        hidden_count--;
+        hidden_count_--;
     }
+}
+
+inline Fl_Font Fl_Allegro_Graphics_Driver::set_fonts(char const * /*name*/)
+{
+    return static_cast<Fl_Font>(ft_.get_font_count());
+}
+
+inline char const *Fl_Allegro_Graphics_Driver::get_font_name(Fl_Font fnum, int *ap)
+{
+    *ap = 0;
+    return ft_.get_face(fnum);
+}
+
+inline int Fl_Allegro_Graphics_Driver::get_font_sizes(Fl_Font fnum, int *&sizep)
+{
+    return ft_.get_font_sizes(fnum, sizep);
 }
 
 #define FL_ALLEGRO_GRAPHICS_DRIVER_H

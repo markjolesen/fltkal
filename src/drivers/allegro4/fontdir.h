@@ -1,6 +1,6 @@
-// ticks.h
+// fontdir.h
 //
-// Time wrapper for the Fast Light Tool Kit (FLTK)
+// Font container for the Fast Light Tool Kit (FLTK)
 //
 // Copyright 2018 The fltkal authors
 //
@@ -63,123 +63,98 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-#if !defined(__TICKS_H__)
+#if !defined(__FONTDIR_H__)
 
-#include <time.h>
-#include <math.h>
+#include <fl/fl_enums.h>
+#include <fl/pref.h>
 
-/**
-Abstract time type
-*/
-#if defined(__DJGPP__)
-typedef uclock_t ticks_t;
-#else
-typedef struct timespec ticks_t;
-#endif
-
-/**
-Set a time type to the current time
-\param[in,out] ticks time object to intialize
-\returns none
-*/
-inline void ticks_set(ticks_t &ticks)
+class fontdir
 {
-#if defined(__DJGPP__)
-    ticks = uclock();
-#else
-    clock_gettime(CLOCK_REALTIME, &ticks);
-#endif
-    return;
+
+public:
+
+    fontdir();
+
+    virtual ~fontdir();
+
+    void clear();
+
+    void add(char const *face, char const *path);
+
+    void load(Fl_Preferences &pref);
+
+    unsigned int get_count() const;
+
+    char const *get_face(Fl_Font const font) const;
+
+    char const *get_path(Fl_Font const font) const;
+
+    void set_invalid(Fl_Font const font);
+
+protected:
+
+    struct fontdir_element
+    {
+        char face[32];
+        char path[128];
+        bool valid;
+    };
+
+    struct fontdir_element *fonts;
+    unsigned int size;
+
+private:
+
+    fontdir(fontdir const &);
+
+    fontdir &operator=(fontdir const &);
+};
+
+inline unsigned int fontdir::get_count() const
+{
+    return size;
 }
 
-/**
-Set a time type in seconds
-\param[in] seconds time in seconds
-\param[out] ticks time object to initialize
-\returns none
-*/
-inline void ticks_convert(ticks_t &ticks, double const seconds)
+inline char const *fontdir::get_face(Fl_Font const font) const
 {
-#if !defined(__DJGPP__)
+    char const *face = 0;
 
-    if (0 < seconds)
+    if (size && size > font)
     {
-        double integral;
-        double fract = modf(seconds, &integral);
-
-        ticks.tv_sec = integral;
-        ticks.tv_nsec = (fract * 1000000000L);
-    }
-    else
-    {
-        ticks.tv_sec = 0;
-        ticks.tv_nsec = 0;
+        if (fonts[font].valid)
+        {
+            face = fonts[font].face;
+        }
     }
 
-#else
-
-    ticks = static_cast<ticks_t>((UCLOCKS_PER_SEC * seconds));
-
-#endif
-    return;
+    return face;
 }
 
-/**
-Subtract time
-\param[out] result time object to place result in
-\param[in] begin begining time object
-\param[in] end ending time object
-\returns none
-*/
-inline void ticks_subtract(ticks_t &result, ticks_t const &begin, ticks_t const &end)
+inline char const *fontdir::get_path(Fl_Font const font) const
 {
-#if !defined(__DJGPP__)
-    long sec_diff = (end.tv_sec - begin.tv_sec);
-    long nsec_diff = (end.tv_nsec - begin.tv_nsec);
+    char const *path = 0;
 
-    if (0 < nsec_diff)
+    if (size && size > font)
     {
-        result.tv_sec = sec_diff;
-        result.tv_nsec = nsec_diff;
+        if (fonts[font].valid)
+        {
+            path = fonts[font].path;
+        }
     }
-    else
-    {
-        result.tv_sec = sec_diff - 1;
-        result.tv_nsec = nsec_diff + 1000000000L;
-    }
-#else
-    result = (end - begin);
-#endif
 
-    return;
+    return path;
 }
 
-/**
-Elapse a time object
-\param[in,out] ticks time object to elapse
-\param[in] elapsed elapsed time to subtract from ticks
-\returns none
-*/
-inline void ticks_elapse(ticks_t &ticks, ticks_t const &elapsed)
+inline void fontdir::set_invalid(Fl_Font const font)
 {
-#if !defined(__DJGPP__)
-    long sec_diff = (ticks.tv_sec - elapsed.tv_sec);
-    long nsec_diff = (ticks.tv_nsec - elapsed.tv_nsec);
 
-    if (0 > nsec_diff)
+    if (size && size > font)
     {
-        sec_diff--;
-        nsec_diff += 1000000000L;
+        fonts[font].valid = false;
     }
-
-    ticks.tv_sec = sec_diff;
-    ticks.tv_nsec = nsec_diff;
-#else
-    ticks -= elapsed;
-#endif
 
     return;
 }
 
-#define __TICKS_H__
+#define __FONTDIR_H__
 #endif

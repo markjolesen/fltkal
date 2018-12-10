@@ -69,6 +69,7 @@
 #include <fl/widget.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../../flstring.h"
 
 Fl_System_Driver *
 Fl_System_Driver::newSystemDriver()
@@ -87,6 +88,150 @@ Fl_Allegro_System_Driver::Fl_Allegro_System_Driver() :
 Fl_Allegro_System_Driver::~Fl_Allegro_System_Driver()
 {
 }
+
+void Fl_Allegro_System_Driver::newUUID(char *uuidBuffer)
+{
+    // void Fl_X11_System_Driver::newUUID(char *uuidBuffer)
+    // warning Unix implementation of Fl_Preferences::newUUID() incomplete!
+    unsigned char b[16];
+    unsigned char *p = &b[0];
+    time_t t = time(0);           // first 4 byte
+    *p++ = (unsigned char)t;
+    *p++ = (unsigned char)(t >> 8);
+    *p++ = (unsigned char)(t >> 16);
+    *p++ = (unsigned char)(t >> 24);
+    int r = rand();           // four more bytes
+    *p++ = (unsigned char)r;
+    *p++ = (unsigned char)(r >> 8);
+    *p++ = (unsigned char)(r >> 16);
+    *p++ = (unsigned char)(r >> 24);
+    unsigned long a = (unsigned long)&t;  // four more bytes
+    *p++ = (unsigned char)a;
+    *p++ = (unsigned char)(a >> 8);
+    *p++ = (unsigned char)(a >> 16);
+    *p++ = (unsigned char)(a >> 24);
+    // Now we try to find 4 more "random" bytes. We extract the
+    // lower 4 bytes from the address of t - it is created on the
+    // stack so *might* be in a different place each time...
+    // This is now done via a union to make it compile OK on 64-bit systems.
+    union
+    {
+        void *pv;
+        unsigned char a[sizeof(void *)];
+    } v;
+    v.pv = (void *)(&t);
+    *p++ = v.a[0];
+    *p++ = v.a[1];
+    *p++ = v.a[2];
+    *p++ = v.a[3];
+    // last four bytes
+    *p++ = (r % 'F');
+    *p++ = (r % 'D');
+    *p++ = (r % 'O');
+    *p++ = (r % 'S');
+    sprintf(uuidBuffer, "%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+            b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7],
+            b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]);
+    return;
+}
+
+char const *Fl_Allegro_System_Driver::preference_ext() const
+{
+    return "cfg";
+}
+
+#if defined(__DJGPP__)
+
+extern char **__crt0_argv;
+
+char *Fl_Allegro_System_Driver::preference_rootnode(
+    Fl_Preferences *prefs,
+    Fl_Preferences::Root root,
+    const char *vendor,
+    const char *application)
+{
+    static char filename[FL_PATH_MAX];
+
+    if (':' == __crt0_argv[0][1])
+    {
+        filename[0] = __crt0_argv[0][0];
+        filename[1] = ':';
+        filename[2] = 0;
+    }
+    else
+    {
+        filename[0] = 0;
+    }
+
+    strlcat(filename, "\\config", sizeof(filename));
+
+    switch (root)
+    {
+    case Fl_Preferences::USER:
+        strlcat(filename, "\\fltk\\user", sizeof(filename));
+        break;
+    case Fl_Preferences::SYSTEM:
+        strlcat(filename, "\\fltk\\system", sizeof(filename));
+        break;
+    }
+
+    snprintf(
+        filename + strlen(filename),
+        sizeof(filename) - strlen(filename),
+        "\\%s\\%s.%s",
+        vendor,
+        application,
+        preference_ext());
+
+    return filename;
+}
+
+#else
+
+char *Fl_Allegro_System_Driver::preference_rootnode(
+    Fl_Preferences *prefs,
+    Fl_Preferences::Root root,
+    const char *vendor,
+    const char *application)
+{
+    static char filename[ FL_PATH_MAX ];
+    filename[0] = 0;
+    const char *e;
+
+    switch (root)
+    {
+    case Fl_Preferences::USER:
+        if ((e = getenv("HOME")) != NULL)
+        {
+            strlcpy(filename, e, sizeof(filename));
+
+            if (filename[strlen(filename) - 1] != '/')
+            {
+                strlcat(filename, "/.fltk/", sizeof(filename));
+            }
+            else
+            {
+                strlcat(filename, ".fltk/", sizeof(filename));
+            }
+            break;
+        }
+    case Fl_Preferences::SYSTEM:
+        strcpy(filename, "/etc/fltk/");
+        break;
+    }
+
+    snprintf(
+        filename + strlen(filename),
+        sizeof(filename) - strlen(filename),
+        "%s/%s.%s",
+        vendor,
+        application,
+        preference_ext());
+
+    return filename;
+}
+
+#endif
 
 void Fl_Allegro_System_Driver::copy(const char *stuff, int len, int clipboard, const char *type)
 {
