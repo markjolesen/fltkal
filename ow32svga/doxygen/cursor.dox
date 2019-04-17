@@ -1,0 +1,172 @@
+/*
+ cursor.dox
+
+ License CC0 PUBLIC DOMAIN
+
+ To the extent possible under law, Mark J. Olesen has waived all copyright
+ and related or neighboring rights to ow32svga Library. This work is published
+ from: United States.
+*/
+
+/*! \file cursor.h
+\brief Cursor container, prebuilt cursors and routines
+*/
+
+/*!
+\struct cursor
+\brief contains the attributes and data of the cursor
+
+\var cursor::width
+	width
+
+\var cursor::height
+	height
+
+\var cursor::hot_x
+	x hot spot
+
+\var cursor::hot_y
+	y hot spot
+
+\var cursor::data
+	32-bpp data array
+
+*/
+
+/*!
+\var _cursor_current
+	reference to current cursor
+*/
+
+
+/*!
+\var _cursor_arrow
+	arrow cursor
+*/
+
+/*!
+\var _cursor_crossh
+	cross hair cursor
+*/
+
+/*!
+\var _cursor_e
+	east cursor
+*/
+
+/*!
+\var _cursor_ew
+	east west cursor
+*/
+
+/*!
+\var _cursor_hand
+	hand/pointer cursor
+*/
+
+/*!
+\var _cursor_help
+	help cursor
+*/
+
+/*!
+\var _cursor_insert
+	insert/cross beam cursor
+*/
+
+/*!
+\var _cursor_move
+	move cursor
+*/
+
+/*!
+\var _cursor_n
+	north cursor
+*/
+
+/*!
+\var _cursor_ne
+	north east cursor
+*/
+/*!
+\var _cursor_nesw
+	north east south west cursor
+*/
+
+/*!
+\var _cursor_ns
+	north south cursor
+*/
+
+/*!
+\var _cursor_nw
+	north west cursor
+*/
+
+/*!
+\var _cursor_nwse
+	nort west south east cursor
+*/
+
+/*!
+\var _cursor_s
+	south cursor
+*/
+
+/*!
+\var _cursor_se
+	south east cursor
+*/
+
+/*!
+\var _cursor_sw
+	south west cursor
+*/
+
+/*!
+\var _cursor_w
+	west cursor
+*/
+
+/*!
+\var _cursor_wait
+	wait cursor
+*/
+
+/*!
+\fn void cursor_blt(
+    struct image*const image,
+    int32_t const dest_x,
+    int32_t const dest_y,
+    struct cursor const*const cursor)
+\brief blit a cursor onto an image
+\param[out] image destination image
+\param[in] dest_x x destination
+\param[in] dest_y y destination
+\param[in] cursor source cursor
+\returns none
+*/
+
+/*!
+\fn void cursor_image_to_backing(
+    struct image const*const image,
+    int32_t const img_x,
+    int32_t const img_y,
+    uint32_t const cursor_len_x,
+    uint32_t const cursor_len_y)
+\brief copy part of an image to an internal backing store
+\param[in] image image to copy from
+\param[in] img_x x dimension of image to copy
+\param[in] img_y y dimension of image to copy
+\param[in] cursor_len_x x dimension of cursor (max 72)
+\param[in] cursor_len_y y dimension of cursor (max 72)
+\returns none
+*/
+
+/*!
+\fn void cursor_backing_to_image(
+    struct image*const image)
+\brief copy internal backing store to an image
+\param[out] image image to copy backing store too
+\returns none
+*/

@@ -1,0 +1,31 @@
+/*
+ display.dox
+
+ License CC0 PUBLIC DOMAIN
+
+ To the extent possible under law, Mark J. Olesen has waived all copyright
+ and related or neighboring rights to ow32svga Library. This work is published
+ from: United States.
+*/
+
+/*! \file display.h
+\brief High level display routines
+*/
+
+/*!
+\fn int display_init_once();
+\brief initialize the display
+\returns 0 success
+\returns -1 failure
+
+display_init_once first verifies the system supports VBE 3.0 or greater.
+Following, it will iterate through 32bpp screen resoultions until one is found
+or the list is exhuasted. If the mode was found, _screen buffer is
+initialzed.
+*/
+
+/*!
+\fn void display_deinit_once();
+\brief restores previous video moode and cleans up internal memory
+\returns 0
+*/

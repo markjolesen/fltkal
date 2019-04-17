@@ -1,0 +1,239 @@
+/*
+ vbe.dox
+
+ License CC0 PUBLIC DOMAIN
+
+ To the extent possible under law, Mark J. Olesen has waived all copyright
+ and related or neighboring rights to ow32svga Library. This work is published
+ from: United States.
+*/
+
+/*! \file vbe.h
+\brief Vesa Bios Extensions (VBE) interface
+*/
+
+
+/*!
+\struct vbe_info_block 
+\brief info block container
+
+\var vbe_info_block::vbe_signature               
+	signature 'VESA'
+
+\var vbe_info_block::vbe_version
+	version
+
+\var vbe_info_block::vbe_oem_string_ptr
+	OEM string pointer
+
+\var vbe_info_block::vbe_capabilities
+	graphic capabilities
+
+\var vbe_info_block::vbe_video_mode_ptr
+	video mode list pointer
+
+\var vbe_info_block::vbe_total_memory
+	number of 64kb memory blocks
+
+\var vbe_info_block::vbe_oem_software_rev
+	VBE software revision
+
+\var vbe_info_block::vbe_oem_vendor_name_ptr
+	vendor name string pointer
+
+\var vbe_info_block::vbe_oem_product_name_ptr
+	product name string pointer
+
+\var vbe_info_block::vbe_oem_product_rev_ptr
+	product revision string pointer
+
+\var vbe_info_block::vbe_reserved
+	reserved
+
+\var vbe_info_block::vbe_oem_data
+	OEM strings
+
+*/
+
+/*!
+\struct vbe_mode_block
+\brief mode block container
+
+\var vbe_mode_block::mod_attr
+	mode attributes
+
+\var vbe_mode_block::mod_wina_attr
+	window A attributes
+
+\var vbe_mode_block::mod_winb_attr
+	window B attributes
+
+\var vbe_mode_block::mod_win_granularity
+	window granularity
+
+\var vbe_mode_block::mod_win_size
+	window size
+
+\var vbe_mode_block::mod_wina_seg
+	window A start segment
+
+\var vbe_mode_block::mod_winb_seg
+	window B start segment
+
+\var vbe_mode_block::mod_win_func_ptr
+	window function pointer
+
+\var vbe_mode_block::mod_bytes_per_scan_line
+	bytes per scan line
+
+\var vbe_mode_block::mod_x_resolution
+	horizontal resolution in pixels or chars
+
+\var vbe_mode_block::mod_y_resolution
+	vertical resolution in pixels or chars
+
+\var vbe_mode_block::mod_x_char_size
+	character cell width in pixels
+
+\var vbe_mode_block::mod_y_char_size
+	character cell height in pixels
+
+\var vbe_mode_block::mod_number_of_planes
+	number of memory planes
+
+\var vbe_mode_block::mod_bits_per_pixel
+	bits per pixel
+
+\var vbe_mode_block::mod_number_of_banks
+	number of banks
+
+\var vbe_mode_block::mod_memory_model
+	memory model type
+
+\var vbe_mode_block::mod_bank_size
+	bank size in KB
+
+\var vbe_mode_block::mod_number_of_image_pages
+	number of image pages
+
+\var vbe_mode_block::mod_reserved1
+	reserved for page function
+
+\var vbe_mode_block::mod_red_mask_size
+	size of direct color red mask in bits
+
+\var vbe_mode_block::mod_red_field_position
+	bit position of lsb of red mask
+
+\var vbe_mode_block::mod_green_mask_size
+	size of direct color green mask in bits
+
+\var vbe_mode_block::mod_green_field_position
+	bit position of lsb of green mask
+
+\var vbe_mode_block::mod_blue_mask_size
+	size of direct color blue mask in bits
+
+\var vbe_mode_block::mod_blue_field_position
+	bit position of lsb of blue mask
+
+\var vbe_mode_block::mod_rsvd_mask_size
+	size of direct color reserved mask in bits
+
+\var vbe_mode_block::mod_rsvd_field_position
+	bit position of lsb of reserved mask
+
+\var vbe_mode_block::mod_direct_color_mode_info
+	direct color mode attributes
+
+\var vbe_mode_block::mod_phys_base_ptr
+	physical address for flat frame buffer
+
+\var vbe_mode_block::mod_off_screen_mem_offset
+	start of off screen memory
+
+\var vbe_mode_block::mod_off_screen_mem_size
+	amount of off screen memoery in 1k units
+
+\var vbe_mode_block::mod_reserved2
+	reserved
+
+*/
+
+/*!
+\var _vbe_info
+	global VBE info block (initialized in ::vbe_query_installed)
+*/
+
+/*!
+\fn void vbe_cleanup
+\brief release internal memory used by this module
+\returns none
+*/
+
+/*!
+\fn int vbe_get_info_block(
+    struct vbe_info_block* info)
+\brief get VBE info block
+\param[out] info info block to fill
+\returns 0 success
+\returns !0 failure
+*/
+
+/*!
+\fn int vbe_get_mode_block(
+    struct vbe_mode_block* info,
+    int16_t const mode)
+\brief get VBE mode block
+\param[out] info mode block to fill
+\param[in] mode valid mode number (returned by vbe_query_mode)
+\returns 0 success
+\returns !0 failure
+*/
+
+/*!
+\fn int vbe_query_installed()
+\brief query if VBE 3.0 or greater is available
+\returns 0 success
+\returns -1 failure
+
+On success, this routine initializes ::_vbe_info and builds an internal
+table of all available modes.  It is the users responsibility to call
+vbe_cleanup when VBE functions will no longer be used.
+
+This routine keeps state of intial call. Successive calls returns
+the initial state.
+
+*/
+
+/*!
+\fn int vbe_query_mode(
+    size_t const width,
+    size_t const height,
+    size_t const depth)
+\brief query mode given width, height and depth dimensions
+\param[in] width width of mode to search
+\param[in] height height of mode to search
+\param[in] depth number of bits per pixel to search
+\returns !-1 mode
+\returns -1 failure
+
+This is a high level API routine that will call ::vbe_query_installed
+and on success iterate through the mode table to find a match.
+
+*/
+
+/*!
+\fn int16_t vbe_get_mode()
+\brief get current video mode
+\returns mode
+*/
+
+/*!
+\fn int vbe_set_mode(
+    int16_t const mode)
+\brief set video mode
+\param[in] mode mode to set
+\returns 0 success
+\returns !0 failure
+*/

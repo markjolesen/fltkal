@@ -1,4 +1,4 @@
-# License
+# Document License
 
     Copyright (C) 2018 The fltkal authors
 

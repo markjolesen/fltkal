@@ -1,0 +1,257 @@
+/*
+ image.dox
+
+ License CC0 PUBLIC DOMAIN
+
+ To the extent possible under law, Mark J. Olesen has waived all copyright
+ and related or neighboring rights to ow32svga Library. This work is published
+ from: United States.
+*/
+
+/*! \file image.h
+\brief image container and routines
+*/ 
+
+/*!
+\struct image
+\brief Represents a 32bpp screen buffer
+
+\var image::stride
+	number of actual bytes in a row (a negative stride is not yet implemented)
+
+\var image::width
+	width of image
+
+\var image::height
+	height of image
+
+\var image::buf
+	image buffer
+
+\var image::clip
+	clipping boundries (must be in range of image dimensions)
+*/
+
+/*!
+\var _screen
+	global variable to the screen buffer
+*/
+
+/*!
+\fn struct image* image_new(
+    size_t const width,
+    size_t const height,
+    int const stride)
+\brief create a new image
+\param[in] width width of image
+\param[in] height height of image
+\param[in] stride actual number of bytes in a row (currently negative values are not handled)
+\returns pointer to an image
+*/
+
+/*!
+\fn void image_free(
+    struct image*const image)
+\brief free an image
+\param[in] image image to free
+\returns none
+*/
+
+/*!
+\fn void image_set_clip(
+    struct image*const image,
+    uint32_t const x1,
+    uint32_t const y1,
+    uint32_t const x2,
+    uint32_t const y2)
+\brief set clipping region of an image
+\param[out] image image to set clipping region
+\param[in] x1 x1 (left) of clip
+\param[in] y1 y1 (top) of clip
+\param[in] x2 x2 (right) of clip 
+\param[in] y2 y2 (bottom) of clip
+\returns none
+*/
+
+/*!
+\fn void image_blt_exact(
+    struct image *const dest,
+    struct image const*const src)
+\brief blit an image onto an image that have exact dimensions
+\param[out] dest destination image
+\param[in] src source image
+\returns none
+
+This is useful when you copy the screen to a backing store or vice-versa
+*/
+
+/*!
+\fn void image_noclip_blt(
+    struct image *const dest,
+    int const dest_x,
+    int const dest_y,
+    struct image const*const src)
+\brief blit an image onto an image without clipping checks
+\param[out] dest destination image
+\param[in] dest_x x dimension
+\param[in] dest_y y dimension
+\param[in] src source image
+\returns none
+
+The source image must fit onto the destination image
+*/
+
+/*!
+\fn void image_fill(
+    struct image*const image,
+    uint32_t const color)
+\brief fill an image with a color
+\param[out] image destination image
+\param[in] color RGBA color
+\returns none
+
+Ignores clipping rect. The entire image will be filled.
+*/
+
+/*!
+\fn void image_fill_area(
+    struct image*const image,
+    int const x,
+    int const y,
+    size_t const len_x,
+    size_t const len_y,
+    uint32_t const color)
+\brief fill a region of an image
+\param[in] image destination
+\param[in] x left dimension
+\param[in] y top dimension
+\param[in] len_x width to fill
+\param[in] len_y height to fill
+\param[in] color RGBA color
+\returns none
+
+Ignores clipping rect. The entire region will be filled within the bounds of image.
+*/
+
+/*!
+\fn void image_pixel_put(
+    struct image*const image,
+    int const x,
+    int const y,
+    uint32_t const color)
+\brief plot a pixel
+\param[in] image destination
+\param[in] x left dimension
+\param[in] y top dimension
+\param[in] color RGBA color
+\returns none
+*/
+
+/*!
+\fn void image_noclip_pixel_put(
+    struct image*const image,
+    int const x,
+    int const y,
+    uint32_t const color)
+\brief plot a pixel
+\param[in] image destination
+\param[in] x left dimension
+\param[in] y top dimension
+\param[in] color RGBA color
+\returns none
+
+This routine will not clip. If the dimensions are out of bounds, the application
+will seg fault.
+*/
+
+/*!
+\fn uint32_t image_noclip_pixel_get(
+    struct image const*const image,
+    int const x,
+    int const y)
+\brief get a pixel
+\param[in] image source image
+\param[in] x left dimension
+\param[in] y top dimension
+\returns RGBA color
+
+This routine will not clip.
+*/
+
+/*!
+\fn void image_line(
+    struct image*const image,
+    int const x0,
+    int const y0,
+    int const x1,
+    int const y1,
+    uint32_t const color)
+\brief plot a line
+\param[out] image destination
+\param[in] x0 starting x
+\param[in] y0 starting y
+\param[in] x1 ending x
+\param[in] y1 ending y
+\param[in] color RGBA color
+\returns none
+*/
+
+/*!
+\fn void image_lineh(
+    struct image*const image,
+    int const x,
+    int const y,
+    size_t const len,
+    uint32_t const color)
+\brief plot a horizontal line
+\param[out] image destination
+\param[in] x top dimension
+\param[in] y bottom dimension
+\param[in] len length of line
+\param[in] color RGBA color
+\returns none
+*/
+
+/*!
+\fn void image_lineh_xor(
+    struct image*const image,
+    int const x,
+    int const y,
+    size_t const len)
+\brief xor a horizontal line
+\param[out] image destination
+\param[in] x top dimension
+\param[in] y bottom dimension
+\param[in] len length of line
+\returns none
+*/
+
+/*!
+\fn void image_linev(
+    struct image*const image,
+    int const x,
+    int const y,
+    size_t const len,
+    uint32_t const color)
+\brief plot a vertical line
+\param[out] image destination
+\param[in] x top dimension
+\param[in] y bottom dimension
+\param[in] len length of line
+\param[in] color RGBA color
+\returns none
+*/
+
+/*!
+\fn void image_linev_xor(
+    struct image*const image,
+    int const x,
+    int const y,
+    size_t const len)
+\brief xor a vertical line
+\param[out] image destination
+\param[in] x top dimension
+\param[in] y bottom dimension
+\param[in] len length of line
+\returns none
+*/

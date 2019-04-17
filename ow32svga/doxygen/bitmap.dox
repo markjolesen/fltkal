@@ -1,0 +1,185 @@
+/*
+ bitmap.dox
+
+ License CC0 PUBLIC DOMAIN
+
+ To the extent possible under law, Mark J. Olesen has waived all copyright
+ and related or neighboring rights to ow32svga Library. This work is published
+ from: United States.
+*/
+
+/*! \file bitmap.h
+\brief bitmap container and routines
+
+A bitmap buffer contains near data (local heap), which contains bits that
+describe an actual image. The depth (number of channels) is not described
+in the container. Rather, it is the users responsiblity to know and map
+to the correct routine. The majority of routines blit a bitmap to an
+image type, which is typically a representation of the screen.
+
+*/
+
+/*!
+\struct bitmap
+\brief container for a bitmap
+
+\var bitmap::stride
+	number of actual bytes a row occupies
+
+\var bitmap::width
+	number of bytes used in a row
+
+\var bitmap::height
+	number of rows
+
+\var bitmap::bits
+	bitmap buffer
+
+*/
+
+/*!
+\fn struct bitmap* bitmap_new(
+    size_t const width,
+    size_t const height)
+\brief create a new bitmap 
+\param[in] width width of bitmap
+\param[in] height height of bitmap
+\returns new bitmap
+*/
+
+/*!
+\fn struct bitmap* bitmap_new_from_image(
+    struct image const*const src,
+    int const src_x,
+    int const src_y,
+    size_t const src_w,
+    size_t const src_h)
+\brief create a bitmap from an image
+\param[in] src source image
+\param[in] src_x x dimension 
+\param[in] src_y y dimension 
+\param[in] src_w width dimension
+\param[in] src_h height dimension
+\returns new bitmap
+*/
+
+/*!
+\fn void bitmap_free(
+    struct bitmap*const bmp)
+\param[in] bmp bitmap to free
+\returns none
+*/
+
+/*!
+\fn void bitmap_1bpp_blt(
+    struct image *const dest,
+    int const dest_x,
+    int const dest_y,
+    struct bitmap const*const src,
+    uint32_t const color)
+\brief blit a 1 bit bitmap onto an image
+\param[out] dest source image
+\param[in] dest_x x destination
+\param[in] dest_y y destination
+\param[in] src source bitmap
+\param[in] color color to use when a bit is on
+\returns none
+*/
+
+/*!
+\fn void bitmap_xy1bpp_blt(
+    struct image *const dest,
+    int const dest_x,
+    int const dest_y,
+    struct bitmap const*const src,
+    int const src_x,
+    int const src_y)
+\brief blit a 1 bit bitmap onto an image
+\param[out] dest source image
+\param[in] dest_x x destination
+\param[in] dest_y y destination
+\param[in] src source bitmap
+\param[in] src_x source x
+\param[in] src_y source y
+\returns none
+*/
+
+/*!
+\fn void bitmap_8bpp_blt(
+    struct image *const dest,
+    int const dest_x,
+    int const dest_y,
+    struct bitmap const*const src,
+    uint32_t const color)
+\brief blit an 8 bit bitmap onto an image
+\param[out] dest source image
+\param[in] dest_x x destination
+\param[in] dest_y y destination
+\param[in] src source bitmap
+\param[in] color color to use when a bit is on
+\returns none
+*/
+
+/*!
+\fn void bitmap_24bpp_blt(
+    struct image *const dest,
+    int const dest_x,
+    int const dest_y,
+    struct bitmap const*const src)
+\brief blit a 24 bit bitmap onto an image
+\param[out] dest source image
+\param[in] dest_x x destination
+\param[in] dest_y y destination
+\param[in] src source bitmap
+\returns none
+*/
+
+/*!
+\fn void bitmap_xy24bpp_blt(
+    struct image *const dest,
+    int const dest_x,
+    int const dest_y,
+    struct bitmap const*const src,
+    int const src_x,
+    int const src_y)
+\brief blit a 24 bit bitmap onto an image
+\param[out] dest source image
+\param[in] dest_x x destination
+\param[in] dest_y y destination
+\param[in] src source bitmap
+\param[in] src_x source x
+\param[in] src_y source y
+\returns none
+*/
+
+/*!
+\fn void bitmap_32bpp_blt(
+    struct image *const dest,
+    int const dest_x,
+    int const dest_y,
+    struct bitmap const*const src)
+\brief blit a 32 bit bitmap onto an image
+\param[out] dest source image
+\param[in] dest_x x destination
+\param[in] dest_y y destination
+\param[in] src source bitmap
+\returns none
+*/
+
+/*!
+\fn void bitmap_xy32bpp_blt(
+    struct image *const dest,
+    int const dest_x,
+    int const dest_y,
+    struct bitmap const*const src,
+    int const src_x,
+    int const src_y)
+\brief blit a 32 bit bitmap onto an image
+\param[out] dest source image
+\param[in] dest_x x destination
+\param[in] dest_y y destination
+\param[in] src source bitmap
+\param[in] src_x source x
+\param[in] src_y source y
+\returns none
+*/

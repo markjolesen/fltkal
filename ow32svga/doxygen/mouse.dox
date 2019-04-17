@@ -1,0 +1,90 @@
+/*
+ mouse.dox
+
+ License CC0 PUBLIC DOMAIN
+
+ To the extent possible under law, Mark J. Olesen has waived all copyright
+ and related or neighboring rights to ow32svga Library. This work is published
+ from: United States.
+*/
+
+/*! \file mouse.h
+\brief mouse routines
+*/
+
+/*!
+\struct mouse_event 
+\brief contianer for mouse event
+
+\var mouse_event::m_btn_state
+	indicator if button is pressed (1) or not (0)
+
+\var mouse_event::m_curs_col
+	position of cursor column
+
+\var mouse_event::m_curs_row
+	position of cursor row
+*/
+
+/*!
+\var mouse_initialized
+	indicator if mouse has been initialized
+*/
+
+/*!
+\fn int mouse_get_event(struct mouse_event* o_event)
+\brief retrieves a mouse event from the queue
+\param[out] o_event event structure to fill
+\returns 0 mouse event not available
+\returns !0 mouse event has been filled
+*/
+
+/*!
+\fn int mouse_init()
+\brief initializes the mouse
+\returns -1 mouse is not supported (driver not installed)
+\returns 0 success mouse has been initialized
+
+This routine initializes the mouse handler and queue.  It must only
+be called once. Equally important is to invoke mouse_deinit when
+finished. This removes the interrupt handler.  Otherwise, after the
+application exists, and  a mouse event occurs it will crash the system.
+
+*/
+
+/*!
+\fn void mouse_deinit()
+\brief clean up the mouse handler
+\returns none
+
+This routine can safely be called after a failed call to ::mouse_init.
+It checks the mouse_initialized flag, and if set will uninstall the
+handler and clean up the queue.
+*/
+
+
+/*!
+\fn void mouse_set_range(
+    unsigned int const i_width,
+    unsigned int const i_height)
+\brief sets the range of the mouse 
+\param[in] i_width width range
+\param[in] i_height height range
+\returns none
+*/
+
+/*!
+\fn void mouse_get_position(
+    unsigned int* o_pos_x,
+    unsigned int* o_pos_y,
+    unsigned int* o_btn_status)
+\brief get mouse status
+\param[out] o_pos_x return x position
+\param[out] o_pos_y return y position
+\param[out] o_btn_status return button status (0x1 left pressed, 0x2 right pressed)
+\returns none
+
+This routine calls int 033h function 03h to get the status of the mouse. 
+
+\returns none
+*/

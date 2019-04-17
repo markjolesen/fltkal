@@ -1,0 +1,102 @@
+/*
+ dpmi.dox
+
+ License CC0 PUBLIC DOMAIN
+
+ To the extent possible under law, Mark J. Olesen has waived all copyright
+ and related or neighboring rights to ow32svga Library. This work is published
+ from: United States.
+*/
+
+/*! \file dpmi.h
+\brief DOS Protected Mode Interface routines
+*/
+
+/*!
+\fn uint32_t dpmi_selector_alloc
+\brief allocate a selector
+\returns -1 unable to allocate
+\returns !-1 selector
+
+Calls int 0x33 fn 0x00
+*/
+
+/*!
+\fn void dpmi_selector_free(
+    uint32_t selector)
+\brief free selector
+\param[in] selector valid selector to free
+\returns none
+
+Calls int 0x33 fn 0x01
+*/
+
+/*!
+\fn int dpmi_selector_set_base(
+    uint32_t selector,
+    uint32_t const linear_address)
+\brief set the base address of a selector (segment)
+\param[in,out] selector selector to modify
+\param[in] linear_address linear address to set
+\returns 0 success
+\returns -1 failure
+
+Calls int 0x31 fn 0x07
+*/
+
+/*!
+\fn int dpmi_selector_set_limit(
+    uint32_t selector,
+    uint32_t const limit)
+\brief set selector limit
+\param[in,out] selector selector to modify
+\param[in] limit limit to set (limit should be one less of actual limit e.g. limit - 1)
+\returns 0 success
+\returns -1 failure
+
+Calls int 0x31 fn 0x08
+*/
+
+/*!
+\fn uint32_t dpmi_physical2linear(
+    uint32_t const physical_address,
+    uint32_t const limit)
+\brief map physical memory to linear memory
+\param[in,out] physical_address  physical address to map
+\param[in] limit limit of address (limit should be one less of actual limit e.g. limit - 1)
+\returns -1 failure
+\returns !-1 linear address
+
+Calls int 0x31 fn 0x0800
+*/
+
+/*!
+\fn void const* dpmi_real2linear(
+    uint32_t const segoff)
+\brief map a real address to a linear address
+\param[in] segoff valid real address (segment:offset)
+\returns linear address
+*/
+
+/*!
+\fn int dpmi_alloc(
+    uint32_t*const linear_address,
+    uint32_t*const handle,
+    size_t const size)
+\brief allocate memory block
+\param[out] linear_address linear address of block allocated
+\param[out] handle memory handle (for resizing and freeing)
+\param[in] size number of bytes to allocate
+\returns 0 success
+\returns -1 failure
+
+Calls int 0x31 fn 0x501
+*/
+
+/*!
+\fn void dpmi_free(
+    uint32_t handle)
+\brief free memory block allocated with dmpi_alloc
+\param[in] handle handle of memory block to free
+\returns none
+*/
