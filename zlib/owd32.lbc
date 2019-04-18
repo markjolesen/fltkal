@@ -1,0 +1,15 @@
+-+..\obj\adler32.obj
+-+..\obj\compress.obj
+-+..\obj\crc32.obj
+-+..\obj\uncompr.obj
+-+..\obj\deflate.obj
+-+..\obj\trees.obj
+-+..\obj\zutil.obj
+-+..\obj\inflate.obj
+-+..\obj\inftrees.obj
+-+..\obj\inffast.obj
+-+..\obj\gzclose.obj
+-+..\obj\gzlib.obj
+-+..\obj\gzread.obj
+-+..\obj\gzwrite.obj
+-+..\obj\infback.obj 
