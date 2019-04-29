@@ -73,6 +73,8 @@ Abstract time type
 */
 #if defined(__DJGPP__)
 typedef uclock_t ticks_t;
+#elif defined(__WATCOMC__)
+typedef clock_t ticks_t;
 #else
 typedef struct timespec ticks_t;
 #endif
@@ -82,14 +84,17 @@ Set a time type to the current time
 \param[in,out] ticks time object to intialize
 \returns none
 */
-inline void ticks_set(ticks_t &ticks)
+inline void
+ticks_set(ticks_t& ticks)
 {
 #if defined(__DJGPP__)
-    ticks = uclock();
+  ticks = uclock();
+#elif defined(__WATCOMC__)
+  ticks = clock();
 #else
-    clock_gettime(CLOCK_REALTIME, &ticks);
+  clock_gettime(CLOCK_REALTIME, &ticks);
 #endif
-    return;
+  return;
 }
 
 /**
@@ -98,30 +103,38 @@ Set a time type in seconds
 \param[out] ticks time object to initialize
 \returns none
 */
-inline void ticks_convert(ticks_t &ticks, double const seconds)
+inline void
+ticks_convert(ticks_t& ticks, double const seconds)
 {
-#if !defined(__DJGPP__)
 
-    if (0 < seconds)
-    {
-        double integral;
-        double fract = modf(seconds, &integral);
+#if defined(__DJGPP__)
 
-        ticks.tv_sec = integral;
-        ticks.tv_nsec = (fract * 1000000000L);
-    }
-    else
-    {
-        ticks.tv_sec = 0;
-        ticks.tv_nsec = 0;
-    }
+  ticks = static_cast<ticks_t>((UCLOCKS_PER_SEC * seconds));
+
+#elif defined(__WATCOMC__)
+
+  ticks = static_cast<ticks_t>((CLOCKS_PER_SEC * seconds));
 
 #else
 
-    ticks = static_cast<ticks_t>((UCLOCKS_PER_SEC * seconds));
+  if (0 < seconds)
+  {
+    double integral;
+    double fract = modf(seconds, &integral);
+
+    ticks.tv_sec = integral;
+    ticks.tv_nsec = (fract * 1000000000L);
+  }
+
+  else
+  {
+    ticks.tv_sec = 0;
+    ticks.tv_nsec = 0;
+  }
 
 #endif
-    return;
+
+  return;
 }
 
 /**
@@ -131,27 +144,34 @@ Subtract time
 \param[in] end ending time object
 \returns none
 */
-inline void ticks_subtract(ticks_t &result, ticks_t const &begin, ticks_t const &end)
+inline void
+ticks_subtract(ticks_t& result, ticks_t const& begin, ticks_t const& end)
 {
-#if !defined(__DJGPP__)
-    long sec_diff = (end.tv_sec - begin.tv_sec);
-    long nsec_diff = (end.tv_nsec - begin.tv_nsec);
 
-    if (0 < nsec_diff)
-    {
-        result.tv_sec = sec_diff;
-        result.tv_nsec = nsec_diff;
-    }
-    else
-    {
-        result.tv_sec = sec_diff - 1;
-        result.tv_nsec = nsec_diff + 1000000000L;
-    }
+#if defined(__DJGPP__) || defined(__WATCOMC__)
+
+  result = (end - begin);
+
 #else
-    result = (end - begin);
+
+  long sec_diff = (end.tv_sec - begin.tv_sec);
+  long nsec_diff = (end.tv_nsec - begin.tv_nsec);
+
+  if (0 < nsec_diff)
+  {
+    result.tv_sec = sec_diff;
+    result.tv_nsec = nsec_diff;
+  }
+
+  else
+  {
+    result.tv_sec = sec_diff - 1;
+    result.tv_nsec = nsec_diff + 1000000000L;
+  }
+
 #endif
 
-    return;
+  return;
 }
 
 /**
@@ -160,25 +180,31 @@ Elapse a time object
 \param[in] elapsed elapsed time to subtract from ticks
 \returns none
 */
-inline void ticks_elapse(ticks_t &ticks, ticks_t const &elapsed)
+inline void
+ticks_elapse(ticks_t& ticks, ticks_t const& elapsed)
 {
-#if !defined(__DJGPP__)
-    long sec_diff = (ticks.tv_sec - elapsed.tv_sec);
-    long nsec_diff = (ticks.tv_nsec - elapsed.tv_nsec);
 
-    if (0 > nsec_diff)
-    {
-        sec_diff--;
-        nsec_diff += 1000000000L;
-    }
+#if defined(__DJGPP__) || defined(__WATCOMC__)
 
-    ticks.tv_sec = sec_diff;
-    ticks.tv_nsec = nsec_diff;
+  ticks -= elapsed;
+
 #else
-    ticks -= elapsed;
+
+  long sec_diff = (ticks.tv_sec - elapsed.tv_sec);
+  long nsec_diff = (ticks.tv_nsec - elapsed.tv_nsec);
+
+  if (0 > nsec_diff)
+  {
+    sec_diff--;
+    nsec_diff += 1000000000L;
+  }
+
+  ticks.tv_sec = sec_diff;
+  ticks.tv_nsec = nsec_diff;
+
 #endif
 
-    return;
+  return;
 }
 
 #define __TICKS_H__

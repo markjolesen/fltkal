@@ -4,7 +4,7 @@
 //
 // Menu code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 // Copyright 1998-2015 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -182,6 +182,8 @@ public:
   int numitems;
   int selected;
   int drawn_selected;	// last redraw has this selected
+  size_t item_offset;
+  size_t items_visible;
   int shortcutWidth;
   const Fl_Menu_Item* menu;
   menuwindow(const Fl_Menu_Item* m, int X, int Y, int W, int H,
@@ -334,7 +336,7 @@ void Fl_Menu_Item::draw(int x, int y, int w, int h, const Fl_Menu_* m,
 menutitle::menutitle(int X, int Y, int W, int H, const Fl_Menu_Item* L) :
   Fl_Menu_Window(X, Y, W, H, 0) {
   end();
-  type(FL_MENU_TITLE_WINDOW); // ALLEGRO:
+  type(FL_MENU_TITLE_WINDOW);
   set_modal();
   clear_border();
   set_menu_window();
@@ -347,7 +349,9 @@ menuwindow::menuwindow(const Fl_Menu_Item* m, int X, int Y, int Wp, int Hp,
 		       int menubar, int menubar_title, int right_edge)
   : Fl_Menu_Window(X, Y, Wp, Hp, 0)
 {
-  type(FL_MENU_WINDOW); // ALLEGRO: 
+  type(FL_MENU_WINDOW);
+  item_offset= 0;
+  items_visible= 0;
   int scr_x, scr_y, scr_w, scr_h;
   int tx = X, ty = Y;
 
@@ -435,7 +439,35 @@ menuwindow::menuwindow(const Fl_Menu_Item* m, int X, int Y, int Wp, int Hp,
   //if (X > scr_x+scr_w-W) X = right_edge-W;
   if (X > scr_x+scr_w-W) X = scr_x+scr_w-W;
   x(X); w(W);
-  h((numitems ? itemheight*numitems-Fl::menu_linespacing() : 0)+2*BW+3);
+
+  int height= 2*BW+3;
+
+  if (numitems)
+  {
+    height= ((itemheight*numitems-Fl::menu_linespacing())+2*BW+3);
+    items_visible = numitems;
+    if (scr_h <= (Y + height))
+    {
+       items_visible= 0;
+       height= scr_h;
+       size_t y= scr_h;
+       for (size_t slot= numitems; slot; slot--)
+       {
+         y-= itemheight;
+         if (m && t)
+         {
+           if (Y >= y) { y= Y; break;}
+         }
+         else if (itemheight >= y) { y= itemheight; items_visible++; break; }
+         items_visible++;
+       }
+       Y= y;
+    }
+  }
+
+  h(height);
+
+#if 0
   if (selected >= 0) {
     Y = Y+(Hp-itemheight)/2-selected*itemheight-BW;
   } else {
@@ -455,8 +487,17 @@ menuwindow::menuwindow(const Fl_Menu_Item* m, int X, int Y, int Wp, int Hp,
         // draw the menu to the right
         Y = Y-h()+itemheight+Fl::box_dy(box());
       }
+      if (t) {
+        if (menubar_title) {
+          Y = Y + Fl::menu_linespacing() - Fl::box_dw(button->box());
+        } else {
+          Y += 2*Htitle+2*BW+3;
+        }
+      }
     }
   }
+#endif
+
   if (m) y(Y); else {y(Y-2); w(1); h(1);}
 
   if (t) {
@@ -487,19 +528,45 @@ void menuwindow::position(int X, int Y) {
 
 // scroll so item i is visible on screen
 void menuwindow::autoscroll(int n) {
-  int scr_y, scr_h;
-  int Y = y()+Fl::box_dx(box())+2+n*itemheight;
+  size_t offset_old= item_offset;
 
-  int xx, ww;
-  Fl::screen_work_area(xx, scr_y, ww, scr_h);
-  if (Y <= scr_y) Y = scr_y-Y+10;
-  else {
-    Y = Y+itemheight-scr_h-scr_y;
-    if (Y < 0) return;
-    Y = -Y-10;
+  do
+  {
+
+    if (0 == itemheight)
+    {
+      break;
+    }
+
+    if (n == item_offset)
+    {
+      if (item_offset)
+      {
+        item_offset--;
+      }
+      break;
+    }
+
+    if (n < (int)item_offset)
+    {
+      for (; n < (int)item_offset; item_offset--);
+
+      break;
+    }
+
+    for (; n > (int)(item_offset + items_visible - 2); item_offset++);
+
+    for (; item_offset && (item_offset + items_visible - 1) >= numitems; item_offset--);
+
   }
-  Fl_Menu_Window::position(x(), y()+Y);
-  // y(y()+Y); // don't wait for response from X
+  while (0);
+
+  if (offset_old != item_offset)
+  {
+    damage(FL_DAMAGE_ALL);
+  }
+
+  return;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -511,7 +578,7 @@ void menuwindow::drawentry(const Fl_Menu_Item* m, int n, int eraseit) {
   int xx = BW;
   int W = w();
   int ww = W-2*BW-1;
-  int yy = BW+1+n*itemheight;
+  int yy = BW+1+(n-item_offset)*itemheight;
   int hh = itemheight - Fl::menu_linespacing();
 
   if (eraseit && n != selected) {
@@ -556,18 +623,22 @@ void menuwindow::drawentry(const Fl_Menu_Item* m, int n, int eraseit) {
 }
 
 void menutitle::draw() {
-  Fl_Window_Driver::driver(this)->draw_begin(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_begin();
   menu->draw(0, 0, w(), h(), button, 2);
-  Fl_Window_Driver::driver(this)->draw_end(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_end();
 }
 
 void menuwindow::draw() {
-  Fl_Window_Driver::driver(this)->draw_begin(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_begin();
   if (damage() != FL_DAMAGE_CHILD) {	// complete redraw
     fl_draw_box(box(), 0, 0, w(), h(), button ? button->color() : color());
     if (menu) {
-      const Fl_Menu_Item* m; int j;
-      for (m=menu->first(), j=0; m->text; j++, m = m->next()) drawentry(m, j, 0);
+      const Fl_Menu_Item* m; int j; size_t slot= 0;
+      for (m=menu->first(), j=0; m->text; j++, m = m->next()) 
+      {
+        if (item_offset <= j) {drawentry(m, j, 0); slot++;}
+        if (items_visible <= slot) break;
+      }
     }
   } else {
     if (damage() & FL_DAMAGE_CHILD && selected!=drawn_selected) { // change selection
@@ -576,7 +647,7 @@ void menuwindow::draw() {
     }
   }	    
   drawn_selected = selected;
-  Fl_Window_Driver::driver(this)->draw_end(); // ALLEGRO:
+  Fl_Window_Driver::driver(this)->draw_end();
 }
 
 void menuwindow::set_selected(int n) {
@@ -592,16 +663,18 @@ int menuwindow::find_selected(int mx, int my) {
   if (my < 0 || my >= h()) return -1;
   if (!itemheight) { // menubar
     int xx = 3; int n = 0;
-    const Fl_Menu_Item* m = menu ? menu->first() : 0;
+    const Fl_Menu_Item* m = menu->first();
     for (; ; m = m->next(), n++) {
       if (!m->text) return -1;
+
       xx += m->measure(0, button) + 16;
       if (xx > mx) break;
+
     }
     return n;
   }
   if (mx < Fl::box_dx(box()) || mx >= w()) return -1;
-  int n = (my-Fl::box_dx(box())-1)/itemheight;
+  int n = (item_offset + ((my-Fl::box_dx(box())-1)/itemheight));
   if (n < 0 || n>=numitems) return -1;
   return n;
 }
@@ -926,6 +999,10 @@ const Fl_Menu_Item* Fl_Menu_Item::pulldown(
     int menubar) const {
   Fl_Group::current(0); // fix possible user error...
 
+  // track the Fl_Menu_ widget to make sure we notice if it gets
+  // deleted while the menu is open (STR #3503)
+  Fl_Widget_Tracker wp((Fl_Widget *)pbutton);
+
   button = pbutton;
   if (pbutton && pbutton->window()) {
     for (Fl_Window* w = pbutton->window(); w; w = w->window()) {
@@ -962,7 +1039,8 @@ const Fl_Menu_Item* Fl_Menu_Item::pulldown(
   initial_item = pp.current_item;
   if (initial_item) goto STARTUP;
 
-  // the main loop, runs until p.state goes to DONE_STATE:
+  // the main loop: runs until p.state goes to DONE_STATE or the menu
+  // widget is deleted (e.g. from a timer callback, see STR #3503):
   for (;;) {
 
     // make sure all the menus are shown:
@@ -979,6 +1057,8 @@ const Fl_Menu_Item* Fl_Menu_Item::pulldown(
     {
       const Fl_Menu_Item* oldi = pp.current_item;
       Fl::wait();
+      if (pbutton && wp.deleted()) // menu widget has been deleted (STR #3503)
+	break;
       if (pp.state == DONE_STATE) break; // done.
       if (pp.current_item == oldi) continue;
     }
@@ -1065,7 +1145,7 @@ const Fl_Menu_Item* Fl_Menu_Item::pulldown(
       }
     }
   }
-  const Fl_Menu_Item* m = pp.current_item;
+  const Fl_Menu_Item* m = (pbutton && wp.deleted()) ? NULL : pp.current_item;
   delete pp.fakemenu;
   while (pp.nummenus>1) delete pp.p[--pp.nummenus];
   mw.hide();
@@ -1080,30 +1160,35 @@ const Fl_Menu_Item* Fl_Menu_Item::pulldown(
   The selected item (or NULL if none) is returned. <I>This does not
   do the callbacks or change the state of check or radio items.</I>
 
-  X,Y is the position of the mouse cursor, relative to the
-  window that got the most recent event (usually you can pass 
-  Fl::event_x() and Fl::event_y() unchanged here).
-
-  \p title is a character string title for the menu.  If
-  non-zero a small box appears above the menu with the title in it.
-
-  The menu is positioned so the cursor is centered over the item 
+  The menu is positioned so the cursor is centered over the item
   picked.  This will work even if \p picked is in a submenu.
   If \p picked is zero or not in the menu item table the menu is
   positioned with the cursor in the top-left corner.
 
-  \p button is a pointer to an Fl_Menu_ from which the color and
+  \param[in] X,Y the position of the mouse cursor, relative to the
+  window that got the most recent event (usually you can pass 
+  Fl::event_x() and Fl::event_y() unchanged here).
+
+  \param[in] title a character string title for the menu.  If
+  non-zero a small box appears above the menu with the title in it.
+
+  \param[in] picked if this pointer is not NULL, the popup menu will appear
+  so that the picked menu is under the mouse pointer.
+
+  \param[in] menu_button is a pointer to an Fl_Menu_ from which the color and
   boxtypes for the menu are pulled.  If NULL then defaults are used.
+
+  \return a pointer to the menu item selected by the user, or NULL
 */
 const Fl_Menu_Item* Fl_Menu_Item::popup(
   int X, int Y,
   const char* title,
   const Fl_Menu_Item* picked,
-  const Fl_Menu_* button
-  ) const {
+  const Fl_Menu_* menu_button
+) const {
   static Fl_Menu_Item dummy; // static so it is all zeros
   dummy.text = title;
-  return pulldown(X, Y, 0, 0, picked, button, title ? &dummy : 0);
+  return pulldown(X, Y, 0, 0, picked, menu_button, title ? &dummy : 0);
 }
 
 /**

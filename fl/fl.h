@@ -4,7 +4,7 @@
 //
 // Main header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -229,7 +229,7 @@ public: // run time information about compile time configuration
 public: // should be private!
 
 #ifndef FL_DOXYGEN
-#if defined(USE_ALLEGRO)
+#if defined(USE_ALLEGRO) || defined(USE_OWD32)
   static int window_draw_offset_x; // ALLEGRO: when drawing contains window x offset. set in Fl_Window::draw
   static int window_draw_offset_y; // ALLEGRO: when drawing contains window y offset. set in Fl_Window::draw
 #endif

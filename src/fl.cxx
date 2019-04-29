@@ -4,7 +4,7 @@
 //
 // Main event handling code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 // Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -185,7 +185,7 @@ bool Fl::cfg_sys_allegro= 0;
 //
 // Globals...
 //
-#if defined(USE_ALLEGRO)
+#if defined(USE_ALLEGRO) || defined(USE_OWD32)
 // ALLEGRO:
 int Fl::window_draw_offset_x= 0; 
 int Fl::window_draw_offset_y= 0;

@@ -2,7 +2,7 @@
 //
 // Window manager for the Fast Light Tool Kit (FLTK)
 //
-// Copyright 2018 The fltkal authors
+// Copyright 2018-2019 The fltkal authors
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -63,11 +63,38 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include "wm.h"
+#include <fl/platform.h>
 #include "aldrvwin.h"
 #include "aldrvgr.h"
+
+#if defined(USE_ALLEGRO)
 #include "algfx.h"
-#include <fl/platform.h>
+#else
+#include "mouse.h"
+#include "image.h"
+#include "cursor.h"
+#define screen _screen
+#pragma aux __halt = "hlt";
+#endif
+
+#include "wm.h"
+
+#if defined(USE_OWD32)
+inline void
+rect_xor(
+  struct image* const bmp,
+  int const x,
+  int const y,
+  unsigned int const width,
+  unsigned int const height)
+{
+  image_lineh_xor(bmp, x, y, width);
+  image_lineh_xor(bmp, x, y + height - 1, width);
+  image_linev_xor(bmp, x, y + 1, height - 1);
+  image_linev_xor(bmp, x + width - 1, y + 1, height - 1);
+  return;
+}
+#endif
 
 wm::wm()
 {
@@ -77,353 +104,458 @@ wm::~wm()
 {
 }
 
-wm::hit_type wm::hit(Fl_Window &window, int const x, int const y) const
+wm::hit_type
+wm::hit(Fl_Window& window, int const x, int const y) const
 {
-    hit_type what = HIT_NONE;
+  hit_type what = HIT_NONE;
 
-    do
+  do
+  {
+
+    int top = window.y();
+    int top_actual = top - Fl_Allegro_Window_Driver::title_bar_height;
+    int left = window.x();
+    int right = left + window.w() - 1;
+    int bottom = top + window.h() - 1;
+
+    if (x < (left - 2))
     {
-
-        int top = window.y();
-        int top_actual = top - Fl_Allegro_Window_Driver::title_bar_height;
-        int left = window.x();
-        int right = left + window.w() - 1;
-        int bottom = top + window.h() - 1;
-
-        if (x <= left)
-        {
-            if (x >= left - 1)
-            {
-                if (y <= top_actual + 1)
-                {
-                    what = HIT_NORTH_WEST;
-                }
-                else if (y >= bottom - 1)
-                {
-                    what = HIT_SOUTH_WEST;
-                }
-                else
-                {
-                    what = HIT_WEST;
-                }
-            }
-            break;
-        }
-
-        if (x >= right)
-        {
-            if (x <= right + 1)
-            {
-                if (y <= top_actual + 1)
-                {
-                    what = HIT_NORTH_EAST;
-                }
-                else if (y >= bottom - 1)
-                {
-                    what = HIT_SOUTH_EAST;
-                }
-                else
-                {
-                    what = HIT_EAST;
-                }
-            }
-            break;
-        }
-
-        if (y <= top)
-        {
-            if (y >= top_actual - 1)
-            {
-                if (y <= top_actual)
-                {
-                    what = HIT_NORTH;
-                }
-                else
-                {
-                    what = HIT_MOVE;
-                }
-            }
-            break;
-        }
-
-        if (y >= bottom)
-        {
-            if (y <= bottom + 1)
-            {
-                what = HIT_SOUTH;
-            }
-            break;
-        }
-
-        what = HIT_WINDOW;
+      break;
     }
-    while (0);
 
-    return what;
+    if (x > (right + 2))
+    {
+      break;
+    }
+
+    if (y < (top_actual - 2))
+    {
+      break;
+    }
+
+    if (y > (bottom + 2))
+    {
+      break;
+    }
+
+    bool hit_left_edge = ((x >= (left - 2)) && (x <= (left + 2)));
+
+    bool hit_right_edge = false;
+
+    if (false == hit_left_edge)
+    {
+      hit_right_edge = ((x >= (right - 2)) && (x <= (right + 2)));
+    }
+
+    bool hit_top_edge = ((y >= (top_actual - 2)) && (y <= (top_actual + 2)));
+
+    bool hit_bottom_edge = false;
+
+    if (false == hit_top_edge)
+    {
+      hit_bottom_edge = ((y >= (bottom - 2)) && (y <= (bottom + 2)));
+    }
+
+    if (hit_left_edge)
+    {
+      if (hit_top_edge)
+      {
+        what = HIT_NORTH_WEST;
+        break;
+      }
+
+      if (hit_bottom_edge)
+      {
+        what = HIT_SOUTH_WEST;
+        break;
+      }
+
+      what = HIT_WEST;
+      break;
+    }
+
+    if (hit_right_edge)
+    {
+      if (hit_top_edge)
+      {
+        what = HIT_NORTH_EAST;
+        break;
+      }
+
+      if (hit_bottom_edge)
+      {
+        what = HIT_SOUTH_EAST;
+        break;
+      }
+
+      what = HIT_EAST;
+      break;
+    }
+
+    if (hit_top_edge)
+    {
+      what = HIT_NORTH;
+      break;
+    }
+
+    if (hit_bottom_edge)
+    {
+      what = HIT_SOUTH;
+      break;
+    }
+
+    if ((y > top_actual) && (y < top))
+    {
+      what = HIT_MOVE;
+      break;
+    }
+
+    what = HIT_WINDOW;
+
+  }
+  while (0);
+
+  return what;
 }
 
-bool wm::handle_push(Fl_Window &window, hit_type const what, int const x, int const y) const
+bool
+wm::handle_push(Fl_Window& window, hit_type const what, int const x,
+                int const y) const
 {
-    bool handled = false;
+  bool handled = false;
 
-    do
+  do
+  {
+
+    if (!(FL_WINDOW == window.type() || FL_DOUBLE_WINDOW == window.type()))
     {
-
-        if (!(FL_WINDOW == window.type() || FL_DOUBLE_WINDOW == window.type()))
-        {
-            break;
-        }
-
-        if (HIT_WINDOW == what)
-        {
-            break;
-        }
-
-        if (HIT_NONE != what)
-        {
-            if (window.modal() && HIT_MOVE != what)
-            {
-                break;
-            }
-            handle_push(window, what);
-            handled = true;
-            break;
-        }
-
-        if (window.modal())
-        {
-            break;
-        }
-
-        Fl_X *i;
-        for (Fl_X **pp = &Fl_X::first; (i = *pp); pp = &i->next)
-        {
-            Fl_Window *wi = i->w;
-            if (wi != &window)
-            {
-                hit_type what2 =  hit((*wi), x, y);
-                if (what2)
-                {
-                    *pp = i->next;
-                    i->next = Fl_X::first;
-                    Fl_X::first = i;
-                    // wi->take_focus();
-                    Fl::focus(wi); // force focus (empty windows)
-                    wi->redraw(); // paint above all other windows
-                    break;
-                }
-            }
-        }
-
+      break;
     }
-    while (0);
 
-    return handled;
+    if (HIT_WINDOW == what)
+    {
+      break;
+    }
+
+    if (HIT_NONE != what)
+    {
+      if (window.modal() && HIT_MOVE != what)
+      {
+        break;
+      }
+
+      handle_push(window, what);
+      handled = true;
+      break;
+    }
+
+    if (window.modal())
+    {
+      break;
+    }
+
+    Fl_X* i;
+
+    for (Fl_X** pp = &Fl_X::first; (i = *pp); pp = &i->next)
+    {
+      Fl_Window* wi = i->w;
+
+      if (wi != &window)
+      {
+        hit_type what2 =  hit((*wi), x, y);
+
+        if (what2)
+        {
+          *pp = i->next;
+          i->next = Fl_X::first;
+          Fl_X::first = i;
+          // wi->take_focus();
+          Fl::focus(wi); // force focus (empty windows)
+          wi->redraw(); // paint above all other windows
+          break;
+        }
+      }
+    }
+
+  }
+  while (0);
+
+  return handled;
 }
 
-static inline void resize_east(int &left, int &top, int &width, int &height, int const delta_x, int const delta_y)
+static inline void
+resize_east(int& left, int& top, int& width, int& height, int const delta_x,
+            int const delta_y)
 {
+  width += delta_x;
+
+  if (Fl_Allegro_Window_Driver::window_min_width > width)
+  {
+    width = Fl_Allegro_Window_Driver::window_min_width;
+  }
+}
+
+static inline void
+resize_west(int& left, int& top, int& width, int& height, int const delta_x,
+            int const delta_y)
+{
+  width -= delta_x;
+
+  if (Fl_Allegro_Window_Driver::window_min_width < width)
+  {
+    left += delta_x;
+  }
+
+  else
+  {
     width += delta_x;
-    if (Fl_Allegro_Window_Driver::window_min_width > width)
-    {
-        width = Fl_Allegro_Window_Driver::window_min_width;
-    }
+  }
 }
 
-static inline void resize_west(int &left, int &top, int &width, int &height, int const delta_x, int const delta_y)
+static inline void
+resize_north(int& left, int& top, int& width, int& height, int const delta_x,
+             int const delta_y)
 {
-    width -= delta_x;
-    if (Fl_Allegro_Window_Driver::window_min_width < width)
-    {
-        left += delta_x;
-    }
-    else
-    {
-        width += delta_x;
-    }
-}
+  height -= delta_y;
 
-static inline void resize_north(int &left, int &top, int &width, int &height, int const delta_x, int const delta_y)
-{
-    height -= delta_y;
-    if (Fl_Allegro_Window_Driver::window_min_height < height)
-    {
-        top += delta_y;
-    }
-    else
-    {
-        height += delta_y;
-    }
-}
+  if (Fl_Allegro_Window_Driver::window_min_height < height)
+  {
+    top += delta_y;
+  }
 
-static inline void resize_south(int &left, int &top, int &width, int &height, int const delta_x, int const delta_y)
-{
+  else
+  {
     height += delta_y;
-    if (Fl_Allegro_Window_Driver::window_min_height > height)
+  }
+}
+
+static inline void
+resize_south(int& left, int& top, int& width, int& height, int const delta_x,
+             int const delta_y)
+{
+  height += delta_y;
+
+  if (Fl_Allegro_Window_Driver::window_min_height > height)
+  {
+    height = Fl_Allegro_Window_Driver::window_min_height;
+  }
+}
+
+static inline void
+resize_north_east(int& left, int& top, int& width, int& height,
+                  int const delta_x, int const delta_y)
+{
+  resize_north(left, top, width, height, delta_x, delta_y);
+  resize_east(left, top, width, height, delta_x, delta_y);
+}
+
+static inline void
+resize_north_west(int& left, int& top, int& width, int& height,
+                  int const delta_x, int const delta_y)
+{
+  resize_north(left, top, width, height, delta_x, delta_y);
+  resize_west(left, top, width, height, delta_x, delta_y);
+}
+
+static inline void
+resize_south_east(int& left, int& top, int& width, int& height,
+                  int const delta_x, int const delta_y)
+{
+  resize_south(left, top, width, height, delta_x, delta_y);
+  resize_east(left, top, width, height, delta_x, delta_y);
+}
+
+static inline void
+resize_south_west(int& left, int& top, int& width, int& height,
+                  int const delta_x, int const delta_y)
+{
+  resize_south(left, top, width, height, delta_x, delta_y);
+  resize_west(left, top, width, height, delta_x, delta_y);
+}
+
+void
+wm::handle_push(Fl_Window& window, hit_type const what) const
+{
+  int left = window.x() - 1;
+  int top = window.y() - Fl_Allegro_Window_Driver::title_bar_height;
+  int width = window.w() + 1;
+  int height = window.h() + Fl_Allegro_Window_Driver::title_bar_height + 1;
+  int left_orig = left;
+  int top_orig = top;
+  int width_orig = width;
+  int height_orig = height;
+#if defined(USE_OWD32)
+  struct mouse_event mouse;
+#endif
+
+  fl_graphics_driver->mouse_hide();
+  rect_xor(screen, left, top, width, height);
+  fl_graphics_driver->mouse_show();
+
+  do
+  {
+
+#if defined (USE_ALLEGRO)
+
+    if (mouse_needs_poll())
     {
-        height = Fl_Allegro_Window_Driver::window_min_height;
+      poll_mouse();
     }
-}
 
-static inline void resize_north_east(int &left, int &top, int &width, int &height, int const delta_x, int const delta_y)
-{
-    resize_north(left, top, width, height, delta_x, delta_y);
-    resize_east(left, top, width, height, delta_x, delta_y);
-}
+    int btn = mouse_b;
 
-static inline void resize_north_west(int &left, int &top, int &width, int &height, int const delta_x, int const delta_y)
-{
-    resize_north(left, top, width, height, delta_x, delta_y);
-    resize_west(left, top, width, height, delta_x, delta_y);
-}
+#else
 
-static inline void resize_south_east(int &left, int &top, int &width, int &height, int const delta_x, int const delta_y)
-{
-    resize_south(left, top, width, height, delta_x, delta_y);
-    resize_east(left, top, width, height, delta_x, delta_y);
-}
+    int rc = mouse_get_event(&mouse);
 
-static inline void resize_south_west(int &left, int &top, int &width, int &height, int const delta_x, int const delta_y)
-{
-    resize_south(left, top, width, height, delta_x, delta_y);
-    resize_west(left, top, width, height, delta_x, delta_y);
-}
+    if (0 == rc)
+    {
+      __halt();
+      continue;
+    }
 
-void wm::handle_push(Fl_Window &window, hit_type const what) const
-{
-    int left = window.x() - 1;
-    int top = window.y() - Fl_Allegro_Window_Driver::title_bar_height;
-    int width = window.w() + 1;
-    int height = window.h() + Fl_Allegro_Window_Driver::title_bar_height + 1;
-    int left_orig = left;
-    int top_orig = top;
-    int width_orig = width;
-    int height_orig = height;
+    int btn = mouse.m_btn_state;
 
-    rect_xor(screen, left, top, width, height);
+#endif
 
-    do
+    if (0 == btn)
     {
 
-        if (mouse_needs_poll())
-        {
-            poll_mouse();
-        }
+      if (left_orig == left &&
+          top_orig == top &&
+          width_orig == width &&
+          height_orig == height)
+      {
+        fl_graphics_driver->mouse_hide();
+        rect_xor(screen, left, top, width, height);
+        fl_graphics_driver->mouse_show();
+        break;
+      }
 
-        int btn = mouse_b;
-
-        if (0 == btn)
-        {
-
-            if (left_orig == left &&
-                    top_orig == top &&
-                    width_orig == width &&
-                    height_orig == height)
-            {
-                fl_graphics_driver->mouse_hide();
-                rect_xor(screen, left, top, width, height);
-                fl_graphics_driver->mouse_show();
-                break;
-            }
-
-            fl_graphics_driver->mouse_hide();
-            fl_graphics_driver->flip_to_offscreen(true);
-            window.resize(left + 1,
-                          top + Fl_Allegro_Window_Driver::title_bar_height,
-                          width - 1,
-                          height - Fl_Allegro_Window_Driver::title_bar_height - 1);
-            Fl::redraw();
-            Fl::flush();
-            fl_graphics_driver->flip_to_onscreen();
-            fl_graphics_driver->mouse_show();
-            break;
-        }
-
-        int pos, x, y;
-
-        pos = mouse_pos;
-        x = (pos >> 16);
-        y = (0xffff & pos);
-
-        int delta_x = (x - Fl::e_x_root);
-        int delta_y = (y - Fl::e_y_root);
-        int movement = (abs(delta_x) + abs(delta_y));
-
-        Fl::e_x_root = x;
-        Fl::e_y_root = y;
-
-        if (movement)
-        {
-            int left1 = left;
-            int top1 = top;
-            int width1 = width;
-            int height1 = height;
-            switch (what)
-            {
-            case HIT_MOVE:
-            {
-                top += delta_y;
-                left += delta_x;
-                break;
-            }
-            case HIT_EAST:
-            {
-                resize_east(left, top, width, height, delta_x, delta_y);
-                break;
-            }
-            case HIT_WEST:
-            {
-                resize_west(left, top, width, height, delta_x, delta_y);
-                break;
-            }
-            case HIT_NORTH:
-            {
-                resize_north(left, top, width, height, delta_x, delta_y);
-                break;
-            }
-            case HIT_SOUTH:
-            {
-                resize_south(left, top, width, height, delta_x, delta_y);
-                break;
-            }
-            case HIT_NORTH_EAST:
-            {
-                resize_north_east(left, top, width, height, delta_x, delta_y);
-                break;
-            }
-            case HIT_NORTH_WEST:
-            {
-                resize_north_west(left, top, width, height, delta_x, delta_y);
-                break;
-            }
-            case HIT_SOUTH_EAST:
-            {
-                resize_south_east(left, top, width, height, delta_x, delta_y);
-                break;
-            }
-            case HIT_SOUTH_WEST:
-            {
-                resize_south_west(left, top, width, height, delta_x, delta_y);
-                break;
-            }
-            default:
-                break;
-            }
-
-            if (left1 != left ||
-                    top1 != top ||
-                    width1 != width ||
-                    height1 != height)
-            {
-                fl_graphics_driver->mouse_hide();
-                rect_xor(screen, left1, top1, width1, height1);
-                rect_xor(screen, left, top, width, height);
-                fl_graphics_driver->mouse_show();
-            }
-        }
-
+      fl_graphics_driver->mouse_hide();
+      fl_graphics_driver->flip_to_offscreen(true);
+      window.resize(left + 1,
+                    top + Fl_Allegro_Window_Driver::title_bar_height,
+                    width - 1,
+                    height - Fl_Allegro_Window_Driver::title_bar_height - 1);
+      Fl::redraw();
+      Fl::flush();
+      fl_graphics_driver->flip_to_onscreen();
+      fl_graphics_driver->mouse_show();
+      break;
     }
-    while (1);
 
-    return;
+#if defined(USE_ALLEGRO)
+    int pos, x, y;
+
+    pos = mouse_pos;
+    x = (pos >> 16);
+    y = (0xffff & pos);
+#else
+    int x = mouse.m_curs_col - _cursor_current->hot_x;
+    int y = mouse.m_curs_row - _cursor_current->hot_y;
+#endif
+    int delta_x = (x - Fl::e_x_root);
+    int delta_y = (y - Fl::e_y_root);
+    int movement = (abs(delta_x) + abs(delta_y));
+
+    Fl::e_x_root = x;
+    Fl::e_y_root = y;
+
+    if (movement)
+    {
+#if defined(USE_OWD32)
+      cursor_backing_to_image(_screen);
+
+      cursor_image_to_backing(
+        _screen,
+        x,
+        y,
+        _cursor_current->width,
+        _cursor_current->height);
+
+      cursor_blt(_screen, x, y, _cursor_current);
+#endif
+      int left1 = left;
+      int top1 = top;
+      int width1 = width;
+      int height1 = height;
+
+      switch (what)
+      {
+        case HIT_MOVE:
+        {
+          top += delta_y;
+          left += delta_x;
+          break;
+        }
+
+        case HIT_EAST:
+        {
+          resize_east(left, top, width, height, delta_x, delta_y);
+          break;
+        }
+
+        case HIT_WEST:
+        {
+          resize_west(left, top, width, height, delta_x, delta_y);
+          break;
+        }
+
+        case HIT_NORTH:
+        {
+          resize_north(left, top, width, height, delta_x, delta_y);
+          break;
+        }
+
+        case HIT_SOUTH:
+        {
+          resize_south(left, top, width, height, delta_x, delta_y);
+          break;
+        }
+
+        case HIT_NORTH_EAST:
+        {
+          resize_north_east(left, top, width, height, delta_x, delta_y);
+          break;
+        }
+
+        case HIT_NORTH_WEST:
+        {
+          resize_north_west(left, top, width, height, delta_x, delta_y);
+          break;
+        }
+
+        case HIT_SOUTH_EAST:
+        {
+          resize_south_east(left, top, width, height, delta_x, delta_y);
+          break;
+        }
+
+        case HIT_SOUTH_WEST:
+        {
+          resize_south_west(left, top, width, height, delta_x, delta_y);
+          break;
+        }
+
+        default:
+          break;
+      }
+
+      if (left1 != left ||
+          top1 != top ||
+          width1 != width ||
+          height1 != height)
+      {
+        fl_graphics_driver->mouse_hide();
+        rect_xor(screen, left1, top1, width1, height1);
+        rect_xor(screen, left, top, width, height);
+        fl_graphics_driver->mouse_show();
+      }
+    }
+
+  }
+  while (1);
+
+  return;
 }

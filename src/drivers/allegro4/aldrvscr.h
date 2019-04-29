@@ -74,27 +74,26 @@
 class FL_EXPORT Fl_Allegro_Screen_Driver : public Fl_Screen_Driver
 {
 
-private:
+  private:
 
     int screen_init();
 
-    bool wait_keyboard(Fl_Window *window);
+    bool wait_keyboard(Fl_Window* window);
 
-    bool wait_mouse(Fl_Window *window);
+    bool wait_mouse(Fl_Window* window);
 
-    wm::hit_type hit(Fl_Window *window, int const x, int const y);
+    wm::hit_type hit(Fl_Window* window, int const x, int const y);
 
-protected:
+  protected:
 
     wm wm_;
     timeout timer_;
     ticker dclick_;
     ticks_t clock_;
-    bool grab_bounce_;
     int btn_state_;
     Fl_Cursor cursor_;
 
-public:
+  public:
 
     Fl_Allegro_Screen_Driver();
 
@@ -110,11 +109,11 @@ public:
 
     virtual int h();
 
-    virtual void screen_xywh(int &X, int &Y, int &W, int &H, int n);
+    virtual void screen_xywh(int& X, int& Y, int& W, int& H, int n);
 
-    virtual void screen_work_area(int &X, int &Y, int &W, int &H, int n);
+    virtual void screen_work_area(int& X, int& Y, int& W, int& H, int n);
 
-    virtual void screen_dpi(float &h, float &v, int n = 0);
+    virtual void screen_dpi(float& h, float& v, int n = 0);
 
     virtual void beep(int type);
 
@@ -124,27 +123,27 @@ public:
 
     virtual int ready();
 
-    virtual void grab(Fl_Window *win);
+    virtual void grab(Fl_Window* win);
 
     virtual void get_system_colors();
 
-    virtual const char *get_system_scheme();
+    virtual const char* get_system_scheme();
 
-    virtual void add_timeout(double time, Fl_Timeout_Handler cb, void *argp);
+    virtual void add_timeout(double time, Fl_Timeout_Handler cb, void* argp);
 
-    virtual void repeat_timeout(double time, Fl_Timeout_Handler cb, void *argp);
+    virtual void repeat_timeout(double time, Fl_Timeout_Handler cb, void* argp);
 
-    virtual int has_timeout(Fl_Timeout_Handler cb, void *argp);
+    virtual int has_timeout(Fl_Timeout_Handler cb, void* argp);
 
-    virtual void remove_timeout(Fl_Timeout_Handler cb, void *argp);
+    virtual void remove_timeout(Fl_Timeout_Handler cb, void* argp);
 
-    virtual int get_mouse(int &x, int &y);
+    virtual int get_mouse(int& x, int& y);
 
     virtual void open_display_platform();
 
     virtual void close_display();
 
-    virtual int compose(int &del);
+    virtual int compose(int& del);
 
 };
 

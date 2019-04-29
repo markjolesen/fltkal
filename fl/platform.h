@@ -4,7 +4,7 @@
 //
 // Platform header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 // Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -89,6 +89,8 @@ class Fl_Window;
 #    include "android.H"
 #  elif defined(__DJGPP__) || defined(USE_ALLEGRO)
 #    include "allegro4.h"
+#  elif defined(__WATCOMC__) || defined(USE_OWD32)
+#    include "owd32.h"
 #  else // X11
 #   include <FL/fl_types.h>
 #   include <FL/Enumerations.H>

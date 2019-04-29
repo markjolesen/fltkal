@@ -8,7 +8,7 @@
  * Note:
  * The 'const' declarations were removed to match FLTK 1.3 wrapper (STR #2931)
  *
- * Copyright 2017-2018 The fltkal authors
+ * Copyright 2017-2019 The fltkal authors
  * Copyright (c) 2013 by Michael Baeuerle
  *
  *                              FLTK License
@@ -88,7 +88,7 @@
 
 #include "config.h"
 // ALLEGRO:
-#if (defined(USE_X11) || defined(USE_ALLEGRO)) && !defined(HAVE_SCANDIR)
+#if (defined(USE_X11) || defined(USE_ALLEGRO) || defined(USE_OWD32)) && !defined(HAVE_SCANDIR)
 
 #ifndef HAVE_PTHREAD
    /* Switch system headers into POSIX.1-1990 mode */
@@ -99,7 +99,11 @@
 #endif  /* HAVE_PTHREAD */
 
 #include <sys/types.h>        /* XPG2 require this for '*dir()' functions */
+#if !defined(__WATCOMC__)
 #include <dirent.h>
+#else
+#include <direct.h>
+#endif
 #include <errno.h>
 #include <stdlib.h>           /* For 'malloc()', 'realloc()' and 'qsort()' */
 #include <stddef.h>           /* For 'offsetof()', 'NULL' and 'size_t' */

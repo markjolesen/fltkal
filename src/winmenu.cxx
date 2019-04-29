@@ -78,8 +78,16 @@
 #include <fl/winmenu.h>
 #include "drvwin.h"
 
+void Fl_Menu_Window::resize(int X,int Y,int W,int H)
+{
+  Fl_Window_Driver::driver(this)->backing_show();
+  Fl_Single_Window::resize(X, Y, W, H);
+  Fl_Window_Driver::driver(this)->backing_create();
+}
+
 void Fl_Menu_Window::show() {
   Fl_Window_Driver::driver(this)->show_menu();
+  Fl_Window_Driver::driver(this)->backing_create();
 }
 
 void Fl_Menu_Window::flush() {
@@ -102,6 +110,7 @@ void Fl_Menu_Window::hide() {
 /**  Destroys the window and all of its children.*/
 Fl_Menu_Window::~Fl_Menu_Window() {
   hide();
+  Fl_Window_Driver::driver(this)->backing_show();
 }
 
 

@@ -2,7 +2,7 @@
 //
 // Ticker class for the Fast Light Tool Kit (FLTK)
 //
-// Copyright 2018 The fltkal authors
+// Copyright 2018-2019 The fltkal authors
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -70,7 +70,7 @@
 class ticker
 {
 
-public:
+  public:
 
     ticker();
 
@@ -82,87 +82,96 @@ public:
 
     void reset();
 
-    void elapse(ticks_t const &elapsed);
+    void elapse(ticks_t const& elapsed);
 
-protected:
+  protected:
 
     bool expired_;
     ticks_t expiry_;
     ticks_t ticker_;
 
-private:
+  private:
 
-    ticker(ticker const &);
+    ticker(ticker const&);
 
-    ticker &operator=(ticker const &);
+    ticker& operator=(ticker const&);
 
 };
 
-inline ticker::ticker() :
-    expired_(true),
-    expiry_(),
-    ticker_()
+inline
+ticker::ticker() :
+  expired_(true),
+  expiry_(),
+  ticker_()
 {
-    return;
+  return;
 }
 
-inline ticker::~ticker()
+inline
+ticker::~ticker()
 {
-    return;
+  return;
 }
 
-inline void ticker::set(double const seconds)
+inline void
+ticker::set(double const seconds)
 {
-    if (seconds > 0)
-    {
-        expired_ = false;
-        ticks_convert(expiry_, seconds);
-    }
-    else
-    {
-        expired_ = true;
-        ticks_convert(expiry_, 0);
-    }
-    ticker_ = expiry_;
-}
-
-inline void ticker::reset()
-{
-    ticker_ = expiry_;
+  if (seconds > 0)
+  {
     expired_ = false;
+    ticks_convert(expiry_, seconds);
+  }
+
+  else
+  {
+    expired_ = true;
+    ticks_convert(expiry_, 0);
+  }
+
+  ticker_ = expiry_;
 }
 
-inline bool ticker::expired() const
+inline void
+ticker::reset()
 {
-    return expired_;
+  ticker_ = expiry_;
+  expired_ = false;
 }
 
-inline void ticker::elapse(ticks_t const &elapsed)
+inline bool
+ticker::expired() const
+{
+  return expired_;
+}
+
+inline void
+ticker::elapse(ticks_t const& elapsed)
 {
 
-    do
+  do
+  {
+
+    if (expired_)
     {
-
-        if (expired_)
-        {
-            break;
-        }
-
-        ticks_elapse(ticker_, elapsed);
-
-#if !defined(__DJGPP__)
-        if (0 > ticker_.tv_sec || 0 > ticker_.tv_nsec)
-#else
-        if (0 > ticker_)
-#endif
-        {
-            expired_ = true;
-        }
-
+      break;
     }
-    while (0);
 
-    return;
+    ticks_elapse(ticker_, elapsed);
+
+#if defined(__DJGPP__) || defined(__WATCOMC__)
+
+    if (0 > ticker_)
+#else
+    if (0 > ticker_.tv_sec || 0 > ticker_.tv_nsec)
+#endif
+    {
+      expired_ = true;
+    }
+
+  }
+  while (0);
+
+  return;
 }
 
 

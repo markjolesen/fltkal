@@ -5,7 +5,7 @@
 // A base class for platform specific system calls
 // for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 // Copyright 2010-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -98,6 +98,7 @@ class Fl_Widget;
   */
 class FL_EXPORT Fl_System_Driver {
   friend class Fl;
+  friend class fl_cleanup;
 public:
   struct Keyname {
     unsigned int key;

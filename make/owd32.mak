@@ -259,6 +259,7 @@ OBJ_OW32DRV= &
     $(OBJ)\drvscrow.obj &
     $(OBJ)\fontdir.obj &
     $(OBJ)\fontft.obj &
+    $(OBJ)\rgb24cb.obj &
     $(OBJ)\timeout.obj &
     $(OBJ)\utf8proc.obj &
     $(OBJ)\util.obj &
@@ -760,6 +761,9 @@ $(OBJ)\fontdir.obj : $(SRC_OW32DRV)\fontdir.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
 
 $(OBJ)\fontft.obj : $(SRC_OW32DRV)\fontft.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<
+    
+$(OBJ)\rgb24cb.obj : $(SRC_OW32DRV)\rgb24cb.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
     
 $(OBJ)\timeout.obj : $(SRC_OW32DRV)\timeout.cxx .AUTODEPEND

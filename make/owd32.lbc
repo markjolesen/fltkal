@@ -159,6 +159,7 @@
 -+..\obj\drvscrow.obj
 -+..\obj\fontdir.obj
 -+..\obj\fontft.obj
+-+..\obj\rgb24cb.obj
 -+..\obj\timeout.obj
 -+..\obj\utf8proc.obj
 -+..\obj\util.obj

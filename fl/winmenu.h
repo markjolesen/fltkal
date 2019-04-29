@@ -88,6 +88,7 @@ public:
   void erase();
   void flush();
   void hide();
+  virtual void resize(int X,int Y,int W,int H);
   /** Tells if hardware overlay mode is set */
   unsigned int overlay() {return !(flags()&NO_OVERLAY);}
   /** Tells FLTK to use hardware overlay planes if they are available.  */

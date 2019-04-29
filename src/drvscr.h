@@ -4,7 +4,7 @@
 //
 // All screen related calls in a driver style class.
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 // Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -107,6 +107,8 @@ class Fl_Input;
  Each supported platform implements several of the virtual methods of this class.
  */
 class FL_EXPORT Fl_Screen_Driver {
+
+  friend class fl_cleanup;
 
 protected:
   Fl_Screen_Driver();

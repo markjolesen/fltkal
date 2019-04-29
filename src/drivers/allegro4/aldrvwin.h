@@ -2,7 +2,7 @@
 //
 // Allegro4 Window handling code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -67,35 +67,60 @@
 
 #include "../../drvwin.h"
 #include <fl/fl_enums.h>
+
+#if defined(USE_ALLEGRO)
 #include <allegro.h>
+#else
+#include "bitmap.h"
+#include "cursor.h"
+#endif
 
 class Fl_Allegro_Window_Driver : public Fl_Window_Driver
 {
 
-protected:
+  protected:
+
+#if defined(USE_ALLEGRO)
+    struct
+    {
+      Fl_Cursor pointer_;
+      struct
+      {
+        BITMAP* bmp_;
+        int hot_x_;
+        int hot_y_;
+      } custom_;
+    } cursor_;
+#else
+    struct
+    {
+      Fl_Cursor pointer_;
+      struct cursor* current_;
+      struct cursor custom_;
+    } cursor_;
+#endif
 
     struct
     {
-        Fl_Cursor pointer_;
-        struct
-        {
-            BITMAP *bmp_;
-            int hot_x_;
-            int hot_y_;
-        } custom_;
-    } cursor_;
-    BITMAP *bmp_store_;
+      int x_;
+      int y_;
+#if defined(USE_ALLEGRO)
+      BITMAP* bmp_;
+#else
+      struct bitmap* bmp_;
+#endif
+    } store_;
 
-public:
+  public:
 
     enum
     {
-        title_bar_height = 24,
-        window_min_height = 50,
-        window_min_width = 50
+      title_bar_height = 24,
+      window_min_height = 50,
+      window_min_width = 50
     };
 
-    Fl_Allegro_Window_Driver(Fl_Window *);
+    Fl_Allegro_Window_Driver(Fl_Window*);
 
     virtual ~Fl_Allegro_Window_Driver();
 
@@ -107,7 +132,7 @@ public:
 
     virtual void draw_end();
 
-    virtual Fl_X *makeWindow();
+    virtual Fl_X* makeWindow();
 
     virtual void take_focus();
 
@@ -115,13 +140,10 @@ public:
 
     virtual void hide();
 
-    virtual void erase_menu();
-
-    virtual void show_menu();
-
     virtual void resize(int X, int Y, int W, int H);
 
-    virtual int scroll(int src_x, int src_y, int src_w, int src_h, int dest_x, int dest_y, void (*draw_area)(void *, int, int, int, int), void *data);
+    virtual int scroll(int src_x, int src_y, int src_w, int src_h, int dest_x,
+                       int dest_y, void (*draw_area)(void*, int, int, int, int), void* data);
 
     virtual void redisplay_cursor() const;
 
@@ -129,7 +151,12 @@ public:
 
     virtual int set_cursor(Fl_Cursor);
 
-    virtual int set_cursor(const Fl_RGB_Image *, int, int);
+    virtual int set_cursor(const Fl_RGB_Image*, int, int);
+
+    virtual void backing_create();
+
+    virtual void backing_show();
+
 };
 
 #define FL_ALLEGRO_WINDOW_DRIVER_H

@@ -4,7 +4,7 @@
 //
 // Math header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -93,6 +93,10 @@
 #    define M_SQRT2         1.41421356237309504880
 #    define M_SQRT1_2       0.70710678118654752440
 #  endif // !M_SQRT2
+
+#if defined(__WATCOMC__) && (__WATCOMC__ < 1300)
+extern "C" double rint(double x);
+#endif
 
 #  if (defined(_WIN32) || defined(CRAY)) && !defined(__MINGW32__) && !defined(__MWERKS__)
 

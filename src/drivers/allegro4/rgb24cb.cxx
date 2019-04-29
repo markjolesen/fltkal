@@ -2,7 +2,7 @@
 //
 // Convert RGB image to Allegro BITMAP for the Fast Light Tool Kit (FLTK)
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -63,8 +63,9 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include <allegro.h>
 #include <fl/drvgr.h>
+#if defined(USE_ALLEGRO)
+#include <allegro.h>
 
 BITMAP *rgb24cb_to_bitmap(
     Fl_Draw_Image_Cb cb,
@@ -105,3 +106,38 @@ BITMAP *rgb24cb_to_bitmap(
 
     return bmp;
 }
+#else
+
+#include "bitmap.h"
+
+struct bitmap *rgb24cb_to_bitmap(
+    Fl_Draw_Image_Cb cb,
+    void *data,
+    unsigned int const img_width,
+    unsigned int const img_height)
+{
+    struct bitmap *bmp = bitmap_new(img_width, img_height);
+
+    unsigned char *line = reinterpret_cast<unsigned char *>(malloc(3 * img_width));
+
+    for (unsigned int row = 0; row < img_height; row++)
+    {
+        (*cb)(data, 0, row, img_width, line);
+	unsigned char* buf= reinterpret_cast<unsigned char *>(bmp->bits.buf);
+        unsigned char* dest = &buf[4*row*img_width];
+        unsigned char *src = &line[0];
+        for (unsigned int index = 0; index < img_width; index++)
+        {
+	    *dest++= 0;
+	    *dest++= *src++;
+	    *dest++= *src++;
+	    *dest++= *src++;
+        }
+    }
+
+    free(line);
+
+    return bmp;
+}
+
+#endif

@@ -3,7 +3,7 @@
  *
  * "$Id: platform_types.h 12969 2018-06-23 17:04:18Z matt $"
  *
- * Copyright 2017-2018 The fltkal authors
+ * Copyright 2017-2019 The fltkal authors
  * Copyright 2016-2018 by Bill Spitzak and others.
  *
  *                              FLTK License
@@ -185,6 +185,17 @@ typedef int FL_SOCKET;
 typedef struct __GLXcontextRec *GLContext;
 #include <sys/types.h>
 #include <dirent.h>
+
+#elif defined(__WATCOMC__)
+
+typedef unsigned long Fl_Offscreen;
+typedef unsigned long Fl_Bitmask;
+typedef struct _XRegion *Fl_Region;
+typedef int FL_SOCKET;
+typedef struct __GLXcontextRec *GLContext;
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <direct.h>
 
 #else /* X11 */
 

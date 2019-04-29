@@ -2,7 +2,7 @@
 //
 // FreeType font for the Fast Light Tool Kit (FLTK)
 //
-// Copyright 2018 The fltkal authors
+// Copyright 2018-2019 The fltkal authors
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -65,30 +65,38 @@
 //
 #if !defined(__FONTFT_H__)
 
-#include "fontdir.h"
-#include <allegro.h>
 #include <stdlib.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_CACHE_H
 
+#include "fontdir.h"
+
+#if defined(USE_ALLEGRO)
+#   include <allegro.h>
+#elif defined(USE_OWD32)
+#   include "bitmap.h"
+#else
+#   error "unknown build target"
+#endif
+
 class fontft
 {
 
-public:
+  public:
 
     fontft();
 
     virtual ~fontft();
 
-    char const *get_face(Fl_Font const font) const;
+    char const* get_face(Fl_Font const font) const;
 
-    char const *get_path(Fl_Font const font) const;
+    char const* get_path(Fl_Font const font) const;
 
     unsigned int get_font_count() const;
 
-    unsigned int get_font_sizes(Fl_Font const font, int *&sizep) const;
+    unsigned int get_font_sizes(Fl_Font const font, int*& sizep) const;
 
     FT_Library get_library() const;
 
@@ -101,22 +109,26 @@ public:
     int height(Fl_Font const font, int const height) const;
 
     int width(
-        char const *text,
-        unsigned int const len,
-        Fl_Font const font,
-        int const height) const;
+      char const* text,
+      unsigned int const len,
+      Fl_Font const font,
+      int const height) const;
 
     void draw(
-        BITMAP *surface,
-        char const *text,
-        unsigned int const len,
-        int const x,
-        int const y,
-        Fl_Font const font,
-        int const height,
-        int const alcolor) const;
+#if defined(USE_ALLEGRO)
+      BITMAP* surface,
+#else
+      struct image* surface,
+#endif
+      char const* text,
+      unsigned int const len,
+      int const x,
+      int const y,
+      Fl_Font const font,
+      int const height,
+      int const alcolor) const;
 
-private:
+  private:
 
     FT_Library lib_;
     FTC_Manager manager_;
@@ -124,66 +136,81 @@ private:
     FTC_ImageCache image_cache_;
     fontdir dir_;
 
-    fontft(fontft const &);
+    fontft(fontft const&);
 
-    fontft &operator=(fontft const &);
+    fontft& operator=(fontft const&);
 
     void draw(
-        BITMAP *surface,
-        FT_Bitmap *bitmap,
-        int const x,
-        int const y,
-        int const alcolor) const;
+#if defined(USE_ALLEGRO)
+      BITMAP* surface,
+#else
+      struct image* surface,
+#endif
+      FT_Bitmap* bitmap,
+      int const x,
+      int const y,
+      int const alcolor) const;
 
 };
 
-inline char const *fontft::get_face(Fl_Font const font) const
+inline char const*
+fontft::get_face(Fl_Font const font) const
 {
-    return dir_.get_face(font);
+  return dir_.get_face(font);
 }
 
-inline char const *fontft::get_path(Fl_Font const font) const
+inline char const*
+fontft::get_path(Fl_Font const font) const
 {
-    return dir_.get_path(font);
+  return dir_.get_path(font);
 }
 
-inline unsigned int fontft::get_font_count() const
+inline unsigned int
+fontft::get_font_count() const
 {
-    return dir_.get_count();
+  return dir_.get_count();
 }
 
-inline FT_Library fontft::get_library() const
+inline FT_Library
+fontft::get_library() const
 {
-    return lib_;
+  return lib_;
 }
 
-inline int fontft::ascent(Fl_Font const font, int const height) const
+inline int
+fontft::ascent(Fl_Font const font, int const height) const
 {
-    int ascent = 8;
-    FT_Size size = get_size(font, height);
-    if (size)
-    {
-        ascent = ((abs(size->metrics.ascender) + 63) >> 6);
-    }
-    return ascent;
+  int ascent = 8;
+  FT_Size size = get_size(font, height);
+
+  if (size)
+  {
+    ascent = ((abs(size->metrics.ascender) + 63) >> 6);
+  }
+
+  return ascent;
 }
 
-inline int fontft::descent(Fl_Font const font, int const height) const
+inline int
+fontft::descent(Fl_Font const font, int const height) const
 {
-    int descent = 0;
-    FT_Size size = get_size(font, height);
-    if (size)
-    {
-        descent = ((abs(size->metrics.descender) + 63) >> 6);
-    }
-    return descent;
+  int descent = 0;
+  FT_Size size = get_size(font, height);
+
+  if (size)
+  {
+    descent = ((abs(size->metrics.descender) + 63) >> 6);
+  }
+
+  return descent;
 }
 
-inline int fontft::height(Fl_Font const font, int const height) const
+inline int
+fontft::height(Fl_Font const font, int const height) const
 {
-    int ascent2 = ascent(font, height);
-    int descent2 = descent(font, height);
-    return (ascent2 + descent2);
+  int ascent2 = ascent(font, height);
+  int descent2 = descent(font, height);
+  return (ascent2 + descent2);
 }
 
 #define __FONTFT_H__
