@@ -1,10 +1,10 @@
 // outvalue.h
 //
-// "$Id: Fl_Value_Output.H 8864 2011-07-19 04:49:30Z greg.ercolano $"
+// "$Id$"
 //
 // Value output header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018,2020 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -134,5 +134,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Value_Output.H 8864 2011-07-19 04:49:30Z greg.ercolano $".
+// End of "$Id$".
 //

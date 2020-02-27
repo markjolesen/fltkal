@@ -1,71 +1,19 @@
-// menuadd.cxx
 //
-// "$Id: Fl_Menu_add.cxx 11802 2016-07-09 17:14:22Z AlbrechtS $"
+// "$Id$"
 //
 // Menu utilities for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2016 by Bill Spitzak and others.
+// Copyright 1998-2019 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     http://www.fltk.org/COPYING.php
+//
+// Please report all bugs and problems on the following page:
+//
+//     http://www.fltk.org/str.php
 //
 
 // Methods to alter the menu in an Fl_Menu_ widget.
@@ -94,7 +42,6 @@ extern Fl_Menu_* fl_menu_array_owner; // in Fl_Menu_.cxx
 // depreciated and should not be used.  These old methods use the
 // above pointers to detect if the array belongs to an Fl_Menu_
 // widget, and if so it reallocates as necessary.
-
 
 
 // Insert a single Fl_Menu_Item into an array of size at offset n,
@@ -228,7 +175,7 @@ int Fl_Menu_Item::insert(
       if (m->flags&FL_SUBMENU && !compare(item, m->text)) break;
 
     if (!m->text) { /* create a new menu */
-      int n = (index==-1) ? (int) (m-array) : index;
+      int n = (int)(m-array); /* index is not used if label contains a path */
       array = array_insert(array, msize, n, item, FL_SUBMENU|flags1);
       msize++;
       array = array_insert(array, msize, n+1, 0, 0);
@@ -428,13 +375,7 @@ int Fl_Menu_::insert(
   // make this widget own the local array:
   if (this != fl_menu_array_owner) {
     if (fl_menu_array_owner) {
-      Fl_Menu_* o = fl_menu_array_owner;
-      // the previous owner gets its own correctly-sized array:
-      int value_offset = (int) (o->value_-local_array);
-      int n = local_array_size;
-      Fl_Menu_Item* newMenu = o->menu_ = new Fl_Menu_Item[n];
-      memcpy(newMenu, local_array, n*sizeof(Fl_Menu_Item));
-      if (o->value_) o->value_ = newMenu+value_offset;
+      fl_menu_array_owner->menu_end();
     }
     if (menu_) {
       // this already has a menu array, use it as the local one:
@@ -516,7 +457,7 @@ void Fl_Menu_::replace(int i, const char *str) {
   if (!alloc) copy(menu_);
   if (alloc > 1) {
     free((void *)menu_[i].text);
-    str = strdup(str);
+      str = strdup(str?str:"");
   }
   menu_[i].text = str;
 }
@@ -547,6 +488,45 @@ void Fl_Menu_::remove(int i) {
   memmove(item, next_item, (menu_+n-next_item)*sizeof(Fl_Menu_Item));
 }
 
+/**
+  Finishes menu modifications and returns menu().
+
+  Call menu_end() after using add(), insert(), remove(), or any other
+  methods that may change the menu array if you want to access the
+  menu array anytime later with menu(). This should be called only
+  once after the \b last menu modification for performance reasons.
+
+  Does nothing if the menu array is already in a private location.
+
+  Some methods like Fl_Menu_Button::popup() call this method before
+  their menu is opened.
+
+  \note After menu changes like add(), insert(), etc. menu() would
+    return a pointer to a temporary internal menu array that may be
+    relocated at unexpected times. This is due to performance
+    considerations and may be changed w/o further notice.
+
+  \since 1.4.0
+
+  \returns New Fl_Menu_Item array pointer.
+
+  \see Fl_Menu_::menu()
+*/
+
+const Fl_Menu_Item *Fl_Menu_::menu_end() {
+  if (menu_ == local_array && fl_menu_array_owner == this) {
+    // copy the menu array to a private correctly-sized array:
+    int value_offset = (int)(value_ - local_array);
+    int n = local_array_size;
+    Fl_Menu_Item* newMenu = menu_ = new Fl_Menu_Item[n];
+    memcpy(newMenu, local_array, n * sizeof(Fl_Menu_Item));
+    if (value_)
+      value_ = newMenu + value_offset;
+    fl_menu_array_owner = 0;
+  }
+  return menu_;
+}
+
 //
-// End of "$Id: Fl_Menu_add.cxx 11802 2016-07-09 17:14:22Z AlbrechtS $".
+// End of "$Id$".
 //

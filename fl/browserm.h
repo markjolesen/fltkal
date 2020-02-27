@@ -1,10 +1,9 @@
 // browserm.h
 //
-// "$Id: Fl_Multi_Browser.H 10882 2015-11-05 17:54:16Z manolo $"
 //
 // Multi browser header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -78,8 +77,12 @@
 
 /**
   The Fl_Multi_Browser class is a subclass of Fl_Browser
-  which lets the user select any set of the lines.  The user interface
-  is Macintosh style: clicking an item turns off all the others and
+  which lets the user select any set of the lines.  
+
+  \image html  fl_multi_browser.png "Fl_Multi_Browser"
+  \image latex fl_multi_browser.png "Fl_Multi_Browser" width=4cm
+
+  The user interface is Macintosh style: clicking an item turns off all the others and
   selects that one, dragging selects all the items the mouse moves over,
   and ctrl + click (Cmd+click on the Mac OS platform) toggles the items.  
   Shift + click extends the selection until the clicked item.
@@ -91,7 +94,7 @@
 class FL_EXPORT Fl_Multi_Browser : public Fl_Browser {
 public:
   /**
-      Creates a new Fl_Multi_Browser widget using the given
+    Creates a new Fl_Multi_Browser widget using the given
     position, size, and label string. The default boxtype is FL_DOWN_BOX.
     The constructor specializes Fl_Browser() by setting the type to FL_MULTI_BROWSER.
     The destructor destroys the widget and frees all memory that has been allocated.
@@ -100,7 +103,3 @@ public:
 };
 
 #endif
-
-//
-// End of "$Id: Fl_Multi_Browser.H 10882 2015-11-05 17:54:16Z manolo $".
-//

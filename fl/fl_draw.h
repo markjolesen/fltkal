@@ -1,71 +1,19 @@
-// fl_draw.h
 //
-// "$Id: fl_draw.H 12935 2018-05-24 19:48:41Z greg.ercolano $"
+// "$Id$"
 //
 // Portable drawing function header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2018 by Bill Spitzak and others.
+// Copyright 1998-2020 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please report all bugs and problems on the following page:
+//
+//     https://www.fltk.org/str.php
 //
 
 /**
@@ -152,32 +100,75 @@ inline void fl_push_no_clip() {fl_graphics_driver->push_no_clip(); }
  you return to FLTK.
  */
 inline void fl_pop_clip() {fl_graphics_driver->pop_clip(); }
+
 /**
- Does the rectangle intersect the current clip region?
- \param[in] x,y,w,h position and size of rectangle
- \returns non-zero if any of the rectangle intersects the current clip
- region. If this returns 0 you don't have to draw the object.
- 
- \note
- Under X this returns 2 if the rectangle is partially clipped, 
- and 1 if it is entirely inside the clip region.
- */
-inline int fl_not_clipped(int x, int y, int w, int h) {return fl_graphics_driver->not_clipped(x,y,w,h); }
+  Does the rectangle intersect the current clip region?
+
+  \param[in] x,y,w,h position and size of rectangle
+
+  \returns non-zero if any of the rectangle intersects the current clip
+    region. If this returns 0 you don't have to draw the object.
+
+  \note Under X this returns 2 if the rectangle is partially clipped
+    and 1 if it is entirely inside the clip region.
+
+  \see fl_clip_box()
+*/
+inline int fl_not_clipped(int x, int y, int w, int h) {
+  return fl_graphics_driver->not_clipped(x, y, w, h);
+}
+
 /**
- Intersects the rectangle with the current clip region and returns the
- bounding box of the result.
- 
- Returns non-zero if the resulting rectangle is different to the original.
- This can be used to limit the necessary drawing to a rectangle.
- \p W and \p H are set to zero if the rectangle is completely outside the region.
- \param[in] x,y,w,h position and size of rectangle
- \param[out] X,Y,W,H position and size of resulting bounding box.
- \returns Non-zero if the resulting rectangle is different to the original.
- */
-inline int fl_clip_box(int x, int y, int w, int h, int& X, int& Y, int& W, int& H)
-  {return fl_graphics_driver->clip_box(x,y,w,h,X,Y,W,H); }
+  Intersects a rectangle with the current clip region and returns the
+  bounding box of the result.
+
+  Returns non-zero if the resulting rectangle is different to the original.
+  The given rectangle <tt>(x, y, w, h)</tt> \e should be entirely inside its
+  window, otherwise the result may be unexpected, i.e. this function \e may
+  not clip the rectangle to the window coordinates and size. In particular
+  \p x and \p y \e should not be negative.
+
+  The resulting bounding box can be used to limit the necessary drawing to
+  this rectangle.
+
+  Example:
+  \code
+    void MyGroup::draw() {
+      int X = 0, Y = 0, W = 0, H = 0;
+      int ret = fl_clip_box(x(), y(), w(), h(), X, Y, W, H);
+      if (ret == 0) { // entire group is visible (not clipped)
+	// full drawing code here
+      } else { // parts of this group are clipped
+	// partial drawing code here (uses X, Y, W, and H to test)
+      }
+    }
+  \endcode
+
+  \p W and \p H are set to zero if the rectangle is completely outside the
+    clipping region. In this case \p X and \p Y are undefined and should
+    not be used. Possible values are <tt>(0, 0)</tt>, <tt>(x, y)</tt>,
+    or anything else (platform dependent).
+
+  \note This function is platform-dependent. If the given rectangle is not
+    entirely inside the window, the results are not guaranteed to be the
+    same on all platforms.
+
+  \param[in]  x,y,w,h position and size of rectangle
+  \param[out] X,Y,W,H position and size of resulting bounding box.
+
+  \returns Non-zero if the resulting rectangle is different to the original.
+
+  \see fl_not_clipped()
+*/
+inline int fl_clip_box(int x, int y, int w, int h, int& X, int& Y, int& W, int& H) {
+  return fl_graphics_driver->clip_box(x, y, w, h, X, Y, W, H);
+}
+
 /** Undoes any clobbering of clip done by your program */
-inline void fl_restore_clip() { fl_graphics_driver->restore_clip(); }
+inline void fl_restore_clip() {
+  fl_graphics_driver->restore_clip();
+}
+
 /**
  Replaces the top of the clipping stack with a clipping region of any shape.
  
@@ -185,6 +176,7 @@ inline void fl_restore_clip() { fl_graphics_driver->restore_clip(); }
  \param[in] r clipping region
  */
 inline void fl_clip_region(Fl_Region r) { fl_graphics_driver->clip_region(r); }
+
 /**
  Returns the current clipping region.
  */
@@ -582,16 +574,11 @@ FL_EXPORT void fl_rescale_offscreen(Fl_Offscreen &ctx);
 /* NOTE: doxygen comments here to avoid triplication in os-specific sources */
 
 // Fonts:
-/**
+/*
   Sets the current font, which is then used in various drawing routines.
-  You may call this outside a draw context if necessary to call fl_width(),
-  but on X this will open the display.
-
-  The font is identified by a \p face and a \p size.
-  The size of the font is measured in pixels and not "points".
-  Lines should be spaced \p size pixels apart or more.
+  Implemented and documented in src/fl_draw.cxx
 */
-inline void fl_font(Fl_Font face, Fl_Fontsize fsize) { fl_graphics_driver->font(face,fsize); }
+FL_EXPORT void fl_font(Fl_Font face, Fl_Fontsize fsize);
 
 /**
   Returns the \p face set by the most recent call to fl_font().
@@ -723,7 +710,7 @@ inline void fl_draw(const char* str, int n, int x, int y) {fl_graphics_driver->d
   Draws at the given \p x, \p y location a UTF-8 string of length \p n bytes
   rotating \p angle degrees counter-clockwise.
 
-  \note When using X11 (Unix, GNU/Linux, Cygwin et al.) this needs Xft to work.
+  \note When using X11 (Unix, Linux, Cygwin et al.) this needs Xft to work.
 	Under plain X11 (w/o Xft) rotated text is not supported by FLTK.
 	A warning will be issued to stderr at runtime (only once) if you
 	use this method with an angle other than 0.
@@ -846,10 +833,27 @@ inline void fl_draw_image_mono(Fl_Draw_Image_Cb cb, void* data, int X,int Y,int 
 inline char fl_can_do_alpha_blending() {return Fl_Graphics_Driver::default_driver().can_do_alpha_blending();}
 
 FL_EXPORT uchar *fl_read_image(uchar *p,int X,int Y,int W,int H,int alpha=0);
+FL_EXPORT Fl_RGB_Image *fl_capture_window_part(Fl_Window *win, int x, int y, int w, int h);
 
 // pixmaps:
-FL_EXPORT int fl_draw_pixmap(/*const*/ char* const* data, int x,int y,Fl_Color=FL_GRAY);
-FL_EXPORT int fl_draw_pixmap(const char* const* cdata, int x,int y,Fl_Color=FL_GRAY);
+/**
+ Draw XPM image data, with the top-left corner at the given position.
+ The image is dithered on 8-bit displays so you won't lose color
+ space for programs displaying both images and pixmaps.
+ \param[in] data pointer to XPM image data
+ \param[in] x,y  position of top-left corner
+ \param[in] bg   background color
+ \returns 0 if there was any error decoding the XPM data.
+ */
+FL_EXPORT int fl_draw_pixmap(const char* const* data, int x,int y,Fl_Color bg=FL_GRAY);
+/**
+ Draw XPM image data, with the top-left corner at the given position.
+ \see fl_draw_pixmap(const char* const* data, int x, int y, Fl_Color bg)
+ */
+inline int fl_draw_pixmap(/*const*/ char* const* data, int x, int y, Fl_Color bg=FL_GRAY)
+{
+  return fl_draw_pixmap((const char*const*)data,x,y,bg);
+}
 FL_EXPORT int fl_measure_pixmap(/*const*/ char* const* data, int &w, int &h);
 FL_EXPORT int fl_measure_pixmap(const char* const* cdata, int &w, int &h);
 
@@ -885,5 +889,5 @@ FL_EXPORT int fl_add_symbol(const char* name, void (*drawit)(Fl_Color), int scal
 #endif
 
 //
-// End of "$Id: fl_draw.H 12935 2018-05-24 19:48:41Z greg.ercolano $".
+// End of "$Id$".
 //

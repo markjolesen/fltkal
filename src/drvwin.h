@@ -173,6 +173,7 @@ public:
   // --- window data
   virtual int decorated_w() { return w(); } // default, should be overidden by driver
   virtual int decorated_h() { return h(); }
+  virtual const Fl_Image* shape() { return NULL; }
 
   // --- window management
   virtual void take_focus();
@@ -228,8 +229,6 @@ public:
   virtual const void *icon() const {return NULL;}
   virtual void icon(const void * ic) {}
   virtual void free_icons() {}
-  // each platform implements this its own way
-  static void default_icons(const Fl_RGB_Image *icons[], int count);
 
   // --- window printing/drawing helper
   virtual void capture_titlebar_and_borders(Fl_RGB_Image*& top, Fl_RGB_Image*& left,

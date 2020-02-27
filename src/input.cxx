@@ -1,71 +1,19 @@
-// input.cxx
 //
-// "$Id: Fl_Input.cxx 12976 2018-06-26 14:12:43Z manolo $"
+// "$Id$"
 //
 // Input widget for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2016, 2018 by Bill Spitzak and others.
+// Copyright 1998-2020 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please report all bugs and problems on the following page:
+//
+//     https://www.fltk.org/str.php
 //
 
 // This is the "user interface", it decodes user actions into what to
@@ -84,7 +32,7 @@
 #include <fl/input.h>
 #include <fl/fl_draw.h>
 #include <fl/fl_ask.h>
-#include "flstring.h"
+#include "flstring.h"		// this #includes "<config.h>" !
 
 #include <fl/inpfloat.h>
 #include <fl/inpint.h>
@@ -229,8 +177,9 @@ int Fl_Input::kf_delete_eol() {
 
 int Fl_Input::kf_delete_char_right() {
   if (readonly()) { fl_beep(); return 1; }
-  if (mark() != position()) return cut();
-  else return cut(1);
+  if (mark() != position()) cut();
+  else cut(1);
+  return 1;
 }
 
 int Fl_Input::kf_delete_char_left() {
@@ -664,27 +613,31 @@ int Fl_Input::handle(int event) {
       Fl::first_window()->cursor(FL_CURSOR_MOVE);
       dnd_save_focus = NULL;
       return 1;
-      
+
     case FL_DND_RELEASE:
       if (dnd_save_focus == this) { // if the dragged text comes from the same widget
-	// remove the selected text
-	int old_position = position();
-	if (dnd_save_mark > dnd_save_position) {
-	  int tmp = dnd_save_mark;
-	  dnd_save_mark = dnd_save_position;
-	  dnd_save_position = tmp;
+	if (!readonly()) {
+	  // remove the selected text
+	  int old_position = position();
+	  if (dnd_save_mark > dnd_save_position) {
+	    int tmp = dnd_save_mark;
+	    dnd_save_mark = dnd_save_position;
+	    dnd_save_position = tmp;
 	  }
-	replace(dnd_save_mark, dnd_save_position, NULL, 0);
-	if (old_position > dnd_save_position) position(old_position - (dnd_save_position - dnd_save_mark));
-	else position(old_position);
-	}
-      else if(dnd_save_focus) {
+	  replace(dnd_save_mark, dnd_save_position, NULL, 0);
+	  if (old_position > dnd_save_position)
+	    position(old_position - (dnd_save_position - dnd_save_mark));
+	  else
+	    position(old_position);
+	} // !readonly()
+      } // from the same widget
+      else if (dnd_save_focus) {
 	dnd_save_focus->handle(FL_UNFOCUS);
-	}
+      }
       dnd_save_focus = NULL;
       take_focus();
       return 1;
-      
+
       /* TODO: this will scroll the area, but stop if the cursor would become invisible.
        That clipping happens in drawtext(). Do we change the clipping or should 
        we move the cursor (ouch)?
@@ -762,5 +715,5 @@ int Fl_Secret_Input::handle(int event) {
 }
 
 //
-// End of "$Id: Fl_Input.cxx 12976 2018-06-26 14:12:43Z manolo $".
+// End of "$Id$".
 //

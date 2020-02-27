@@ -1,75 +1,23 @@
-// helpview.cxx
 //
-// "$Id: Fl_Help_View.cxx 12392 2017-08-18 15:46:20Z AlbrechtS $"
+// "$Id$"
 //
 // Fl_Help_View widget routines.
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1997-2010 by Easy Software Products.
-//
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
-//
 // Image support by Matthias Melcher, Copyright 2000-2009.
 //
 // Buffer management (HV_Edit_Buffer) and more by AlbrechtS and others.
-// Copyright 2011-2016 by Bill Spitzak and others.
+// Copyright 2011-2019 by Bill Spitzak and others.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     http://www.fltk.org/COPYING.php
+//
+// Please report all bugs and problems on the following page:
+//
+//     http://www.fltk.org/str.php
 //
 // Contents:
 //
@@ -2827,7 +2775,7 @@ Fl_Shared_Image *
 Fl_Help_View::get_image(const char *name, int W, int H) {
   const char	*localname;		// Local filename
   char		dir[FL_PATH_MAX];	// Current directory
-  char		temp[FL_PATH_MAX],	// Temporary filename
+  char		temp[2 * FL_PATH_MAX],	// Temporary filename
 		*tempptr;		// Pointer into temporary name
   Fl_Shared_Image *ip;			// Image pointer...
 
@@ -2924,7 +2872,7 @@ void Fl_Help_View::follow_link(Fl_Help_Link *linkp)
   if (strcmp(linkp->filename, filename_) != 0 && linkp->filename[0])
   {
     char	dir[FL_PATH_MAX];	// Current directory
-    char	temp[FL_PATH_MAX],	// Temporary filename
+    char	temp[2 * FL_PATH_MAX],	// Temporary filename
 	      *tempptr;	// Pointer into temporary filename
 
 
@@ -3333,17 +3281,31 @@ Fl_Help_View::~Fl_Help_View()
 
 /** Loads the specified file.
 
-  This method loads the specified file or URL.
+ This method loads the specified file or URL. The filename may end in a
+ \c \#name style target.
+
+ If the URL starts with \a ftp, \a http, \a https, \a ipp, \a mailto, or
+ \a news, followed by a colon, FLTK will use fl_open_uri() to show the
+ requested page in an external browser.
+
+ In all other cases, the URL is interpreted as a filename. The file is read and
+ displayed in this borwser. Note that MSWindows style backslashes are not
+ supported in the file name.
+
+ \param[in] f filename or URL
+
+ \return 0 on success, -1 on error
+
+ \see fl_open_uri()
 */
-int				// O - 0 on success, -1 on error
-Fl_Help_View::load(const char *f)// I - Filename to load (may also have target)
+int Fl_Help_View::load(const char *f)
 {
   FILE		*fp;		// File to read from
   long		len;		// Length of file
   char		*target;	// Target in file
   char		*slash;		// Directory separator
   const char	*localname;	// Local filename
-  char		error[1024];	// Error buffer
+  char		error[2 * FL_PATH_MAX];	// Error buffer
   char		newname[FL_PATH_MAX];	// New filename buffer
 
   // printf("load(%s)\n",f); fflush(stdout);
@@ -3353,7 +3315,8 @@ Fl_Help_View::load(const char *f)// I - Filename to load (may also have target)
       strncmp(f, "https:", 6) == 0 ||
       strncmp(f, "ipp:", 4) == 0 ||
       strncmp(f, "mailto:", 7) == 0 ||
-      strncmp(f, "news:", 5) == 0) {
+      strncmp(f, "news:", 5) == 0)
+  {
     char urimsg[FL_PATH_MAX];
     if ( fl_open_uri(f, urimsg, sizeof(urimsg)) == 0 ) {
       clear_selection();
@@ -3389,9 +3352,10 @@ Fl_Help_View::load(const char *f)// I - Filename to load (may also have target)
 	       "%s.</P></BODY>",
 	       f, urimsg);
       value(error);
-      //return(-1);
+      return -1;
+    } else {
+      return 0;
     }
-    return(0);
   }
 
   clear_selection();
@@ -3406,7 +3370,7 @@ Fl_Help_View::load(const char *f)// I - Filename to load (may also have target)
     localname = filename_;
 
   if (!localname)
-    return (0);
+    return -1;
 
   free_data();
 
@@ -3423,6 +3387,7 @@ Fl_Help_View::load(const char *f)// I - Filename to load (may also have target)
   if (strncmp(localname, "file:", 5) == 0)
     localname += 5;	// Adjust for local filename...
 
+  int ret = 0;
   if ((fp = fl_fopen(localname, "rb")) != NULL)
   {
     fseek(fp, 0, SEEK_END);
@@ -3442,6 +3407,7 @@ Fl_Help_View::load(const char *f)// I - Filename to load (may also have target)
 	     "%s.</P></BODY>",
 	     localname, strerror(errno));
     value_ = strdup(error);
+    ret = -1;
   }
 
   initial_load = 1;
@@ -3453,7 +3419,7 @@ Fl_Help_View::load(const char *f)// I - Filename to load (may also have target)
   else
     topline(0);
 
-  return (0);
+  return ret;
 }
 
 
@@ -3760,5 +3726,5 @@ hscrollbar_callback(Fl_Widget *s, void *)
 
 
 //
-// End of "$Id: Fl_Help_View.cxx 12392 2017-08-18 15:46:20Z AlbrechtS $".
+// End of "$Id$".
 //

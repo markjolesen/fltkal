@@ -1,71 +1,19 @@
-// textdsp.cxx
 //
-// "$Id: Fl_Text_Display.cxx 12975 2018-06-26 14:04:09Z manolo $"
+// "$Id$"
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 2001-2018 by Bill Spitzak and others.
-//
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
-//
+// Copyright 2001-2020 by Bill Spitzak and others.
 // Original code Copyright Mark Edel.  Permission to distribute under
 // the LGPL for the FLTK library granted by Mark Edel.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file. If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please report all bugs and problems on the following page:
+//
+//     https://www.fltk.org/str.php
 //
 
 // TODO: rendering of the "optional hyphen"
@@ -448,7 +396,7 @@ void Fl_Text_Display::buffer( Fl_Text_Buffer *buf ) {
  Styles are ranged from 65 ('A') to 126.
 
  \param styleBuffer this buffer works in parallel to the text buffer. For every
-   character in the text buffer, the stye buffer has a byte at the same offset
+   character in the text buffer, the style buffer has a byte at the same offset
    that contains an index into an array of possible styles.
  \param styleTable a list of styles indexed by the style buffer
  \param nStyles number of styles in the style table
@@ -530,8 +478,6 @@ void Fl_Text_Display::recalc_display() {
   unsigned int vscrollbarvisible = mVScrollBar->visible();
   int scrollsize = scrollbar_width_ ? scrollbar_width_ : Fl::scrollbar_size();
 
-  int oldTAWidth = text_area.w;
-
   int X = x() + Fl::box_dx(box());
   int Y = y() + Fl::box_dy(box());
   int W = w() - Fl::box_dw(box());
@@ -551,16 +497,16 @@ void Fl_Text_Display::recalc_display() {
   mVScrollBar->clear_visible();
   mHScrollBar->clear_visible();
 
-#if (1) // optimization (experimental - seems to work well)
-
   // Optimization: if the number of lines in the buffer does not fit in
   // the display area, then we need a vertical scrollbar regardless of
   // word wrapping. If we switch it on here, this saves one line counting
   // run in wrap mode in the loop below ("... again ..."). This is important
   // for large buffers that suffer from slow calculations of character width
   // to determine line wrapping.
+  // Note: active since Oct 25, 2017: commit eb772d027d (svn r12526)
 
-  oldTAWidth = -1; // force _first_ calculation in loop (STR #3412)
+  // force _first_ calculation in loop (STR #3412)
+  int oldTAWidth = -1; // was: text_area.w (before STR #3412)
 
   if (mContinuousWrap && !mWrapMarginPix) {
 
@@ -572,8 +518,7 @@ void Fl_Text_Display::recalc_display() {
       text_area.w -= scrollsize;
     }
   }
-
-#endif // optimization
+  // End of optimization, see comment above.
 
   for (int again = 1; again;) {
     again = 0;
@@ -680,12 +625,15 @@ void Fl_Text_Display::recalc_display() {
     if (scrollbar_align() & FL_ALIGN_LEFT) {
 #ifdef LINENUM_LEFT_OF_VSCROLL
       mVScrollBar->resize(text_area.x - LEFT_MARGIN - scrollsize,
+                          text_area.y - TOP_MARGIN,
+                          scrollsize,
+                          text_area.h + TOP_MARGIN + BOTTOM_MARGIN);
 #else
       mVScrollBar->resize(X,
+                          text_area.y - TOP_MARGIN,
+                          scrollsize,
+                          text_area.h + TOP_MARGIN + BOTTOM_MARGIN);
 #endif
-			  text_area.y - TOP_MARGIN,
-			  scrollsize,
-			  text_area.h + TOP_MARGIN + BOTTOM_MARGIN);
     } else {
       mVScrollBar->resize(X+W-scrollsize,
 			  text_area.y - TOP_MARGIN,
@@ -2016,9 +1964,23 @@ int Fl_Text_Display::handle_vline(
 
   // FIXME: we need to allow two modes for FIND_INDEX: one on the edge of the
   // FIXME: character for selection, and one on the character center for cursors.
-  int i, X, startIndex, style, charStyle;
+
+  /* STR #2531
+
+   The variables startStyle and styleX seem to introduce some additional
+   complexity. They were required to fix STR #2531 in which a horizontal
+   character wiggle could be observed when drag-selecting text. This was caused
+   by native drawing an measuring routines that support kerning (inter-character
+   spacing, the width of 'T' plus the width of 'e' is greater than the width of
+   'Te', because advanced typesetting moves the 'e' slightly to the left below
+   the 'T').
+
+   To acommodate this, FLTK uses slightly different routines for a true style
+   change vs. a change in highlighting only.
+   */
+  int i, X, startIndex, startStyle, style, charStyle;
   char *lineStr;
-  double startX;
+  double startX, styleX;
 
   if ( lineStartPos == -1 ) {
     lineStr = NULL;
@@ -2056,8 +2018,8 @@ int Fl_Text_Display::handle_vline(
     }
     return 0;
   }
-
   char currChar = 0, prevChar = 0;
+  styleX = startX; startStyle = startIndex;
   // draw the line
   style = position_style(lineStartPos, lineLen, 0);
   for (i=0; i<lineLen; ) {
@@ -2073,6 +2035,7 @@ int Fl_Text_Display::handle_vline(
         double tab = col_to_x(mBuffer->tab_distance());
         double xAbs = (mode==GET_WIDTH) ? startX : startX+mHorizOffset-text_area.x;
         w = ((int(xAbs/tab)+1)*tab) - xAbs;
+        styleX = startX+w; startStyle = i;
         if (mode==DRAW_LINE)
           draw_string( style|BG_ONLY_MASK, startX, Y, startX+w, 0, 0 );
         if (mode==FIND_INDEX && startX+w>rightClip) {
@@ -2083,16 +2046,38 @@ int Fl_Text_Display::handle_vline(
           return lineStartPos + startIndex;
         }
       } else {
-        // draw a text segment
-        w = string_width( lineStr+startIndex, i-startIndex, style );
-        if (mode==DRAW_LINE)
-          draw_string( style, startX, Y, startX+w, lineStr+startIndex, i-startIndex );
+        // draw the text segment from the previous style change up to this point
+        if ( (style&0xff)==(charStyle&0xff)) {
+          w = string_width( lineStr+startStyle, i-startStyle, style ) - startX + styleX;
+        } else {
+          w = string_width( lineStr+startIndex, i-startIndex, style );
+        }
+        if (mode==DRAW_LINE) {
+          if (startIndex!=startStyle) {
+            fl_push_clip(startX, Y, w+1, mMaxsize);
+            draw_string( style, styleX, Y, startX+w, lineStr+startStyle, i-startStyle );
+            fl_pop_clip();
+          } else {
+            draw_string( style, startX, Y, startX+w, lineStr+startIndex, i-startIndex );
+          }
+        }
         if (mode==FIND_INDEX && startX+w>rightClip) {
           // find x pos inside block
-	  int di = find_x(lineStr+startIndex, i-startIndex, style, -(rightClip-startX)); // STR #2788
+          int di;
+          if (startIndex!=startStyle) {
+            di = find_x(lineStr+startStyle, i-startStyle, style, -(rightClip-styleX)); // STR #2788
+            di = lineStartPos + startStyle + di;
+          } else {
+            di = find_x(lineStr+startIndex, i-startIndex, style, -(rightClip-startX)); // STR #2788
+            di = lineStartPos + startIndex + di;
+          }
           free(lineStr);
           IS_UTF8_ALIGNED2(buffer(), (lineStartPos+startIndex+di))
-          return lineStartPos + startIndex + di;
+          return di;
+        }
+        if ( (style&0xff)!=(charStyle&0xff)) {
+          startStyle = i;
+          styleX = startX+w;
         }
       }
       style = charStyle;
@@ -2102,7 +2087,7 @@ int Fl_Text_Display::handle_vline(
     i += len;
     prevChar = currChar;
   }
-  int w = 0;
+  double w = 0;
   if (currChar=='\t') {
     // draw a single Tab space
     double tab = col_to_x(mBuffer->tab_distance());
@@ -2119,14 +2104,29 @@ int Fl_Text_Display::handle_vline(
     }
   } else {
     w = string_width( lineStr+startIndex, i-startIndex, style );
-    if (mode==DRAW_LINE)
-      draw_string( style, startX, Y, startX+w, lineStr+startIndex, i-startIndex );
+    if (mode==DRAW_LINE) {
+      // STR 2531
+      if (startIndex!=startStyle) {
+        fl_push_clip(startX, Y, w+1, mMaxsize);
+        draw_string( style, styleX, Y, startX+w, lineStr+startStyle, i-startStyle );
+        fl_pop_clip();
+      } else {
+        draw_string( style, startX, Y, startX+w, lineStr+startIndex, i-startIndex );
+      }
+    }
     if (mode==FIND_INDEX) {
       // find x pos inside block
-      int di = find_x(lineStr+startIndex, i-startIndex, style, -(rightClip-startX)); // STR #2788
+      int di;
+      if (startIndex!=startStyle) {
+        di = find_x(lineStr+startStyle, i-startStyle, style, -(rightClip-styleX)); // STR #2788
+        di = lineStartPos + startStyle + di;
+      } else {
+        di = find_x(lineStr+startIndex, i-startIndex, style, -(rightClip-startX)); // STR #2788
+        di = lineStartPos + startIndex + di;
+      }
       free(lineStr);
       IS_UTF8_ALIGNED2(buffer(), (lineStartPos+startIndex+di))
-      return lineStartPos + startIndex + di;
+      return di;
     }
   }
   if (mode==GET_WIDTH) {
@@ -3725,9 +3725,6 @@ void Fl_Text_Display::draw(void) {
   // background color -- change if inactive
   Fl_Color bgcolor = active_r() ? color() : fl_inactive(color());
 
-  // scrollbar size
-  int scrollsize = scrollbar_width_ ? scrollbar_width_ : Fl::scrollbar_size();
-
   // draw the non-text, non-scrollbar areas.
   if (damage() & FL_DAMAGE_ALL) {
     recalc_display();
@@ -3736,14 +3733,9 @@ void Fl_Text_Display::draw(void) {
       // if to printer, draw the background
       fl_rectf(text_area.x, text_area.y, text_area.w, text_area.h, bgcolor);
     }
-    // draw the box()
-    int W = w(), H = h();
-    draw_box(box(), x(), y(), W, H, bgcolor);
 
-    if (mHScrollBar->visible())
-      W -= scrollsize;
-    if (mVScrollBar->visible())
-      H -= scrollsize;
+    // draw the box()
+    draw_box(box(), x(), y(), w(), h(), bgcolor);
 
     // left margin
     fl_rectf(text_area.x-LEFT_MARGIN, text_area.y-TOP_MARGIN,
@@ -3768,7 +3760,6 @@ void Fl_Text_Display::draw(void) {
       fl_rectf(mVScrollBar->x(), mHScrollBar->y(),
                mVScrollBar->w(), mHScrollBar->h(),
                FL_GRAY);
-    //draw_line_numbers(true);		// commented out STR# 2621 / LZA
   }
   else if (damage() & (FL_DAMAGE_SCROLL | FL_DAMAGE_EXPOSE)) {
     //    printf("blanking previous cursor extrusions at Y: %d\n", mCursorOldY);
@@ -3795,7 +3786,7 @@ void Fl_Text_Display::draw(void) {
   // draw all of the text
   if (damage() & (FL_DAMAGE_ALL | FL_DAMAGE_EXPOSE)) {
     //printf("drawing all text\n");
-    int X, Y, W, H;
+    int X = 0, Y = 0, W = 0, H = 0;
     if (fl_clip_box(text_area.x, text_area.y, text_area.w, text_area.h,
                     X, Y, W, H)) {
       // Draw text using the intersected clipping box...
@@ -3968,7 +3959,11 @@ int Fl_Text_Display::handle(int event) {
         handle(FL_FOCUS);
       }
       if (Fl_Group::handle(event)) return 1;
-      if (Fl::event_state()&FL_SHIFT) return handle(FL_DRAG);
+      if (Fl::event_state()&FL_SHIFT) {
+        if (!buffer()->primary_selection()->selected())
+            dragPos = insert_position();
+        return handle(FL_DRAG);
+      }
       dragging = 1;
       int pos = xy_to_position(Fl::event_x(), Fl::event_y(), CURSOR_POS);
       dragPos = pos;
@@ -4168,5 +4163,5 @@ double Fl_Text_Display::col_to_x(double col) const
 
 
 //
-// End of "$Id: Fl_Text_Display.cxx 12975 2018-06-26 14:04:09Z manolo $".
+// End of "$Id$".
 //

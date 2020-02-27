@@ -1,11 +1,11 @@
 // menu_.h
 //
-// "$Id: Fl_Menu_.H 12816 2018-03-31 17:29:23Z greg.ercolano $"
+// "$Id$"
 //
 // Menu base class header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2018 by Bill Spitzak and others.
+// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 1998-2019 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -102,7 +102,7 @@
 
   The line spacing between menu items can be controlled with the global setting
   Fl::menu_linespacing().
-
+ \see Fl_Widget::shortcut_label(int)
 */
 class FL_EXPORT Fl_Menu_ : public Fl_Widget {
 
@@ -147,8 +147,25 @@ public:
 
   /**
     Returns a pointer to the array of Fl_Menu_Items.  This will either be
-    the value passed to menu(value) or the private copy.
-    \sa size() -- returns the size of the Fl_Menu_Item array.
+    the value passed to menu(value) or the private copy or an internal
+    (temporary) location (see note below).
+
+    \note <b>Implementation details - may be changed in the future.</b>
+      All modifications of the menu array are done by copying the entire
+      menu array to an internal storage for optimization of memory
+      allocations, for instance when using add() or insert(). While this
+      is done, menu() returns the pointer to this internal location. The
+      entire menu will be copied back to private storage when needed,
+      i.e. when \b another Fl_Menu_ is modified. You can force this
+      reallocation after you're done with all menu modifications by calling
+      Fl_Menu_::menu_end() to make sure menu() returns a permanent pointer
+      to private storage (until the menu is modified again).
+      Note also that some menu methods (e.g. Fl_Menu_Button::popup()) call
+      menu_end() internally to ensure a consistent menu array while the
+      menu is open.
+
+    \see size() -- returns the size of the Fl_Menu_Item array.
+    \see menu_end() -- finish %menu modifications (optional)
 
     \b Example: How to walk the array:
     \code
@@ -164,6 +181,7 @@ public:
 
   */
   const Fl_Menu_Item *menu() const {return menu_;}
+  const Fl_Menu_Item *menu_end(); // in src/Fl_Menu_add.cxx
   void menu(const Fl_Menu_Item *m);
   void copy(const Fl_Menu_Item *m, void* user_data = 0);
   int insert(int index, const char*, int shortcut, Fl_Callback*, void* = 0, int = 0);
@@ -240,5 +258,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Menu_.H 12816 2018-03-31 17:29:23Z greg.ercolano $".
+// End of "$Id$".
 //

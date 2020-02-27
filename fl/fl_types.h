@@ -1,11 +1,9 @@
 // fl_types.h
-/*
- * "$Id: fl_types.h 10759 2015-06-15 20:24:41Z AlbrechtS $"
- *
- * Simple "C"-style types for the Fast Light Tool Kit (FLTK).
- *
-// Copyright 2017-2018 The fltkal authors
- * Copyright 1998-2015 by Bill Spitzak and others.
+//
+// Simple "C"-style types for the Fast Light Tool Kit (FLTK).
+//
+// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 1998-2020 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -66,7 +64,7 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
- *
+//
 
 /** \file
  *  This file contains simple "C"-style type definitions.
@@ -94,7 +92,27 @@ typedef char *Fl_String;
  */
 typedef const char *Fl_CString;
 
-/** 24-bit Unicode character + 8-bit indicator for keyboard flags */
+/** 16-bit Unicode character + 8-bit indicator for keyboard flags.
+
+  \note This \b should be 24-bit Unicode character + 8-bit indicator for
+    keyboard flags. The upper 8 bits are currently unused but reserved.
+
+  Due to compatibility issues this type and all FLTK \b shortcuts can only
+  be used with 16-bit Unicode characters (<tt>U+0000 .. U+FFFF</tt>) and
+  not with the full range of unicode characters (<tt>U+0000 .. U+10FFFF</tt>).
+
+  This is caused by the bit flags \c FL_SHIFT, \c FL_CTRL, \c FL_ALT, and
+  \c FL_META being all in the range <tt>0x010000 .. 0x400000</tt>.
+
+  \todo Discuss and decide whether we can "shift" these special keyboard
+    flags to the upper byte to enable full 21-bit Unicode characters
+    (<tt>U+0000 .. U+10FFFF</tt>) plus the keyboard indicator bits as this
+    was originally intended. This would be possible if we could rely on \b all
+    programs being coded with symbolic names and not hard coded bit values.
+
+  \internal Can we do the move for 1.4 or, if not, for any later version
+    that is allowed to break the ABI?
+*/
 typedef unsigned int Fl_Shortcut;
 
 /** 24-bit Unicode character - upper 8 bits are unused */
@@ -104,6 +122,3 @@ typedef unsigned int Fl_Char;
 
 #endif
 
-/*
- * End of "$Id: fl_types.h 10759 2015-06-15 20:24:41Z AlbrechtS $".
- */

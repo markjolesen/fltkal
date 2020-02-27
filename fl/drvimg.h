@@ -1,10 +1,9 @@
 // drvimg.h
 //
-// "$Id: Fl_Image_Surface.H 12982 2018-06-27 12:00:40Z manolo $"
 //
 // Draw-to-image code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -74,7 +73,7 @@
 #include <fl/widgsurf.h>
 #include <fl/img.h>
 #include <fl/imgshare.h>
-#include <fl/drvgr.h> // for Fl_Offscreen
+#include <fl/typesplt.h> // for Fl_Offscreen
 
 
 /** 
@@ -86,7 +85,7 @@
  draw widgets (using Fl_Image_Surface::draw()) or to use any of the 
  \ref fl_drawings or the \ref fl_attributes. Finally, call image() on the object
  to obtain a newly allocated Fl_RGB_Image object.
- Fl_GL_Window objects can be drawn in the image as well.
+ Fl_Gl_Window objects can be drawn in the image as well.
  
  Usage example:
  \code
@@ -128,6 +127,7 @@ public:
   Fl_Image_Surface(int w, int h, int high_res = 0, Fl_Offscreen off = 0);
   ~Fl_Image_Surface();
   void set_current();
+  virtual bool is_current();
   Fl_RGB_Image *image();
   Fl_Shared_Image *highres_image();
   void origin(int *x, int *y);
@@ -158,11 +158,11 @@ protected:
   int external_offscreen;
   Fl_Image_Surface_Driver(int w, int h, int high_res, Fl_Offscreen off) : Fl_Widget_Surface(NULL), width(w), height(h), offscreen(off) {external_offscreen = (off != 0);}
   virtual ~Fl_Image_Surface_Driver() {}
-  virtual void set_current() {}
-  virtual void translate(int x, int y) {}
-  virtual void untranslate() {}
-  int printable_rect(int *w, int *h) {*w = width; *h = height; return 0;}
-  virtual Fl_RGB_Image *image() {return NULL;}
+  virtual void set_current() = 0;
+  virtual void translate(int x, int y) = 0;
+  virtual void untranslate() = 0;
+  int printable_rect(int *w, int *h);
+  virtual Fl_RGB_Image *image() = 0;
   /** Each platform implements this function its own way.
    It returns an object implementing all virtual functions
    of class Fl_Image_Surface_Driver for the plaform.
@@ -176,7 +176,3 @@ protected:
  */
 
 #endif // Fl_Image_Surface_H
-
-//
-// End of "$Id: Fl_Image_Surface.H 12982 2018-06-27 12:00:40Z manolo $".
-//

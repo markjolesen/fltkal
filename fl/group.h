@@ -1,10 +1,10 @@
 // group.h
 //
-// "$Id: Fl_Group.H 12827 2018-04-12 12:58:10Z AlbrechtS $"
+// "$Id$"
 //
 // Group header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -79,6 +79,7 @@
 // Don't #include Fl_Rect.H because this would introduce lots
 // of unnecessary dependencies on Fl_Rect.H
 class Fl_Rect;
+
 
 /**
   The Fl_Group class is the FLTK container widget. It maintains
@@ -256,19 +257,20 @@ public:
   This is a dummy class that allows you to end a Fl_Group in a constructor list of a
   class:
   \code 
-   class MyClass {
-   Fl_Group group;
-   Fl_Button button_in_group;
-   Fl_End end;
-   Fl_Button button_outside_group;
-   MyClass();
+  class MyClass {
+    Fl_Group group;
+    Fl_Button button_in_group;
+    Fl_End end;
+    Fl_Button button_outside_group;
+    MyClass();
   };
   MyClass::MyClass() :
-   group(10,10,100,100),
-   button_in_group(20,20,60,30),
-   end(),
-   button_outside_group(10,120,60,30)
-  {} 
+    group(10,10,100,100),
+    button_in_group(20,20,60,30),
+    end(),
+    button_outside_group(10,120,60,30) {
+    [..ctor code..]
+  } 
   \endcode
 */
 class FL_EXPORT Fl_End {
@@ -280,5 +282,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Group.H 12827 2018-04-12 12:58:10Z AlbrechtS $".
+// End of "$Id$".
 //

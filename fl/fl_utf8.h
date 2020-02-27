@@ -1,10 +1,10 @@
 // fl_utf8.h
-/*
- * "$Id: fl_utf8.h 12549 2017-11-10 12:56:00Z AlbrechtS $"
- *
- * Author: Jean-Marc Lienher ( http://oksid.ch )
+//
+// "$Id$"
+//
+// Author: Jean-Marc Lienher ( http://oksid.ch )
 // Copyright 2017-2018 The fltkal authors
- * Copyright 2000-2010 by O'ksi'D.
+// Copyright 2000-2010 by O'ksi'D.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -65,8 +65,8 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
- * Copyright 2016-2017 by Bill Spitzak and others.
- *
+// Copyright 2016-2017 by Bill Spitzak and others.
+//
 
 /* Merged in some functionality from the fltk-2 version. IMM.
  * The following code is an attempt to merge the functions incorporated in FLTK2
@@ -243,6 +243,9 @@ FL_EXPORT int fl_rmdir(const char *f);
 /* OD: Portable UTF-8 aware getenv wrapper */
 FL_EXPORT char* fl_getenv(const char *name);
 
+/* Portable UTF-8 aware putenv wrapper */
+FL_EXPORT int fl_putenv(const char *var);
+
 /* OD: Portable UTF-8 aware execvp wrapper */
 FL_EXPORT int fl_mkdir(const char* f, int mode);
 
@@ -269,5 +272,5 @@ FL_EXPORT char fl_make_path( const char *path );
 #endif /* _HAVE_FL_UTF8_HDR_ */
 
 /*
- * End of "$Id: fl_utf8.h 12549 2017-11-10 12:56:00Z AlbrechtS $".
+ * End of "$Id$".
  */

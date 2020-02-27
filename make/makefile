@@ -185,6 +185,7 @@ FLTKOBJS=\
 	$(OBJ)/imgpix.o \
 	$(OBJ)/imgpng.o \
 	$(OBJ)/imgpnm.o \
+	$(OBJ)/imgrdr.o \
 	$(OBJ)/imgread.o \
 	$(OBJ)/imgshare.o \
 	$(OBJ)/imgtiled.o \

@@ -77,6 +77,7 @@
 #include <fl/fl.h>
 #include <fl/platform.h>
 #include "drvwin.h"
+#include "drvscr.h"
 #include <fl/imgrgb.h>
 #include <fl/win.h>
 #include <fl/tooltip.h>
@@ -125,6 +126,7 @@ Fl_Window::Fl_Window(int X,int Y,int W, int H, const char *l) :
 {
   _Fl_Window();
   set_flag(FORCE_POSITION);
+  if (!parent()) clear_visible();
 }
 
 
@@ -369,7 +371,8 @@ void Fl_Window::default_icon(const Fl_RGB_Image *icon) {
   \see Fl_Window::icons(const Fl_RGB_Image *[], int)
  */
 void Fl_Window::default_icons(const Fl_RGB_Image *icons[], int count) {
-  Fl_Window_Driver::default_icons(icons, count);
+  Fl::screen_driver()->open_display();
+  Fl::screen_driver()->default_icons(icons, count);
 }
 
 /** Sets or resets a single window icon.
@@ -649,23 +652,7 @@ int Fl_Window::handle(int ev)
 /**
  Sets the allowable range the user can resize this window to.
  This only works for top-level windows.
- <UL>
- <LI>\p minw and \p minh are the smallest the window can be.
-	Either value must be greater than 0.</LI>
- <LI>\p maxw and \p maxh are the largest the window can be. If either is
-	<I>equal</I> to the minimum then you cannot resize in that direction.
-	If either is zero  then FLTK picks a maximum size in that direction
-	such that the window will fill the screen.</LI>
- <LI>\p dw and \p dh are size increments.  The  window will be constrained
-	to widths of minw + N * dw,  where N is any non-negative integer.
-	If these are less or equal to 1 they are ignored (this is ignored
-	on Windows).</LI>
- <LI>\p aspect is a flag that indicates that the window should preserve its
-	aspect ratio.  This only works if both the maximum and minimum have
-	the same aspect ratio (ignored on Windows and by many X window managers).
-	</LI>
- </UL>
- 
+
  If this function is not called, FLTK tries to figure out the range
  from the setting of resizable():
  <UL>
@@ -681,15 +668,31 @@ int Fl_Window::handle(int ev)
  
  It is undefined what happens if the current size does not fit in the
  constraints passed to size_range().
+
+ \param[in] minWidth, minHeight The smallest the window can be.
+    Either value must be greater than 0.
+ \param[in] maxWidth, maxHeight The largest the window can be. If either is
+    equal to the minimum then you cannot resize in that direction.
+    If either is zero then FLTK picks a maximum size in that direction
+    such that the window will fill the screen.
+ \param[in] deltaX, deltaY These are size increments. The window will be
+    constrained to widths of <tt>minWidth + N * deltaX</tt>, where N is any
+    non-negative integer. If these are less or equal to 1 they are ignored.
+    (this is ignored on Windows)
+ \param[in] aspectRatio A flag that indicates that the window should preserve
+    its aspect ratio. This only works if both the maximum and minimum have
+    the same aspect ratio (ignored on Windows and by many X window managers).
  */
-void Fl_Window::size_range(int minw, int minh, int maxw, int maxh, int dw, int dh, int aspect) {
-  this->minw   = minw;
-  this->minh   = minh;
-  this->maxw   = maxw;
-  this->maxh   = maxh;
-  this->dw     = dw;
-  this->dh     = dh;
-  this->aspect = aspect;
+void Fl_Window::size_range(int minWidth, int minHeight,
+                           int maxWidth, int maxHeight,
+                           int deltaX, int deltaY, int aspectRatio) {
+  minw   = minWidth;
+  minh   = minHeight;
+  maxw   = maxWidth;
+  maxh   = maxHeight;
+  dw     = deltaX;
+  dh     = deltaY;
+  aspect = aspectRatio;
   pWindowDriver->size_range();
 }
 
@@ -697,6 +700,52 @@ void Fl_Window::size_range(int minw, int minh, int maxw, int maxh, int dw, int d
 int Fl_Window::screen_num() {
   return pWindowDriver->screen_num();
 }
+
+/** Assigns a non-rectangular shape to the window.
+ This function gives an arbitrary shape (not just a rectangular region) to an Fl_Window.
+ An Fl_Image of any dimension can be used as mask; it is rescaled to the window's dimension as needed.
+ 
+ The layout and widgets inside are unaware of the mask shape, and most will act as though the window's
+ rectangular bounding box is available
+ to them. It is up to you to make sure they adhere to the bounds of their masking shape.
+ 
+ The \p img argument can be an Fl_Bitmap, Fl_Pixmap, Fl_RGB_Image or Fl_Shared_Image:
+ \li With Fl_Bitmap or Fl_Pixmap, the shaped window covers the image part where bitmap bits equal one,
+ or where the pixmap is not fully transparent.
+ \li With an Fl_RGB_Image with an alpha channel (depths 2 or 4), the shaped window covers the image part
+ that is not fully transparent.
+ \li With an Fl_RGB_Image of depth 1 (gray-scale) or 3 (RGB), the shaped window covers the non-black image part.
+ \li With an Fl_Shared_Image, the shape is determined by rules above applied to the underlying image.
+ The shared image should not have been scaled through Fl_Image::scale().
+ 
+ Platform details:
+ \li On the unix/linux platform, the SHAPE extension of the X server is required.
+ This function does control the shape of Fl_Gl_Window instances.
+ \li On the Windows platform, this function does nothing with class Fl_Gl_Window.
+ \li On the Mac platform, OS version 10.4 or above is required.
+ An 8-bit shape-mask is used when \p img is an Fl_RGB_Image:
+ with depths 2 or 4, the image alpha channel becomes the shape mask such that areas with alpha = 0
+ are out of the shaped window;
+ with depths 1 or 3, white and black are in and out of the
+ shaped window, respectively, and other colors give intermediate masking scores.
+ This function does nothing with class Fl_Gl_Window.
+ 
+ The window borders and caption created by the window system are turned off by default. They
+ can be re-enabled by calling Fl_Window::border(1).
+ 
+ A usage example is found at example/shapedwindow.cxx.
+ 
+ \version 1.3.3
+ */
+void Fl_Window::shape(const Fl_Image* img) {pWindowDriver->shape(img);}
+
+/** Set the window's shape with an Fl_Image.
+ \see void shape(const Fl_Image* img)
+ */
+void Fl_Window::shape(const Fl_Image& img) {pWindowDriver->shape(&img);}
+
+/** Returns the image controlling the window shape or NULL */
+const Fl_Image* Fl_Window::shape() {return pWindowDriver->shape();}
 
 //
 // End of "$Id: Fl_Window.cxx 12974 2018-06-26 13:43:18Z manolo $".

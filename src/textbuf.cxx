@@ -77,6 +77,7 @@
 #include <fl/textbuf.h>
 #include <fl/fl_ask.h>
 
+
 /*
  This file is based on a port of NEdit to FLTK many years ago. NEdit at that
  point was already stretched beyond the task it was designed for which explains
@@ -1299,7 +1300,7 @@ void Fl_Text_Buffer::remove_(int start, int end)
   
   /* expand the gap to encompass the deleted characters */
   mGapEnd += end - mGapStart;
-  mGapStart -= mGapStart - start;
+  mGapStart = start;
   
   /* update the length */
   mLength -= end - start;

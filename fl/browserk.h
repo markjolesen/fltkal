@@ -1,10 +1,9 @@
 // browserk.h
 //
-// "$Id: Fl_Check_Browser.H 8864 2011-07-19 04:49:30Z greg.ercolano $"
 //
 // Fl_Check_Browser header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -82,8 +81,9 @@
   lines that may be selected and/or checked by the user.
 */
 class FL_EXPORT Fl_Check_Browser : public Fl_Browser_ {
-  /* required routines for Fl_Browser_ subclass: */
 
+protected:
+  /* required routines for Fl_Browser_ subclass: */
   void *item_first() const;
   void *item_next(void *) const;
   void *item_prev(void *) const;
@@ -92,6 +92,12 @@ class FL_EXPORT Fl_Check_Browser : public Fl_Browser_ {
   void item_draw(void *, int, int, int, int) const;
   void item_select(void *, int);
   int item_selected(void *) const;
+  const char *item_text(void *item) const /* override */;
+
+public:
+  void *item_at(int index) const /* override */;
+  void item_swap(int ia, int ib) /* override */;
+  void item_swap(void *a, void *b) /* override */;
 
   /* private data */
 
@@ -158,8 +164,3 @@ class FL_EXPORT Fl_Check_Browser : public Fl_Browser_ {
 };
 
 #endif // Fl_Check_Browser_H
-
-//
-// End of "$Id: Fl_Check_Browser.H 8864 2011-07-19 04:49:30Z greg.ercolano $".
-//
-

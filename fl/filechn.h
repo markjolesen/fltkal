@@ -1,6 +1,5 @@
 // filechn.h
 //
-// "$Id: Fl_Native_File_Chooser.H 12970 2018-06-23 20:50:22Z matt $"
 //
 // FLTK native OS file chooser widget
 //
@@ -158,6 +157,7 @@ class Fl_Native_File_Chooser_Driver;
  - Under X windows, and if Fl::OPTION_FNFC_USES_GTK has not been switched off,
  the widget attempts to use standard GTK file chooser dialogs if they are
  available at run-time on the platform, and falls back to use FLTK's Fl_File_Chooser if they are not.
+ In the first case, calling fl_register_images() adds  a "Preview" button to the GTK chooser dialog.
  In the latter case, it's best if you call Fl_File_Icon::load_system_icons()
  at the start of main(), to enable the nicer looking file browser widgets.
  Use the static public attributes of class Fl_File_Chooser to localize
@@ -323,7 +323,3 @@ public:
 
 
 #endif /*FL_NATIVE_FILE_CHOOSER_H*/
-
-//
-// End of "$Id: Fl_Native_File_Chooser.H 12970 2018-06-23 20:50:22Z matt $".
-//

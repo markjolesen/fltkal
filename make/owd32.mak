@@ -182,6 +182,7 @@ OBJ_FLTK=&
     $(OBJ)\imgpix.obj &
     $(OBJ)\imgpng.obj &
     $(OBJ)\imgpnm.obj &
+    $(OBJ)\imgrdr.obj &
     $(OBJ)\imgread.obj &
     $(OBJ)\imgshare.obj &
     $(OBJ)\imgtiled.obj &
@@ -536,6 +537,9 @@ $(OBJ)\imgpng.obj : $(SRC_FLTK)\imgpng.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
     
 $(OBJ)\imgpnm.obj : $(SRC_FLTK)\imgpnm.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<
+
+$(OBJ)\imgrdr.obj : $(SRC_FLTK)\imgrdr.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
     
 $(OBJ)\imgread.obj : $(SRC_FLTK)\imgread.cxx .AUTODEPEND

@@ -1,10 +1,10 @@
 // win.h
 //
-// "$Id: Fl_Window.H 12926 2018-05-22 17:00:27Z manolo $"
+// "$Id$"
 //
 // Window header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -256,7 +256,7 @@ public:
     off. It only works before show() is called.
   */
   void clear_border()	{set_flag(NOBORDER);}
-  /** See void Fl_Window::border(int) */
+  /** Returns whether the window possesses a border */
   unsigned int border() const	{return !(flags() & NOBORDER);}
   /** Activates the flags NOBORDER|FL_OVERRIDE */
   void set_override()	{set_flag(NOBORDER|OVERRIDE);}
@@ -598,12 +598,12 @@ public:
   
   void shape(const Fl_Image* img);
   void shape(const Fl_Image& b) ;
-  int is_shaped();
+  const Fl_Image *shape();
   int screen_num();
 };
 
 #endif
 
 //
-// End of "$Id: Fl_Window.H 12926 2018-05-22 17:00:27Z manolo $".
+// End of "$Id$".
 //

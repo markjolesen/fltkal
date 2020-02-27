@@ -1,71 +1,19 @@
-// browser.h
 //
-// "$Id: Fl_Browser.H 11465 2016-03-29 11:54:44Z AlbrechtS $"
+// "$Id$"
 //
 // Browser header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     http://www.fltk.org/COPYING.php
+//
+// Please report all bugs and problems on the following page:
+//
+//     http://www.fltk.org/str.php
 //
 
 /* \file
@@ -81,7 +29,6 @@
 #include "browser_.h"
 #include "img.h"
 
-
 struct FL_BLINE;
 
 /**
@@ -90,6 +37,14 @@ struct FL_BLINE;
   editor or spreadsheet!  But it is useful for showing a vertical list of
   named objects to the user.
   
+  \image html  fl_hold_browser.png "Fl_Hold_Browser"
+  \image latex fl_hold_browser.png "Fl_Hold_Browser" width=4cm
+
+  \par
+
+  \image html  fl_multi_browser.png "Fl_Multi_Browser"
+  \image latex fl_multi_browser.png "Fl_Multi_Browser" width=4cm
+
   Each line in the browser is identified by number. <I>The numbers
   start at one</I> (this is so that zero can be reserved for "no line" in
   the selective browsers). <I>Unless otherwise noted, the methods do not
@@ -265,7 +220,8 @@ public:
     and used to modify how the rest of the line is printed:
     
     \li <tt>'\@.'</tt> Print rest of line, don't look for more '\@' signs
-    \li <tt>'\@\@'</tt> Print rest of line starting with '\@'
+    \li <tt>'\@\@'</tt> Doubling the format character prints the format
+      character once, followed by the rest of line
     \li <tt>'\@l'</tt> Use a LARGE (24 point) font
     \li <tt>'\@m'</tt> Use a medium large (18 point) font
     \li <tt>'\@s'</tt> Use a <SMALL>small</SMALL> (11 point) font
@@ -275,8 +231,9 @@ public:
     font (sets font to FL_COURIER)
     \li <tt>'\@c'</tt> Center the line horizontally
     \li <tt>'\@r'</tt> Right-justify the text
+    \li <tt>'\@N'</tt> Use fl_inactive_color() to draw the text
     \li <tt>'\@B0', '\@B1', ... '\@B255'</tt> Fill the backgound with
-    fl_color(n)
+      fl_color(n)
     \li <tt>'\@C0', '\@C1', ... '\@C255'</tt> Use fl_color(n) to draw the text
     \li <tt>'\@F0', '\@F1', ...</tt> Use fl_font(n) to draw the text
     \li <tt>'\@S1', '\@S2', ...</tt> Use point size n to draw the text
@@ -375,5 +332,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Browser.H 11465 2016-03-29 11:54:44Z AlbrechtS $".
+// End of "$Id$".
 //

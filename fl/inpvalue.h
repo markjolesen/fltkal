@@ -1,10 +1,10 @@
 // inpvalue.h
 //
-// "$Id: Fl_Value_Input.H 8864 2011-07-19 04:49:30Z greg.ercolano $"
+// "$Id$"
 //
 // Value input header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -104,6 +104,7 @@
   
   <P ALIGN="CENTER">\image html Fl_Value_Input.png 
   \image latex  Fl_Value_Input.png "Fl_Value_Input" width=4cm
+  \see Fl_Widget::shortcut_label(int)
 */
 class FL_EXPORT Fl_Value_Input : public Fl_Valuator {
 public:
@@ -178,5 +179,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Value_Input.H 8864 2011-07-19 04:49:30Z greg.ercolano $".
+// End of "$Id$".
 //

@@ -1,10 +1,9 @@
 // btn.h
 //
-// "$Id: Fl_Button.H 10386 2014-10-19 20:17:17Z AlbrechtS $"
 //
 // Button header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2014 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -103,7 +102,7 @@ class Fl_Widget_Tracker;
   down, but if you have an input field in the same window, the user will have
   to hold down the \e Alt key so that the input field does not eat the event
   first as an \c FL_KEYBOARD event.
-
+  \see Fl_Widget::shortcut_label(int)
   \todo Refactor the doxygen comments for Fl_Button type() documentation.
 
   For an Fl_Button object, the type() call returns one of:
@@ -222,7 +221,3 @@ public:
 };
 
 #endif
-
-//
-// End of "$Id: Fl_Button.H 10386 2014-10-19 20:17:17Z AlbrechtS $".
-//

@@ -1,71 +1,19 @@
-// drvdev.cxx
 //
-// "$Id: Fl_Device.cxx 12921 2018-05-14 14:52:23Z manolo $"
+// "$Id$"
 //
 // implementation of classes Fl_Surface_Device and Fl_Display_Device for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 2010-2017 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     http://www.fltk.org/COPYING.php
+//
+// Please report all bugs and problems to:
+//
+//     http://www.fltk.org/str.php
 //
 
 #include <fl/fl.h>
@@ -88,13 +36,15 @@
           +- Fl_Image_Surface_Driver: helper class interfacing FLTK with draw-to-image operations
               |
               +- Fl_..._Image_Surface_Driver: platform-specific implementation of Fl_Image_Surface_Driver
-         +- Fl_Paged_Device: output to a page-structured surface
+          +- Fl_Paged_Device: output to a page-structured surface
               |
               +- Fl_Printer: user can instantiate this to gain access to a printer
-              +- Fl_..._Printer_Driver: platform-specific helper class interfacing FLTK with print operations
+              +- Fl_WinAPI_Printer_Driver: Windows-specific helper class interfacing FLTK with print operations
+              +- Fl_Cocoa_Printer_Driver: macOS-specific helper class interfacing FLTK with print operations
               +- Fl_PostScript_File_Device: draw into a PostScript file
                   |
                   +- Fl_Posix_Printer_Driver: Fl_Printer uses that under Posix platforms
+                  +- Fl_GTK_Printer_Driver: Fl_Printer uses that under Posix+GTK platforms
  
   +- Fl_Graphics_Driver -> directed to an Fl_Surface_Device object
       |
@@ -115,7 +65,7 @@
  is Fl_Surface_Device::push_current( ) / Fl_Surface_Device::pop_current().*/
 void Fl_Surface_Device::set_current(void)
 {
-  if (surface_) surface_->end_current_();
+  if (surface_) surface_->end_current();
   fl_graphics_driver = pGraphicsDriver;
   surface_ = this;
   pGraphicsDriver->global_gc();
@@ -124,6 +74,10 @@ void Fl_Surface_Device::set_current(void)
 
 Fl_Surface_Device* Fl_Surface_Device::surface_; // the current target surface of graphics operations
 
+/** Is this surface the current drawing surface? */
+bool Fl_Surface_Device::is_current() {
+  return surface_ == this;
+}
 
 Fl_Surface_Device::~Fl_Surface_Device()
 {
@@ -174,6 +128,15 @@ Fl_Surface_Device *Fl_Surface_Device::pop_current()
   return surface_;
 }
 
+Fl_Device_Plugin *Fl_Device_Plugin::opengl_plugin() {
+  static Fl_Device_Plugin *pi = NULL;
+  if (!pi) {
+    Fl_Plugin_Manager pm("fltk:device");
+    pi = (Fl_Device_Plugin*)pm.plugin("opengl.device.fltk.org");
+  }
+  return pi;
+}
+
 //
-// End of "$Id: Fl_Device.cxx 12921 2018-05-14 14:52:23Z manolo $".
+// End of "$Id$".
 //

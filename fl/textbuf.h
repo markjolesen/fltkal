@@ -1,10 +1,10 @@
 // textbuf.h
 //
-// "$Id: Fl_Text_Buffer.H 12483 2017-10-08 20:38:36Z greg.ercolano $"
+// "$Id$"
 //
 // Header file for Fl_Text_Buffer class.
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 2001-2017 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -244,16 +244,16 @@ typedef void (*Fl_Text_Predelete_Cb)(int pos, int nDeleted, void* cbArg);
 
 
 /**
- \brief This class manages Unicode text displayed in one or more Fl_Text_Display widgets.
+ This class manages Unicode text displayed in one or more Fl_Text_Display widgets.
 
  All text in Fl_Text_Buffer must be encoded in UTF-8. All indices used in the
  function calls must be aligned to the start of a UTF-8 sequence. All indices
  and pointers returned will be aligned. All functions that return a single
  character will return that in an unsiged int in UCS-4 encoding.
 
- The Fl_Text_Buffer class is used by the Fl_Text_Display
- and Fl_Text_Editor to manage complex text data and is based upon the
- excellent NEdit text editor engine - see http://www.nedit.org/.
+ The Fl_Text_Buffer class is used by the Fl_Text_Display and Fl_Text_Editor
+ to manage complex text data and is based upon the excellent NEdit text
+ editor engine - see https://sourceforge.net/projects/nedit/.
  */
 class FL_EXPORT Fl_Text_Buffer {
 public:
@@ -905,5 +905,5 @@ protected:
 #endif
 
 //
-// End of "$Id: Fl_Text_Buffer.H 12483 2017-10-08 20:38:36Z greg.ercolano $".
+// End of "$Id$".
 //

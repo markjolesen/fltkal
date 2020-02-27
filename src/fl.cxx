@@ -952,8 +952,7 @@ static handler_link *handlers = 0;
   - \ref FL_SCREEN_CONFIGURATION_CHANGED events.
     Under X11, this event requires the libXrandr.so shared library to be
     loadable at run-time and the X server to implement the RandR extension.
-  - \ref FL_FULLSCREEN events sent to a window that enters or leaves
-    fullscreen mode.
+  - \ref FL_ZOOM_EVENT events.
   - System events that FLTK does not recognize.  See fl_xevent.
   - \e Some other events when the widget FLTK selected returns
     zero from its handle() method.  Exactly which ones may change
@@ -1096,7 +1095,7 @@ Fl_Widget* fl_oldfocus; // kludge for Fl_Group...
 
     Widgets can set the NEEDS_KEYBOARD flag to indicate that a keyboard is
     essential for the widget to function. Touchscreen devices will be sent a
-    request to show and on-screen keyboard if no hardware keyboard is
+    request to show an on-screen keyboard if no hardware keyboard is
     connected.
 
     \see Fl_Widget::take_focus()
@@ -1518,6 +1517,7 @@ int Fl::handle_(int e, Fl_Window* window)
 
   case FL_UNFOCUS:
     window = 0;
+      // FALLTHROUGH
   case FL_FOCUS:
     fl_xfocus = window;
     fl_fix_focus();
@@ -2061,7 +2061,7 @@ bool Fl::option(Fl_Option opt)
   if (!options_read_) {
     int tmp;
     { // first, read the system wide preferences
-      Fl_Preferences prefs(Fl_Preferences::SYSTEM, "fltk.org", "fltk");
+      Fl_Preferences prefs(Fl_Preferences::CORE_SYSTEM, "fltk.org", "fltk");
       Fl_Preferences opt_prefs(prefs, "options");
       opt_prefs.get("ArrowFocus", tmp, 0);                      // default: off
       options_[OPTION_ARROW_FOCUS] = tmp;
@@ -2075,12 +2075,17 @@ bool Fl::option(Fl_Option opt)
       options_[OPTION_DND_TEXT] = tmp;
       opt_prefs.get("ShowTooltips", tmp, 1);                    // default: on
       options_[OPTION_SHOW_TOOLTIPS] = tmp;
-      opt_prefs.get("FNFCUsesGTK", tmp, 1);                    // default: on
+      opt_prefs.get("FNFCUsesGTK", tmp, 1);                     // default: on
       options_[OPTION_FNFC_USES_GTK] = tmp;
+      opt_prefs.get("PrintUsesGTK", tmp, 1);                     // default: on
+      options_[OPTION_PRINTER_USES_GTK] = tmp;
+
+      opt_prefs.get("ShowZoomFactor", tmp, 1);                  // default: on
+      options_[OPTION_SHOW_SCALING] = tmp;
     }
     { // next, check the user preferences
       // override system options only, if the option is set ( >= 0 )
-      Fl_Preferences prefs(Fl_Preferences::USER, "fltk.org", "fltk");
+      Fl_Preferences prefs(Fl_Preferences::CORE_USER, "fltk.org", "fltk");
       Fl_Preferences opt_prefs(prefs, "options");
       opt_prefs.get("ArrowFocus", tmp, -1);
       if (tmp >= 0) options_[OPTION_ARROW_FOCUS] = tmp;
@@ -2096,8 +2101,13 @@ bool Fl::option(Fl_Option opt)
       if (tmp >= 0) options_[OPTION_SHOW_TOOLTIPS] = tmp;
       opt_prefs.get("FNFCUsesGTK", tmp, -1);
       if (tmp >= 0) options_[OPTION_FNFC_USES_GTK] = tmp;
+      opt_prefs.get("PrintUsesGTK", tmp, -1);
+      if (tmp >= 0) options_[OPTION_PRINTER_USES_GTK] = tmp;
+
+      opt_prefs.get("ShowZoomFactor", tmp, -1);
+      if (tmp >= 0) options_[OPTION_SHOW_SCALING] = tmp;
     }
-    { // now, if the developer has registered this app, we could as for per-application preferences
+    { // now, if the developer has registered this app, we could ask for per-application preferences
     }
     options_read_ = 1;
   }
@@ -2273,6 +2283,11 @@ void Fl::disable_im()
   Fl::screen_driver()->disable_im();
 }
 
+/**
+ Opens the display.
+ Automatically called by the library when the first window is show()'n.
+ Does nothing if the display is already open.
+ */
 void fl_open_display()
 {
   Fl::screen_driver()->open_display();
@@ -2322,9 +2337,50 @@ int Fl::get_font_sizes(Fl_Font fnum, int*& sizep) {
 
 /** Current value of the GUI scaling factor for screen number \p n */
 float Fl::screen_scale(int n) {
+  if (!Fl::screen_scaling_supported() || n < 0 || n >= Fl::screen_count()) return 1.;
   return Fl::screen_driver()->scale(n);
 }
 
+/** Set the value of the GUI scaling factor for screen number \p n.
+When this function is called before the first window is show()'n it sets the
+ application's initial scaling factor value. Otherwise, it sets the scale factor value of all windows mapped to screen number \p n */
+void Fl::screen_scale(int n, float factor) {
+  if (!Fl::screen_scaling_supported() || n < 0 || n >= Fl::screen_count()) return;
+  if (Fl::first_window()) {
+    Fl::screen_driver()->rescale_all_windows_from_screen(n, factor);
+  } else {
+    Fl::screen_driver()->scale(n, factor);
+    Fl_Graphics_Driver::default_driver().scale(factor);
+  }
+}
+
+/**
+  See if scaling factors are supported by this platform.
+ \return 0 if scaling factors are not supported by this platform,
+ 1 if a single scaling factor value is shared by all screens, 2 if each screen
+ can have its own scaling factor value.
+  \see Fl::screen_scale(int)
+ */
+int Fl::screen_scaling_supported() {
+  return Fl::screen_driver()->rescalable();
+}
+
+/** Controls the possibility to scale all windows by ctrl/+/-/0/ or cmd/+/-/0/.
+
+  This function \b should be called before fl_open_display() runs.
+  If it is not called, the default is to handle these keys for
+  window scaling.
+
+  \note This function can currently only be used to switch the internal
+    handler \b off, i.e. \p value must be 0 (zero) - all other values
+    result in undefined behavior and are reserved for future extension.
+
+  \param value 0 to stop recognition of ctrl/+/-/0/ (or cmd/+/-/0/ under macOS)
+    keys as window scaling.
+*/
+void Fl::keyboard_screen_scaling(int value) {
+  Fl_Screen_Driver::keyboard_screen_scaling = value;
+}
 
 // Pointers you can use to change FLTK to another language.
 // Note: Similar pointers are defined in FL/fl_ask.H and src/fl_ask.cxx

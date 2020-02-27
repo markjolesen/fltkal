@@ -1,10 +1,10 @@
 // btnradro.h
 //
-// "$Id: Fl_Radio_Round_Button.H 10386 2014-10-19 20:17:17Z AlbrechtS $"
+// "$Id$"
 //
 // Radio round button header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2014 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -84,5 +84,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Radio_Round_Button.H 10386 2014-10-19 20:17:17Z AlbrechtS $".
+// End of "$Id$".
 //

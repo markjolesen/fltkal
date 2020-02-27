@@ -1,10 +1,10 @@
 // textdsp.h
 //
-// "$Id: Fl_Text_Display.H 12570 2017-11-23 19:34:33Z greg.ercolano $"
+// "$Id$"
 //
 // Header file for Fl_Text_Display class.
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 2001-2017 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -127,6 +127,7 @@
  and Fl_Text_Buffer classes.
 
  \note Line numbers were added in FLTK 1.3.3.
+ \see Fl_Widget::shortcut_label(int)
  */
 class FL_EXPORT Fl_Text_Display: public Fl_Group {
 
@@ -276,10 +277,8 @@ public:
   void cursor_color(Fl_Color n) {mCursor_color = n;}
   
   /**
-    This method has been deprecated, existing for backwards compatibility only.
-    Use scrollbar_size() instead.
-    This method returns the global value Fl::scrollbar_size() unless
-    a specific scrollbar_width_ has been set.
+    Returns the global value Fl::scrollbar_size() unless a specific scrollbar_width_ has been set.
+   \deprecated Use scrollbar_size() instead.
     \todo This method should eventually be removed.
   */
   int scrollbar_width() const {
@@ -287,10 +286,8 @@ public:
   }
 
   /**
-    This method has been deprecated, existing for backwards compatibility only.
-    Use scrollbar_size(int) instead.
-    This method sets the global Fl::scrollbar_size(), and forces this
-    instance of the widget to use it.
+    Sets the global Fl::scrollbar_size(), and forces this instance of the widget to use it.
+   \deprecated Use scrollbar_size() instead.
     \todo This method should eventually be removed
   */
   void scrollbar_width(int width) {
@@ -648,5 +645,5 @@ protected:
 #endif
 
 //
-// End of "$Id: Fl_Text_Display.H 12570 2017-11-23 19:34:33Z greg.ercolano $".
+// End of "$Id$".
 //

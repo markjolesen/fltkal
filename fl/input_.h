@@ -1,10 +1,10 @@
 // input_.h
 //
-// "$Id: Fl_Input_.H 10807 2015-07-21 13:55:13Z AlbrechtS $"
+// "$Id$"
 //
 // Input base class header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2015 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -131,6 +131,7 @@
   UTF-8 sequences and pointers into the middle of a sequence are undefined.
 
   \see Fl_Text_Display, Fl_Text_Editor for more powerful text handling widgets
+  \see Fl_Widget::shortcut_label(int)
 
   \internal
   When porting this widget from ASCII to UTF-8, previously legal pointers into
@@ -411,6 +412,9 @@ public:
   */
   int insert(const char* t, int l=0){return replace(position_, mark_, t, l);}
 
+  /* Append text at the end. */
+  int append(const char* t, int l=0, char keep_selection=0);
+
   /* Put the current selection into the clipboard. */
   int copy(int clipboard);
 
@@ -547,5 +551,5 @@ public:
 #endif 
 
 //
-// End of "$Id: Fl_Input_.H 10807 2015-07-21 13:55:13Z AlbrechtS $".
+// End of "$Id$".
 //

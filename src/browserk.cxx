@@ -1,71 +1,19 @@
-// browserk.cxx
 //
-// "$Id: Fl_Check_Browser.cxx 8864 2011-07-19 04:49:30Z greg.ercolano $"
+// "$Id$"
 //
-// Fl_Check_Browser header file for the Fast Light Tool Kit (FLTK).
+// Fl_Check_Browser implementation for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2010 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     http://www.fltk.org/COPYING.php
+//
+// Please report all bugs and problems on the following page:
+//
+//     http://www.fltk.org/str.php
 //
 
 #include <stdio.h>
@@ -153,6 +101,76 @@ int Fl_Check_Browser::item_height(void *) const {
 	return textsize() + 2;
 }
 
+const char *Fl_Check_Browser::item_text(void *item) const {
+  cb_item *i = (cb_item *)item;
+  return i->text;
+}
+
+void *Fl_Check_Browser::item_at(int index) const { // note: index is 1-based
+  if (index < 1 || index > nitems())
+    return 0L;
+  cb_item *item = (cb_item *)item_first();
+  for (int i = 1; i < index; i++)
+    item = (cb_item *)(item_next(item));
+  return (void *)item;
+}
+
+void Fl_Check_Browser::item_swap(int ia, int ib) {
+  item_swap(item_at(ia), item_at(ib));
+}
+
+void Fl_Check_Browser::item_swap(void *a, void *b) {
+  cb_item *ia = (cb_item *)a;
+  cb_item *ib = (cb_item *)b;
+
+  cb_item *a_next = ia->next;
+  cb_item *a_prev = ia->prev;
+
+  cb_item *b_next = ib->next;
+  cb_item *b_prev = ib->prev;
+
+  if (a_next == ib) {        // p - a - b - n  => p - b - a - n
+    if (a_prev)
+      a_prev->next = ib;
+    if (b_next)
+      b_next->prev = ia;
+    ib->prev = a_prev;
+    ib->next = ia;
+    ia->prev = ib;
+    ia->next = b_next;
+  } else if (a_prev == ib) {    // p - b - a - n  => p - a - b - n
+    if (b_prev)
+      b_prev->next = ia;
+    if (a_next)
+      a_next->prev = ib;
+    ia->prev = b_prev;
+    ia->next = ib;
+    ib->prev = ia;
+    ib->next = a_next;
+  } else {            // x - a - y - b - z => x - b - y - a - z
+    if (a_prev)
+      a_prev->next = ib;
+    if (a_next)
+      a_next->prev = ib;
+    ia->next = b_next;
+    ia->prev = b_prev;
+
+    if (b_prev)
+      b_prev->next = ia;
+    if (b_next)
+      b_next->prev = ia;
+    ib->next = a_next;
+    ib->prev = a_prev;
+  }
+  if (first == ia)
+    first = ib;
+  if (last == ia)
+    last = ib;
+  // invalidate item cache
+  cached_item = -1;
+  cache = 0L;
+}
+
 #define CHECK_SIZE (textsize()-2)
 
 int Fl_Check_Browser::item_width(void *v) const {
@@ -227,7 +245,7 @@ int Fl_Check_Browser::add(char *s, int b) {
 	p->prev = 0;
 	p->checked = b;
 	p->selected = 0;
-	p->text = strdup(s);
+    p->text = strdup(s?s:"");
 
 	if (b) {
 		nchecked_++;
@@ -362,11 +380,15 @@ void Fl_Check_Browser::check_none() {
 }
 
 int Fl_Check_Browser::handle(int event) {
-  if (event==FL_PUSH)
-    deselect();
+  if (event == FL_PUSH) {
+    int X, Y, W, H;
+    bbox(X, Y, W, H);
+    if (Fl::event_inside(X, Y, W, H))
+      deselect();
+  }
   return Fl_Browser_::handle(event);
 }
 
 //
-// End of "$Id: Fl_Check_Browser.cxx 8864 2011-07-19 04:49:30Z greg.ercolano $".
+// End of "$Id$".
 //

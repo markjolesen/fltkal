@@ -1,10 +1,10 @@
 // labelm.h
 //
-// "$Id: Fl_Multi_Label.H 12471 2017-09-27 03:30:13Z greg.ercolano $"
+// "$Id$"
 //
 // Multi-label header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2015 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -74,10 +74,7 @@
 class Fl_Widget;
 struct Fl_Menu_Item;
 
-/** This struct allows multiple labels to be added to objects that might normally have only one label.
-
-    This struct allows a mixed text and/or graphics label to be applied to an object that
-    would normally only have a single (usually text only) label.
+/** Allows a mixed text and/or graphics label to be applied to an Fl_Menu_Item or Fl_Widget.
 
     Most regular FLTK widgets now support the ability to associate both images and text
     with a label but some special cases, notably the non-widget Fl_Menu_Item objects, do not.
@@ -153,5 +150,5 @@ struct FL_EXPORT Fl_Multi_Label {
 #endif
 
 //
-// End of "$Id: Fl_Multi_Label.H 12471 2017-09-27 03:30:13Z greg.ercolano $".
+// End of "$Id$".
 //

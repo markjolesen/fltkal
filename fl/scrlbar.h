@@ -1,10 +1,10 @@
 // scrlbar.h
 //
-// "$Id: Fl_Scrollbar.H 9116 2011-10-02 06:25:13Z matt $"
+// "$Id$"
 //
 // Scroll bar header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
+// Copyright 2017-2018, 2020 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -128,8 +128,8 @@ public:
     Sets the position, size and range of the slider in the scrollbar.
     \param[in] pos   position, first line displayed
     \param[in] windowSize  number of lines displayed
-    \param[in] first number of first line
-    \param[in] total total number of lines
+    \param[in] first_line number of first line
+    \param[in] total_lines total number of lines
 
     You should call this every time your window changes size, your data
     changes size, or your scroll position changes (even if in response
@@ -138,8 +138,8 @@ public:
 
     Calls Fl_Slider::scrollvalue(int pos, int size, int first, int total).
   */
-  int value(int pos, int windowSize, int first, int total) {
-    return scrollvalue(pos, windowSize, first, total);
+  int value(int pos, int windowSize, int first_line, int total_lines) {
+    return scrollvalue(pos, windowSize, first_line, total_lines);
   }
 
   /**
@@ -159,5 +159,5 @@ public:
 #endif
 
 //
-// End of "$Id: Fl_Scrollbar.H 9116 2011-10-02 06:25:13Z matt $".
+// End of "$Id$".
 //

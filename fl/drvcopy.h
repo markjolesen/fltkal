@@ -1,6 +1,6 @@
 // drvcopy.h
 //
-// "$Id: Fl_Copy_Surface.H 12970 2018-06-23 20:50:22Z matt $"
+// "$Id$"
 //
 // Copy-to-clipboard code for the Fast Light Tool Kit (FLTK).
 //
@@ -79,7 +79,7 @@
  will be recorded in the clipboard. It's possible to draw widgets (using Fl_Copy_Surface::draw()
  ) or to use any of the \ref fl_drawings or the \ref fl_attributes.
  Finally, delete the Fl_Copy_Surface object to load the clipboard with the graphical data.
- <br> Fl_GL_Window 's can be copied to the clipboard as well. 
+ <br> Fl_Gl_Window 's can be copied to the clipboard as well. 
  <br> Usage example:
  \code
  Fl_Widget *g = ...; // a widget you want to copy to the clipboard
@@ -92,7 +92,9 @@
  \endcode
  Platform details:
  \li Windows: Transparent RGB images copy without transparency.
- The graphical data are copied to the clipboard as an 'enhanced metafile'.
+ The graphical data are copied to the clipboard in two formats: 1) as an 'enhanced metafile';
+ 2) as a color bitmap. Applications to which the clipboard content is pasted can use the format
+ that suits them best.
  \li Mac OS: The graphical data are copied to the clipboard (a.k.a. pasteboard) in two 'flavors':
  1) in vectorial form as PDF data; 2) in bitmap form as a TIFF image. 
  Applications to which the clipboard content is pasted can use the flavor that suits them best.
@@ -108,6 +110,7 @@ public:
   Fl_Copy_Surface(int w, int h);
   ~Fl_Copy_Surface();
   void set_current();
+  virtual bool is_current();
   /** Returns the pixel width of the copy surface */
   int w();
   /** Returns the pixel height of the copy surface */
@@ -115,6 +118,7 @@ public:
   void origin(int *x, int *y);
   void origin(int x, int y);
   int printable_rect(int *w, int *h);
+  virtual void draw_decorated_window(Fl_Window *win, int x_offset = 0, int y_offset = 0);
 };
 
 
@@ -139,11 +143,10 @@ protected:
   int height;
   Fl_Copy_Surface_Driver(int w, int h) : Fl_Widget_Surface(NULL), width(w), height(h) {}
   virtual ~Fl_Copy_Surface_Driver() {}
-  virtual void set_current() {}
-  virtual void translate(int x, int y) {}
-  virtual void untranslate() {}
-  int printable_rect(int *w, int *h) {*w = width; *h = height; return 0;}
-  virtual Fl_RGB_Image *image() {return NULL;}
+  virtual void set_current() = 0;
+  virtual void translate(int x, int y) = 0;
+  virtual void untranslate() = 0;
+  int printable_rect(int *w, int *h);
   /** Each platform implements this function its own way.
    It returns an object implementing all virtual functions
    of class Fl_Copy_Surface_Driver for the plaform.
@@ -159,5 +162,5 @@ protected:
 #endif // Fl_Copy_Surface_H
 
 //
-// End of "$Id: Fl_Copy_Surface.H 12970 2018-06-23 20:50:22Z matt $".
+// End of "$Id$".
 //
