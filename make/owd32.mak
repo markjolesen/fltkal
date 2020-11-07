@@ -89,9 +89,9 @@ AS=wasm
 CC=wcc386
 CXX=wpp386
 
-AFLAGS= -3r -mf -bt=DOS -d1 $(INCLUDES) $(DEFINES)
-CFLAGS= -3r -mf -bt=DOS -d3 $(INCLUDES) $(DEFINES)
-CXXFLAGS= -3r -mf -bt=DOS -d3 $(INCLUDES) $(DEFINES)
+AFLAGS= $(DEBUG) -3r -mf -bt=DOS $(INCLUDES) $(DEFINES)
+CFLAGS= $(DEBUG) -3r -mf -bt=DOS $(INCLUDES) $(DEFINES)
+CXXFLAGS= $(DEBUG) -3r -mf -bt=DOS $(INCLUDES) $(DEFINES)
 
 LIB_FLTK=$(LIB)\fltk.lib
 
