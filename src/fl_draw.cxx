@@ -1,19 +1,71 @@
+// fl_draw.cxx
 //
-// "$Id$"
+// "$Id: fl_draw.cxx 12176 2017-02-19 15:49:48Z manolo $"
 //
 // Label drawing code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 1998-2020 by Bill Spitzak and others.
+// Copyright 2017-2018 The fltkal authors
+// Copyright 1998-2016 by Bill Spitzak and others.
 //
-// This library is free software. Distribution and use rights are outlined in
-// the file "COPYING" which should have been included with this file.  If this
-// file is missing or damaged, see the license at:
+//                              FLTK License
+//                            December 11, 2001
+// 
+// The FLTK library and included programs are provided under the terms
+// of the GNU Library General Public License (LGPL) with the following
+// exceptions:
+// 
+//     1. Modifications to the FLTK configure script, config
+//        header file, and makefiles by themselves to support
+//        a specific platform do not constitute a modified or
+//        derivative work.
+// 
+//       The authors do request that such modifications be
+//       contributed to the FLTK project - send all contributions
+//       through the "Software Trouble Report" on the following page:
+//  
+//            http://www.fltk.org/str.php
+// 
+//     2. Widgets that are subclassed from FLTK widgets do not
+//        constitute a derivative work.
+// 
+//     3. Static linking of applications and widgets to the
+//        FLTK library does not constitute a derivative work
+//        and does not require the author to provide source
+//        code for the application or widget, use the shared
+//        FLTK libraries, or link their applications or
+//        widgets against a user-supplied version of FLTK.
+// 
+//        If you link the application or widget to a modified
+//        version of FLTK, then the changes to FLTK must be
+//        provided under the terms of the LGPL in sections
+//        1, 2, and 4.
+// 
+//     4. You do not have to provide a copy of the FLTK license
+//        with programs that are linked to the FLTK library, nor
+//        do you have to identify the FLTK license in your
+//        program or documentation as required by section 6
+//        of the LGPL.
+// 
+//        However, programs must still identify their use of FLTK.
+//        The following example statement can be included in user
+//        documentation to satisfy this requirement:
+// 
+//            [program/widget] is based in part on the work of
+//            the FLTK project (http://www.fltk.org).
+// 
+//     This library is free software; you can redistribute it and/or
+//     modify it under the terms of the GNU Library General Public
+//     License as published by the Free Software Foundation; either
+//     version 2 of the License, or (at your option) any later version.
+// 
+//     This library is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//     Library General Public License for more details.
+// 
+//     You should have received a copy of the GNU Library General Public
+//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-//     https://www.fltk.org/COPYING.php
-//
-// Please report all bugs and problems on the following page:
-//
-//     https://www.fltk.org/str.php
 //
 
 // Implementation of fl_draw(const char*,int,int,int,int,Fl_Align)
@@ -27,7 +79,6 @@
 #include <fl/fl.h>
 #include <fl/fl_draw.h>
 #include <fl/img.h>
-#include <fl/platform.h>	// fl_open_display()
 
 #include "flstring.h"
 #include <ctype.h>
@@ -421,22 +472,6 @@ void fl_measure(const char* str, int& w, int& h, int draw_symbols) {
 }
 
 /**
-  Sets the current font, which is then used in various drawing routines.
-  You may call this outside a draw context if necessary to measure text,
-  for instance by calling fl_width(), fl_measure(), or fl_text_extents(),
-  but on X this will open the display.
-
-  The font is identified by a \p face and a \p size.
-  The size of the font is measured in pixels and not "points".
-  Lines should be spaced \p size pixels apart or more.
-*/
-void fl_font(Fl_Font face, Fl_Fontsize fsize) {
-  if (!fl_graphics_driver)
-    fl_open_display();
-  fl_graphics_driver->font(face, fsize);
-}
-
-/**
   This function returns the actual height of the specified \p font
   and \p size. Normally the font height should always be 'size',
   but with the advent of XFT, there are (currently) complexities
@@ -462,5 +497,5 @@ int fl_height(int font, int size) {
 }
 
 //
-// End of "$Id$".
+// End of "$Id: fl_draw.cxx 12176 2017-02-19 15:49:48Z manolo $".
 //

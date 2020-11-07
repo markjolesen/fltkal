@@ -578,7 +578,7 @@ void menuwindow::drawentry(const Fl_Menu_Item* m, int n, int eraseit) {
   int xx = BW;
   int W = w();
   int ww = W-2*BW-1;
-  int yy = BW+1+n*itemheight;
+  int yy = BW+1+(n-item_offset)*itemheight;
   int hh = itemheight - Fl::menu_linespacing();
 
   if (eraseit && n != selected) {
@@ -666,13 +666,15 @@ int menuwindow::find_selected(int mx, int my) {
     const Fl_Menu_Item* m = menu->first();
     for (; ; m = m->next(), n++) {
       if (!m->text) return -1;
+
       xx += m->measure(0, button) + 16;
       if (xx > mx) break;
+
     }
     return n;
   }
   if (mx < Fl::box_dx(box()) || mx >= w()) return -1;
-  int n = (my-Fl::box_dx(box())-1)/itemheight;
+  int n = (item_offset + ((my-Fl::box_dx(box())-1)/itemheight));
   if (n < 0 || n>=numitems) return -1;
   return n;
 }

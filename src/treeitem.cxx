@@ -1,6 +1,76 @@
+// treeitem.cxx
 //
-// "$Id$"
+// "$Id: Fl_Tree_Item.cxx 12824 2018-04-10 18:37:18Z greg.ercolano $"
 //
+//////////////////////
+// Fl_Tree_Item.cxx
+//////////////////////
+//
+// Fl_Tree -- This file is part of the Fl_Tree widget for FLTK
+// Copyright 2017-2018 The fltkal authors
+// Copyright (C) 2009-2010, 2018 by Greg Ercolano.
+//
+//                              FLTK License
+//                            December 11, 2001
+// 
+// The FLTK library and included programs are provided under the terms
+// of the GNU Library General Public License (LGPL) with the following
+// exceptions:
+// 
+//     1. Modifications to the FLTK configure script, config
+//        header file, and makefiles by themselves to support
+//        a specific platform do not constitute a modified or
+//        derivative work.
+// 
+//       The authors do request that such modifications be
+//       contributed to the FLTK project - send all contributions
+//       through the "Software Trouble Report" on the following page:
+//  
+//            http://www.fltk.org/str.php
+// 
+//     2. Widgets that are subclassed from FLTK widgets do not
+//        constitute a derivative work.
+// 
+//     3. Static linking of applications and widgets to the
+//        FLTK library does not constitute a derivative work
+//        and does not require the author to provide source
+//        code for the application or widget, use the shared
+//        FLTK libraries, or link their applications or
+//        widgets against a user-supplied version of FLTK.
+// 
+//        If you link the application or widget to a modified
+//        version of FLTK, then the changes to FLTK must be
+//        provided under the terms of the LGPL in sections
+//        1, 2, and 4.
+// 
+//     4. You do not have to provide a copy of the FLTK license
+//        with programs that are linked to the FLTK library, nor
+//        do you have to identify the FLTK license in your
+//        program or documentation as required by section 6
+//        of the LGPL.
+// 
+//        However, programs must still identify their use of FLTK.
+//        The following example statement can be included in user
+//        documentation to satisfy this requirement:
+// 
+//            [program/widget] is based in part on the work of
+//            the FLTK project (http://www.fltk.org).
+// 
+//     This library is free software; you can redistribute it and/or
+//     modify it under the terms of the GNU Library General Public
+//     License as published by the Free Software Foundation; either
+//     version 2 of the License, or (at your option) any later version.
+// 
+//     This library is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//     Library General Public License for more details.
+// 
+//     You should have received a copy of the GNU Library General Public
+//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+//
+//
+/////////////////////////////////////////////////////////////////////////// 80 /
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,24 +80,6 @@
 #include <fl/treepref.h>
 #include <fl/tree.h>
 
-//////////////////////
-// Fl_Tree_Item.cxx
-//////////////////////
-//
-// Fl_Tree -- This file is part of the Fl_Tree widget for FLTK
-// Copyright (C) 2009-2010 by Greg Ercolano.
-//
-// This library is free software. Distribution and use rights are outlined in
-// the file "COPYING" which should have been included with this file.  If this
-// file is missing or damaged, see the license at:
-//
-//     http://www.fltk.org/COPYING.php
-//
-// Please report all bugs and problems on the following page:
-//
-//     http://www.fltk.org/str.php
-//
-/////////////////////////////////////////////////////////////////////////// 80 /
 
 // Was the last event inside the specified xywh?
 static int event_inside(const int xywh[4]) {
@@ -387,17 +439,10 @@ Fl_Tree_Item *Fl_Tree_Item::add(const Fl_Tree_Prefs &prefs,
 	 : 0;				      // failed? error
 }
 
-/**
-  Insert a new item named \p 'new_label' into current item's
-  children at a specified position \p 'pos'.
-
-  If \p pos is out of range the new item is
-   - prepended if \p pos \< 0 or
-   - appended  if \p pos \> item->children().
-
-  \returns the new item inserted
-  \see Fl_Tree::insert()
-*/
+/// Insert a new item named \p 'new_label' into current item's
+/// children at a specified position \p 'pos'.
+/// \returns the new item inserted.
+///
 Fl_Tree_Item *Fl_Tree_Item::insert(const Fl_Tree_Prefs &prefs, const char *new_label, int pos) {
   Fl_Tree_Item *item = new Fl_Tree_Item(_tree);
   item->label(new_label);
@@ -492,20 +537,17 @@ int Fl_Tree_Item::move(Fl_Tree_Item *item, int op, int pos) {
     case 0:	// "above"
       from_parent = this->parent();
       to_parent   = item->parent();
-      if ( !from_parent || !to_parent ) return -1;
       from        = from_parent->find_child(this);
       to          = to_parent->find_child(item);
       break;
     case 1:	// "below"
       from_parent = this->parent();
       to_parent   = item->parent();
-      if ( !from_parent || !to_parent ) return -1;
       from        = from_parent->find_child(this);
       to          = to_parent->find_child(item);
       break;
     case 2:	// "into"
       from_parent = this->parent();
-      if ( !from_parent ) return -1;
       to_parent   = item;
       from        = from_parent->find_child(this);
       to          = pos;
@@ -1166,17 +1208,17 @@ void Fl_Tree_Item::draw(int X, int &Y, int W, Fl_Tree_Item *itemfocus,
     int child_w = W - (child_x-X);
     int child_y_start = Y;
     for ( int t=0; t<children(); t++ ) {
-      int is_lastchild = ((t+1)==children()) ? 1 : 0;
-      _children[t]->draw(child_x, Y, child_w, itemfocus, tree_item_xmax, is_lastchild, render);
+      int lastchild = ((t+1)==children()) ? 1 : 0;
+      _children[t]->draw(child_x, Y, child_w, itemfocus, tree_item_xmax, lastchild, render);
     }
     if ( has_children() && is_open() ) {
       Y += prefs.openchild_marginbottom();		// offset below open child tree
     }
     if ( ! lastchild ) {
       // Special 'clipped' calculation. (intentional variable shadowing)
-      int is_clipped = ((child_y_start < tree_top) && (Y < tree_top)) ||
-                       ((child_y_start > tree_bot) && (Y > tree_bot));
-      if (render && !is_clipped )
+      int clipped = ((child_y_start < tree_top) && (Y < tree_top)) ||
+                    ((child_y_start > tree_bot) && (Y > tree_bot));
+      if (render && !clipped )
         draw_vertical_connector(hconn_x, child_y_start, Y, prefs);
     }
   }
@@ -1193,37 +1235,8 @@ int Fl_Tree_Item::event_on_collapse_icon(const Fl_Tree_Prefs &prefs) const {
   }
 }
 
-/// Was the event on the 'user icon' of this item, if any?
-///
-int Fl_Tree_Item::event_on_user_icon(const Fl_Tree_Prefs &prefs) const {
-  // NOTE: Fl_Tree_Item doesn't keep an _xywh[] for usericon, but we can derive it as
-  //       by elimitation of all other possibilities.
-  if ( !is_visible() )  return 0;                       // item not visible? not us
-  if ( !event_inside(_xywh) ) return 0;                 // not inside item? not us
-  if ( event_on_collapse_icon(prefs) ) return 0;        // inside collapse icon? not us
-  if ( Fl::event_x() >= _label_xywh[0] ) return 0;      // inside label or beyond (e.g. widget())? not us
-  // Is a user icon being shown?
-  // TBD: Determining usericon xywh and 'if displayed' should be class methods used here and by draw_*()
-  Fl_Image *ui = 0;
-  if ( is_active() ) {
-    if ( usericon() )              ui = usericon();         // user icon for item?
-    else if ( prefs.usericon() )   ui = prefs.usericon();   // user icon for tree?
-  } else {
-    if ( userdeicon() )            ui = userdeicon();       // user deicon for this item?
-    else if ( prefs.userdeicon() ) ui = prefs.userdeicon(); // user deicon for tree?
-  }
-  if ( !ui ) return 0;                                  // no user icon? not us
-  int uix = _label_xywh[0]-ui->w();                     // find x position of usericon
-  if ( Fl::event_x() < uix ) return 0;                  // event left of usericon? not us
-  return 1;                                             // must be inside usericon by elimination
-}
-
-/// Was event anywhere on the item?
-int Fl_Tree_Item::event_on_item(const Fl_Tree_Prefs &prefs) const {
-    return(event_inside(_xywh) ? 1 : 0);
-}
-
 /// Was event on the label() of this item?
+///
 int Fl_Tree_Item::event_on_label(const Fl_Tree_Prefs &prefs) const {
   if ( is_visible() && is_active() ) {
     return(event_inside(_label_xywh) ? 1 : 0);
@@ -1482,5 +1495,5 @@ void Fl_Tree_Item::recalc_tree() {
 }
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_Tree_Item.cxx 12824 2018-04-10 18:37:18Z greg.ercolano $".
 //

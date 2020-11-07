@@ -1,10 +1,10 @@
 // spinner.h
 //
-// "$Id$"
+// "$Id: Fl_Spinner.H 12313 2017-07-12 21:51:42Z AlbrechtS $"
 //
 // Spinner widget for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2017 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -246,21 +246,11 @@ public:
     Returns the selection color of the spinner widget's input field.
   */
   Fl_Color selection_color() const { return input_.selection_color(); }
-
-  /**
-   Sets the maximum width of the input field.
-   */
-  void maximum_size(int m) { if (m > 0) input_.maximum_size(m); }
-
-  /**
-   Returns the maximum width of the input field.
-   */
-  int maximum_size() const { return input_.maximum_size(); }
 };
 
 #endif // !Fl_Spinner_H
 
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_Spinner.H 12313 2017-07-12 21:51:42Z AlbrechtS $".
 //

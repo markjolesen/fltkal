@@ -1,10 +1,10 @@
 // tooltip.h
 //
-// "$Id$"
+// "$Id: Fl_Tooltip.H 12748 2018-03-15 09:34:20Z matt $"
 //
 // Tooltip header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2011 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -92,10 +92,6 @@ public:
   static float delay() { return delay_; }
   /**    Sets the tooltip delay. The default delay is 1.0 seconds.  */
   static void delay(float f) { delay_ = f; }
-  /**    Gets the time until an open tooltip hides again. The default delay is 12.0 seconds.  */
-  static float hidedelay() { return hidedelay_; }
-  /**    Sets the time until an open tooltip hides again. The default delay is 12.0 seconds.  */
-  static void hidedelay(float f) { hidedelay_ = f; }
   /**
     Gets the tooltip hover delay, the delay between tooltips.
     The default delay is 0.2 seconds.
@@ -161,7 +157,6 @@ private:
 
 private:
   static float delay_; //!< delay before a tooltip is shown
-  static float hidedelay_; //!< delay until tooltip is closed again
   static float hoverdelay_; //!< delay between tooltips
   static Fl_Color color_;
   static Fl_Color textcolor_;
@@ -177,5 +172,5 @@ private:
 #endif
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_Tooltip.H 12748 2018-03-15 09:34:20Z matt $".
 //

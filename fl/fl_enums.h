@@ -1,9 +1,11 @@
 // fl_enums.h
 //
+// "$Id: Enumerations.H 12450 2017-09-12 15:26:36Z AlbrechtS $"
+//
 // Enumerations for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
-// Copyright 1998-2020 by Bill Spitzak and others.
+// Copyright 2017-2018 The fltkal authors
+// Copyright 1998-2017 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -446,20 +448,15 @@ enum Fl_Event {	// events
    Use Fl::add_handler() to be notified of this event.
    */
   FL_SCREEN_CONFIGURATION_CHANGED = 24,
-  /** The fullscreen state of the window has changed.
-   This event is sent to the window's handle method.
+  /** The fullscreen state of the window has changed
    */
   FL_FULLSCREEN         = 25,
-  /** The user has made a zoom/pinch/magnification gesture (Mac OS platform only).
+  /** The user has made a zoom/pinch/magnification gesture. 
       The Fl::event_dy() method can be used to find magnification amount,
       Fl::event_x() and Fl::event_y() are set as well.
-      This event is sent to the window's handle method.
      */
-  FL_ZOOM_GESTURE	= 26,
-  /** A zoom event (ctrl/+/-/0/ or cmd/+/-/0/) was processed.
-   Use Fl::add_handler() to be notified of this event.
-   */
-  FL_ZOOM_EVENT = 27
+  FL_ZOOM_GESTURE	= 26
+
 // DEV NOTE: Keep this list in sync with FL/names.h
 };
 
@@ -632,22 +629,8 @@ enum Fl_When { // Fl_Widget::when():
     		See below for the defined enum Fl_Boxtype.
 		\see src/Fl_get_system_colors.cxx
 */
-
-/*@{*/		// group: Box Types
-
-/**
-    \brief FLTK standard box types
-
-    This enum defines the standard box types included with FLTK.
-
-   \note The documented \p enum \p Fl_Boxtype contains some values (names)
-      with leading underscores, e.g. \p \b _FL_SHADOW_BOX. This is due to
-      technical reasons - please use the same values (names) without the
-      leading underscore in your code! Enum values with leading underscores
-      are reserved for internal use and subject to change without notice!
-
-*/
-enum Fl_Boxtype { // boxtypes (if you change these you must also change fl_boxtype.cxx):
+/*@{*/
+enum Fl_Boxtype { // boxtypes (if you change these you must fix fl_boxtype.cxx):
 
   FL_NO_BOX = 0,		///< nothing is drawn at all, this box is invisible
   FL_FLAT_BOX,			///< a flat box
@@ -664,47 +647,47 @@ enum Fl_Boxtype { // boxtypes (if you change these you must also change fl_boxty
   FL_ENGRAVED_FRAME,		///< see figure 1
   FL_EMBOSSED_FRAME,		///< see figure 1
   FL_BORDER_BOX,		///< see figure 1
-  _FL_SHADOW_BOX,		///< see figure 1, use FL_SHADOW_BOX
+  _FL_SHADOW_BOX,		///< see figure 1
   FL_BORDER_FRAME,		///< see figure 1
-  _FL_SHADOW_FRAME,		///< see figure 1, use FL_SHADOW_FRAME
-  _FL_ROUNDED_BOX,		///< see figure 1, use FL_ROUNDED_BOX
-  _FL_RSHADOW_BOX,		///< see figure 1, use FL_RSHADOW_BOX
-  _FL_ROUNDED_FRAME,		///< see figure 1, use FL_ROUNDED_FRAME
-  _FL_RFLAT_BOX,		///< see figure 1, use FL_RFLAT_BOX
-  _FL_ROUND_UP_BOX,		///< see figure 1, use FL_ROUND_UP_BOX
-  _FL_ROUND_DOWN_BOX,		///< see figure 1, use FL_ROUND_DOWN_BOX
-  _FL_DIAMOND_UP_BOX,		///< see figure 1, use FL_DIAMOND_UP_BOX
-  _FL_DIAMOND_DOWN_BOX,		///< see figure 1, use FL_DIAMOND_DOWN_BOX
-  _FL_OVAL_BOX,			///< see figure 1, use FL_OVAL_BOX
-  _FL_OSHADOW_BOX,		///< see figure 1, use FL_OSHADOW_BOX
-  _FL_OVAL_FRAME,		///< see figure 1, use FL_OVAL_FRAME
-  _FL_OFLAT_BOX,		///< see figure 1, use FL_OFLAT_BOX
-  _FL_PLASTIC_UP_BOX,		///< plastic version of FL_UP_BOX, use FL_PLASTIC_UP_BOX
-  _FL_PLASTIC_DOWN_BOX,		///< plastic version of FL_DOWN_BOX, use FL_PLASTIC_DOWN_BOX
-  _FL_PLASTIC_UP_FRAME,		///< plastic version of FL_UP_FRAME, use FL_PLASTIC_UP_FRAME
-  _FL_PLASTIC_DOWN_FRAME,	///< plastic version of FL_DOWN_FRAME, use FL_PLASTIC_DOWN_FRAME
-  _FL_PLASTIC_THIN_UP_BOX,	///< plastic version of FL_THIN_UP_BOX, use FL_PLASTIC_THIN_UP_BOX
-  _FL_PLASTIC_THIN_DOWN_BOX,	///< plastic version of FL_THIN_DOWN_BOX, use FL_PLASTIC_THIN_DOWN_BOX
-  _FL_PLASTIC_ROUND_UP_BOX,	///< plastic version of FL_ROUND_UP_BOX, use FL_PLASTIC_ROUND_UP_BOX
-  _FL_PLASTIC_ROUND_DOWN_BOX,	///< plastic version of FL_ROUND_DOWN_BOX, use FL_PLASTIC_ROUND_DOWN_BOX
-  _FL_GTK_UP_BOX,		///< gtk+ version of FL_UP_BOX, use FL_GTK_UP_BOX
-  _FL_GTK_DOWN_BOX,		///< gtk+ version of FL_DOWN_BOX, use FL_GTK_DOWN_BOX
-  _FL_GTK_UP_FRAME,		///< gtk+ version of FL_UP_FRAME, use FL_GTK_UP_FRAME
-  _FL_GTK_DOWN_FRAME,		///< gtk+ version of FL_DOWN_FRAME, use FL_GTK_DOWN_FRAME
-  _FL_GTK_THIN_UP_BOX,		///< gtk+ version of FL_THIN_UP_BOX, use FL_GTK_THIN_UP_BOX
-  _FL_GTK_THIN_DOWN_BOX,	///< gtk+ version of FL_THIN_DOWN_BOX, use FL_GTK_THIN_DOWN_BOX
-  _FL_GTK_THIN_UP_FRAME,	///< gtk+ version of FL_THIN_UP_FRAME, use FL_GTK_THIN_UP_FRAME
-  _FL_GTK_THIN_DOWN_FRAME,	///< gtk+ version of FL_THIN_DOWN_FRAME, use FL_GTK_THIN_DOWN_FRAME
-  _FL_GTK_ROUND_UP_BOX,		///< gtk+ version of FL_ROUND_UP_BOX, use FL_GTK_ROUND_UP_BOX
-  _FL_GTK_ROUND_DOWN_BOX,	///< gtk+ version of FL_ROUND_DOWN_BOX, use FL_GTK_ROUND_DOWN_BOX
-  _FL_GLEAM_UP_BOX,		///< gleam version of FL_UP_BOX, use FL_GLEAM_UP_BOX
-  _FL_GLEAM_DOWN_BOX,		///< gleam version of FL_DOWN_BOX, use FL_GLEAM_DOWN_BOX
-  _FL_GLEAM_UP_FRAME,		///< gleam version of FL_UP_FRAME, use FL_GLEAM_UP_FRAME
-  _FL_GLEAM_DOWN_FRAME,		///< gleam version of FL_DOWN_FRAME, use FL_GLEAM_DOWN_FRAME
-  _FL_GLEAM_THIN_UP_BOX,	///< gleam version of FL_THIN_UP_BOX, use FL_GLEAM_THIN_UP_BOX
-  _FL_GLEAM_THIN_DOWN_BOX,	///< gleam version of FL_THIN_DOWN_BOX, use FL_GLEAM_THIN_DOWN_BOX
-  _FL_GLEAM_ROUND_UP_BOX,	///< gleam version of FL_ROUND_UP_BOX, use FL_GLEAM_ROUND_UP_BOX
-  _FL_GLEAM_ROUND_DOWN_BOX,	///< gleam version of FL_ROUND_DOWN_BOX, use FL_GLEAM_ROUND_DOWN_BOX
+  _FL_SHADOW_FRAME,		///< see figure 1
+  _FL_ROUNDED_BOX,		///< see figure 1
+  _FL_RSHADOW_BOX,		///< see figure 1
+  _FL_ROUNDED_FRAME,		///< see figure 1
+  _FL_RFLAT_BOX,		///< see figure 1
+  _FL_ROUND_UP_BOX,		///< see figure 1
+  _FL_ROUND_DOWN_BOX,		///< see figure 1
+  _FL_DIAMOND_UP_BOX,		///< see figure 1
+  _FL_DIAMOND_DOWN_BOX,		///< see figure 1
+  _FL_OVAL_BOX,			///< see figure 1
+  _FL_OSHADOW_BOX,		///< see figure 1
+  _FL_OVAL_FRAME,		///< see figure 1
+  _FL_OFLAT_BOX,		///< see figure 1
+  _FL_PLASTIC_UP_BOX,		///< plastic version of FL_UP_BOX
+  _FL_PLASTIC_DOWN_BOX,		///< plastic version of FL_DOWN_BOX
+  _FL_PLASTIC_UP_FRAME,		///< plastic version of FL_UP_FRAME
+  _FL_PLASTIC_DOWN_FRAME,	///< plastic version of FL_DOWN_FRAME
+  _FL_PLASTIC_THIN_UP_BOX,	///< plastic version of FL_THIN_UP_BOX
+  _FL_PLASTIC_THIN_DOWN_BOX,	///< plastic version of FL_THIN_DOWN_BOX
+  _FL_PLASTIC_ROUND_UP_BOX,	///< plastic version of FL_ROUND_UP_BOX
+  _FL_PLASTIC_ROUND_DOWN_BOX,	///< plastic version of FL_ROUND_DOWN_BOX
+  _FL_GTK_UP_BOX,		///< gtk+ version of FL_UP_BOX
+  _FL_GTK_DOWN_BOX,		///< gtk+ version of FL_DOWN_BOX
+  _FL_GTK_UP_FRAME,		///< gtk+ version of FL_UP_FRAME
+  _FL_GTK_DOWN_FRAME,		///< gtk+ version of FL_DOWN_FRAME
+  _FL_GTK_THIN_UP_BOX,		///< gtk+ version of FL_THIN_UP_BOX
+  _FL_GTK_THIN_DOWN_BOX,	///< gtk+ version of FL_THIN_DOWN_BOX
+  _FL_GTK_THIN_UP_FRAME,	///< gtk+ version of FL_THIN_UP_FRAME
+  _FL_GTK_THIN_DOWN_FRAME,	///< gtk+ version of FL_THIN_DOWN_FRAME
+  _FL_GTK_ROUND_UP_BOX,		///< gtk+ version of FL_ROUND_UP_BOX
+  _FL_GTK_ROUND_DOWN_BOX,	///< gtk+ version of FL_ROUND_DOWN_BOX
+  _FL_GLEAM_UP_BOX,		///< gleam version of FL_UP_BOX
+  _FL_GLEAM_DOWN_BOX,		///< gleam version of FL_DOWN_BOX
+  _FL_GLEAM_UP_FRAME,		///< gleam version of FL_UP_FRAME
+  _FL_GLEAM_DOWN_FRAME,		///< gleam version of FL_DOWN_FRAME
+  _FL_GLEAM_THIN_UP_BOX,	///< gleam version of FL_THIN_UP_BOX
+  _FL_GLEAM_THIN_DOWN_BOX,	///< gleam version of FL_THIN_DOWN_BOX
+  _FL_GLEAM_ROUND_UP_BOX,	///< gleam version of FL_ROUND_UP_BOX
+  _FL_GLEAM_ROUND_DOWN_BOX,	///< gleam version of FL_ROUND_DOWN_BOX
   FL_FREE_BOXTYPE		///< the first free box type for creation of new box types
 };
 extern FL_EXPORT Fl_Boxtype fl_define_FL_ROUND_UP_BOX();
@@ -1209,7 +1192,7 @@ enum Fl_Cursor {
   FL_CURSOR_DEFAULT    =  0, /**< the default cursor, usually an arrow. */
   FL_CURSOR_ARROW      = 35, /**< an arrow pointer. */
   FL_CURSOR_CROSS      = 66, /**< crosshair. */
-  FL_CURSOR_WAIT       = 76, /**< busy indicator (for instance hourglass). */
+  FL_CURSOR_WAIT       = 76, /**< busy indicator (e.g. hourglass). */
   FL_CURSOR_INSERT     = 77, /**< I-beam. */
   FL_CURSOR_HAND       = 31, /**< pointing hand. */
   FL_CURSOR_HELP       = 47, /**< question mark pointer. */
@@ -1272,6 +1255,16 @@ enum Fl_Damage {
   FL_DAMAGE_ALL      = 0x80  /**< Everything needs to be redrawn. */
 };
 
-// FLTK 1.0.x compatibility definitions (FLTK_1_0_COMPAT) dropped in 1.4.0
+// FLTK 1.0.x compatibility definitions...
+#  ifdef FLTK_1_0_COMPAT
+#    define contrast	fl_contrast
+#    define down	fl_down
+#    define frame	fl_frame
+#    define inactive	fl_inactive
+#  endif // FLTK_1_0_COMPAT
 
 #endif
+
+//
+// End of "$Id: Enumerations.H 12450 2017-09-12 15:26:36Z AlbrechtS $".
+//

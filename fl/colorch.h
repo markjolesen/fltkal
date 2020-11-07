@@ -1,10 +1,10 @@
 // colorch.h
 //
-// "$Id$"
+// "$Id: Fl_Color_Chooser.H 8864 2011-07-19 04:49:30Z greg.ercolano $"
 //
 // Color chooser header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -146,10 +146,6 @@ public:
   them.  The pull-down menu lets the user set the input fields to show RGB,
   HSV, or 8-bit RGB (0 to 255).
 
-  The user can press CTRL-C to copy the currently selected color value as
-  text in RGB hex format with leading zeroes to the clipboard, for instance
-  \p FL_GREEN would be '00FF00' (since FLTK 1.4.0).
-
   fl_color_chooser() returns non-zero if the user picks ok, and updates the
   RGB values.  If the user picks cancel or closes the window this returns
   zero and leaves RGB unchanged.
@@ -175,8 +171,6 @@ class FL_EXPORT Fl_Color_Chooser : public Fl_Group {
   static void mode_cb(Fl_Widget*, void*);
 public:
   
-  int handle(int e);
-
   /** 
    Returns which Fl_Color_Chooser variant is currently active 
    \return color modes are rgb(0), byte(1), hex(2), or hsv(3)   
@@ -244,5 +238,5 @@ FL_EXPORT int fl_color_chooser(const char* name, uchar& r, uchar& g, uchar& b, i
 #endif
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_Color_Chooser.H 8864 2011-07-19 04:49:30Z greg.ercolano $".
 //

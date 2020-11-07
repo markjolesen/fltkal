@@ -1,10 +1,10 @@
 // input.h
 //
-// "$Id$"
+// "$Id: Fl_Input.H 11544 2016-04-06 19:39:15Z manolo $"
 //
 // Input header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -88,9 +88,8 @@
   Character composition is done using dead keys and/or a compose
   key as defined by the operating system.
   <P>
- <!-- DON'T use the class name in the caption, or doxygen 1.8.x will fail. -->
-  <TABLE WIDTH="90%" BORDER="1" SUMMARY="Fl_Input keyboard and mouse bindings.">
-    <CAPTION ALIGN="TOP">Keyboard and mouse bindings.</CAPTION>
+  <TABLE WIDTH=90% BORDER=1 SUMMARY="Fl_Input keyboard and mouse bindings.">
+    <CAPTION ALIGN=TOP>Fl_Input keyboard and mouse bindings.</CAPTION>
     <TR><TD NOWRAP="NOWRAP" WIDTH="1%">
       <B>Mouse button 1</B> 
     </TD><TD>
@@ -128,7 +127,7 @@
   <P>
 
   <TABLE WIDTH="90%" BORDER="1" SUMMARY="Fl_Input platform specific keyboard bindings.">
-    <CAPTION ALIGN="TOP">Platform specific keyboard bindings.</CAPTION>
+    <CAPTION ALIGN=TOP>Fl_Input platform specific keyboard bindings.</CAPTION>
   <TR>
     <TD NOWRAP="NOWRAP" WIDTH="1%"><B> Windows/Linux </B></TD>
     <TD NOWRAP="NOWRAP" WIDTH="1%"><B> Mac </B></TD>
@@ -319,5 +318,5 @@ public:
 #endif 
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_Input.H 11544 2016-04-06 19:39:15Z manolo $".
 //

@@ -185,7 +185,6 @@ FLTKOBJS=\
 	$(OBJ)/imgpix.o \
 	$(OBJ)/imgpng.o \
 	$(OBJ)/imgpnm.o \
-	$(OBJ)/imgrdr.o \
 	$(OBJ)/imgread.o \
 	$(OBJ)/imgshare.o \
 	$(OBJ)/imgtiled.o \
@@ -264,7 +263,6 @@ ALLEGRO4DRVOBJS=\
 	$(OBJ)/aldrvsys.o \
 	$(OBJ)/aldrvwin.o \
 	$(OBJ)/algfx.o \
-	$(OBJ)/drvscral.o \
 	$(OBJ)/fontdir.o \
 	$(OBJ)/fontft.o \
 	$(OBJ)/imgconv.o \

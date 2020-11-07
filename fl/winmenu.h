@@ -1,10 +1,10 @@
 // winmenu.h
 //
-// "$Id$"
+// "$Id: Fl_Menu_Window.H 9637 2012-07-24 04:37:22Z matt $"
 //
 // Menu window header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -88,6 +88,7 @@ public:
   void erase();
   void flush();
   void hide();
+  virtual void resize(int X,int Y,int W,int H);
   /** Tells if hardware overlay mode is set */
   unsigned int overlay() {return !(flags()&NO_OVERLAY);}
   /** Tells FLTK to use hardware overlay planes if they are available.  */
@@ -100,11 +101,10 @@ public:
   Fl_Menu_Window(int W, int H, const char *l = 0);
   /** Creates a new Fl_Menu_Window widget using the given position, size, and label string. */
   Fl_Menu_Window(int X, int Y, int W, int H, const char *l = 0);
-  void resize(int X,int Y,int W,int H);
 };
 
 #endif
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_Menu_Window.H 9637 2012-07-24 04:37:22Z matt $".
 //

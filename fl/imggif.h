@@ -1,11 +1,11 @@
 // imggif.h
 //
-// "$Id$"
+// "$Id: Fl_GIF_Image.H 10732 2015-05-23 23:42:26Z matt $"
 //
 // GIF image header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
-// Copyright 1998-2020 by Bill Spitzak and others.
+// Copyright 2017-2018 The fltkal authors
+// Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -82,19 +82,13 @@
  */
 class FL_EXPORT Fl_GIF_Image : public Fl_Pixmap {
 
-public:
+  public:
 
   Fl_GIF_Image(const char* filename);
-  Fl_GIF_Image(const char* imagename, const unsigned char *data);
-
-protected:
-
-  void load_gif_(class Fl_Image_Reader &rdr);
-
 };
 
 #endif
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_GIF_Image.H 10732 2015-05-23 23:42:26Z matt $".
 //

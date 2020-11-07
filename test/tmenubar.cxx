@@ -315,7 +315,8 @@ int main(int argc, char **argv) {
   menu_location_cb(&ch2, &menubar);
 #endif
 
-  Fl_Value_Slider menu_linespacing_slider(500,150,150,20,"Fl::menu_linespacing()");
+//  Fl_Value_Slider menu_linespacing_slider(500,150,150,20,"Fl::menu_linespacing()");
+  Fl_Value_Slider menu_linespacing_slider(500,150,450,20,"Fl::menu_linespacing()");
   menu_linespacing_slider.tooltip("Changes the line spacing between all menu items");
   menu_linespacing_slider.type(1);
   //menu_linespacing_slider.labelsize(14);

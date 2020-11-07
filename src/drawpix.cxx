@@ -1,19 +1,71 @@
+// drawpix.cxx
 //
-// "$Id$"
+// "$Id: fl_draw_pixmap.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Pixmap drawing code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 1998-2018 by Bill Spitzak and others.
+// Copyright 2017-2018 The fltkal authors
+// Copyright 1998-2012, 2018 by Bill Spitzak and others.
 //
-// This library is free software. Distribution and use rights are outlined in
-// the file "COPYING" which should have been included with this file.  If this
-// file is missing or damaged, see the license at:
+//                              FLTK License
+//                            December 11, 2001
+// 
+// The FLTK library and included programs are provided under the terms
+// of the GNU Library General Public License (LGPL) with the following
+// exceptions:
+// 
+//     1. Modifications to the FLTK configure script, config
+//        header file, and makefiles by themselves to support
+//        a specific platform do not constitute a modified or
+//        derivative work.
+// 
+//       The authors do request that such modifications be
+//       contributed to the FLTK project - send all contributions
+//       through the "Software Trouble Report" on the following page:
+//  
+//            http://www.fltk.org/str.php
+// 
+//     2. Widgets that are subclassed from FLTK widgets do not
+//        constitute a derivative work.
+// 
+//     3. Static linking of applications and widgets to the
+//        FLTK library does not constitute a derivative work
+//        and does not require the author to provide source
+//        code for the application or widget, use the shared
+//        FLTK libraries, or link their applications or
+//        widgets against a user-supplied version of FLTK.
+// 
+//        If you link the application or widget to a modified
+//        version of FLTK, then the changes to FLTK must be
+//        provided under the terms of the LGPL in sections
+//        1, 2, and 4.
+// 
+//     4. You do not have to provide a copy of the FLTK license
+//        with programs that are linked to the FLTK library, nor
+//        do you have to identify the FLTK license in your
+//        program or documentation as required by section 6
+//        of the LGPL.
+// 
+//        However, programs must still identify their use of FLTK.
+//        The following example statement can be included in user
+//        documentation to satisfy this requirement:
+// 
+//            [program/widget] is based in part on the work of
+//            the FLTK project (http://www.fltk.org).
+// 
+//     This library is free software; you can redistribute it and/or
+//     modify it under the terms of the GNU Library General Public
+//     License as published by the Free Software Foundation; either
+//     version 2 of the License, or (at your option) any later version.
+// 
+//     This library is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//     Library General Public License for more details.
+// 
+//     You should have received a copy of the GNU Library General Public
+//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-//     http://www.fltk.org/COPYING.php
-//
-// Please report all bugs and problems on the following page:
-//
-//     http://www.fltk.org/str.php
 //
 
 // NOTE: I believe many of the following comments (between the dash markers)
@@ -36,7 +88,7 @@
 #include <fl/fl.h>
 #include "drvsys.h"
 #if defined(FL_CFG_SYS_WIN32)
-#include "drivers/GDI/Fl_GDI_Graphics_Driver.H"
+#include "drivers/WinAPI/Fl_WinAPI_System_Driver.H"
 #endif
 #include <fl/platform.h>
 #include <fl/fl_draw.h>
@@ -73,6 +125,21 @@ int fl_measure_pixmap(const char * const *cdata, int &w, int &h) {
       (chars_per_pixel!=1 && chars_per_pixel!=2) ) return w=0;
   return 1;
 }
+
+
+/**
+  Draw XPM image data, with the top-left corner at the given position.
+  The image is dithered on 8-bit displays so you won't lose color
+  space for programs displaying both images and pixmaps.
+  \param[in] data pointer to XPM image data
+  \param[in] x,y  position of top-left corner
+  \param[in] bg   background color
+  \returns 0 if there was any error decoding the XPM data.
+  */
+int fl_draw_pixmap(/*const*/ char* const* data, int x,int y,Fl_Color bg) {
+  return fl_draw_pixmap((const char*const*)data,x,y,bg);
+}
+
 
 #if defined(FL_CFG_SYS_WIN32)
 
@@ -188,8 +255,8 @@ int fl_convert_pixmap(const char*const* cdata, uchar* out, Fl_Color bg) {
         // assume "None" or "#transparent" for any errors
         // "bg" should be transparent...
         Fl::get_color(bg, c[0], c[1], c[2]);
-        //uchar **m = fl_graphics_driver->mask_bitmap();
-        c[3] = /*(m && !*m) ? 255 :*/ 0;
+        uchar **m = fl_graphics_driver->mask_bitmap();
+        c[3] = (m && !*m) ? 255 : 0;
         if (Fl_Graphics_Driver::need_pixmap_bg_color) transparent_c = c;
       } // if parse
     } // for ncolors
@@ -221,6 +288,10 @@ int fl_convert_pixmap(const char*const* cdata, uchar* out, Fl_Color bg) {
   return 1;
 }
 
+/**
+  Draw XPM image data, with the top-left corner at the given position.
+  \see fl_draw_pixmap(char* const* data, int x, int y, Fl_Color bg)
+  */
 int fl_draw_pixmap(const char*const* cdata, int x, int y, Fl_Color bg) {
   int w, h;
 
@@ -240,19 +311,19 @@ int fl_draw_pixmap(const char*const* cdata, int x, int y, Fl_Color bg) {
     int W = (w+7)/8;
     uchar* bitmap = new uchar[W * h];
     *p = bitmap;
-    const uchar *alphaPtr = &buffer[3];
+    const uchar *p = &buffer[3];
     uchar b = 0;
     for (int Y = 0; Y < h; Y++) {
       b = 0;
-      for (int X = 0, bit = 1; X < w; X++, alphaPtr += 4) {
-        if (*alphaPtr > 127)
+      for (int X = 0, bit = 1; X < w; X++, p += 4) {
+        if (*p > 127)
           b |= bit;
-        bit <<= 1;
+	    bit <<= 1;
         if (bit > 0x80 || X == w-1) {
-          *bitmap++ = b;
+	    *bitmap++ = b;
           bit = 1;
-          b = 0;
-        }
+	    b = 0;
+	  }
       } // if chars_per_pixel
     } // for Y
   }
@@ -264,5 +335,5 @@ int fl_draw_pixmap(const char*const* cdata, int x, int y, Fl_Color bg) {
 }
 
 //
-// End of "$Id$".
+// End of "$Id: fl_draw_pixmap.cxx 12976 2018-06-26 14:12:43Z manolo $".
 //

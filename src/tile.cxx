@@ -136,6 +136,7 @@
   See also the complete example program in test/tile.cxx.
 */
 
+#include <fl/fl.h>
 #include <fl/tile.h>
 #include <fl/win.h>
 #include <fl/rect.h>

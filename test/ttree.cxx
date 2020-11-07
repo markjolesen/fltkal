@@ -65,6 +65,12 @@
 //
 
 #include "ttree.h"
+
+/* delete me */
+void fl_cursor(Fl_Cursor) {};
+
+
+
 /**
  // Global callback event counter
 */

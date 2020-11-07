@@ -1,9 +1,10 @@
 // browserh.h
 //
+// "$Id: Fl_Hold_Browser.H 9637 2012-07-24 04:37:22Z matt $"
 //
 // Hold browser header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -76,13 +77,9 @@
 #include "browser.h"
 
 /**
-  The Fl_Hold_Browser is a subclass of Fl_Browser which lets the user 
-  select a single item, or no items by clicking on the empty space.
-
-  \image html  fl_hold_browser.png "Fl_Hold_Browser"
-  \image latex fl_hold_browser.png "Fl_Hold_Browser" width=4cm
-
-  As long as the mouse button is held down the item
+  The Fl_Hold_Browser is a subclass of Fl_Browser
+  which lets the user select a single item, or no items by clicking on
+  the empty space.  As long as the mouse button is held down the item
   pointed to by it is highlighted, and this highlighting remains on when
   the mouse button is released. Normally the callback is done when the
   user releases the mouse, but you can change this with when().
@@ -100,3 +97,7 @@ public:
 };
 
 #endif
+
+//
+// End of "$Id: Fl_Hold_Browser.H 9637 2012-07-24 04:37:22Z matt $".
+//

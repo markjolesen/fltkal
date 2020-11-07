@@ -1,10 +1,10 @@
 // fl.h
 //
-// "$Id$"
+// "$Id: Fl.H 12930 2018-05-24 10:58:47Z manolo $"
 //
 // Main header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2020 The fltkal authors
+// Copyright 2017-2019 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -311,14 +311,6 @@ public:
      /// if the GTK library is available on the platform (linux/unix only).
      /// When switched off, GTK file dialogs aren't used even if the GTK library is available.
     OPTION_FNFC_USES_GTK,
-    /// When switched on (default), Fl_Printer runs the GTK printer dialog
-    /// if the GTK library is available on the platform (linux/unix only).
-    /// When switched off, the GTK printer dialog isn't used even if the GTK library is available.
-    OPTION_PRINTER_USES_GTK,
-    /// When switched on (default), the library shows in a transient yellow window the zoom factor
-    /// value.
-    /// When switched off, no such window gets displayed.
-    OPTION_SHOW_SCALING,
       // don't change this, leave it always as the last element
       /// For internal use only.
     OPTION_LAST
@@ -970,18 +962,13 @@ int main() {
    Fl::clipboard_image (requesting image data) are possible.
    Set things up so the handle function of the \p receiver widget will be called with an FL_PASTE event some
    time in the future if the clipboard does contain data of the requested type.
-   
-   The handle function of \p receiver can process the FL_PASTE event as follows:
-   \li If the \p receiver widget is known to only receive text data, the text string
-   from the specified \p source is in Fl::event_text() with UTF-8 encoding, and the
-   number of bytes is in Fl::event_length(). If Fl::paste() gets called during the
-   drop step of a files-drag-and-drop operation,
+   While processing the FL_PASTE event:
+   \li if \p type is Fl::clipboard_plain_text, the text string from the specified \p source is in Fl::event_text()
+   with UTF-8 encoding, and the number of bytes in Fl::event_length().
+   If Fl::paste() gets called during the drop step of a files-drag-and-drop operation,
    Fl::event_text() contains a list of filenames (see \ref events_dnd).
-   \li If the \p receiver widget can potentially receive non-text data, use
-   Fl::event_clipboard_type() to determine what sort of data is being sent.
-   If Fl::event_clipboard_type() returns Fl::clipboard_plain_text, proceed as above.
-   It it returns Fl::clipboard_image, the pointer returned by Fl::event_clipboard()
-   can be safely cast to type Fl_RGB_Image * to obtain a pointer to the pasted image.
+   \li if \p type is Fl::clipboard_image, the pointer returned by Fl::event_clipboard() can be safely cast to
+   type Fl_RGB_Image * to obtain a pointer to the pasted image.
    If \p receiver accepts the clipboard image, receiver.handle() should return 1 and the
    application should take ownership of this image (that is, delete it after use).
    Conversely, if receiver.handle() returns 0, the application must not use the image.
@@ -1061,20 +1048,7 @@ int main() {
 
 
 /** \defgroup  fl_screen  Screen functions
- Fl global screen functions declared in <FL/Fl.H>.
- 
- FLTK supports high-DPI screens using a screen scaling factor.
- The scaling factor is initialized by the library to a value
- based on information obtained from the OS. If this initial value
- is not satisfactory, the FLTK_SCALING_FACTOR environment variable
- can be set to a value FLTK will use as initial scaling factor.
- The scaling factor value can be further changed at runtime
- by typing ctrl-/+/-/0/ (cmd-/+/-/0/ under MacOS). FLTK sends the
- \ref FL_ZOOM_EVENT when the factor value is changed, to which a
- callback can be associated with Fl::add_handler().
- By default, FLTK also displays the new scaling factor value in a yellow, transient window.
- This can be changed with option Fl::OPTION_SHOW_SCALING.
- The scaling factor value is programmatically get and set with the Fl::screen_scale() functions.
+	fl global screen functions declared in <FL/Fl.H>
      @{ */
   static int x(); // via screen driver
   static int y(); // via screen driver
@@ -1094,10 +1068,6 @@ int main() {
   static void screen_work_area(int &X, int &Y, int &W, int &H, int n); // via screen driver
   static void screen_work_area(int &X, int &Y, int &W, int &H); // via screen driver
   static float screen_scale(int n); // via screen driver
-  static void screen_scale(int n, float factor); // via screen driver
-  static int screen_scaling_supported();
-  static void keyboard_screen_scaling(int value);
-
 /**   @} */
 
 
@@ -1517,5 +1487,5 @@ public:
 #endif // !Fl_H
 
 //
-// End of "$Id$".
+// End of "$Id: Fl.H 12930 2018-05-24 10:58:47Z manolo $".
 //

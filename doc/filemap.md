@@ -13,7 +13,7 @@
 
 | Long Name                       | 8.3 Name    |
 | --------------------------------| ------------|
-| Enumerations.H                  | fl\_enums.h |
+| Enumerations.H                  | enums.h     |
 | filename.H                      | filename.h  |
 | Fl\_Adjuster.H                  | adjuster.h  |
 | fl\_ask.H                       | fl\_ask.h   |
@@ -105,8 +105,9 @@
 | Fl\_Return\_Button.H            | btnret.h    |
 | Fl\_RGB\_Image.H                | imgrgb.h    |
 | Fl\_Roller.H                    | roller.h    |
-| Fl\_Round\_Button.H             | btnro.h     |
+| Fl\_Round\_Button.H             | btnrnd.h    |
 | Fl\_Round\_Clock.H              | clockrnd.h  |
+| Fl\_Screen\_Driver.H            | drvscr.h    |
 | Fl\_Scrollbar.H                 | scrlbar.h   |
 | Fl\_Scroll.H                    | scroll.h    |
 | Fl\_Secret\_Input.H             | inphid.h    |
@@ -122,6 +123,7 @@
 | Fl\_SVG\_Image.H                | N/A         |
 | Fl\_Sys\_Menu\_Bar\_Driver.H    | N/A         |
 | Fl\_Sys\_Menu\_Bar.H            | N/A         |
+| Fl\_System\_Driver.H            | drvsys.h    |
 | Fl\_Table.H                     | table.h     |
 | Fl\_Table\_Row.H                | tablerow.h  |
 | Fl\_Tabs.H          		  | tabs.h      |
@@ -147,6 +149,7 @@
 | Fl\_Value\_Slider.H             | slvalue.h   |
 | Fl\_Widget.H                    | widget.h    |
 | Fl\_Widget\_Surface.H           | widgsurf.h  |
+| Fl\_Window\_Driver.H            | drvwin.h    |
 | Fl\_Window.H                    | win.h       |
 | Fl\_Wizard.H                    | wizard.h    |
 | Fl\_XBM\_Image.H                | imgxbm.h    |

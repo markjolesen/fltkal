@@ -1,11 +1,11 @@
 // imgbmp.h
 //
-// "$Id$"
+// "$Id: Fl_BMP_Image.H 10732 2015-05-23 23:42:26Z matt $"
 //
 // BMP image header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
-// Copyright 1998-2020 by Bill Spitzak and others.
+// Copyright 2017-2018 The fltkal authors
+// Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -77,23 +77,17 @@
 
 /**
  The Fl_BMP_Image class supports loading, caching,
- and drawing of Windows Bitmap (BMP) image files.
+ and drawing of Windows Bitmap (BMP) image files. 
  */
 class FL_EXPORT Fl_BMP_Image : public Fl_RGB_Image {
 
   public:
 
-    Fl_BMP_Image(const char* filename);
-    Fl_BMP_Image(const char* imagename, const unsigned char *data);
-
-  protected:
-
-    void load_bmp_(class Fl_Image_Reader &rdr);
-
+  Fl_BMP_Image(const char* filename);
 };
 
 #endif
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_BMP_Image.H 10732 2015-05-23 23:42:26Z matt $".
 //

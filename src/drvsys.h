@@ -144,7 +144,7 @@ public:
   // implement these to support cross-platform file operations
   virtual char *utf2mbcs(const char *s) {return (char*)s;}
   virtual char *getenv(const char* v) {return NULL;}
-  virtual int putenv(const char *var) {return -1;}
+  virtual int putenv(char* v) {return -1;}
   virtual int open(const char* f, int oflags, int pmode) {return -1;}
 
   // Note: the default implementation ignores the 'binary' argument.

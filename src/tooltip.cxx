@@ -72,14 +72,13 @@
 #include <fl/fl_draw.h>
 #include <fl/winmenu.h>
 #include <fl/fl.h>
-#include "drvwin.h"
 #include "drvsys.h"
+#include "drvwin.h"
 
 #include <stdio.h>
 #include <string.h>   // strdup()
 
 float     Fl_Tooltip::delay_ = 1.0f;
-float     Fl_Tooltip::hidedelay_ = 12.0f;
 float     Fl_Tooltip::hoverdelay_ = 0.2f;
 Fl_Color  Fl_Tooltip::color_ = fl_color_cube(FL_NUM_RED - 1,
                                              FL_NUM_GREEN - 1,
@@ -93,8 +92,6 @@ int       Fl_Tooltip::wrap_width_ = 400;
 const int Fl_Tooltip::draw_symbols_ = 1;
 
 static const char* tip;
-
-static void tooltip_hide_timeout(void*);
 
 /**
     This widget creates a tooltip box window, with no caption.
@@ -120,7 +117,6 @@ public:
   int handle(int e) {
     if (e == FL_PUSH || e == FL_KEYDOWN) {
       hide();
-      Fl::remove_timeout(tooltip_hide_timeout);
       return 1;
     }
     return Fl_Menu_Window::handle(e);
@@ -129,7 +125,7 @@ public:
 
 Fl_Widget* Fl_Tooltip::widget_ = 0;
 static Fl_TooltipBox *window = 0;
-static int currentTooltipY, currentTooltipH;
+static int Y,H;
 
 Fl_Window *Fl_Tooltip::current_window(void)
 {
@@ -146,7 +142,7 @@ void Fl_TooltipBox::layout() {
 
   // find position on the screen of the widget:
   int ox = Fl::event_x_root();
-  int oy = currentTooltipY + currentTooltipH+2;
+  int oy = Y + H+2;
   for (Fl_Widget* p = Fl_Tooltip::current(); p; p = p->window()) {
     oy += p->y();
   }
@@ -154,11 +150,11 @@ void Fl_TooltipBox::layout() {
   Fl::screen_xywh(scr_x, scr_y, scr_w, scr_h);
   if (ox+ww > scr_x+scr_w) ox = scr_x+scr_w - ww;
   if (ox < scr_x) ox = scr_x;
-  if (currentTooltipH > 30) {
+  if (H > 30) {
     oy = Fl::event_y_root()+13;
     if (oy+hh > scr_y+scr_h) oy -= 23+hh;
   } else {
-    if (oy+hh > scr_y+scr_h) oy -= (4+hh+currentTooltipH);
+    if (oy+hh > scr_y+scr_h) oy -= (4+hh+H);
   }
   if (oy < scr_y) oy = scr_y;
 
@@ -199,11 +195,6 @@ static int top_win_iconified_() {
   return !topwin->visible() ? 1 : 0;
 }
 
-static void tooltip_hide_timeout(void*) {
-  if (window) window->hide();
-  recent_tooltip = 0;
-}
-
 static void tooltip_timeout(void*) {
 #ifdef DEBUG
   puts("tooltip_timeout();");
@@ -214,7 +205,6 @@ static void tooltip_timeout(void*) {
   if (!top_win_iconified_()) {   // no tooltip if top win iconified (STR #3157)
     if (!tip || !*tip) {
       if (window) window->hide();
-      Fl::remove_timeout(tooltip_hide_timeout);
     } else {
       int condition = 1;
 // bugfix: no need to refactor
@@ -228,7 +218,6 @@ static void tooltip_timeout(void*) {
         // printf("tooltip_timeout: Showing window %p with tooltip \"%s\"...\n",
         //        window, tip ? tip : "(null)");
         window->show();
-        Fl::add_timeout(Fl_Tooltip::hidedelay(), tooltip_hide_timeout);
       }
     }
   }
@@ -305,10 +294,7 @@ void Fl_Tooltip::exit_(Fl_Widget *w) {
   widget_ = 0;
   Fl::remove_timeout(tooltip_timeout);
   Fl::remove_timeout(recent_timeout);
-  if (window && window->visible()) {
-    window->hide();
-    Fl::remove_timeout(tooltip_hide_timeout);
-  }
+  if (window && window->visible()) window->hide();
   if (recent_tooltip) {
     if (Fl::event_state() & FL_BUTTONS) recent_tooltip = 0;
     else Fl::add_timeout(Fl_Tooltip::hoverdelay(), recent_timeout);
@@ -347,30 +333,21 @@ void Fl_Tooltip::enter_area(Fl_Widget* wid, int x,int y,int w,int h, const char*
     return;
   }
   // do nothing if it is the same:
-  if (wid==widget_ /*&& x==X && y==currentTooltipY && w==W && h==currentTooltipH*/ && t==tip) return;
+  if (wid==widget_ /*&& x==X && y==Y && w==W && h==H*/ && t==tip) return;
   Fl::remove_timeout(tooltip_timeout);
   Fl::remove_timeout(recent_timeout);
   // remember it:
-  widget_ = wid; currentTooltipY = y; currentTooltipH = h; tip = t;
+  widget_ = wid; Y = y; H = h; tip = t;
   // popup the tooltip immediately if it was recently up:
   if (recent_tooltip) {
-    if (window) {
-      window->hide();
-      Fl::remove_timeout(tooltip_hide_timeout);
-    }
+    if (window) window->hide();
     Fl::add_timeout(Fl_Tooltip::hoverdelay(), tooltip_timeout);
     // possible fix for the Windows titlebar, it seems to want the
     // window to be destroyed, moving it messes up the parenting:
-    if (Fl::system_driver()->use_recent_tooltip_fix() && window && window->visible()) {
-      window->hide();
-      Fl::remove_timeout(tooltip_hide_timeout);
-    }
+    if (Fl::system_driver()->use_recent_tooltip_fix() && window && window->visible()) window->hide();
     tooltip_timeout(0);
   } else {
-    if (window && window->visible()) {
-      window->hide();
-      Fl::remove_timeout(tooltip_hide_timeout);
-    }
+    if (window && window->visible()) window->hide();
     Fl::add_timeout(Fl_Tooltip::delay(), tooltip_timeout);
   }
 

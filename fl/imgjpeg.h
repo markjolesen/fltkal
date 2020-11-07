@@ -1,10 +1,10 @@
 // imgjpeg.h
 //
-// "$Id$"
+// "$Id: Fl_JPEG_Image.H 10732 2015-05-23 23:42:26Z matt $"
 //
 // JPEG image header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -87,15 +87,10 @@ public:
 
   Fl_JPEG_Image(const char *filename);
   Fl_JPEG_Image(const char *name, const unsigned char *data);
-
-protected:
-
-  void load_jpg_(const char *filename, const char *sharename, const unsigned char *data);
-
 };
 
 #endif
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_JPEG_Image.H 10732 2015-05-23 23:42:26Z matt $".
 //

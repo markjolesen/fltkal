@@ -1,10 +1,10 @@
 // dlghelp.h
 //
-// "$Id$"
+// "$Id: Fl_Help_Dialog.H 11088 2016-01-30 00:56:42Z AlbrechtS $"
 //
 // Fl_Help_Dialog dialog for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2015 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -119,7 +119,7 @@ public:
   ~Fl_Help_Dialog();
   int h();
   void hide();
-  int load(const char *f);
+  void load(const char *f);
   void position(int xx, int yy);
   void resize(int xx, int yy, int ww, int hh);
   void show();
@@ -138,5 +138,5 @@ public:
 #endif
 
 //
-// End of "$Id$".
+// End of "$Id: Fl_Help_Dialog.H 11088 2016-01-30 00:56:42Z AlbrechtS $".
 //

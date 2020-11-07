@@ -1,10 +1,10 @@
 // img.h
 //
-// "$Id$"
+// "$Id: Fl_Image.H 12811 2018-03-28 13:00:12Z manolo $"
 //
 // Image header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018, 2020 The fltkal authors
+// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2018 by Bill Spitzak and others.
 //
 //                              FLTK License
@@ -173,13 +173,13 @@ protected:
 public:
 
   /** 
-   Returns the current image drawing width in FLTK units.
+   Returns the current image width in FLTK units.
    The values of w() and data_w() are identical unless scale() has been called
    after which they may differ.
    */
   int w() const {return w_;}
   /**
-   Returns the current image drawing height in FLTK units.
+   Returns the current image height in FLTK units.
    The values of h() and data_h() are identical unless scale() has been called
    after which they may differ.
    */
@@ -193,7 +193,7 @@ public:
    */
   int data_h() const {return data_h_;}
   /**
-   Returns the image depth.
+   Returns the current image depth.
    The return value will be 0 for bitmaps, 1 for
    pixmaps, and 1 to 4 for color images.</P>
    */
@@ -265,6 +265,12 @@ public:
   // get RGB image scaling method
   static Fl_RGB_Scaling RGB_scaling();
   
+  /** Use this method if you have an Fl_Image object and want to know whether it is derived 
+   from class Fl_RGB_Image. 
+   If the method returns non-NULL, then the image in question is
+   derived from Fl_RGB_Image, and the returned value is a pointer to this image.
+   */
+  virtual Fl_RGB_Image *as_rgb_image() {return NULL;}
   // set the image drawing size
   virtual void scale(int width, int height, int proportional = 1, int can_expand = 0);
   /** Sets what algorithm is used when resizing a source image to draw it.
@@ -278,7 +284,6 @@ public:
   static void scaling_algorithm(Fl_RGB_Scaling algorithm) {scaling_algorithm_ = algorithm; }
   /** Gets what algorithm is used when resizing a source image to draw it. */
   static Fl_RGB_Scaling scaling_algorithm() {return scaling_algorithm_;}
-  static bool register_images_done;
 };
 
 
@@ -340,6 +345,7 @@ public:
    \sa  void Fl_RGB_Image::max_size(size_t)
    */
   static size_t max_size() {return max_size_;}
+  virtual Fl_RGB_Image *as_rgb_image() {return this;}
 };
 
 #endif // !Fl_Image_H
