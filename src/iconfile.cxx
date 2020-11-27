@@ -1,73 +1,19 @@
-// iconfile.cxx
-//
-// "$Id: Fl_File_Icon.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Fl_File_Icon routines.
 //
 // KDE icon code donated by Maarten De Boer.
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1999-2010 by Michael Sweet.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 // Contents:
 //
@@ -99,7 +45,7 @@
 // Icon cache...
 //
 
-Fl_File_Icon	*Fl_File_Icon::first_ = (Fl_File_Icon *)0;
+Fl_File_Icon    *Fl_File_Icon::first_ = (Fl_File_Icon *)0;
 
 
 // Registers the FL_ICON_LABEL drawing function
@@ -116,10 +62,10 @@ Fl_Labeltype fl_define_FL_ICON_LABEL() {
   \param[in] nd number of data values
   \param[in] d data values
 */
-Fl_File_Icon::Fl_File_Icon(const char *p,	/* I - Filename pattern */
-                	   int        t,	/* I - File type */
-			   int        nd,	/* I - Number of data values */
-			   short      *d)	/* I - Data values */
+Fl_File_Icon::Fl_File_Icon(const char *p,       /* I - Filename pattern */
+                           int        t,        /* I - File type */
+                           int        nd,       /* I - Number of data values */
+                           short      *d)       /* I - Data values */
 {
   // Initialize the pattern and type...
   pattern_ = p;
@@ -150,8 +96,8 @@ Fl_File_Icon::Fl_File_Icon(const char *p,	/* I - Filename pattern */
   allocated for it.
 */
 Fl_File_Icon::~Fl_File_Icon() {
-  Fl_File_Icon	*current,	// Current icon in list
-		*prev;		// Previous icon in list
+  Fl_File_Icon  *current,       // Current icon in list
+                *prev;          // Previous icon in list
 
 
   // Find the icon in the list...
@@ -178,10 +124,10 @@ Fl_File_Icon::~Fl_File_Icon() {
   Adds a keyword value to the icon array, returning a pointer to it.
   \param[in] d data value
 */
-short *				// O - Pointer to new data value
-Fl_File_Icon::add(short d)	// I - Data to add
+short *                         // O - Pointer to new data value
+Fl_File_Icon::add(short d)      // I - Data to add
 {
-  short	*dptr;			// Pointer to new data value
+  short *dptr;                  // Pointer to new data value
 
 
   // Allocate/reallocate memory as needed
@@ -214,12 +160,12 @@ Fl_File_Icon::add(short d)	// I - Data to add
   \param[in] filetype enumerated file type
   \return matching file icon or NULL
 */
-Fl_File_Icon *				// O - Matching file icon or NULL
+Fl_File_Icon *                          // O - Matching file icon or NULL
 Fl_File_Icon::find(const char *filename,// I - Name of file */
-                   int        filetype)	// I - Enumerated file type
+                   int        filetype) // I - Enumerated file type
 {
-  Fl_File_Icon	*current;		// Current file in list
-  const char	*name;			// Base name of filename
+  Fl_File_Icon  *current;               // Current file in list
+  const char    *name;                  // Base name of filename
 
 
   // Get file information if needed...
@@ -235,7 +181,7 @@ Fl_File_Icon::find(const char *filename,// I - Name of file */
   for (current = first_; current != (Fl_File_Icon *)0; current = current->next_)
     if ((current->type_ == filetype || current->type_ == ANY) &&
         (fl_filename_match(filename, current->pattern_) ||
-	 fl_filename_match(name, current->pattern_)))
+         fl_filename_match(name, current->pattern_)))
       break;
 
   // Return the match (if any)...
@@ -249,19 +195,19 @@ Fl_File_Icon::find(const char *filename,// I - Name of file */
   \param[in] active status, default is active [non-zero]
 */
 void
-Fl_File_Icon::draw(int      x,		// I - Upper-lefthand X
-        	   int      y,		// I - Upper-lefthand Y
-		   int      w,		// I - Width of bounding box
-		   int      h,		// I - Height of bounding box
-        	   Fl_Color ic,		// I - Icon color...
-        	   int      active)	// I - Active or inactive?
+Fl_File_Icon::draw(int      x,          // I - Upper-lefthand X
+                   int      y,          // I - Upper-lefthand Y
+                   int      w,          // I - Width of bounding box
+                   int      h,          // I - Height of bounding box
+                   Fl_Color ic,         // I - Icon color...
+                   int      active)     // I - Active or inactive?
 {
-  Fl_Color	c,		// Current color
-		oc;		// Outline color
-  short		*d,		// Pointer to data
-		*dend;		// End of data...
-  short		*prim;		// Pointer to start of primitive...
-  double	scale;		// Scale of icon
+  Fl_Color      c,              // Current color
+                oc;             // Outline color
+  short         *d,             // Pointer to data
+                *dend;          // End of data...
+  short         *prim;          // Pointer to start of primitive...
+  double        scale;          // Scale of icon
 
 
   // Don't try to draw a NULL array!
@@ -293,100 +239,100 @@ Fl_File_Icon::draw(int      x,		// I - Upper-lefthand X
       case END :
           if (prim)
             switch (*prim)
-	    {
-	      case LINE :
-		  fl_end_line();
-		  break;
+            {
+              case LINE :
+                  fl_end_line();
+                  break;
 
-	      case CLOSEDLINE :
-		  fl_end_loop();
-		  break;
+              case CLOSEDLINE :
+                  fl_end_loop();
+                  break;
 
-	      case POLYGON :
-		  fl_end_complex_polygon();
-		  break;
+              case POLYGON :
+                  fl_end_complex_polygon();
+                  break;
 
-	      case OUTLINEPOLYGON :
-		  fl_end_complex_polygon();
+              case OUTLINEPOLYGON :
+                  fl_end_complex_polygon();
 
-        	  oc = (Fl_Color)((((unsigned short *)prim)[1] << 16) | 
-	                	  ((unsigned short *)prim)[2]);
+                  oc = (Fl_Color)((((unsigned short *)prim)[1] << 16) |
+                                  ((unsigned short *)prim)[2]);
                   if (active)
-		  {
+                  {
                     if (oc == FL_ICON_COLOR)
-		      fl_color(ic);
-		    else
-		      fl_color(oc);
-		  }
-		  else
-		  {
+                      fl_color(ic);
+                    else
+                      fl_color(oc);
+                  }
+                  else
+                  {
                     if (oc == FL_ICON_COLOR)
-		      fl_color(fl_inactive(ic));
-		    else
-		      fl_color(fl_inactive(oc));
-		  }
+                      fl_color(fl_inactive(ic));
+                    else
+                      fl_color(fl_inactive(oc));
+                  }
 
-		  fl_begin_loop();
+                  fl_begin_loop();
 
-		  prim += 3;
-		  while (*prim == VERTEX)
-		  {
-		    fl_vertex(prim[1] * 0.0001, prim[2] * 0.0001);
-		    prim += 3;
-		  }
+                  prim += 3;
+                  while (*prim == VERTEX)
+                  {
+                    fl_vertex(prim[1] * 0.0001, prim[2] * 0.0001);
+                    prim += 3;
+                  }
 
-        	  fl_end_loop();
-		  fl_color(c);
-		  break;
-	    }
+                  fl_end_loop();
+                  fl_color(c);
+                  break;
+            }
 
           prim = NULL;
-	  d ++;
-	  break;
+          d ++;
+          break;
 
       case COLOR :
-          c = (Fl_Color)((((unsigned short *)d)[1] << 16) | 
-	                   ((unsigned short *)d)[2]);
+          c = (Fl_Color)((((unsigned short *)d)[1] << 16) |
+                           ((unsigned short *)d)[2]);
 
           if (c == FL_ICON_COLOR)
-	    c = ic;
+            c = ic;
 
           if (!active)
-	    c = fl_inactive(c);
+            c = fl_inactive(c);
 
           fl_color(c);
-	  d += 3;
-	  break;
+          d += 3;
+          break;
 
       case LINE :
           prim = d;
-	  d ++;
-	  fl_begin_line();
-	  break;
+          d ++;
+          fl_begin_line();
+          break;
 
       case CLOSEDLINE :
           prim = d;
-	  d ++;
-	  fl_begin_loop();
-	  break;
+          d ++;
+          fl_begin_loop();
+          break;
 
       case POLYGON :
           prim = d;
-	  d ++;
-	  fl_begin_complex_polygon();
-	  break;
+          d ++;
+          fl_begin_complex_polygon();
+          break;
 
       case OUTLINEPOLYGON :
           prim = d;
-	  d += 3;
-	  fl_begin_complex_polygon();
-	  break;
+          d += 3;
+          fl_begin_complex_polygon();
+          break;
 
       case VERTEX :
           if (prim)
-	    fl_vertex(d[1] * 0.0001, d[2] * 0.0001);
-	  d += 3;
-	  break;
+            fl_vertex(d[1] * 0.0001, d[2] * 0.0001);
+          d += 3;
+          break;
 
       default : // Ignore invalid data...
           d ++;
@@ -397,49 +343,49 @@ Fl_File_Icon::draw(int      x,		// I - Upper-lefthand X
     switch (*prim)
     {
       case LINE :
-	  fl_end_line();
-	  break;
+          fl_end_line();
+          break;
 
       case CLOSEDLINE :
-	  fl_end_loop();
-	  break;
+          fl_end_loop();
+          break;
 
       case POLYGON :
-	  fl_end_polygon();
-	  break;
+          fl_end_polygon();
+          break;
 
       case OUTLINEPOLYGON :
-	  fl_end_polygon();
+          fl_end_polygon();
 
-          oc = (Fl_Color)((((unsigned short *)prim)[1] << 16) | 
-	                  ((unsigned short *)prim)[2]);
+          oc = (Fl_Color)((((unsigned short *)prim)[1] << 16) |
+                          ((unsigned short *)prim)[2]);
           if (active)
-	  {
+          {
             if (oc == FL_ICON_COLOR)
-	      fl_color(ic);
-	    else
-	      fl_color(oc);
-	  }
-	  else
-	  {
+              fl_color(ic);
+            else
+              fl_color(oc);
+          }
+          else
+          {
             if (oc == FL_ICON_COLOR)
-	      fl_color(fl_inactive(ic));
-	    else
-	      fl_color(fl_inactive(oc));
-	  }
+              fl_color(fl_inactive(ic));
+            else
+              fl_color(fl_inactive(oc));
+          }
 
-	  fl_begin_loop();
+          fl_begin_loop();
 
-	  prim += 3;
-	  while (*prim == VERTEX)
-	  {
-	    fl_vertex(prim[1] * 0.0001, prim[2] * 0.0001);
-	    prim += 3;
-	  }
+          prim += 3;
+          while (*prim == VERTEX)
+          {
+            fl_vertex(prim[1] * 0.0001, prim[2] * 0.0001);
+            prim += 3;
+          }
 
           fl_end_loop();
-	  fl_color(c);
-	  break;
+          fl_color(c);
+          break;
     }
 
   // Restore the transform matrix
@@ -451,7 +397,7 @@ Fl_File_Icon::draw(int      x,		// I - Upper-lefthand X
   label type as needed.
   \param[in] w widget for which this icon will become the label
 */
-void Fl_File_Icon::label(Fl_Widget *w)	// I - Widget to label
+void Fl_File_Icon::label(Fl_Widget *w)  // I - Widget to label
 {
   w->label(FL_ICON_LABEL, (const char*)this);
 }
@@ -464,14 +410,14 @@ void Fl_File_Icon::label(Fl_Widget *w)	// I - Widget to label
   \param[in] a label alignment [not used]
 */
 void
-Fl_File_Icon::labeltype(const Fl_Label *o,	// I - Label data
-                	int            x,	// I - X position of label
-			int            y,	// I - Y position of label
-			int            w,	// I - Width of label
-			int            h,	// I - Height of label
-			Fl_Align       a)	// I - Label alignment (not used)
+Fl_File_Icon::labeltype(const Fl_Label *o,      // I - Label data
+                        int            x,       // I - X position of label
+                        int            y,       // I - Y position of label
+                        int            w,       // I - Width of label
+                        int            h,       // I - Height of label
+                        Fl_Align       a)       // I - Label alignment (not used)
 {
-  Fl_File_Icon *icon;			// Pointer to icon data
+  Fl_File_Icon *icon;                   // Pointer to icon data
 
 
   (void)a;
@@ -479,8 +425,3 @@ Fl_File_Icon::labeltype(const Fl_Label *o,	// I - Label data
   icon = (Fl_File_Icon *)(o->value);
   if (icon) icon->draw(x, y, w, h, (Fl_Color)(o->color));
 }
-
-
-//
-// End of "$Id: Fl_File_Icon.cxx 12976 2018-06-26 14:12:43Z manolo $".
-//

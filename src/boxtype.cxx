@@ -1,71 +1,17 @@
-// boxtype.cxx
-//
-// "$Id: fl_boxtype.cxx 10781 2015-07-09 00:10:44Z AlbrechtS $"
 //
 // Box drawing code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2015 by Bill Spitzak and others.
+// Copyright 1998-2020 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /**
@@ -99,6 +45,9 @@ static const uchar inactive_ramp[24] = {
   49, 49, 50, 50,
   51, 51, 52, 52};
 static int draw_it_active = 1;
+
+int Fl::box_border_radius_max_ = 15;
+int Fl::box_shadow_width_ = 3;
 
 /**
   Determines if the currently drawn box is active or inactive.
@@ -321,7 +270,7 @@ void fl_rectbound(int x, int y, int w, int h, Fl_Color bgcolor) {
   Fl::set_box_color(bgcolor);
   fl_rectf(x+1, y+1, w-2, h-2);
 }
-#define fl_border_box fl_rectbound	/**< allow consistent naming */
+#define fl_border_box fl_rectbound      /**< allow consistent naming */
 
 /**
   Draws a frame of type FL_BORDER_FRAME.
@@ -339,70 +288,70 @@ static struct {
   int set;
 } fl_box_table[256] = {
 // must match list in Enumerations.H!!!
-  {fl_no_box,		0,0,0,0,1},
-  {fl_flat_box,		0,0,0,0,1}, // FL_FLAT_BOX
-  {fl_up_box,		D1,D1,D2,D2,1},
-  {fl_down_box,		D1,D1,D2,D2,1},
-  {fl_up_frame,		D1,D1,D2,D2,1},
-  {fl_down_frame,	D1,D1,D2,D2,1},
-  {fl_thin_up_box,	1,1,2,2,1},
-  {fl_thin_down_box,	1,1,2,2,1},
-  {fl_thin_up_frame,	1,1,2,2,1},
-  {fl_thin_down_frame,	1,1,2,2,1},
-  {fl_engraved_box,	2,2,4,4,1},
-  {fl_embossed_box,	2,2,4,4,1},
-  {fl_engraved_frame,	2,2,4,4,1},
-  {fl_embossed_frame,	2,2,4,4,1},
-  {fl_border_box,	1,1,2,2,1},
-  {fl_border_box,	1,1,5,5,0}, // _FL_SHADOW_BOX
-  {fl_border_frame,	1,1,2,2,1},
-  {fl_border_frame,	1,1,5,5,0}, // _FL_SHADOW_FRAME
-  {fl_border_box,	1,1,2,2,0}, // _FL_ROUNDED_BOX
-  {fl_border_box,	1,1,2,2,0}, // _FL_RSHADOW_BOX
-  {fl_border_frame,	1,1,2,2,0}, // _FL_ROUNDED_FRAME
-  {fl_flat_box,		0,0,0,0,0}, // _FL_RFLAT_BOX
-  {fl_up_box,		3,3,6,6,0}, // _FL_ROUND_UP_BOX
-  {fl_down_box,		3,3,6,6,0}, // _FL_ROUND_DOWN_BOX
-  {fl_up_box,		0,0,0,0,0}, // _FL_DIAMOND_UP_BOX
-  {fl_down_box,		0,0,0,0,0}, // _FL_DIAMOND_DOWN_BOX
-  {fl_border_box,	1,1,2,2,0}, // _FL_OVAL_BOX
-  {fl_border_box,	1,1,2,2,0}, // _FL_OVAL_SHADOW_BOX
-  {fl_border_frame,	1,1,2,2,0}, // _FL_OVAL_FRAME
-  {fl_flat_box,		0,0,0,0,0}, // _FL_OVAL_FLAT_BOX
-  {fl_up_box,		4,4,8,8,0}, // _FL_PLASTIC_UP_BOX
-  {fl_down_box,		2,2,4,4,0}, // _FL_PLASTIC_DOWN_BOX
-  {fl_up_frame,		2,2,4,4,0}, // _FL_PLASTIC_UP_FRAME
-  {fl_down_frame,	2,2,4,4,0}, // _FL_PLASTIC_DOWN_FRAME
-  {fl_up_box,		2,2,4,4,0}, // _FL_PLASTIC_THIN_UP_BOX
-  {fl_down_box,		2,2,4,4,0}, // _FL_PLASTIC_THIN_DOWN_BOX
-  {fl_up_box,		2,2,4,4,0}, // _FL_PLASTIC_ROUND_UP_BOX
-  {fl_down_box,		2,2,4,4,0}, // _FL_PLASTIC_ROUND_DOWN_BOX
-  {fl_up_box,		2,2,4,4,0}, // _FL_GTK_UP_BOX
-  {fl_down_box,		2,2,4,4,0}, // _FL_GTK_DOWN_BOX
-  {fl_up_frame,		2,2,4,4,0}, // _FL_GTK_UP_FRAME
-  {fl_down_frame,	2,2,4,4,0}, // _FL_GTK_DOWN_FRAME
-  {fl_up_frame,		1,1,2,2,0}, // _FL_GTK_THIN_UP_FRAME
-  {fl_down_frame,	1,1,2,2,0}, // _FL_GTK_THIN_DOWN_FRAME
-  {fl_up_box,		1,1,2,2,0}, // _FL_GTK_THIN_ROUND_UP_BOX
-  {fl_down_box,		1,1,2,2,0}, // _FL_GTK_THIN_ROUND_DOWN_BOX
-  {fl_up_box,		2,2,4,4,0}, // _FL_GTK_ROUND_UP_BOX
-  {fl_down_box,		2,2,4,4,0}, // _FL_GTK_ROUND_DOWN_BOX
-  {fl_up_box,		2,2,4,4,0}, // _FL_GLEAM_UP_BOX
-  {fl_down_box,		2,2,4,4,0}, // _FL_GLEAM_DOWN_BOX
-  {fl_up_frame,		2,2,4,4,0}, // _FL_GLEAM_UP_FRAME
-  {fl_down_frame,	2,2,4,4,0}, // _FL_GLEAM_DOWN_FRAME
-  {fl_up_box,		2,2,4,4,0}, // _FL_GLEAM_THIN_UP_BOX
-  {fl_down_box,		2,2,4,4,0}, // _FL_GLEAM_THIN_DOWN_BOX
-  {fl_up_box,	       	2,2,4,4,0}, // _FL_GLEAM_ROUND_UP_BOX
-  {fl_down_box,		2,2,4,4,0}, // _FL_GLEAM_ROUND_DOWN_BOX
-  {fl_up_box,		3,3,6,6,0}, // FL_FREE_BOX+0
-  {fl_down_box,		3,3,6,6,0}, // FL_FREE_BOX+1
-  {fl_up_box,		3,3,6,6,0}, // FL_FREE_BOX+2
-  {fl_down_box,		3,3,6,6,0}, // FL_FREE_BOX+3
-  {fl_up_box,		3,3,6,6,0}, // FL_FREE_BOX+4
-  {fl_down_box,		3,3,6,6,0}, // FL_FREE_BOX+5
-  {fl_up_box,		3,3,6,6,0}, // FL_FREE_BOX+6
-  {fl_down_box,		3,3,6,6,0}  // FL_FREE_BOX+7
+  {fl_no_box,           0,0,0,0,1},
+  {fl_flat_box,         0,0,0,0,1}, // FL_FLAT_BOX
+  {fl_up_box,           D1,D1,D2,D2,1},
+  {fl_down_box,         D1,D1,D2,D2,1},
+  {fl_up_frame,         D1,D1,D2,D2,1},
+  {fl_down_frame,       D1,D1,D2,D2,1},
+  {fl_thin_up_box,      1,1,2,2,1},
+  {fl_thin_down_box,    1,1,2,2,1},
+  {fl_thin_up_frame,    1,1,2,2,1},
+  {fl_thin_down_frame,  1,1,2,2,1},
+  {fl_engraved_box,     2,2,4,4,1},
+  {fl_embossed_box,     2,2,4,4,1},
+  {fl_engraved_frame,   2,2,4,4,1},
+  {fl_embossed_frame,   2,2,4,4,1},
+  {fl_border_box,       1,1,2,2,1},
+  {fl_border_box,       1,1,5,5,0}, // _FL_SHADOW_BOX
+  {fl_border_frame,     1,1,2,2,1},
+  {fl_border_frame,     1,1,5,5,0}, // _FL_SHADOW_FRAME
+  {fl_border_box,       1,1,2,2,0}, // _FL_ROUNDED_BOX
+  {fl_border_box,       1,1,2,2,0}, // _FL_RSHADOW_BOX
+  {fl_border_frame,     1,1,2,2,0}, // _FL_ROUNDED_FRAME
+  {fl_flat_box,         0,0,0,0,0}, // _FL_RFLAT_BOX
+  {fl_up_box,           3,3,6,6,0}, // _FL_ROUND_UP_BOX
+  {fl_down_box,         3,3,6,6,0}, // _FL_ROUND_DOWN_BOX
+  {fl_up_box,           0,0,0,0,0}, // _FL_DIAMOND_UP_BOX
+  {fl_down_box,         0,0,0,0,0}, // _FL_DIAMOND_DOWN_BOX
+  {fl_border_box,       1,1,2,2,0}, // _FL_OVAL_BOX
+  {fl_border_box,       1,1,2,2,0}, // _FL_OVAL_SHADOW_BOX
+  {fl_border_frame,     1,1,2,2,0}, // _FL_OVAL_FRAME
+  {fl_flat_box,         0,0,0,0,0}, // _FL_OVAL_FLAT_BOX
+  {fl_up_box,           4,4,8,8,0}, // _FL_PLASTIC_UP_BOX
+  {fl_down_box,         2,2,4,4,0}, // _FL_PLASTIC_DOWN_BOX
+  {fl_up_frame,         2,2,4,4,0}, // _FL_PLASTIC_UP_FRAME
+  {fl_down_frame,       2,2,4,4,0}, // _FL_PLASTIC_DOWN_FRAME
+  {fl_up_box,           2,2,4,4,0}, // _FL_PLASTIC_THIN_UP_BOX
+  {fl_down_box,         2,2,4,4,0}, // _FL_PLASTIC_THIN_DOWN_BOX
+  {fl_up_box,           2,2,4,4,0}, // _FL_PLASTIC_ROUND_UP_BOX
+  {fl_down_box,         2,2,4,4,0}, // _FL_PLASTIC_ROUND_DOWN_BOX
+  {fl_up_box,           2,2,4,4,0}, // _FL_GTK_UP_BOX
+  {fl_down_box,         2,2,4,4,0}, // _FL_GTK_DOWN_BOX
+  {fl_up_frame,         2,2,4,4,0}, // _FL_GTK_UP_FRAME
+  {fl_down_frame,       2,2,4,4,0}, // _FL_GTK_DOWN_FRAME
+  {fl_up_frame,         1,1,2,2,0}, // _FL_GTK_THIN_UP_FRAME
+  {fl_down_frame,       1,1,2,2,0}, // _FL_GTK_THIN_DOWN_FRAME
+  {fl_up_box,           1,1,2,2,0}, // _FL_GTK_THIN_ROUND_UP_BOX
+  {fl_down_box,         1,1,2,2,0}, // _FL_GTK_THIN_ROUND_DOWN_BOX
+  {fl_up_box,           2,2,4,4,0}, // _FL_GTK_ROUND_UP_BOX
+  {fl_down_box,         2,2,4,4,0}, // _FL_GTK_ROUND_DOWN_BOX
+  {fl_up_box,           2,2,4,4,0}, // _FL_GLEAM_UP_BOX
+  {fl_down_box,         2,2,4,4,0}, // _FL_GLEAM_DOWN_BOX
+  {fl_up_frame,         2,2,4,4,0}, // _FL_GLEAM_UP_FRAME
+  {fl_down_frame,       2,2,4,4,0}, // _FL_GLEAM_DOWN_FRAME
+  {fl_up_box,           2,2,4,4,0}, // _FL_GLEAM_THIN_UP_BOX
+  {fl_down_box,         2,2,4,4,0}, // _FL_GLEAM_THIN_DOWN_BOX
+  {fl_up_box,           2,2,4,4,0}, // _FL_GLEAM_ROUND_UP_BOX
+  {fl_down_box,         2,2,4,4,0}, // _FL_GLEAM_ROUND_DOWN_BOX
+  {fl_up_box,           3,3,6,6,0}, // FL_FREE_BOX+0
+  {fl_down_box,         3,3,6,6,0}, // FL_FREE_BOX+1
+  {fl_up_box,           3,3,6,6,0}, // FL_FREE_BOX+2
+  {fl_down_box,         3,3,6,6,0}, // FL_FREE_BOX+3
+  {fl_up_box,           3,3,6,6,0}, // FL_FREE_BOX+4
+  {fl_down_box,         3,3,6,6,0}, // FL_FREE_BOX+5
+  {fl_up_box,           3,3,6,6,0}, // FL_FREE_BOX+6
+  {fl_down_box,         3,3,6,6,0}  // FL_FREE_BOX+7
 };
 
 /**
@@ -466,7 +415,7 @@ Fl_Box_Draw_F *Fl::get_boxtype(Fl_Boxtype t) {
 }
 /** Sets the function to call to draw a specific boxtype. */
 void Fl::set_boxtype(Fl_Boxtype t, Fl_Box_Draw_F* f,
-		      uchar a, uchar b, uchar c, uchar d) {
+                      uchar a, uchar b, uchar c, uchar d) {
   fl_box_table[t].f   = f;
   fl_box_table[t].set = 1;
   fl_box_table[t].dx  = a;
@@ -516,7 +465,3 @@ void Fl_Widget::draw_box(Fl_Boxtype t, int X, int Y, int W, int H, Fl_Color c) c
   fl_box_table[t].f(X, Y, W, H, c);
   draw_it_active = 1;
 }
-
-//
-// End of "$Id: fl_boxtype.cxx 10781 2015-07-09 00:10:44Z AlbrechtS $".
-//

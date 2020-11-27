@@ -64,42 +64,43 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "util.h"
-#include <fl/filename.h>
+
+#include <sys/stat.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/stat.h>
 
-extern char const*
-filename_extract(char const* path)
+#include <fl/filename.h>
+
+extern char const *
+  filename_extract(char const *path)
 {
   size_t size = strlen(path);
-  char const* filename = path;
-  char const* eos = &path[size - 1];
+  char const *filename = path;
+  char const *eos = &path[size - 1];
 
   do
-  {
-
-    if (0 == size)
     {
-      break;
-    }
+      if (0 == size)
+        {
+          break;
+        }
 
 #if defined(__DJGPP__)
 
-    if (*eos == '\\' || *eos == '/' || *eos == ':')
+      if (*eos == '\\' || *eos == '/' || *eos == ':')
 #else
-    if (*eos == '/')
+      if (*eos == '/')
 #endif
-    {
-      filename = &eos[1];
-      break;
+        {
+          filename = &eos[1];
+          break;
+        }
+
+      size--;
+      eos--;
     }
-
-    size--;
-    eos--;
-
-  }
   while (1);
 
   return filename;
@@ -107,41 +108,39 @@ filename_extract(char const* path)
 
 #if defined(__DJGPP__)
 
-extern char** __crt0_argv;
+extern char **__crt0_argv;
 
-extern char*
-program_path()
+extern char *
+  program_path()
 {
   size_t size = strlen(__crt0_argv[0]);
-  char* path = reinterpret_cast<char*>(calloc(1, 1 + size));
+  char *path = reinterpret_cast<char *>(calloc(1, 1 + size));
   memcpy(path, __crt0_argv[0], size);
-  char* eos = &path[size - 1];
+  char *eos = &path[size - 1];
 
   do
-  {
-
-    if (0 == size)
     {
-      eos[0] = 0;
-      break;
+      if (0 == size)
+        {
+          eos[0] = 0;
+          break;
+        }
+
+      if (*eos == ':')
+        {
+          eos[1] = 0;
+          break;
+        }
+
+      if (*eos == '\\' || *eos == '/')
+        {
+          eos[0] = 0;
+          break;
+        }
+
+      size--;
+      eos--;
     }
-
-    if (*eos == ':')
-    {
-      eos[1] = 0;
-      break;
-    }
-
-    if (*eos == '\\' || *eos == '/')
-    {
-      eos[0] = 0;
-      break;
-    }
-
-    size--;
-    eos--;
-
-  }
   while (1);
 
   return path;
@@ -149,8 +148,8 @@ program_path()
 
 #elif defined(__WATCOMC__)
 
-extern char*
-program_path()
+extern char *
+  program_path()
 {
   return ".\\";
 }
@@ -159,35 +158,33 @@ program_path()
 
 /* Currently GNU/Linux support only */
 
-extern char*
-program_path()
+extern char *
+  program_path()
 {
-  char* path = reinterpret_cast<char*>(calloc(1, 1024));
+  char *path = reinterpret_cast<char *>(calloc(1, 1024));
 
   readlink("/proc/self/exe", path, 1024);
 
   size_t size = strlen(path);
-  char* eos = &path[size - 1];
+  char *eos = &path[size - 1];
 
   do
-  {
-
-    if (0 == size)
     {
-      eos[0] = 0;
-      break;
+      if (0 == size)
+        {
+          eos[0] = 0;
+          break;
+        }
+
+      if (*eos == '/')
+        {
+          eos[0] = 0;
+          break;
+        }
+
+      size--;
+      eos--;
     }
-
-    if (*eos == '/')
-    {
-      eos[0] = 0;
-      break;
-    }
-
-    size--;
-    eos--;
-
-  }
   while (1);
 
   return path;
@@ -196,58 +193,56 @@ program_path()
 #endif
 
 #if defined(__DJGPP__)
-extern unsigned short  _djstat_flags;
+extern unsigned short _djstat_flags;
 #endif
 
-extern Fl_Preferences*
-fltkcfg()
+extern Fl_Preferences *
+  fltkcfg()
 {
-  Fl_Preferences* pref = 0;
+  Fl_Preferences *pref = 0;
 #if defined(__DJGPP__)
   unsigned short flags_saved = _djstat_flags;
   _djstat_flags = 0;
 #endif
   struct stat sbuf;
   int rc;
-  char* path = 0;
+  char *path = 0;
 
   do
-  {
-
-    rc = stat("fltk.cfg", &sbuf);
-
-    if (0 == rc && S_ISREG(sbuf.st_mode))
     {
-      pref = new Fl_Preferences("fltk.cfg", 0, 0);
-      break;
+      rc = stat("fltk.cfg", &sbuf);
+
+      if (0 == rc && S_ISREG(sbuf.st_mode))
+        {
+          pref = new Fl_Preferences("fltk.cfg", 0, 0);
+          break;
+        }
+
+      path = reinterpret_cast<char *>(malloc(FL_PATH_MAX));
+      char *prgpath = program_path();
+      snprintf(path, FL_PATH_MAX, "%s/fltk.cfg", prgpath);
+      free(prgpath);
+
+      rc = stat(path, &sbuf);
+
+      if (0 == rc && S_ISREG(sbuf.st_mode))
+        {
+          pref = new Fl_Preferences(path, 0, 0);
+          break;
+        }
+
+      pref = new Fl_Preferences(Fl_Preferences::USER, "fltk", "fltk");
+
+      rc = stat(pref->getFileName(), &sbuf);
+
+      if (0 == rc && S_ISREG(sbuf.st_mode))
+        {
+          break;
+        }
+
+      delete pref;
+      pref = new Fl_Preferences(Fl_Preferences::SYSTEM, "fltk", "fltk");
     }
-
-    path = reinterpret_cast<char*>(malloc(FL_PATH_MAX));
-    char* prgpath = program_path();
-    snprintf(path, FL_PATH_MAX, "%s/fltk.cfg", prgpath);
-    free(prgpath);
-
-    rc = stat(path, &sbuf);
-
-    if (0 == rc && S_ISREG(sbuf.st_mode))
-    {
-      pref = new Fl_Preferences(path, 0, 0);
-      break;
-    }
-
-    pref = new Fl_Preferences(Fl_Preferences::USER, "fltk", "fltk");
-
-    rc = stat(pref->getFileName(), &sbuf);
-
-    if (0 == rc && S_ISREG(sbuf.st_mode))
-    {
-      break;
-    }
-
-    delete pref;
-    pref = new Fl_Preferences(Fl_Preferences::SYSTEM, "fltk", "fltk");
-
-  }
   while (0);
 
 #if defined(__DJGPP__)

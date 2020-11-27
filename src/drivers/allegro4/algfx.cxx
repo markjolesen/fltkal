@@ -65,147 +65,139 @@
 //
 #include "algfx.h"
 
-void line_horiz_xor(BITMAP *bmp, int const x, int const y, unsigned int const len)
+void
+  line_horiz_xor(BITMAP *bmp, int const x, int const y, unsigned int const len)
 {
-
-    do
+  do
     {
-
-        if (0 > x + len)
+      if (0 > x + len)
         {
-            break;
+          break;
         }
 
-        if (bmp->w <= x)
+      if (bmp->w <= x)
         {
-            break;
+          break;
         }
 
-        if (0 > y)
+      if (0 > y)
         {
-            break;
+          break;
         }
 
-        if (bmp->h <= y)
+      if (bmp->h <= y)
         {
-            break;
+          break;
         }
 
-        unsigned int left = len;
-        unsigned int col = 0;
+      unsigned int left = len;
+      unsigned int col = 0;
 
-        if (0 <= x)
+      if (0 <= x)
         {
-            col = x;
+          col = x;
         }
-        else
+      else
         {
-            left = len + x;
+          left = len + x;
         }
 
-        do
+      do
         {
-
-            if (0 == left)
+          if (0 == left)
             {
-                break;
+              break;
             }
 
-            if (bmp->w <= col)
+          if (bmp->w <= col)
             {
-                break;
+              break;
             }
 
-            int pixel = getpixel(bmp, col, y);
-            pixel ^= -1;
-            putpixel(bmp, col, y, pixel);
+          int pixel = getpixel(bmp, col, y);
+          pixel ^= -1;
+          putpixel(bmp, col, y, pixel);
 
-            col++;
-            left--;
-
+          col++;
+          left--;
         }
-        while (1);
-
+      while (1);
     }
-    while (0);
+  while (0);
 
-    return;
+  return;
 }
 
-void line_vert_xor(BITMAP *bmp, int const x, int const y, unsigned int const len)
+void
+  line_vert_xor(BITMAP *bmp, int const x, int const y, unsigned int const len)
 {
-
-    do
+  do
     {
-
-        if (0 > x)
+      if (0 > x)
         {
-            break;
+          break;
         }
 
-        if (bmp->w <= x)
+      if (bmp->w <= x)
         {
-            break;
+          break;
         }
 
-        if (0 > y + len)
+      if (0 > y + len)
         {
-            break;
+          break;
         }
 
-        if (bmp->h <= y)
+      if (bmp->h <= y)
         {
-            break;
+          break;
         }
 
-        unsigned int left = len;
-        unsigned int row = 0;
+      unsigned int left = len;
+      unsigned int row = 0;
 
-        if (0 <= y)
+      if (0 <= y)
         {
-            row = y;
+          row = y;
         }
-        else
+      else
         {
-            left = len + y;
+          left = len + y;
         }
 
-        do
+      do
         {
-
-            if (0 == left)
+          if (0 == left)
             {
-                break;
+              break;
             }
 
-            if (bmp->h <= row)
+          if (bmp->h <= row)
             {
-                break;
+              break;
             }
 
-            int pixel = getpixel(bmp, x, row);
-            pixel ^= -1;
-            putpixel(bmp, x, row, pixel);
+          int pixel = getpixel(bmp, x, row);
+          pixel ^= -1;
+          putpixel(bmp, x, row, pixel);
 
-            row++;
-            left--;
-
+          row++;
+          left--;
         }
-        while (1);
-
+      while (1);
     }
-    while (0);
+  while (0);
 
-    return;
+  return;
 }
 
-void rect_xor(BITMAP *bmp, int x, int y, unsigned int width, unsigned int height)
+void
+  rect_xor(BITMAP *bmp, int x, int y, unsigned int width, unsigned int height)
 {
+  line_horiz_xor(bmp, x, y, width);
+  line_horiz_xor(bmp, x, y + height - 1, width);
+  line_vert_xor(bmp, x, y + 1, height - 1);
+  line_vert_xor(bmp, x + width - 1, y + 1, height - 1);
 
-    line_horiz_xor(bmp, x, y, width);
-    line_horiz_xor(bmp, x, y + height - 1, width);
-    line_vert_xor(bmp, x, y + 1, height - 1);
-    line_vert_xor(bmp, x + width - 1, y + 1, height - 1);
-
-    return;
+  return;
 }

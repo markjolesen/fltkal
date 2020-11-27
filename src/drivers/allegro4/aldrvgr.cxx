@@ -62,28 +62,30 @@
 //
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+#include "aldrvgr.h"
+
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
-#include "aldrvgr.h"
+
 #include <fl/fl.h>
 
 #if defined(USE_ALLEGRO)
-#include "imgconv.h"
+#  include "imgconv.h"
 #else
-#define SCREEN_W _screen->width
-#define SCREEN_H _screen->height
+#  define SCREEN_W _screen->width
+#  define SCREEN_H _screen->height
 
-struct bitmap *rgb24cb_to_bitmap(
-    Fl_Draw_Image_Cb cb,
-    void *data,
-    unsigned int const img_width,
-    unsigned int const img_height);
+struct bitmap *
+  rgb24cb_to_bitmap(Fl_Draw_Image_Cb cb,
+                    void *data,
+                    unsigned int const img_width,
+                    unsigned int const img_height);
 
 #endif
 
 #if !defined(M_PI)
-#define M_PI 3.14159
+#  define M_PI 3.14159
 #endif
 
 struct _XRegion
@@ -94,18 +96,14 @@ struct _XRegion
   int y2;
 };
 
-Fl_Graphics_Driver*
-Fl_Graphics_Driver::newMainGraphicsDriver()
+Fl_Graphics_Driver *
+  Fl_Graphics_Driver::newMainGraphicsDriver()
 {
   return new Fl_Allegro_Graphics_Driver();
 }
 
 Fl_Allegro_Graphics_Driver::Fl_Allegro_Graphics_Driver() :
-  Fl_Graphics_Driver(),
-  ft_(),
-  hidden_count_(0),
-  active_(0),
-  backing_(0)
+  Fl_Graphics_Driver(), ft_(), hidden_count_(0), active_(0), backing_(0)
 {
   return;
 }
@@ -116,29 +114,28 @@ Fl_Allegro_Graphics_Driver::~Fl_Allegro_Graphics_Driver()
 }
 
 void
-Fl_Allegro_Graphics_Driver::draw(const char* str, int n, int x, int y)
+  Fl_Allegro_Graphics_Driver::draw(const char *str, int n, int x, int y)
 {
-
   if (n > 0)
-  {
-    x += Fl::window_draw_offset_x;
-    y += Fl::window_draw_offset_y;
+    {
+      x += Fl::window_draw_offset_x;
+      y += Fl::window_draw_offset_y;
 #if defined(USE_ALLEGRO)
-    unsigned char r, g, b;
-    Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
-    int color = makecol(r, g, b);
+      unsigned char r, g, b;
+      Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
+      int color = makecol(r, g, b);
 #else
-    unsigned color = Fl::get_color(Fl_Graphics_Driver::color());
-    color >>= 8;
+      unsigned color = Fl::get_color(Fl_Graphics_Driver::color());
+      color >>= 8;
 #endif
-    ft_.draw(surface(), str, n, x, y, font_, size_, color);
-  }
+      ft_.draw(surface(), str, n, x, y, font_, size_, color);
+    }
 
   return;
 }
 
 void
-Fl_Allegro_Graphics_Driver::point(int x, int y)
+  Fl_Allegro_Graphics_Driver::point(int x, int y)
 {
   x += Fl::window_draw_offset_x;
   y += Fl::window_draw_offset_y;
@@ -156,7 +153,7 @@ Fl_Allegro_Graphics_Driver::point(int x, int y)
 }
 
 void
-Fl_Allegro_Graphics_Driver::rect(int x, int y, int w, int h)
+  Fl_Allegro_Graphics_Driver::rect(int x, int y, int w, int h)
 {
   x += Fl::window_draw_offset_x;
   y += Fl::window_draw_offset_y;
@@ -177,7 +174,7 @@ Fl_Allegro_Graphics_Driver::rect(int x, int y, int w, int h)
 }
 
 void
-Fl_Allegro_Graphics_Driver::rectf(int x, int y, int w, int h)
+  Fl_Allegro_Graphics_Driver::rectf(int x, int y, int w, int h)
 {
   x += Fl::window_draw_offset_x;
   y += Fl::window_draw_offset_y;
@@ -195,7 +192,7 @@ Fl_Allegro_Graphics_Driver::rectf(int x, int y, int w, int h)
 }
 
 void
-Fl_Allegro_Graphics_Driver::line(int x, int y, int x1, int y1)
+  Fl_Allegro_Graphics_Driver::line(int x, int y, int x1, int y1)
 {
   x += Fl::window_draw_offset_x;
   x1 += Fl::window_draw_offset_x;
@@ -215,7 +212,7 @@ Fl_Allegro_Graphics_Driver::line(int x, int y, int x1, int y1)
 }
 
 void
-Fl_Allegro_Graphics_Driver::line(int x, int y, int x1, int y1, int x2, int y2)
+  Fl_Allegro_Graphics_Driver::line(int x, int y, int x1, int y1, int x2, int y2)
 {
   x += Fl::window_draw_offset_x;
   x1 += Fl::window_draw_offset_x;
@@ -239,7 +236,7 @@ Fl_Allegro_Graphics_Driver::line(int x, int y, int x1, int y1, int x2, int y2)
 }
 
 void
-Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1)
+  Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1)
 {
   x += Fl::window_draw_offset_x;
   x1 += Fl::window_draw_offset_x;
@@ -258,7 +255,7 @@ Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1)
 }
 
 void
-Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1, int y2)
+  Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1, int y2)
 {
   xyline(x, y, x1);
   yxline(x1, y, y2);
@@ -266,7 +263,7 @@ Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1, int y2)
 }
 
 void
-Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1, int y2, int x3)
+  Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1, int y2, int x3)
 {
   xyline(x, y, x1);
   yxline(x1, y, y2);
@@ -275,7 +272,7 @@ Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1, int y2, int x3)
 }
 
 void
-Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1)
+  Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1)
 {
   x += Fl::window_draw_offset_x;
   y += Fl::window_draw_offset_y;
@@ -294,9 +291,8 @@ Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1)
 }
 
 void
-Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1, int x2)
+  Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1, int x2)
 {
-
   yxline(x, y, y1);
   xyline(x, y1, x2);
 
@@ -304,9 +300,8 @@ Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1, int x2)
 }
 
 void
-Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1, int x2, int y3)
+  Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1, int x2, int y3)
 {
-
   yxline(x, y, y1);
   xyline(x, y1, x2);
   yxline(x2, y1, y3);
@@ -315,7 +310,8 @@ Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1, int x2, int y3)
 }
 
 void
-Fl_Allegro_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2)
+  Fl_Allegro_Graphics_Driver::loop(
+    int x0, int y0, int x1, int y1, int x2, int y2)
 {
   x0 += Fl::window_draw_offset_x;
   x1 += Fl::window_draw_offset_x;
@@ -341,8 +337,8 @@ Fl_Allegro_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2)
 }
 
 void
-Fl_Allegro_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2,
-                                 int x3, int y3)
+  Fl_Allegro_Graphics_Driver::loop(
+    int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3)
 {
   x0 += Fl::window_draw_offset_x;
   x1 += Fl::window_draw_offset_x;
@@ -374,8 +370,8 @@ Fl_Allegro_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2,
 }
 
 void
-Fl_Allegro_Graphics_Driver::polygon(int x0, int y0, int x1, int y1, int x2,
-                                    int y2)
+  Fl_Allegro_Graphics_Driver::polygon(
+    int x0, int y0, int x1, int y1, int x2, int y2)
 {
   int points[6];
   points[0] = x0 + Fl::window_draw_offset_x;
@@ -394,8 +390,8 @@ Fl_Allegro_Graphics_Driver::polygon(int x0, int y0, int x1, int y1, int x2,
 }
 
 void
-Fl_Allegro_Graphics_Driver::polygon(int x0, int y0, int x1, int y1, int x2,
-                                    int y2, int x3, int y3)
+  Fl_Allegro_Graphics_Driver::polygon(
+    int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3)
 {
   int points[8];
   points[0] = x0 + Fl::window_draw_offset_x;
@@ -416,7 +412,7 @@ Fl_Allegro_Graphics_Driver::polygon(int x0, int y0, int x1, int y1, int x2,
 }
 
 void
-Fl_Allegro_Graphics_Driver::circle(double x, double y, double rad)
+  Fl_Allegro_Graphics_Driver::circle(double x, double y, double rad)
 {
   x += Fl::window_draw_offset_x;
   y += Fl::window_draw_offset_y;
@@ -424,8 +420,11 @@ Fl_Allegro_Graphics_Driver::circle(double x, double y, double rad)
   unsigned char r, g, b;
   Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
   int color = makecol(r, g, b);
-  ::circle(surface(), static_cast<int>(x), static_cast<int>(y),
-           static_cast<int>(rad), color);
+  ::circle(surface(),
+           static_cast<int>(x),
+           static_cast<int>(y),
+           static_cast<int>(rad),
+           color);
 #endif
   return;
 }
@@ -433,8 +432,8 @@ Fl_Allegro_Graphics_Driver::circle(double x, double y, double rad)
 // Fl_Pico_Graphics_Driver::arc
 // Fl_Android_Graphics_driver::arc
 void
-Fl_Allegro_Graphics_Driver::arc(int xi, int yi, int w, int h, double a1,
-                                double a2)
+  Fl_Allegro_Graphics_Driver::arc(
+    int xi, int yi, int w, int h, double a1, double a2)
 {
   xi += Fl::window_draw_offset_x;
   yi += Fl::window_draw_offset_y;
@@ -448,22 +447,22 @@ Fl_Allegro_Graphics_Driver::arc(int xi, int yi, int w, int h, double a1,
 #endif
 
   if (a2 <= a1)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   double rx = w / 2.0;
   double ry = h / 2.0;
   double x = xi + rx;
   double y = yi + ry;
   double circ = M_PI * 0.5 * (rx + ry);
-  int i, segs = static_cast<int>(circ * (a2 - a1) /
-                                 1000); // every line is about three pixels long
+  int i, segs = static_cast<int>(
+           circ * (a2 - a1) / 1000); // every line is about three pixels long
 
   if (segs < 3)
-  {
-    segs = 3;
-  }
+    {
+      segs = 3;
+    }
 
   int px, py;
   a1 = a1 / 180 * M_PI;
@@ -476,26 +475,26 @@ Fl_Allegro_Graphics_Driver::arc(int xi, int yi, int w, int h, double a1,
   int ny = static_cast<int>(y - cosa1 * ry);
 
   for (i = segs; i > 0; i--)
-  {
-    a1 += step;
-    px = nx;
-    py = ny;
-    int nx = static_cast<int>(x + sina1 * rx);
-    int ny = static_cast<int>(y - cosa1 * ry);
+    {
+      a1 += step;
+      px = nx;
+      py = ny;
+      int nx = static_cast<int>(x + sina1 * rx);
+      int ny = static_cast<int>(y - cosa1 * ry);
 #if defined(USE_ALLEGRO)
-    ::line(surface(), px, py, nx, ny, color);
+      ::line(surface(), px, py, nx, ny, color);
 #else
-    image_line(surface(), px, py, nx, ny, color);
+      image_line(surface(), px, py, nx, ny, color);
 #endif
-  }
+    }
 
   return;
 }
 
 // Fl_Android_Graphics_driver::pie
 void
-Fl_Allegro_Graphics_Driver::pie(int xi, int yi, int w, int h, double b1,
-                                double b2)
+  Fl_Allegro_Graphics_Driver::pie(
+    int xi, int yi, int w, int h, double b1, double b2)
 {
   // quick access to bounding box size
   double rx = w / 2.0;
@@ -503,20 +502,19 @@ Fl_Allegro_Graphics_Driver::pie(int xi, int yi, int w, int h, double b1,
   double x = xi + rx;
   double y = yi + ry;
 
-
   double a1 = b1 / 180 * M_PI;
   double a2 = b2 / 180 * M_PI;
 
   // invert to make b1 always the smaller value
   if (b1 > b2)
-  {
-    b1 -= 360.0;
-  }
+    {
+      b1 -= 360.0;
+    }
 
   if (b1 == b2)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   // make the top the zero degree origin, turning CCW
   b1 -= 90.0;
@@ -526,22 +524,22 @@ Fl_Allegro_Graphics_Driver::pie(int xi, int yi, int w, int h, double b1,
   double delta = b2 - b1;
 
   if (delta >= 360.0)
-  {
-    b1 = 0.0;
-    b2 = 360.0;
-    delta = 360.0;
-  }
+    {
+      b1 = 0.0;
+      b2 = 360.0;
+      delta = 360.0;
+    }
 
   // make sure that b2 is always in the range [0.0..360.0]
   if (b2 > 360.0)
-  {
-    b2 -= 360.0;    // FIXME: fmod(...)
-  }
+    {
+      b2 -= 360.0; // FIXME: fmod(...)
+    }
 
   if (b2 < 0.0)
-  {
-    b2 += 360.0;
-  }
+    {
+      b2 += 360.0;
+    }
 
   b1 = b2 - delta;
   // now b1 is [-360...360] and b2 is [0..360] and b1<b2;
@@ -552,11 +550,11 @@ Fl_Allegro_Graphics_Driver::pie(int xi, int yi, int w, int h, double b1,
   bool flipped = false;
 
   if (a1 < 0.0)
-  {
-    a1 += 2 * M_PI;
-    b1 += 360.0;
-    flipped = true;
-  }
+    {
+      a1 += 2 * M_PI;
+      b1 += 360.0;
+      flipped = true;
+    }
 
   //  Fl_Android_Application::log_e(" %g %g %d", b1, b2, flipped);
 
@@ -565,333 +563,334 @@ Fl_Allegro_Graphics_Driver::pie(int xi, int yi, int w, int h, double b1,
 
   // draw the pie line by line
   for (double iy = y - ry; iy <= y + ry; iy++)
-  {
-    double a = acos((iy - y) / ry);
-    double aL = M_PI - a; // 0..PI
-    double aR = a + M_PI; // 2PI..PI
-    double sinALrx = sin(aL) * rx;
-
-    //    fl_color(FL_RED);
-
-    if (aL < 0.5 * M_PI)
     {
-      // rasterize top left quadrant
-      bool loInside = false, hiInside = false;
-      double loLeft = 0.0, loRight = 0.0;
-      double hiLeft = 0.0, hiRight = 0.0;
+      double a = acos((iy - y) / ry);
+      double aL = M_PI - a; // 0..PI
+      double aR = a + M_PI; // 2PI..PI
+      double sinALrx = sin(aL) * rx;
 
-      if (b1 >= 0 && b1 < 90)
-      {
-        loInside = true;
-        loLeft = -sinALrx;
-        loRight = a1Slope * (iy - y);
-      }
+      //    fl_color(FL_RED);
 
-      if (b2 >= 0 && b2 < 90)
-      {
-        hiInside = true;
-
-        if (aL < a2)
+      if (aL < 0.5 * M_PI)
         {
-          hiLeft = -sinALrx;
-        }
+          // rasterize top left quadrant
+          bool loInside = false, hiInside = false;
+          double loLeft = 0.0, loRight = 0.0;
+          double hiLeft = 0.0, hiRight = 0.0;
 
-        else
-        {
-          hiLeft = a2Slope * (iy - y);
-        }
-      }
+          if (b1 >= 0 && b1 < 90)
+            {
+              loInside = true;
+              loLeft = -sinALrx;
+              loRight = a1Slope * (iy - y);
+            }
 
-      if (loInside && hiInside && !flipped)
-      {
-        //        fl_color(FL_GREEN);
-        if (a1 < aL)
-        {
-          xyline(x + hiLeft, iy, x + loRight);
+          if (b2 >= 0 && b2 < 90)
+            {
+              hiInside = true;
+
+              if (aL < a2)
+                {
+                  hiLeft = -sinALrx;
+                }
+
+              else
+                {
+                  hiLeft = a2Slope * (iy - y);
+                }
+            }
+
+          if (loInside && hiInside && !flipped)
+            {
+              //        fl_color(FL_GREEN);
+              if (a1 < aL)
+                {
+                  xyline(x + hiLeft, iy, x + loRight);
+                }
+            }
+
+          else
+            {
+              if ((!loInside) && (!hiInside))
+                {
+                  //          fl_color(FL_MAGENTA);
+                  if ((b1o <= 0.0 && b2 >= 90.0)
+                      || (b1o <= (0.0 - 360.0) && b2 >= (90.0 - 360.0)))
+                    {
+                      xyline(x - sinALrx, iy, x);
+                    }
+                }
+
+              else
+                {
+                  if (loInside)
+                    {
+                      //            fl_color(FL_BLUE);
+                      if (a1 < aL)
+                        {
+                          xyline(x + loLeft, iy, x + loRight);
+                        }
+                    }
+
+                  if (hiInside)
+                    {
+                      //            fl_color(FL_YELLOW);
+                      xyline(x + hiLeft, iy, x);
+                    }
+                }
+            }
         }
-      }
 
       else
-      {
-        if ((!loInside) && (!hiInside))
         {
-          //          fl_color(FL_MAGENTA);
-          if ((b1o <= 0.0 && b2 >= 90.0) || (b1o <= (0.0 - 360.0)
-                                             && b2 >= (90.0 - 360.0)))
-          {
-            xyline(x - sinALrx, iy, x);
-          }
-        }
+          // rasterize bottom left quadrant
+          bool loInside = false, hiInside = false;
+          double loLeft = 0.0, loRight = 0.0;
+          double hiLeft = 0.0, hiRight = 0.0;
 
-        else
-        {
-          if (loInside)
-          {
-            //            fl_color(FL_BLUE);
-            if (a1 < aL)
+          if (b1 >= 90 && b1 < 180)
             {
-              xyline(x + loLeft, iy, x + loRight);
+              loInside = true;
+
+              if (aL >= a1)
+                {
+                  loLeft = -sinALrx;
+                }
+
+              else
+                {
+                  loLeft = a1Slope * (iy - y);
+                }
             }
-          }
 
-          if (hiInside)
-          {
-            //            fl_color(FL_YELLOW);
-            xyline(x + hiLeft, iy, x);
-          }
+          if (b2 >= 90 && b2 < 180)
+            {
+              hiInside = true;
+              hiLeft = -sinALrx;
+              hiRight = a2Slope * (iy - y);
+            }
+
+          if (loInside && hiInside && !flipped)
+            {
+              //        fl_color(FL_GREEN);
+              if (a2 > aL)
+                {
+                  xyline(x + loLeft, iy, x + hiRight);
+                }
+            }
+
+          else
+            {
+              if ((!loInside) && (!hiInside))
+                {
+                  //          fl_color(FL_MAGENTA);
+                  if ((b1o <= 90.0 && b2 >= 180.0)
+                      || (b1o <= (90.0 - 360.0) && b2 >= (180.0 - 360.0)))
+                    {
+                      xyline(x - sinALrx, iy, x);
+                    }
+                }
+
+              else
+                {
+                  if (loInside)
+                    {
+                      //            fl_color(FL_BLUE);
+                      xyline(x + loLeft, iy, x);
+                    }
+
+                  if (hiInside)
+                    {
+                      //            fl_color(FL_YELLOW);
+                      if (a2 > aL)
+                        {
+                          xyline(x + hiLeft, iy, x + hiRight);
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
 
-    else
-    {
-      // rasterize bottom left quadrant
-      bool loInside = false, hiInside = false;
-      double loLeft = 0.0, loRight = 0.0;
-      double hiLeft = 0.0, hiRight = 0.0;
-
-      if (b1 >= 90 && b1 < 180)
-      {
-        loInside = true;
-
-        if (aL >= a1)
+      if (aR < 1.5 * M_PI)
         {
-          loLeft = -sinALrx;
-        }
+          // rasterize bottom right quadrant
+          bool loInside = false, hiInside = false;
+          double loLeft = 0.0, loRight = 0.0;
+          double hiLeft = 0.0, hiRight = 0.0;
 
-        else
-        {
-          loLeft = a1Slope * (iy - y);
-        }
-      }
+          if (b1 >= 180 && b1 < 270)
+            {
+              loInside = true;
+              loLeft = sinALrx;
+              loRight = a1Slope * (iy - y);
+            }
 
-      if (b2 >= 90 && b2 < 180)
-      {
-        hiInside = true;
-        hiLeft = -sinALrx;
-        hiRight = a2Slope * (iy - y);
-      }
+          if (b2 >= 180 && b2 < 270)
+            {
+              hiInside = true;
 
-      if (loInside && hiInside && !flipped)
-      {
-        //        fl_color(FL_GREEN);
-        if (a2 > aL)
-        {
-          xyline(x + loLeft, iy, x + hiRight);
+              if (aR < a2)
+                {
+                  hiLeft = sinALrx;
+                }
+
+              else
+                {
+                  hiLeft = a2Slope * (iy - y);
+                }
+            }
+
+          if (loInside && hiInside && !flipped)
+            {
+              //        fl_color(FL_GREEN);
+              if (a1 < aR)
+                {
+                  xyline(x + hiLeft, iy, x + loRight);
+                }
+            }
+
+          else
+            {
+              if ((!loInside) && (!hiInside))
+                {
+                  //          fl_color(FL_MAGENTA);
+                  if ((b1o <= 180.0 && b2 >= 270.0)
+                      || (b1o <= (180.0 - 360.0) && b2 >= (270.0 - 360.0)))
+                    {
+                      xyline(x + sinALrx, iy, x);
+                    }
+                }
+
+              else
+                {
+                  if (loInside)
+                    {
+                      //            fl_color(FL_BLUE);
+                      if (a1 < aR)
+                        {
+                          xyline(x + loLeft, iy, x + loRight);
+                        }
+                    }
+
+                  if (hiInside)
+                    {
+                      //            fl_color(FL_YELLOW);
+                      xyline(x + hiLeft, iy, x);
+                    }
+                }
+            }
         }
-      }
 
       else
-      {
-        if ((!loInside) && (!hiInside))
         {
-          //          fl_color(FL_MAGENTA);
-          if ((b1o <= 90.0 && b2 >= 180.0) || (b1o <= (90.0 - 360.0)
-                                               && b2 >= (180.0 - 360.0)))
-          {
-            xyline(x - sinALrx, iy, x);
-          }
-        }
+          // rasterize top right quadrant
+          bool loInside = false, hiInside = false;
+          double loLeft = 0.0, loRight = 0.0;
+          double hiLeft = 0.0, hiRight = 0.0;
 
-        else
-        {
-          if (loInside)
-          {
-            //            fl_color(FL_BLUE);
-            xyline(x + loLeft, iy, x);
-          }
-
-          if (hiInside)
-          {
-            //            fl_color(FL_YELLOW);
-            if (a2 > aL)
+          if (b1 >= 270 && b1 < 360)
             {
-              xyline(x + hiLeft, iy, x + hiRight);
+              loInside = true;
+
+              if (aR >= a1)
+                {
+                  loLeft = sinALrx;
+                }
+
+              else
+                {
+                  loLeft = a1Slope * (iy - y);
+                }
             }
-          }
-        }
-      }
-    }
 
-    if (aR < 1.5 * M_PI)
-    {
-      // rasterize bottom right quadrant
-      bool loInside = false, hiInside = false;
-      double loLeft = 0.0, loRight = 0.0;
-      double hiLeft = 0.0, hiRight = 0.0;
-
-      if (b1 >= 180 && b1 < 270)
-      {
-        loInside = true;
-        loLeft = sinALrx;
-        loRight = a1Slope * (iy - y);
-      }
-
-      if (b2 >= 180 && b2 < 270)
-      {
-        hiInside = true;
-
-        if (aR < a2)
-        {
-          hiLeft = sinALrx;
-        }
-
-        else
-        {
-          hiLeft = a2Slope * (iy - y);
-        }
-      }
-
-      if (loInside && hiInside && !flipped)
-      {
-        //        fl_color(FL_GREEN);
-        if (a1 < aR)
-        {
-          xyline(x + hiLeft, iy, x + loRight);
-        }
-      }
-
-      else
-      {
-        if ((!loInside) && (!hiInside))
-        {
-          //          fl_color(FL_MAGENTA);
-          if ((b1o <= 180.0 && b2 >= 270.0) || (b1o <= (180.0 - 360.0)
-                                                && b2 >= (270.0 - 360.0)))
-          {
-            xyline(x + sinALrx, iy, x);
-          }
-        }
-
-        else
-        {
-          if (loInside)
-          {
-            //            fl_color(FL_BLUE);
-            if (a1 < aR)
+          if (b2 >= 270 && b2 < 360)
             {
-              xyline(x + loLeft, iy, x + loRight);
+              hiInside = true;
+              hiLeft = sinALrx;
+              hiRight = a2Slope * (iy - y);
             }
-          }
 
-          if (hiInside)
-          {
-            //            fl_color(FL_YELLOW);
-            xyline(x + hiLeft, iy, x);
-          }
-        }
-      }
-    }
-
-    else
-    {
-      // rasterize top right quadrant
-      bool loInside = false, hiInside = false;
-      double loLeft = 0.0, loRight = 0.0;
-      double hiLeft = 0.0, hiRight = 0.0;
-
-      if (b1 >= 270 && b1 < 360)
-      {
-        loInside = true;
-
-        if (aR >= a1)
-        {
-          loLeft = sinALrx;
-        }
-
-        else
-        {
-          loLeft = a1Slope * (iy - y);
-        }
-      }
-
-      if (b2 >= 270 && b2 < 360)
-      {
-        hiInside = true;
-        hiLeft = sinALrx;
-        hiRight = a2Slope * (iy - y);
-      }
-
-      if (loInside && hiInside && !flipped)
-      {
-        //        fl_color(FL_GREEN);
-        if (a2 > aR)
-        {
-          xyline(x + loLeft, iy, x + hiRight);
-        }
-      }
-
-      else
-      {
-        if ((!loInside) && (!hiInside))
-        {
-          //          fl_color(FL_MAGENTA);
-          if ((b1o <= 270.0 && b2 >= 360.0) || (b1o <= (270.0 - 360.0)
-                                                && b2 >= (360.0 - 360.0)))
-          {
-            xyline(x + sinALrx, iy, x);
-          }
-        }
-
-        else
-        {
-          if (loInside)
-          {
-            //            fl_color(FL_BLUE);
-            xyline(x + loLeft, iy, x);
-          }
-
-          if (hiInside)
-          {
-            //            fl_color(FL_YELLOW);
-            if (a2 > aR)
+          if (loInside && hiInside && !flipped)
             {
-              xyline(x + hiLeft, iy, x + hiRight);
+              //        fl_color(FL_GREEN);
+              if (a2 > aR)
+                {
+                  xyline(x + loLeft, iy, x + hiRight);
+                }
             }
-          }
+
+          else
+            {
+              if ((!loInside) && (!hiInside))
+                {
+                  //          fl_color(FL_MAGENTA);
+                  if ((b1o <= 270.0 && b2 >= 360.0)
+                      || (b1o <= (270.0 - 360.0) && b2 >= (360.0 - 360.0)))
+                    {
+                      xyline(x + sinALrx, iy, x);
+                    }
+                }
+
+              else
+                {
+                  if (loInside)
+                    {
+                      //            fl_color(FL_BLUE);
+                      xyline(x + loLeft, iy, x);
+                    }
+
+                  if (hiInside)
+                    {
+                      //            fl_color(FL_YELLOW);
+                      if (a2 > aR)
+                        {
+                          xyline(x + hiLeft, iy, x + hiRight);
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
 
   return;
 }
 
 void
-Fl_Allegro_Graphics_Driver::push_clip(int x, int y, int w, int h)
+  Fl_Allegro_Graphics_Driver::push_clip(int x, int y, int w, int h)
 {
   Fl_Region r;
 
   r = reinterpret_cast<Fl_Region>(malloc(sizeof(*r)));
 
   if (w > 0 && h > 0)
-  {
-    int cx, cy, cw, ch;
-    clip_box(x, y, w, h, cx, cy, cw, ch);
-    r->x1 = cx;
-    r->y1 = cy;
-    r->x2 = (cx + cw);
-    r->y2 = (cy + ch);
-  }
+    {
+      int cx, cy, cw, ch;
+      clip_box(x, y, w, h, cx, cy, cw, ch);
+      r->x1 = cx;
+      r->y1 = cy;
+      r->x2 = (cx + cw);
+      r->y2 = (cy + ch);
+    }
 
   else
-  {
-    r->x1 = 0;
-    r->y1 = 0;
-    r->x2 = (SCREEN_W - 1);
-    r->y2 = (SCREEN_H - 1);
-  }
+    {
+      r->x1 = 0;
+      r->y1 = 0;
+      r->x2 = (SCREEN_W - 1);
+      r->y2 = (SCREEN_H - 1);
+    }
 
   if (rstackptr < region_stack_max)
-  {
-    rstack[++rstackptr] = r;
-  }
+    {
+      rstack[++rstackptr] = r;
+    }
 
   else
-  {
-    Fl::warning("Fl_Allegro_Graphics_Driver::push_clip: clip stack overflow!\n");
-    free(r);
-  }
+    {
+      Fl::warning(
+        "Fl_Allegro_Graphics_Driver::push_clip: clip stack overflow!\n");
+      free(r);
+    }
 
   restore_clip();
 
@@ -899,8 +898,8 @@ Fl_Allegro_Graphics_Driver::push_clip(int x, int y, int w, int h)
 }
 
 int
-Fl_Allegro_Graphics_Driver::clip_box(int x, int y, int w, int h, int& X, int& Y,
-                                     int& W, int& H)
+  Fl_Allegro_Graphics_Driver::clip_box(
+    int x, int y, int w, int h, int &X, int &Y, int &W, int &H)
 {
   struct _XRegion xscr;
 
@@ -912,112 +911,109 @@ Fl_Allegro_Graphics_Driver::clip_box(int x, int y, int w, int h, int& X, int& Y,
   Fl_Region r = rstack[rstackptr];
 
   if (!r)
-  {
-    xscr.x1 = 0;
-    xscr.y1 = 0;
-    xscr.x2 = (SCREEN_W - 1);
-    xscr.y2 = (SCREEN_H - 1);
-    r = &xscr;
-  }
+    {
+      xscr.x1 = 0;
+      xscr.y1 = 0;
+      xscr.x2 = (SCREEN_W - 1);
+      xscr.y2 = (SCREEN_H - 1);
+      r = &xscr;
+    }
 
   if (X < r->x1)
-  {
-    W -= r->x1 - X;
-
-    if (0 > W)
     {
-      W = 0;
-    }
+      W -= r->x1 - X;
 
-    X = r->x1;
-  }
+      if (0 > W)
+        {
+          W = 0;
+        }
+
+      X = r->x1;
+    }
 
   else if (X > r->x2)
-  {
-    X = r->x2;
-  }
+    {
+      X = r->x2;
+    }
 
   if ((X + W) > r->x2)
-  {
-    if (X < r->x2)
     {
-      W = (r->x2 - X);
-    }
+      if (X < r->x2)
+        {
+          W = (r->x2 - X);
+        }
 
-    else
-    {
-      W = 0;
+      else
+        {
+          W = 0;
+        }
     }
-  }
 
   if (Y < r->y1)
-  {
-    H -= (r->y1 - Y);
-
-    if (0 > H)
     {
-      H = 0;
-    }
+      H -= (r->y1 - Y);
 
-    Y = r->y1;
-  }
+      if (0 > H)
+        {
+          H = 0;
+        }
+
+      Y = r->y1;
+    }
 
   else if (Y > r->y2)
-  {
-    Y = r->y2;
-  }
+    {
+      Y = r->y2;
+    }
 
   if ((Y + H) > r->y2)
-  {
-    if (Y < r->y2)
     {
-      H = (r->y2 - Y);
-    }
+      if (Y < r->y2)
+        {
+          H = (r->y2 - Y);
+        }
 
-    else
-    {
-      H = 0;
+      else
+        {
+          H = 0;
+        }
     }
-  }
 
   return (X != x || Y != y || W != w || H != h);
 }
 
 int
-Fl_Allegro_Graphics_Driver::not_clipped(int x, int y, int w, int h)
+  Fl_Allegro_Graphics_Driver::not_clipped(int x, int y, int w, int h)
 {
-
   if (x + w <= 0 || y + h <= 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   Fl_Region r = rstack[rstackptr];
 
   if (!r)
-  {
-    return 1;
-  }
+    {
+      return 1;
+    }
 
-  return ((x < r->x2) &&
-          ((x + w) > r->x1) &&
-          (y < r->y2) &&
-          ((y + h) > r->y1));
+  return ((x < r->x2) && ((x + w) > r->x1) && (y < r->y2)
+          && ((y + h) > r->y1));
 }
 
 void
-Fl_Allegro_Graphics_Driver::push_no_clip()
+  Fl_Allegro_Graphics_Driver::push_no_clip()
 {
-
   if (rstackptr < region_stack_max)
-  {
-    rstack[++rstackptr] = 0;
-  }
+    {
+      rstack[++rstackptr] = 0;
+    }
 
   else
-  {
-    Fl::warning("Fl_Xlib_Graphics_Driver::push_no_clip: clip stack overflow!\n");
-  }
+    {
+      Fl::warning(
+        "Fl_Xlib_Graphics_Driver::push_no_clip: clip stack overflow!\n");
+    }
 
   restore_clip();
 
@@ -1025,19 +1021,19 @@ Fl_Allegro_Graphics_Driver::push_no_clip()
 }
 
 void
-Fl_Allegro_Graphics_Driver::pop_clip()
+  Fl_Allegro_Graphics_Driver::pop_clip()
 {
-
   if (rstackptr > 0)
-  {
-    Fl_Region oldr = rstack[rstackptr--];
-    free(oldr);
-  }
+    {
+      Fl_Region oldr = rstack[rstackptr--];
+      free(oldr);
+    }
 
   else
-  {
-    Fl::warning("Fl_Xlib_Graphics_Driver::pop_clip: clip stack underflow!\n");
-  }
+    {
+      Fl::warning(
+        "Fl_Xlib_Graphics_Driver::pop_clip: clip stack underflow!\n");
+    }
 
   restore_clip();
 
@@ -1045,114 +1041,122 @@ Fl_Allegro_Graphics_Driver::pop_clip()
 }
 
 void
-Fl_Allegro_Graphics_Driver::restore_clip()
+  Fl_Allegro_Graphics_Driver::restore_clip()
 {
 #if defined(USE_ALLEGRO)
-  BITMAP* bmp = surface();
+  BITMAP *bmp = surface();
 #else
-  struct image* bmp = surface();
+  struct image *bmp = surface();
 #endif
 
   if ((rstackptr > 0) && rstack[rstackptr])
-  {
-    Fl_Region r = rstack[rstackptr];
-    int x1 = (r->x1 + Fl::window_draw_offset_x);
-    int x2 = (r->x2 + Fl::window_draw_offset_x);
-    int y1 = (r->y1 + Fl::window_draw_offset_y);
-    int y2 = (r->y2 + Fl::window_draw_offset_y);
+    {
+      Fl_Region r = rstack[rstackptr];
+      int x1 = (r->x1 + Fl::window_draw_offset_x);
+      int x2 = (r->x2 + Fl::window_draw_offset_x);
+      int y1 = (r->y1 + Fl::window_draw_offset_y);
+      int y2 = (r->y2 + Fl::window_draw_offset_y);
 #if defined(USE_ALLEGRO)
 
-    if (0 > x1) x1 = 0;
+      if (0 > x1)
+        x1 = 0;
 
-    if (bmp->w < (unsigned)x2) x2 = bmp->w;
+      if (bmp->w < (unsigned)x2)
+        x2 = bmp->w;
 
-    if (0 > y1) y1 = 0;
+      if (0 > y1)
+        y1 = 0;
 
-    if (bmp->h < (unsigned)y2) y2 = bmp->h;
+      if (bmp->h < (unsigned)y2)
+        y2 = bmp->h;
 
-    ::set_clip_rect(surface(), x1, y1, x2, y2);
+      ::set_clip_rect(surface(), x1, y1, x2, y2);
 #else
 
-    if (0 > x1) x1 = 0;
+      if (0 > x1)
+        x1 = 0;
 
-    if (bmp->width <= (unsigned)x2) x2 = (bmp->width - 1);
+      if (bmp->width <= (unsigned)x2)
+        x2 = (bmp->width - 1);
 
-    if (0 > y1) y1 = 0;
+      if (0 > y1)
+        y1 = 0;
 
-    if (bmp->height <= (unsigned)y2) y2 = (bmp->height - 1);
+      if (bmp->height <= (unsigned)y2)
+        y2 = (bmp->height - 1);
 
-    image_set_clip(surface(), x1, y1, x2, y2);
+      image_set_clip(surface(), x1, y1, x2, y2);
 #endif
-  }
+    }
 
   else
-  {
+    {
 #if defined(USE_ALLEGRO)
-    ::set_clip_rect(bmp, 0, 0, (bmp->w - 1), (bmp->h - 1));
+      ::set_clip_rect(bmp, 0, 0, (bmp->w - 1), (bmp->h - 1));
 #else
-    image_set_clip(bmp, 0, 0, (bmp->width - 1), (bmp->height - 1));
+      image_set_clip(bmp, 0, 0, (bmp->width - 1), (bmp->height - 1));
 #endif
-  }
+    }
 
   return;
 }
 
 double
-Fl_Allegro_Graphics_Driver::width(const char* str, int n)
+  Fl_Allegro_Graphics_Driver::width(const char *str, int n)
 {
-  double width;
+  double width = 0.0f;
 
-  width = ft_.width(str, n, font_, size_);
+  if (n && *str)
+    {
+      width = ft_.width(str, n, font_, size_);
+    }
 
   return width;
 }
 
 bool
-Fl_Allegro_Graphics_Driver::flip_to_offscreen(bool clear)
+  Fl_Allegro_Graphics_Driver::flip_to_offscreen(bool clear)
 #if defined(USE_ALLEGRO)
 {
   bool activated = false;
 
   do
-  {
-
-
-    if (0 == backing_)
     {
-      int depth = bitmap_color_depth(screen);
-      backing_ = create_bitmap_ex(depth, SCREEN_W, SCREEN_H);
-
       if (0 == backing_)
-      {
-        break;
-      }
+        {
+          int depth = bitmap_color_depth(screen);
+          backing_ = create_bitmap_ex(depth, SCREEN_W, SCREEN_H);
+
+          if (0 == backing_)
+            {
+              break;
+            }
+        }
+
+      // TODO: _mjo if backing dimensions differ from screen
+      // destroy and rebuild
+
+      if (backing_ == active_)
+        {
+          break;
+        }
+
+      if (clear)
+        {
+          // TODO: get background color from somewhere
+          clear_to_color(backing_, 0);
+        }
+
+      else
+        {
+          mouse_hide();
+          blit(::screen, backing_, 0, 0, 0, 0, backing_->w, backing_->h);
+          mouse_show();
+        }
+
+      active_ = backing_;
+      activated = true;
     }
-
-    // TODO: _mjo if backing dimensions differ from screen
-    // destroy and rebuild
-
-    if (backing_ == active_)
-    {
-      break;
-    }
-
-    if (clear)
-    {
-      // TODO: get background color from somewhere
-      clear_to_color(backing_, 0);
-    }
-
-    else
-    {
-      mouse_hide();
-      blit(::screen, backing_, 0, 0, 0, 0, backing_->w, backing_->h);
-      mouse_show();
-    }
-
-    active_ = backing_;
-    activated = true;
-
-  }
   while (0);
 
   return activated;
@@ -1162,65 +1166,61 @@ Fl_Allegro_Graphics_Driver::flip_to_offscreen(bool clear)
   bool activated = false;
 
   do
-  {
-
-    mouse_hide();
-
-    if (0 == backing_)
     {
-      backing_ = image_new(_screen->width, _screen->height, _screen->stride);
+      mouse_hide();
+
+      if (0 == backing_)
+        {
+          backing_
+            = image_new(_screen->width, _screen->height, _screen->stride);
+        }
+
+      // TODO: _mjo if backing dimensions differ from screen
+      // destroy and rebuild
+
+      if (backing_ == active_)
+        {
+          break;
+        }
+
+      if (clear)
+        {
+          // TODO: get background color from somewhere
+          image_fill(backing_, 0);
+        }
+
+      else
+        {
+          image_blt_exact(backing_, _screen);
+        }
+
+      active_ = backing_;
+      activated = true;
     }
-
-    // TODO: _mjo if backing dimensions differ from screen
-    // destroy and rebuild
-
-    if (backing_ == active_)
-    {
-      break;
-    }
-
-    if (clear)
-    {
-      // TODO: get background color from somewhere
-      image_fill(backing_, 0);
-    }
-
-    else
-    {
-      image_blt_exact(backing_, _screen);
-    }
-
-    active_ = backing_;
-    activated = true;
-
-  }
   while (0);
 
   return activated;
-
 }
 #endif
 
 bool
-Fl_Allegro_Graphics_Driver::flip_to_onscreen()
+  Fl_Allegro_Graphics_Driver::flip_to_onscreen()
 #if defined(USE_ALLEGRO)
 {
   bool activated = false;
 
   do
-  {
-
-    if (::screen == active_)
     {
-      break;
+      if (::screen == active_)
+        {
+          break;
+        }
+
+      blit(backing_, ::screen, 0, 0, 0, 0, backing_->w, backing_->h);
+      active_ = ::screen;
+      activated = true;
+      mouse_show();
     }
-
-    blit(backing_, ::screen, 0, 0, 0, 0, backing_->w, backing_->h);
-    active_ = ::screen;
-    activated = true;
-    mouse_show();
-
-  }
   while (0);
 
   return activated;
@@ -1230,20 +1230,18 @@ Fl_Allegro_Graphics_Driver::flip_to_onscreen()
   bool activated = false;
 
   do
-  {
-
-    if (_screen == active_)
     {
-      break;
+      if (_screen == active_)
+        {
+          break;
+        }
+
+      mouse_hide();
+      image_blt_exact(_screen, backing_);
+      active_ = _screen;
+      activated = true;
+      mouse_show();
     }
-
-    mouse_hide();
-    image_blt_exact(_screen, backing_);
-    active_ = _screen;
-    activated = true;
-    mouse_show();
-
-  }
   while (0);
 
   return activated;
@@ -1251,76 +1249,73 @@ Fl_Allegro_Graphics_Driver::flip_to_onscreen()
 #endif
 
 void
-Fl_Allegro_Graphics_Driver::draw_image(const uchar* buf, int X, int Y, int W,
-                                       int H, int D, int L)
+  Fl_Allegro_Graphics_Driver::draw_image(
+    const uchar *buf, int X, int Y, int W, int H, int D, int L)
 {
 #if defined(USE_ALLEGRO)
-  BITMAP* bmp = rgb_data_to_bitmap(
-                  static_cast<unsigned int>(W),
-                  static_cast<unsigned int>(H),
-                  static_cast<unsigned int>(D),
-                  static_cast<unsigned int>(L),
-                  buf);
+  BITMAP *bmp = rgb_data_to_bitmap(static_cast<unsigned int>(W),
+                                   static_cast<unsigned int>(H),
+                                   static_cast<unsigned int>(D),
+                                   static_cast<unsigned int>(L),
+                                   buf);
 
   if (bmp)
-  {
-    X += Fl::window_draw_offset_x;
-    Y += Fl::window_draw_offset_y;
-    masked_blit(bmp, surface(), 0, 0, X, Y, bmp->w, bmp->h);
-    destroy_bitmap(bmp);
-  }
+    {
+      X += Fl::window_draw_offset_x;
+      Y += Fl::window_draw_offset_y;
+      masked_blit(bmp, surface(), 0, 0, X, Y, bmp->w, bmp->h);
+      destroy_bitmap(bmp);
+    }
 
 #else
 
   do
-  {
-
-    if (0 >= W)
     {
-      break;
+      if (0 >= W)
+        {
+          break;
+        }
+
+      if (0 >= H)
+        {
+          break;
+        }
+
+      struct bitmap bmp;
+
+      bmp.stride = L;
+
+      bmp.width = static_cast<size_t>(W);
+
+      bmp.height = static_cast<size_t>(H);
+
+      bmp.bits.ref = buf;
+
+      int x = X + Fl::window_draw_offset_x;
+
+      int y = Y + Fl::window_draw_offset_y;
+
+      switch (D)
+        {
+        case 4: // 32
+          bitmap_32bpp_blt(surface(), x, y, &bmp);
+          break;
+
+        case 3: // 24
+          bitmap_24bpp_blt(surface(), x, y, &bmp);
+          break;
+
+        case 2: // 16
+          break;
+
+        case 1: // 8
+          bitmap_8bpp_blt(surface(), x, y, &bmp, 0);
+          break;
+
+        default:
+          break;
+        }
     }
-
-    if (0 >= H)
-    {
-      break;
-    }
-
-    struct bitmap bmp;
-
-    bmp.stride = L;
-
-    bmp.width = static_cast<size_t>(W);
-
-    bmp.height = static_cast<size_t>(H);
-
-    bmp.bits.ref = buf;
-
-    int x = X + Fl::window_draw_offset_x;
-
-    int y = Y + Fl::window_draw_offset_y;
-
-    switch (D)
-    {
-      case 4: // 32
-        bitmap_32bpp_blt(surface(), x, y, &bmp);
-        break;
-
-      case 3: // 24
-        bitmap_24bpp_blt(surface(), x, y, &bmp);
-        break;
-
-      case 2: // 16
-        break;
-
-      case 1: // 8
-        bitmap_8bpp_blt(surface(), x, y, &bmp, 0);
-        break;
-
-      default:
-        break;
-    }
-
-  }
   while (0);
 
 #endif
@@ -1328,129 +1323,121 @@ Fl_Allegro_Graphics_Driver::draw_image(const uchar* buf, int X, int Y, int W,
 }
 
 void
-Fl_Allegro_Graphics_Driver::draw_image(Fl_Draw_Image_Cb cb, void* data, int X,
-                                       int Y, int W, int H, int D)
+  Fl_Allegro_Graphics_Driver::draw_image(
+    Fl_Draw_Image_Cb cb, void *data, int X, int Y, int W, int H, int D)
 {
-
   X += Fl::window_draw_offset_x;
   Y += Fl::window_draw_offset_y;
 
 #if defined(USE_ALLEGRO)
-  BITMAP* bmp = rgb_staged_to_image(
-                  cb,
-                  data,
-                  static_cast<unsigned int>(W),
-                  static_cast<unsigned int>(H),
-                  static_cast<unsigned int>(D));
+  BITMAP *bmp = rgb_staged_to_image(cb,
+                                    data,
+                                    static_cast<unsigned int>(W),
+                                    static_cast<unsigned int>(H),
+                                    static_cast<unsigned int>(D));
 
   if (bmp)
-  {
-    masked_blit(bmp, surface(), 0, 0, X, Y, bmp->w, bmp->h);
-    destroy_bitmap(bmp);
-  }
+    {
+      masked_blit(bmp, surface(), 0, 0, X, Y, bmp->w, bmp->h);
+      destroy_bitmap(bmp);
+    }
 
 #else
 
-  struct bitmap* bmp= rgb24cb_to_bitmap(
-    cb,
-    data,
-    static_cast<unsigned int>(W),
-    static_cast<unsigned int>(H));
+  struct bitmap *bmp = rgb24cb_to_bitmap(
+    cb, data, static_cast<unsigned int>(W), static_cast<unsigned int>(H));
 
   bitmap_32bpp_blt(surface(), X, Y, bmp);
 
   bitmap_free(bmp);
 
-
 #endif
   return;
 }
 
 void
-Fl_Allegro_Graphics_Driver::draw_rgb(Fl_RGB_Image* rgb, int XP, int YP, int WP,
-                                     int HP, int cx, int cy)
+  Fl_Allegro_Graphics_Driver::draw_rgb(
+    Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy)
 {
 #if defined(USE_ALLEGRO)
-  BITMAP* bmp = rgb_image_to_bitmap((*rgb));
+  BITMAP *bmp = rgb_image_to_bitmap((*rgb));
 
   if (bmp)
-  {
-    int X = XP + Fl::window_draw_offset_x;
-    int Y = YP + Fl::window_draw_offset_y;
-    masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
-    destroy_bitmap(bmp);
-  }
+    {
+      int X = XP + Fl::window_draw_offset_x;
+      int Y = YP + Fl::window_draw_offset_y;
+      masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
+      destroy_bitmap(bmp);
+    }
 
 #else
 
   do
-  {
-
-    if (0 >= WP)
     {
-      break;
+      if (0 >= WP)
+        {
+          break;
+        }
+
+      if (0 >= HP)
+        {
+          break;
+        }
+
+      if (0 > cx)
+        {
+          break;
+        }
+
+      if (0 > cy)
+        {
+          break;
+        }
+
+      if (WP <= cx)
+        {
+          break;
+        }
+
+      if (HP <= cy)
+        {
+          break;
+        }
+
+      struct bitmap bmp;
+
+      bmp.width = static_cast<size_t>(WP);
+
+      bmp.height = static_cast<size_t>(HP);
+
+      bmp.bits.ref = rgb->array;
+
+      bmp.stride = bmp.width;
+
+      int x = XP + Fl::window_draw_offset_x;
+
+      int y = YP + Fl::window_draw_offset_y;
+
+      switch (rgb->d())
+        {
+        case 4:
+          bitmap_xy32bpp_blt(surface(), x, y, &bmp, cx, cy);
+          break;
+
+        case 3:
+          bitmap_xy24bpp_blt(surface(), x, y, &bmp, cx, cy);
+          break;
+
+        case 2:
+          break;
+
+        case 1:
+          break;
+
+        default:
+          break;
+        }
     }
-
-    if (0 >= HP)
-    {
-      break;
-    }
-
-    if (0 > cx)
-    {
-      break;
-    }
-
-    if (0 > cy)
-    {
-      break;
-    }
-
-    if (WP <= cx)
-    {
-      break;
-    }
-
-    if (HP <= cy)
-    {
-      break;
-    }
-
-    struct bitmap bmp;
-
-    bmp.width = static_cast<size_t>(WP);
-
-    bmp.height = static_cast<size_t>(HP);
-
-    bmp.bits.ref = rgb->array;
-
-    bmp.stride = bmp.width;
-
-    int x = XP + Fl::window_draw_offset_x;
-
-    int y = YP + Fl::window_draw_offset_y;
-
-    switch (rgb->d())
-    {
-      case 4:
-        bitmap_xy32bpp_blt(surface(), x, y, &bmp, cx, cy);
-        break;
-
-      case 3:
-        bitmap_xy24bpp_blt(surface(), x, y, &bmp, cx, cy);
-        break;
-
-      case 2:
-        break;
-
-      case 1:
-        break;
-
-      default:
-        break;
-    }
-
-  }
   while (0);
 
 #endif
@@ -1458,75 +1445,73 @@ Fl_Allegro_Graphics_Driver::draw_rgb(Fl_RGB_Image* rgb, int XP, int YP, int WP,
 }
 
 void
-Fl_Allegro_Graphics_Driver::draw_pixmap(Fl_Pixmap* pxm, int XP, int YP, int WP,
-                                        int HP, int cx, int cy)
+  Fl_Allegro_Graphics_Driver::draw_pixmap(
+    Fl_Pixmap *pxm, int XP, int YP, int WP, int HP, int cx, int cy)
 {
 #if defined(USE_ALLEGRO)
-  BITMAP* bmp = pxm_to_bitmap((*pxm));
+  BITMAP *bmp = pxm_to_bitmap((*pxm));
 
   if (bmp)
-  {
-    int X = XP + Fl::window_draw_offset_x;
-    int Y = YP + Fl::window_draw_offset_y;
-    masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
-    destroy_bitmap(bmp);
-  }
+    {
+      int X = XP + Fl::window_draw_offset_x;
+      int Y = YP + Fl::window_draw_offset_y;
+      masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
+      destroy_bitmap(bmp);
+    }
 
 #else
-  uint8_t* bits = 0;
+  uint8_t *bits = 0;
 
   do
-  {
-
-    if (0 >= pxm->w())
     {
-      break;
+      if (0 >= pxm->w())
+        {
+          break;
+        }
+
+      if (0 >= pxm->h())
+        {
+          break;
+        }
+
+      size_t limit = (pxm->w() * pxm->h() * 4);
+      bits = reinterpret_cast<unsigned char *>(malloc(limit));
+      char const *const *raw = pxm->data();
+      int rc = fl_convert_pixmap(raw, bits, 0);
+
+      if (0 == rc)
+        {
+          break;
+        }
+
+      uint8_t *byte = (uint8_t *)bits;
+
+      for (size_t slot = 0; (pxm->w() * pxm->h()) > slot; slot++)
+        {
+          uint8_t red = byte[0];
+          uint8_t green = byte[1];
+          uint8_t blue = byte[2];
+          uint32_t color = (red << 16) | (green << 8) | blue;
+          *(uint32_t *)byte = color;
+          byte += 4;
+        }
+
+      struct bitmap bmp;
+
+      bmp.width = static_cast<size_t>(pxm->w());
+
+      bmp.height = static_cast<size_t>(pxm->h());
+
+      bmp.bits.ref = bits;
+
+      bmp.stride = bmp.width;
+
+      int x = XP + Fl::window_draw_offset_x;
+
+      int y = YP + Fl::window_draw_offset_y;
+
+      bitmap_xy32bpp_blt(surface(), x, y, &bmp, cx, cy);
     }
-
-    if (0 >= pxm->h())
-    {
-      break;
-    }
-
-    size_t limit = (pxm->w() * pxm->h() * 4);
-    bits = reinterpret_cast<unsigned char*>(malloc(limit));
-    char const* const* raw = pxm->data();
-    int rc = fl_convert_pixmap(raw, bits, 0);
-
-    if (0 == rc)
-    {
-      break;
-    }
-
-    uint8_t* byte = (uint8_t*)bits;
-
-    for (size_t slot = 0; (pxm->w() * pxm->h()) > slot; slot++)
-    {
-      uint8_t red = byte[0];
-      uint8_t green = byte[1];
-      uint8_t blue = byte[2];
-      uint32_t color = (red << 16) | (green << 8) | blue;
-      *(uint32_t*)byte = color;
-      byte += 4;
-    }
-
-    struct bitmap bmp;
-
-    bmp.width = static_cast<size_t>(pxm->w());
-
-    bmp.height = static_cast<size_t>(pxm->h());
-
-    bmp.bits.ref = bits;
-
-    bmp.stride = bmp.width;
-
-    int x = XP + Fl::window_draw_offset_x;
-
-    int y = YP + Fl::window_draw_offset_y;
-
-    bitmap_xy32bpp_blt(surface(), x, y, &bmp, cx, cy);
-
-  }
   while (0);
 
   free(bits);
@@ -1536,61 +1521,58 @@ Fl_Allegro_Graphics_Driver::draw_pixmap(Fl_Pixmap* pxm, int XP, int YP, int WP,
 }
 
 void
-Fl_Allegro_Graphics_Driver::draw_bitmap(Fl_Bitmap* bm, int XP, int YP, int WP,
-                                        int HP, int cx, int cy)
+  Fl_Allegro_Graphics_Driver::draw_bitmap(
+    Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy)
 {
 #if defined(USE_ALLEGRO)
-  BITMAP* bmp = bitmap_to_bitmap((*bm));
+  BITMAP *bmp = bitmap_to_bitmap((*bm));
 
   if (bmp)
-  {
-    int X = XP + Fl::window_draw_offset_x;
-    int Y = YP + Fl::window_draw_offset_y;
-    masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
-    destroy_bitmap(bmp);
-  }
+    {
+      int X = XP + Fl::window_draw_offset_x;
+      int Y = YP + Fl::window_draw_offset_y;
+      masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
+      destroy_bitmap(bmp);
+    }
 
 #else
 
   do
-  {
-
-    if (0 >= bm->w())
     {
-      break;
+      if (0 >= bm->w())
+        {
+          break;
+        }
+
+      if (0 >= bm->h())
+        {
+          break;
+        }
+
+      struct bitmap bmp;
+
+      bmp.width = static_cast<size_t>(bm->w());
+
+      bmp.height = static_cast<size_t>(bm->h());
+
+      bmp.bits.ref = bm->array;
+
+      bmp.stride = bmp.width;
+
+      int x = XP + Fl::window_draw_offset_x;
+
+      int y = YP + Fl::window_draw_offset_y;
+
+      switch (bm->d())
+        {
+        case 0:
+          bitmap_xy1bpp_blt(surface(), x, y, &bmp, cx, cy);
+          break;
+
+        default:
+          break;
+        }
     }
-
-    if (0 >= bm->h())
-    {
-      break;
-    }
-
-    struct bitmap bmp;
-
-    bmp.width = static_cast<size_t>(bm->w());
-
-    bmp.height = static_cast<size_t>(bm->h());
-
-    bmp.bits.ref = bm->array;
-
-    bmp.stride = bmp.width;
-
-    int x = XP + Fl::window_draw_offset_x;
-
-    int y = YP + Fl::window_draw_offset_y;
-
-    switch (bm->d())
-    {
-      case 0:
-        bitmap_xy1bpp_blt(surface(), x, y, &bmp, cx, cy);
-        break;
-
-      default:
-        break;
-    }
-
-
-  }
   while (0);
 
 #endif
@@ -1599,36 +1581,40 @@ Fl_Allegro_Graphics_Driver::draw_bitmap(Fl_Bitmap* bm, int XP, int YP, int WP,
 }
 
 void
-Fl_Allegro_Graphics_Driver::nca_draw_frame(
-  int const nca_x,
-  int const nca_y,
-  unsigned int const nca_w,
-  unsigned int const nca_h,
-  unsigned int const title_bar_height,
-  char const* title)
+  Fl_Allegro_Graphics_Driver::nca_draw_frame(
+    int const nca_x,
+    int const nca_y,
+    unsigned int const nca_w,
+    unsigned int const nca_h,
+    unsigned int const title_bar_height,
+    char const *title)
 {
 #if defined(USE_ALLEGRO)
   int fg = makecol(255, 255, 255);
   int bg = makecol(45, 45, 45);
 
-  ::rectfill(surface(), nca_x, nca_y, nca_x + nca_w, nca_y + title_bar_height - 1,
-             bg);
+  ::rectfill(
+    surface(), nca_x, nca_y, nca_x + nca_w, nca_y + title_bar_height - 1, bg);
   ::rect(surface(), nca_x, nca_y, nca_x + nca_w, nca_y + nca_h - 1, bg);
-  ::line(surface(), nca_x, nca_y + title_bar_height - 2, nca_x + nca_w - 1,
-         nca_y + title_bar_height - 2, bg);
+  ::line(surface(),
+         nca_x,
+         nca_y + title_bar_height - 2,
+         nca_x + nca_w - 1,
+         nca_y + title_bar_height - 2,
+         bg);
 
   if (title && *title)
-  {
-    ::textout_centre_ex(surface(), ::font, title, nca_x + (nca_w / 2), nca_y + 8,
-                        fg, -1);
-  }
+    {
+      ::textout_centre_ex(
+        surface(), ::font, title, nca_x + (nca_w / 2), nca_y + 8, fg, -1);
+    }
 
 #else
   uint32_t fg = 0xffffff;
   uint32_t bg = 0x000000;
 
-  image_fill_area(surface(), nca_x, nca_y, nca_x + nca_w,
-                  nca_y + title_bar_height - 1, bg);
+  image_fill_area(
+    surface(), nca_x, nca_y, nca_x + nca_w, nca_y + title_bar_height - 1, bg);
 
   image_lineh(surface(), nca_x, nca_y, nca_w, bg);
   image_lineh(surface(), nca_x, nca_y + nca_h, nca_w, bg);
@@ -1636,12 +1622,12 @@ Fl_Allegro_Graphics_Driver::nca_draw_frame(
   image_linev(surface(), nca_x + nca_w, nca_y, nca_h, bg);
 
   if (title && *title)
-  {
-    size_t len = strlen(title);
-    int x = (nca_x + ( (nca_w / 2) - (len / 2) ));
-    int y = nca_y + title_bar_height - 4;
-    ft_.draw(surface(), title, len, x, y, 0, 14, fg);
-  }
+    {
+      size_t len = strlen(title);
+      int x = (nca_x + ((nca_w / 2) - (len / 2)));
+      int y = nca_y + title_bar_height - 4;
+      ft_.draw(surface(), title, len, x, y, 0, 14, fg);
+    }
 
 #endif
 
@@ -1649,21 +1635,21 @@ Fl_Allegro_Graphics_Driver::nca_draw_frame(
 }
 
 int
-Fl_Allegro_Graphics_Driver::height()
+  Fl_Allegro_Graphics_Driver::height()
 {
   int height2 = ft_.height(font_, size_);
   return height2;
 }
 
 int
-Fl_Allegro_Graphics_Driver::descent()
+  Fl_Allegro_Graphics_Driver::descent()
 {
   int descent2 = ft_.descent(font_, size_);
   return descent2;
 }
 
 void
-Fl_Allegro_Graphics_Driver::font(Fl_Font font, Fl_Fontsize fsize)
+  Fl_Allegro_Graphics_Driver::font(Fl_Font font, Fl_Fontsize fsize)
 {
   font_ = font;
   size_ = fsize;

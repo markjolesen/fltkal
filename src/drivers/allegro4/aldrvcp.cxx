@@ -66,13 +66,13 @@
 #include "aldrvcp.h"
 
 Fl_Copy_Surface_Driver *
-Fl_Copy_Surface_Driver::newCopySurfaceDriver(int w, int h)
+  Fl_Copy_Surface_Driver::newCopySurfaceDriver(int w, int h)
 {
-    return reinterpret_cast<Fl_Copy_Surface_Driver *>(0);
+  return reinterpret_cast<Fl_Copy_Surface_Driver *>(0);
 }
 
 Fl_Allegro_Copy_Surface_Driver::Fl_Allegro_Copy_Surface_Driver(int w, int h) :
-    Fl_Copy_Surface_Driver(w, h)
+  Fl_Copy_Surface_Driver(w, h)
 {
 }
 
@@ -80,22 +80,23 @@ Fl_Allegro_Copy_Surface_Driver::~Fl_Allegro_Copy_Surface_Driver()
 {
 }
 
-void Fl_Allegro_Copy_Surface_Driver::set_current()
+void
+  Fl_Allegro_Copy_Surface_Driver::set_current()
 {
-
 }
 
-void Fl_Allegro_Copy_Surface_Driver::translate(int x, int y)
+void
+  Fl_Allegro_Copy_Surface_Driver::translate(int x, int y)
 {
-
 }
 
-void Fl_Allegro_Copy_Surface_Driver::untranslate()
+void
+  Fl_Allegro_Copy_Surface_Driver::untranslate()
 {
-
 }
 
-Fl_RGB_Image *Fl_Allegro_Copy_Surface_Driver::image()
+Fl_RGB_Image *
+  Fl_Allegro_Copy_Surface_Driver::image()
 {
-    return 0;
+  return 0;
 }

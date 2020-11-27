@@ -1,71 +1,17 @@
-// colorch.cxx
-//
-// "$Id: Fl_Color_Chooser.cxx 10234 2014-08-21 12:18:32Z cand $"
 //
 // Color chooser for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2010 by Bill Spitzak and others.
+// Copyright 1998-2019 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <fl/fl.h>
@@ -96,11 +42,11 @@
   \param[out] R, G, B color components
  */
 void Fl_Color_Chooser::hsv2rgb(
-	double H, double S, double V, double& R, double& G, double& B) {
+        double H, double S, double V, double& R, double& G, double& B) {
   if (S < 5.0e-6) {
     R = G = B = V;
   } else {
-    int i = (int)H;  
+    int i = (int)H;
     double f = H - (float)i;
     double p1 = V*(1.0-S);
     double p2 = V*(1.0-S*f);
@@ -122,7 +68,7 @@ void Fl_Color_Chooser::hsv2rgb(
   \param[out] H, S, V color components
  */
 void Fl_Color_Chooser::rgb2hsv(
-	double R, double G, double B, double& H, double& S, double& V) {
+        double R, double G, double B, double& H, double& S, double& V) {
   double maxv = R > G ? R : G; if (B > maxv) maxv = B;
   V = maxv;
   if (maxv>0) {
@@ -138,10 +84,10 @@ void Fl_Color_Chooser::rgb2hsv(
 
 /** Fl_Color_Chooser modes */
 enum {
-  M_RGB,	/**< mode() of Fl_Color_Chooser showing RGB values */
-  M_BYTE,	/**< mode() of Fl_Color_Chooser showing byte values */
-  M_HEX,	/**< mode() of Fl_Color_Chooser showing hex values */
-  M_HSV		/**< mode() of Fl_Color_Chooser showing HSV values */
+  M_RGB,        /**< mode() of Fl_Color_Chooser showing RGB values */
+  M_BYTE,       /**< mode() of Fl_Color_Chooser showing byte values */
+  M_HEX,        /**< mode() of Fl_Color_Chooser showing hex values */
+  M_HSV         /**< mode() of Fl_Color_Chooser showing HSV values */
 };
 static const Fl_Menu_Item mode_menu[] = {
   {"rgb"},
@@ -202,7 +148,7 @@ int Fl_Color_Chooser::rgb(double R, double G, double B) {
 #endif
     valuebox.damage(FL_DAMAGE_EXPOSE);}
   if (hue_ != ph || saturation_ != ps) {
-    huebox.damage(FL_DAMAGE_EXPOSE); 
+    huebox.damage(FL_DAMAGE_EXPOSE);
     valuebox.damage(FL_DAMAGE_SCROLL);
   }
   return 1;
@@ -230,7 +176,7 @@ int Fl_Color_Chooser::hsv(double H, double S, double V) {
 #endif
     valuebox.damage(FL_DAMAGE_EXPOSE);}
   if (hue_ != ph || saturation_ != ps) {
-    huebox.damage(FL_DAMAGE_EXPOSE); 
+    huebox.damage(FL_DAMAGE_EXPOSE);
     valuebox.damage(FL_DAMAGE_SCROLL);
   }
   hsv2rgb(H,S,V,r_,g_,b_);
@@ -359,9 +305,11 @@ void Flcc_HueBox::draw() {
   int yy1 = y()+Fl::box_dy(box());
   int w1 = w()-Fl::box_dw(box());
   int h1 = h()-Fl::box_dh(box());
-  if (damage() == FL_DAMAGE_EXPOSE) fl_push_clip(x1+px,yy1+py,6,6);
-  fl_draw_image(generate_image, this, x1, yy1, w1, h1);
-  if (damage() == FL_DAMAGE_EXPOSE) fl_pop_clip();
+  if (w1>0 && h1>0) {
+    if (damage() == FL_DAMAGE_EXPOSE) fl_push_clip(x1+px,yy1+py,6,6);
+    fl_draw_image(generate_image, this, x1, yy1, w1, h1);
+    if (damage() == FL_DAMAGE_EXPOSE) fl_pop_clip();
+  }
   Fl_Color_Chooser* c = (Fl_Color_Chooser*)parent();
 #ifdef CIRCLE
   int X = int(.5*(cos(c->hue()*(M_PI/3.0))*c->saturation()+1) * (w1-6));
@@ -373,7 +321,11 @@ void Flcc_HueBox::draw() {
   if (X < 0) X = 0; else if (X > w1-6) X = w1-6;
   if (Y < 0) Y = 0; else if (Y > h1-6) Y = h1-6;
   //  fl_color(c->value()>.75 ? FL_BLACK : FL_WHITE);
-  draw_box(FL_UP_BOX,x1+X,yy1+Y,6,6,Fl::focus() == this ? FL_FOREGROUND_COLOR : FL_GRAY);
+  if (w1>0 && h1>0) {
+    fl_push_clip(x1,yy1,w1,h1);
+    draw_box(FL_UP_BOX,x1+X,yy1+Y,6,6,Fl::focus() == this ? FL_FOREGROUND_COLOR : FL_GRAY);
+    fl_pop_clip();
+  }
   px = X; py = Y;
 }
 #endif // !FL_DOXYGEN
@@ -433,9 +385,11 @@ void Flcc_ValueBox::draw() {
   int yy1 = y()+Fl::box_dy(box());
   int w1 = w()-Fl::box_dw(box());
   int h1 = h()-Fl::box_dh(box());
-  if (damage() == FL_DAMAGE_EXPOSE) fl_push_clip(x1,yy1+py,w1,6);
-  fl_draw_image(generate_vimage, this, x1, yy1, w1, h1);
-  if (damage() == FL_DAMAGE_EXPOSE) fl_pop_clip();
+  if (w1>0 && h1>0) {
+    if (damage() == FL_DAMAGE_EXPOSE) fl_push_clip(x1,yy1+py,w1,6);
+    fl_draw_image(generate_vimage, this, x1, yy1, w1, h1);
+    if (damage() == FL_DAMAGE_EXPOSE) fl_pop_clip();
+  }
   int Y = int((1-c->value()) * (h1-6));
   if (Y < 0) Y = 0; else if (Y > h1-6) Y = h1-6;
   draw_box(FL_UP_BOX,x1,yy1+Y,w1,6,Fl::focus() == this ? FL_FOREGROUND_COLOR : FL_GRAY);
@@ -504,6 +458,81 @@ void Fl_Color_Chooser::mode(int newMode)
   choice.do_callback();
 }
 
+// Small local helper function:
+// Copy hex color value ('RRGGBB') of Fl_Color_Chooser to clipboard.
+// Always returns 1 (event was used).
+
+static int copy_rgb(double r, double g, double b) {
+  char buf[8];
+  int len;
+  len = sprintf(buf, "%02X%02X%02X", int(r * 255 + .5), int(g * 255 + .5), int(b * 255 + .5));
+  Fl::copy(buf, len, 1);
+  // printf("copied '%s' to clipboard\n", buf); // Debug
+  return 1;
+}
+
+/**
+  Handles all events received by this widget.
+
+  This specific handle() method processes the standard 'copy' function
+  as seen in other input widgets. It copies the current color value to
+  the clipboard as a string in RGB format ('RRGGBB').
+
+  This format is independent of the Fl_Color_Chooser display format
+  setting. No other formats are supplied.
+
+  The keyboard events handled are:
+    - ctrl-c
+    - ctrl-x
+    - ctrl-Insert
+
+  All other events are processed by the parent class \c Fl_Group.
+
+  This enables the \b user to choose a color value, press
+  \p ctrl-c to copy the value to the clipboard and paste it into
+  a color selection widget in another application window or any
+  other text input (e.g. a preferences dialog or an editor).
+
+  \note Keyboard event handling by the current focus widget has
+    priority, hence moving the focus to one of the buttons or
+    selecting text in one of the input widgets effectively
+    disables this special method.
+
+  \param[in]    e  current event
+  \returns      1  if event has been handled, 0 otherwise
+
+  \see Fl_Group::handle(int)
+*/
+
+int Fl_Color_Chooser::handle(int e) {
+
+  unsigned int mods = Fl::event_state() & (FL_META | FL_CTRL | FL_ALT);
+  unsigned int shift = Fl::event_state() & FL_SHIFT;
+
+  switch (e) {
+    case FL_KEYBOARD:
+    case FL_SHORTCUT:
+      // ignore CTRL-SHIFT-C, CTRL-SHIFT-X and CTRL-SHIFT-Insert
+      if (shift)
+        return Fl_Group::handle(e);
+      switch (Fl::event_key()) {
+        case FL_Insert:
+          if (mods == FL_CTRL)
+            return copy_rgb(r_, g_, b_);
+          break;
+        case 'c':
+        case 'x':
+          if (mods == FL_COMMAND)
+            return copy_rgb(r_, g_, b_);
+          break;
+        default:
+          break;
+      }
+    default:
+      break;
+  }
+  return Fl_Group::handle(e);
+}
 
 ////////////////////////////////////////////////////////////////
 
@@ -561,9 +590,9 @@ public:
 void ColorChip::draw() {
   if (damage()&FL_DAMAGE_ALL) draw_box();
   fl_rectf(x()+Fl::box_dx(box()),
-	   y()+Fl::box_dy(box()),
-	   w()-Fl::box_dw(box()),
-	   h()-Fl::box_dh(box()),r,g,b);
+           y()+Fl::box_dy(box()),
+           w()-Fl::box_dw(box()),
+           h()-Fl::box_dh(box()),r,g,b);
 }
 
 static void chooser_cb(Fl_Widget* o, void* vv) {
@@ -579,7 +608,7 @@ extern const char* fl_ok;
 extern const char* fl_cancel;
 
 // fl_color_chooser's callback for ok_button (below)
-//  [in] o is a pointer to okay_button (below) 
+//  [in] o is a pointer to okay_button (below)
 //  [in] p is a pointer to an int to receive the return value (1)
 // closes the fl_color_chooser window
 static void cc_ok_cb (Fl_Widget *o, void *p) {
@@ -599,17 +628,17 @@ static void cc_cancel_cb (Fl_Widget *o, void *p) {
     o->hide();
 }
 
-/** \addtogroup  group_comdlg 
+/** \addtogroup  group_comdlg
     @{ */
 /**
   \brief Pops up a window to let the user pick an arbitrary RGB color.
   \note \#include <FL/Fl_Color_Chooser.H>
-  \image html fl_color_chooser.jpg 
+  \image html fl_color_chooser.jpg
   \image latex  fl_color_chooser.jpg "fl_color_chooser" width=8cm
   \param[in] name Title label for the window
   \param[in,out] r, g, b Color components in the range 0.0 to 1.0.
   \param[in] cmode Optional mode for color chooser. See mode(int). Default -1 if none (rgb mode).
-  \retval 1 if user confirms the selection 
+  \retval 1 if user confirms the selection
   \retval 0 if user cancels the dialog
   \relates Fl_Color_Chooser
  */
@@ -647,12 +676,12 @@ int fl_color_chooser(const char* name, double& r, double& g, double& b, int cmod
 /**
   \brief Pops up a window to let the user pick an arbitrary RGB color.
   \note \#include <FL/Fl_Color_Chooser.H>
-  \image html fl_color_chooser.jpg 
+  \image html fl_color_chooser.jpg
   \image latex  fl_color_chooser.jpg "fl_color_chooser" width=8cm
   \param[in] name Title label for the window
   \param[in,out] r, g, b Color components in the range 0 to 255.
   \param[in] cmode Optional mode for color chooser. See mode(int). Default -1 if none (rgb mode).
-  \retval 1 if user confirms the selection 
+  \retval 1 if user confirms the selection
   \retval 0 if user cancels the dialog
   \relates Fl_Color_Chooser
  */
@@ -670,6 +699,3 @@ int fl_color_chooser(const char* name, uchar& r, uchar& g, uchar& b, int cmode) 
 }
 
 /** @} */
-//
-// End of "$Id: Fl_Color_Chooser.cxx 10234 2014-08-21 12:18:32Z cand $".
-//

@@ -65,55 +65,59 @@
 //
 #if !defined(__TIMEOUT_H__)
 
-#include "ticker.h"
-#include <fl/fl.h>
+#  include "ticker.h"
+#  include <fl/fl.h>
 
 class timeout
 {
-
 public:
+  timeout();
 
-    timeout();
+  virtual ~timeout();
 
-    virtual ~timeout();
+  void
+    clear();
 
-    void clear();
+  void
+    add(double const seconds, Fl_Timeout_Handler cb, void *arg);
 
-    void add(double const seconds, Fl_Timeout_Handler cb, void *arg);
+  void
+    repeat(double const seconds, Fl_Timeout_Handler cb, void *arg);
 
-    void repeat(double const seconds, Fl_Timeout_Handler cb, void *arg);
+  bool
+    contains(Fl_Timeout_Handler cb, void *arg);
 
-    bool contains(Fl_Timeout_Handler cb, void *arg);
+  void
+    remove(Fl_Timeout_Handler cb, void *arg);
 
-    void remove(Fl_Timeout_Handler cb, void *arg);
-
-    void elapse(ticks_t const &elapsed);
+  void
+    elapse(ticks_t const &elapsed);
 
 protected:
+  struct slot
+  {
+    ticker timer;
+    double seconds; // TODO: _mjo remove
+    Fl_Timeout_Handler cb;
+    void *arg;
+    struct slot *next;
+  };
 
-    struct slot
-    {
-        ticker timer;
-        double seconds; // TODO: _mjo remove
-        Fl_Timeout_Handler cb;
-        void *arg;
-        struct slot *next;
-    };
+  void
+    clear(struct slot *const head);
 
-    void clear(struct slot *const head);
+  void
+    link(double const seconds, Fl_Timeout_Handler cb, void *arg);
 
-    void link(double const seconds, Fl_Timeout_Handler cb, void *arg);
-
-    struct slot *first_;
-    struct slot *free_;
+  struct slot *first_;
+  struct slot *free_;
 
 private:
+  timeout(timeout const &);
 
-    timeout(timeout const &);
-
-    timeout &operator=(timeout const &);
-
+  timeout &
+    operator=(timeout const &);
 };
 
-#define __TIMEOUT_H__
+#  define __TIMEOUT_H__
 #endif

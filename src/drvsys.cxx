@@ -1,71 +1,17 @@
-// drvsys.cxx
-//
-// "$Id: Fl_System_Driver.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // A base class for platform specific system calls.
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /**
@@ -189,7 +135,7 @@ void Fl_System_Driver::fatal(const char *format, va_list args) {
 
 /* the following function was stolen from the X sources as indicated. */
 
-/* Copyright 	Massachusetts Institute of Technology  1985, 1986, 1987 */
+/* Copyright    Massachusetts Institute of Technology  1985, 1986, 1987 */
 /* $XConsortium: XParseGeom.c,v 11.18 91/02/21 17:23:05 rws Exp $ */
 
 /*
@@ -220,7 +166,7 @@ static int ReadInteger(char* string, char** NextString)
 {
   int Result = 0;
   int Sign = 1;
-  
+
   if (*string == '+')
     string++;
   else if (*string == '-') {
@@ -245,11 +191,11 @@ int Fl_System_Driver::XParseGeometry(const char* string, int* x, int* y,
   unsigned int tempWidth = 0, tempHeight = 0;
   int tempX = 0, tempY = 0;
   char *nextCharacter;
-  
+
   if ( (string == NULL) || (*string == '\0')) return(mask);
   if (*string == '=')
     string++;  /* ignore possible '=' at beg of geometry spec */
-  
+
   strind = (char *)string;
   if (*strind != '+' && *strind != '-' && *strind != 'x') {
     tempWidth = ReadInteger(strind, &nextCharacter);
@@ -258,7 +204,7 @@ int Fl_System_Driver::XParseGeometry(const char* string, int* x, int* y,
     strind = nextCharacter;
     mask |= fl_WidthValue;
   }
-  
+
   if (*strind == 'x' || *strind == 'X') {
     strind++;
     tempHeight = ReadInteger(strind, &nextCharacter);
@@ -267,7 +213,7 @@ int Fl_System_Driver::XParseGeometry(const char* string, int* x, int* y,
     strind = nextCharacter;
     mask |= fl_HeightValue;
   }
-  
+
   if ((*strind == '+') || (*strind == '-')) {
     if (*strind == '-') {
       strind++;
@@ -276,7 +222,7 @@ int Fl_System_Driver::XParseGeometry(const char* string, int* x, int* y,
         return (0);
       strind = nextCharacter;
       mask |= fl_XNegative;
-      
+
     } else {
       strind++;
       tempX = ReadInteger(strind, &nextCharacter);
@@ -293,7 +239,7 @@ int Fl_System_Driver::XParseGeometry(const char* string, int* x, int* y,
           return(0);
         strind = nextCharacter;
         mask |= fl_YNegative;
-        
+
       } else {
         strind++;
         tempY = ReadInteger(strind, &nextCharacter);
@@ -304,12 +250,12 @@ int Fl_System_Driver::XParseGeometry(const char* string, int* x, int* y,
       mask |= fl_YValue;
     }
   }
-  
+
   /* If strind isn't at the end of the string the it's an invalid
    geometry specification. */
-  
+
   if (*strind != '\0') return (0);
-  
+
   if (mask & fl_XValue)
     *x = tempX;
   if (mask & fl_YValue)
@@ -463,23 +409,23 @@ int Fl_System_Driver::filename_expand(char *to,int tolen, const char *from) {
   strlcpy(temp,from, tolen);
   char *start = temp;
   char *end = temp+strlen(temp);
-  
+
   int ret = 0;
-  
-  for (char *a=temp; a<end; ) {	// for each slash component
+
+  for (char *a=temp; a<end; ) { // for each slash component
     char *e; for (e=a; e<end && *e != '/'; e++) {/*empty*/} // find next slash
     const char *value = 0; // this will point at substitute value
     switch (*a) {
-      case '~':	// a home directory name
-        if (e <= a+1) {	// current user's directory
+      case '~': // a home directory name
+        if (e <= a+1) { // current user's directory
           value = getenv("HOME");
-        } else {	// another user's directory
+        } else {        // another user's directory
           char t = *e; *(char *)e = 0;
           value = getpwnam(a+1);
           *(char *)e = t;
         }
         break;
-      case '$':		/* an environment variable */
+      case '$':         /* an environment variable */
       {char t = *e; *(char *)e = 0; value = getenv(a+1); *(char *)e = t;}
         break;
     }
@@ -503,9 +449,11 @@ int Fl_System_Driver::filename_expand(char *to,int tolen, const char *from) {
 }
 
 int Fl_System_Driver::file_browser_load_directory(const char *directory, char *filename,
-                                                  size_t name_size, dirent ***pfiles, Fl_File_Sort_F *sort)
+                                                  size_t name_size, dirent ***pfiles,
+                                                  Fl_File_Sort_F *sort,
+                                                  char *errmsg, int errmsg_sz)
 {
-  return filename_list(directory, pfiles, sort);
+  return filename_list(directory, pfiles, sort, errmsg, errmsg_sz);
 }
 
 int Fl_System_Driver::file_type(const char *filename)
@@ -550,7 +498,3 @@ void Fl_System_Driver::gettime(time_t *sec, int *usec) {
  \}
  \endcond
  */
-
-//
-// End of "$Id: Fl_System_Driver.cxx 12976 2018-06-26 14:12:43Z manolo $".
-//

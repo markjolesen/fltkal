@@ -65,115 +65,106 @@
 //
 #if !defined(__TICKER_H__)
 
-#include "ticks.h"
+#  include "ticks.h"
 
 class ticker
 {
+public:
+  ticker();
 
-  public:
+  virtual ~ticker();
 
-    ticker();
+  bool
+    expired() const;
 
-    virtual ~ticker();
+  void
+    set(double const seconds);
 
-    bool expired() const;
+  void
+    reset();
 
-    void set(double const seconds);
+  void
+    elapse(ticks_t const &elapsed);
 
-    void reset();
+protected:
+  bool expired_;
+  ticks_t expiry_;
+  ticks_t ticker_;
 
-    void elapse(ticks_t const& elapsed);
+private:
+  ticker(ticker const &);
 
-  protected:
-
-    bool expired_;
-    ticks_t expiry_;
-    ticks_t ticker_;
-
-  private:
-
-    ticker(ticker const&);
-
-    ticker& operator=(ticker const&);
-
+  ticker &
+    operator=(ticker const &);
 };
 
-inline
-ticker::ticker() :
-  expired_(true),
-  expiry_(),
-  ticker_()
+inline ticker::ticker() : expired_(true), expiry_(), ticker_()
 {
   return;
 }
 
-inline
-ticker::~ticker()
+inline ticker::~ticker()
 {
   return;
 }
 
 inline void
-ticker::set(double const seconds)
+  ticker::set(double const seconds)
 {
   if (seconds > 0)
-  {
-    expired_ = false;
-    ticks_convert(expiry_, seconds);
-  }
+    {
+      expired_ = false;
+      ticks_convert(expiry_, seconds);
+    }
 
   else
-  {
-    expired_ = true;
-    ticks_convert(expiry_, 0);
-  }
+    {
+      expired_ = true;
+      ticks_convert(expiry_, 0);
+    }
 
   ticker_ = expiry_;
 }
 
 inline void
-ticker::reset()
+  ticker::reset()
 {
   ticker_ = expiry_;
   expired_ = false;
 }
 
 inline bool
-ticker::expired() const
+  ticker::expired() const
 {
   return expired_;
 }
 
 inline void
-ticker::elapse(ticks_t const& elapsed)
+  ticker::elapse(ticks_t const &elapsed)
 {
-
   do
-  {
-
-    if (expired_)
     {
-      break;
+      if (expired_)
+        {
+          break;
+        }
+
+      ticks_elapse(ticker_, elapsed);
+
+#  if defined(__DJGPP__) || defined(__WATCOMC__)
+
+      if (0 > ticker_)
+#  else
+      if (0 > ticker_.tv_sec || 0 > ticker_.tv_nsec)
+#  endif
+        {
+          expired_ = true;
+        }
     }
-
-    ticks_elapse(ticker_, elapsed);
-
-#if defined(__DJGPP__) || defined(__WATCOMC__)
-
-    if (0 > ticker_)
-#else
-    if (0 > ticker_.tv_sec || 0 > ticker_.tv_nsec)
-#endif
-    {
-      expired_ = true;
-    }
-
-  }
   while (0);
 
   return;
 }
 
-
-#define __TICKER_H__
+#  define __TICKER_H__
 #endif

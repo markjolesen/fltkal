@@ -1,74 +1,20 @@
-// imgpng.cxx
-//
-// "$Id: Fl_PNG_Image.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Fl_PNG_Image routines.
 //
-// Copyright 2017-2019 The fltkal authors
 // Copyright 1997-2012 by Easy Software Products.
-//
-//                              FLTK License
-//                            December 11, 2001
-//
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-//
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-//
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//
-//            http://www.fltk.org/str.php
-//
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-//
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-//
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-//
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-//
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-//
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-//
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-//
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-//
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
-//
 // Image support by Matthias Melcher, Copyright 2000-2009.
 //
 // Copyright 2013-2017 by Bill Spitzak and others.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 // Contents:
 
@@ -122,8 +68,8 @@ typedef struct  {
 
 extern "C" {
   static void png_read_data_from_mem( png_structp png_ptr, //pointer to our data
-				      png_bytep data,  // where to copy the image data for libpng computing
-				      png_size_t length) // length of data to copy
+                                      png_bytep data,  // where to copy the image data for libpng computing
+                                      png_size_t length) // length of data to copy
   {
     fl_png_memory *png_mem_data = (fl_png_memory*)png_get_io_ptr(png_ptr); // get the pointer to our struct
     if (png_mem_data->current + length > png_mem_data->last) {
@@ -150,7 +96,7 @@ extern "C" {
  PNG format could not be decoded, and ERR_NO_IMAGE if the image could not
  be loaded for another reason.
 
- \param[in] filename	Name of PNG file to read
+ \param[in] filename    Name of PNG file to read
  */
 Fl_PNG_Image::Fl_PNG_Image (const char *filename): Fl_RGB_Image(0,0,0)
 {
@@ -167,7 +113,7 @@ Fl_PNG_Image::Fl_PNG_Image (const char *filename): Fl_RGB_Image(0,0,0)
  shared images (see: Fl_Shared_Image) and will be available by that name.
 
  \param name_png  A name given to this image or NULL
- \param buffer	  Pointer to the start of the PNG image in memory
+ \param buffer    Pointer to the start of the PNG image in memory
  \param maxsize   Size in bytes of the memory buffer containing the PNG image
  */
 Fl_PNG_Image::Fl_PNG_Image (
@@ -180,18 +126,18 @@ Fl_PNG_Image::Fl_PNG_Image (
 void Fl_PNG_Image::load_png_(const char *name_png, const unsigned char *buffer_png, int maxsize)
 {
 #if defined(HAVE_LIBPNG) && defined(HAVE_LIBZ)
-  int i;		// Looping var
-  int channels;		// Number of color channels
-  png_structp pp;	// PNG read pointer
-  png_infop info = 0;	// PNG info pointers
-  png_bytep *rows;	// PNG row pointers
+  int i;                // Looping var
+  int channels;         // Number of color channels
+  png_structp pp;       // PNG read pointer
+  png_infop info = 0;   // PNG info pointers
+  png_bytep *rows;      // PNG row pointers
   fl_png_memory png_mem_data;
   int from_memory = (buffer_png != NULL); // true if reading image from memory
 
   // Note: The file pointer fp must not be an automatic (stack) variable
   // to avoid potential clobbering by setjmp/longjmp (gcc: [-Wclobbered]).
-  static FILE *fp;	// intentionally initialized separately below
-  fp = NULL;		// always initialize file pointer
+  static FILE *fp;      // intentionally initialized separately below
+  fp = NULL;            // always initialize file pointer
 
   if (!from_memory) {
     if ((fp = fl_fopen(name_png, "rb")) == NULL) {
@@ -296,8 +242,3 @@ void Fl_PNG_Image::load_png_(const char *name_png, const unsigned char *buffer_p
   }
 #endif // HAVE_LIBPNG && HAVE_LIBZ
 }
-
-
-//
-// End of "$Id: Fl_PNG_Image.cxx 12976 2018-06-26 14:12:43Z manolo $".
-//

@@ -1,76 +1,20 @@
 /*
- * scandir.c
- *
- * "$Id: scandir_posix.c 12193 2017-03-12 15:12:35Z AlbrechtS $"
- *
  * This implementation of 'scandir()' is intended to be POSIX.1-2008 compliant.
  * A POSIX.1-1990 compliant system is required as minimum base.
  * Note:
  * The 'const' declarations were removed to match FLTK 1.3 wrapper (STR #2931)
  *
- * Copyright 2017-2019 The fltkal authors
  * Copyright (c) 2013 by Michael Baeuerle
  *
- *                              FLTK License
- *                            December 11, 2001
- * 
- * The FLTK library and included programs are provided under the terms
- * of the GNU Library General Public License (LGPL) with the following
- * exceptions:
- * 
- *     1. Modifications to the FLTK configure script, config
- *        header file, and makefiles by themselves to support
- *        a specific platform do not constitute a modified or
- *        derivative work.
- * 
- *       The authors do request that such modifications be
- *       contributed to the FLTK project - send all contributions
- *       through the "Software Trouble Report" on the following page:
- *  
- *            http://www.fltk.org/str.php
- * 
- *     2. Widgets that are subclassed from FLTK widgets do not
- *        constitute a derivative work.
- * 
- *     3. Static linking of applications and widgets to the
- *        FLTK library does not constitute a derivative work
- *        and does not require the author to provide source
- *        code for the application or widget, use the shared
- *        FLTK libraries, or link their applications or
- *        widgets against a user-supplied version of FLTK.
- * 
- *        If you link the application or widget to a modified
- *        version of FLTK, then the changes to FLTK must be
- *        provided under the terms of the LGPL in sections
- *        1, 2, and 4.
- * 
- *     4. You do not have to provide a copy of the FLTK license
- *        with programs that are linked to the FLTK library, nor
- *        do you have to identify the FLTK license in your
- *        program or documentation as required by section 6
- *        of the LGPL.
- * 
- *        However, programs must still identify their use of FLTK.
- *        The following example statement can be included in user
- *        documentation to satisfy this requirement:
- * 
- *            [program/widget] is based in part on the work of
- *            the FLTK project (http://www.fltk.org).
- * 
- *     This library is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU Library General Public
- *     License as published by the Free Software Foundation; either
- *     version 2 of the License, or (at your option) any later version.
- * 
- *     This library is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *     Library General Public License for more details.
- * 
- *     You should have received a copy of the GNU Library General Public
- *     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
- */
-/*
+ * This library is free software. Distribution and use rights are outlined in
+ * the file "COPYING" which should have been included with this file. If this
+ * file is missing or damaged, see the license at:
+ *
+ *     https://www.fltk.org/COPYING.php
+ *
+ * Please see the following page on how to report bugs and issues:
+ *
+ *     https://www.fltk.org/bugs.php
  *
  * It is required that 'SIZE_MAX' is at least 'INT_MAX'.
  * Don't use a C++ compiler to build this module.
@@ -99,11 +43,14 @@
 #endif  /* HAVE_PTHREAD */
 
 #include <sys/types.h>        /* XPG2 require this for '*dir()' functions */
+
 #if !defined(__WATCOMC__)
 #include <dirent.h>
 #else
 #include <direct.h>
 #endif
+
+#include "flstring.h"
 #include <errno.h>
 #include <stdlib.h>           /* For 'malloc()', 'realloc()' and 'qsort()' */
 #include <stddef.h>           /* For 'offsetof()', 'NULL' and 'size_t' */
@@ -188,77 +135,91 @@ readentry(DIR *dirp, struct dirent **entryp, size_t *len)
   return result;
 }
 
-
-/* ========================================================================== */
+/*
+ * This could use some docs.
+ *
+ * Returns -1 on error, errmsg returns error string (if non-NULL)
+ */
 int
 fl_scandir(const char *dir, struct dirent ***namelist,
            int (*sel)(struct dirent *),
-           int (*compar)(struct dirent **, struct dirent **))
+           int (*compar)(struct dirent **, struct dirent **),
+           char *errmsg, int errmsg_sz)
 {
   int result = -1;
   DIR *dirp;
   size_t len, num = 0, max = ENTRIES_MIN;
   struct dirent *entryp, **entries, **p;
 
+  if (errmsg && errmsg_sz>0) errmsg[0] = '\0';
   entries = (struct dirent **) malloc(sizeof(*entries) * max);
-  if (NULL != entries)
-  {
-    /* Open directory 'dir' (and verify that it really is a directory) */
-    dirp = opendir(dir);
-    if (NULL != dirp)
-    {
-      /* Read next directory entry */
-      while (!readentry(dirp, &entryp, &len))
-      {
-        if (NULL == entryp)
-        {
-          /* EOD => Return number of directory entries */
-          result = (int) num;
-          break;
-        }
-        /* Apply select function if there is one provided */
-        if (NULL != sel)  { if (!sel(entryp))  continue; }
-        entries[num++] = entryp;
-        if (num >= max)
-        {
-          /* Allocate exponentially increasing sized memory chunks */
-          if (INT_MAX / 2 >= (int) max)  { max *= (size_t) 2; }
-          else
-          {
-            errno = ENOMEM;
-            break;
-          }
-          p = (struct dirent **) realloc((void *) entries,
-                                         sizeof(*entries) * max);
-          if (NULL != p)  { entries = p; }
-          else  break;
-        }
-      }
-      closedir(dirp);
-      /*
-       * A standard compliant 'closedir()' is allowed to fail with 'EINTR',
-       * but the state of the directory structure is undefined in this case.
-       * Therefore we ignore the return value because we can't call 'closedir()'
-       * again and must hope that the system has released all resources.
-       */
-    }
-    /* Sort entries in array if there is a compare function provided */
-    if (NULL != compar)
-    {
-      qsort((void *) entries, num, sizeof(*entries),
-            (int (*)(const void *, const void *)) compar);
-    }
-    *namelist = entries;
+  if (NULL == entries) {
+    if (errmsg) fl_snprintf(errmsg, errmsg_sz, "out of memory");
+    return -1;
   }
 
-  /* Check for error */
-  if (-1 == result)
+  /* Open directory 'dir' (and verify that it really is a directory) */
+  dirp = opendir(dir);
+  if (NULL == dirp) {
+    if (errmsg) fl_snprintf(errmsg, errmsg_sz, "%s", strerror(errno));
+
+    // XXX: This would be a thread safe alternative to the above, but commented
+    //      out because we can get either GNU or POSIX versions on linux,
+    //      which AFAICT are incompatible: GNU doesn't guarantee errmsg is used
+    //      at all, whereas POSIX /only/ fills buffer. The two calls are not really
+    //      compatible but have the same name and different return values.. wtf?
+    //
+    // if (errmsg && errmsg_sz > 0) {
+    //   strerror_r(errno, errmsg, errmsg_sz); // thread safe. Might be GNU, might be POSIX
+    //   errmsg[errmsg_sz-1] = '\0';           // force null term b/c XSI does not specify
+    // }
+    return -1;
+  }
+
+  /* Read next directory entry */
+  while (!readentry(dirp, &entryp, &len))
   {
+    if (NULL == entryp)
+    {
+      /* EOD => Return number of directory entries */
+      result = (int) num;
+      break;
+    }
+    /* Apply select function if there is one provided */
+    if (NULL != sel)  { if (!sel(entryp))  continue; }
+    entries[num++] = entryp;
+    if (num >= max) {
+      /* Allocate exponentially increasing sized memory chunks */
+      if (INT_MAX / 2 >= (int) max)  { max *= (size_t) 2; }
+      else {
+        errno = ENOMEM;
+        break;
+      }
+      p = (struct dirent **) realloc((void *)entries, sizeof(*entries)*max);
+      if (NULL != p) { entries = p; }
+      else  break;
+    }
+  }
+  closedir(dirp);
+  /*
+   * A standard compliant 'closedir()' is allowed to fail with 'EINTR',
+   * but the state of the directory structure is undefined in this case.
+   * Therefore we ignore the return value because we can't call 'closedir()'
+   * again and must hope that the system has released all resources.
+   */
+
+  /* Sort entries in array if there is a compare function provided */
+  if (NULL != compar) {
+    qsort((void *) entries, num, sizeof(*entries),
+          (int (*)(const void *, const void *)) compar);
+  }
+  *namelist = entries;
+  /* Check for error */
+  if (-1 == result) {
     /* Free all memory we have allocated */
     while (num--)  { free(entries[num]); }
     free(entries);
   }
-
   return result;
 }
 
@@ -271,7 +232,3 @@ fl_scandir(const char *dir, struct dirent ***namelist,
 typedef int dummy;
 
 #endif /* defined(USE_X11) && !defined(HAVE_SCANDIR) */
-
-/*
- * End of "$Id: scandir_posix.c 12193 2017-03-12 15:12:35Z AlbrechtS $".
- */

@@ -1,72 +1,18 @@
-// terminal.cxx
-//
-// "$Id: Fl_Simple_Terminal.cxx 12520 2017-10-22 02:58:35Z greg.ercolano $"
 //
 // A simple terminal widget for Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2011 by Bill Spitzak and others.
-//
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
-//
 // Copyright 2017 by Greg Ercolano.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <ctype.h>      /* isdigit */
@@ -484,19 +430,19 @@ int Fl_Simple_Terminal::current_style_index() const {
 
  \param stable - the style table, an array of structs of the type
                  Fl_Text_Display::Style_Table_Entry. Can be NULL
-		 to use the default style table (see ansi(bool)).
+                 to use the default style table (see ansi(bool)).
  \param stable_size - the sizeof() the style table (in bytes).
                       Set this to 0 if 'stable' is NULL.
  \param normal_style_index - the style table index# used when the special
                              ANSI sequence "\033[0m" is encountered.
-			     Normally use 0 so that sequence selects the
-			     first item in the table. Only use different
-			     values if a different entry in the table
-			     should be the default. This value should
-			     not be larger than the number of items in
-			     the table, or it will be clamped with a
-			     modulus operation. This value is ignored
-			     if stable is NULL.
+                             Normally use 0 so that sequence selects the
+                             first item in the table. Only use different
+                             values if a different entry in the table
+                             should be the default. This value should
+                             not be larger than the number of items in
+                             the table, or it will be clamped with a
+                             modulus operation. This value is ignored
+                             if stable is NULL.
 */
 void Fl_Simple_Terminal::style_table(Fl_Text_Display::Style_Table_Entry *stable,
                                      int stable_size, int normal_style_index) {

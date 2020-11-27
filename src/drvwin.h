@@ -1,73 +1,25 @@
-// drvwin.h
-//
-// "$Id: Fl_Window_Driver.H 12983 2018-06-27 12:26:49Z manolo $"
 //
 // A base class for platform specific window handling code
 // for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 2010-2017 by Bill Spitzak and others.
+// Copyright 2010-2018 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
 //
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
+//
+
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
 
 /** \file Fl_Window_Driver.H
  \brief declaration of class Fl_Window_Driver.
@@ -90,7 +42,7 @@ class Fl_RGB_Image;
  \brief A base class for platform specific window handling code.
 
  This class is only for internal use by the FLTK library.
- 
+
  When porting FLTK to a new platform, many mothods in this class provide
  a minimal default implementation. Some methods must be overridden to make
  sure that the Graphics Driver will draw into the bitmap associated with
@@ -115,7 +67,6 @@ public:
   Fl_Offscreen other_xid; // offscreen bitmap (overlay and double-buffered windows)
   virtual int screen_num();
   virtual void screen_num(int) {}
-  static bool is_a_rescale() {return is_a_rescale_;};
 
 
   // --- frequently used accessors to public window data
@@ -167,12 +118,13 @@ public:
   void overlay(Fl_Window *o) {
     if (pWindow->as_overlay_window()) pWindow->as_overlay_window()->overlay_ = o;
   }
-  
+
   void resize_after_scale_change(int ns, float old_f, float new_f);
 
   // --- window data
   virtual int decorated_w() { return w(); } // default, should be overidden by driver
   virtual int decorated_h() { return h(); }
+  virtual const Fl_Image* shape() { return NULL; }
 
   // --- window management
   virtual void take_focus();
@@ -211,7 +163,7 @@ public:
   virtual void show_with_args_end(int argc, char **argv) {}
   virtual int can_do_overlay();
   virtual void redraw_overlay();
-  
+
   // --- window cursor stuff
   virtual void redisplay_cursor() const = 0; // ALLEGRO:
   virtual Fl_Cursor get_cursor() const = 0; // ALLEGRO:
@@ -228,8 +180,6 @@ public:
   virtual const void *icon() const {return NULL;}
   virtual void icon(const void * ic) {}
   virtual void free_icons() {}
-  // each platform implements this its own way
-  static void default_icons(const Fl_RGB_Image *icons[], int count);
 
   // --- window printing/drawing helper
   virtual void capture_titlebar_and_borders(Fl_RGB_Image*& top, Fl_RGB_Image*& left,
@@ -237,11 +187,6 @@ public:
   virtual int scroll(int src_x, int src_y, int src_w, int src_h, int dest_x, int dest_y,
                      void (*draw_area)(void*, int,int,int,int), void* data) { return 0; }
   static inline Fl_Window_Driver* driver(const Fl_Window *win) {return win->pWindowDriver;}
-
-  virtual void backing_create() {}
-
-  virtual void backing_show() {}
-
 };
 
 #endif // FL_WINDOW_DRIVER_H
@@ -250,7 +195,3 @@ public:
  \}
  \endcond
  */
-
-//
-// End of "$Id: Fl_Window_Driver.H 12983 2018-06-27 12:26:49Z manolo $".
-//

@@ -65,47 +65,46 @@
 //
 #include <allegro.h>
 
-BITMAP *rgb8_to_bitmap(
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned int const img_stride,
-    unsigned char const *img_bits)
+BITMAP *
+  rgb8_to_bitmap(unsigned int const img_width,
+                 unsigned int const img_height,
+                 unsigned int const img_stride,
+                 unsigned char const *img_bits)
 {
-    BITMAP *bmp = 0;
-    unsigned int delta = 0;
+  BITMAP *bmp = 0;
+  unsigned int delta = 0;
 
-    if (img_stride)
+  if (img_stride)
     {
-        delta = (img_stride - img_width);
+      delta = (img_stride - img_width);
     }
 
-    do
+  do
     {
-        bmp = create_bitmap_ex(32, img_width, img_height);
+      bmp = create_bitmap_ex(32, img_width, img_height);
 
-        if (0 == bmp)
+      if (0 == bmp)
         {
-            break;
+          break;
         }
 
-        clear_to_color(bmp, MASK_COLOR_32);
+      clear_to_color(bmp, MASK_COLOR_32);
 
-        unsigned char const *src = &img_bits[0];
+      unsigned char const *src = &img_bits[0];
 
-        for (unsigned int row = 0; row < img_height; row++)
+      for (unsigned int row = 0; row < img_height; row++)
         {
-            uint32_t *dest = reinterpret_cast<uint32_t *>(bmp->line[row]);
-            for (unsigned int index = 0; index < img_width; index++)
+          uint32_t *dest = reinterpret_cast<uint32_t *>(bmp->line[row]);
+          for (unsigned int index = 0; index < img_width; index++)
             {
-                unsigned char grey = *src++;
-                uint32_t color = makecol24(grey, grey, grey);
-                *dest++ = color;
+              unsigned char grey = *src++;
+              uint32_t color = makecol24(grey, grey, grey);
+              *dest++ = color;
             }
-            src += delta;
+          src += delta;
         }
-
     }
-    while (0);
+  while (0);
 
-    return bmp;
+  return bmp;
 }

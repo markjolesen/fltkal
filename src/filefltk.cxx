@@ -1,72 +1,18 @@
-// filefltk.cxx
 //
-// "$Id: Fl_Native_File_Chooser_FLTK.cxx 12976 2018-06-26 14:12:43Z manolo $"
+// FLTK native file chooser widget wrapper for GTK's GtkFileChooserDialog
 //
-// FLTK native file chooser widget wrapper for GTK's GtkFileChooserDialog 
-//
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2014 by Bill Spitzak and others.
-//
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
-//
 // Copyright 2012 IMM
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /**
@@ -97,10 +43,10 @@ Fl_Native_File_Chooser_FLTK_Driver::Fl_Native_File_Chooser_FLTK_Driver(int val) 
   _file_chooser= NULL;
   if (val >= 0) {
     _file_chooser = new Fl_File_Chooser(NULL, NULL, 0, NULL);
-    type(val);			// do this after _file_chooser created
+    type(val);                  // do this after _file_chooser created
     }
   _nfilters    = 0;
-} 
+}
 
 Fl_Native_File_Chooser_FLTK_Driver::~Fl_Native_File_Chooser_FLTK_Driver() {
   delete _file_chooser;
@@ -186,8 +132,8 @@ int Fl_Native_File_Chooser_FLTK_Driver::show() {
 
   // OPTIONS: NEW FOLDER
   if ( options() & Fl_Native_File_Chooser::NEW_FOLDER )
-    _file_chooser->type(_file_chooser->type() | Fl_File_Chooser::CREATE);	// on
-  
+    _file_chooser->type(_file_chooser->type() | Fl_File_Chooser::CREATE);       // on
+
   // SHOW
   _file_chooser->show();
 
@@ -289,22 +235,22 @@ const char *Fl_Native_File_Chooser_FLTK_Driver::directory() const {
 //     for freeing with strfree().
 //
 void Fl_Native_File_Chooser_FLTK_Driver::parse_filter() {
-  _parsedfilt = strfree(_parsedfilt);	// clear previous parsed filter (if any)
+  _parsedfilt = strfree(_parsedfilt);   // clear previous parsed filter (if any)
   _nfilters = 0;
   char *in = _filter;
   if ( !in ) return;
 
   int has_name = strchr(in, '\t') ? 1 : 0;
 
-  char mode = has_name ? 'n' : 'w';	// parse mode: n=title, w=wildcard
-  char wildcard[1024] = "";		// parsed wildcard
+  char mode = has_name ? 'n' : 'w';     // parse mode: n=title, w=wildcard
+  char wildcard[1024] = "";             // parsed wildcard
   char name[1024] = "";
 
   // Parse filter user specified
   for ( ; 1; in++ ) {
     /*** DEBUG
     printf("WORKING ON '%c': mode=<%c> name=<%s> wildcard=<%s>\n",
-			*in, mode,     name,     wildcard);
+                        *in, mode,     name,     wildcard);
     ***/
 
     switch (*in) {
@@ -312,40 +258,40 @@ void Fl_Native_File_Chooser_FLTK_Driver::parse_filter() {
       case '\t':
         if ( mode != 'n' ) goto regchar;
         mode = 'w';
-        break; 
+        break;
       // ESCAPE NEXT CHAR
       case '\\':
-	++in;
-	goto regchar; 
+        ++in;
+        goto regchar;
       // FINISHED PARSING ONE OF POSSIBLY SEVERAL FILTERS?
       case '\r':
       case '\n':
       case '\0':
-	// APPEND NEW FILTER TO LIST
-	if ( wildcard[0] ) {
-	  // OUT: "name(wild)\tname(wild)"
-	  char comp[2048];
-	  sprintf(comp, "%s%.511s(%.511s)", ((_parsedfilt)?"\t":""),
-					    name, wildcard);
-	  _parsedfilt = strapp(_parsedfilt, comp);
-	  _nfilters++;
-	  //DEBUG printf("DEBUG: PARSED FILT NOW <%s>\n", _parsedfilt);
-	}
-	// RESET
-	wildcard[0] = name[0] = '\0';
-	mode = strchr(in, '\t') ? 'n' : 'w';
-	// DONE?
-	if ( *in == '\0' ) return;	// done
-	else continue;			// not done yet, more filters
+        // APPEND NEW FILTER TO LIST
+        if ( wildcard[0] ) {
+          // OUT: "name(wild)\tname(wild)"
+          char comp[2048];
+          sprintf(comp, "%s%.511s(%.511s)", ((_parsedfilt)?"\t":""),
+                                            name, wildcard);
+          _parsedfilt = strapp(_parsedfilt, comp);
+          _nfilters++;
+          //DEBUG printf("DEBUG: PARSED FILT NOW <%s>\n", _parsedfilt);
+        }
+        // RESET
+        wildcard[0] = name[0] = '\0';
+        mode = strchr(in, '\t') ? 'n' : 'w';
+        // DONE?
+        if ( *in == '\0' ) return;      // done
+        else continue;                  // not done yet, more filters
 
       // Parse all other chars
-      default:				// handle all non-special chars
-      regchar:				// handle regular char
-	switch ( mode ) {
-	  case 'n': chrcat(name, *in);     continue;
-	  case 'w': chrcat(wildcard, *in); continue;
-	}
-	break;
+      default:                          // handle all non-special chars
+      regchar:                          // handle regular char
+        switch ( mode ) {
+          case 'n': chrcat(name, *in);     continue;
+          case 'w': chrcat(wildcard, *in); continue;
+        }
+        break;
     }
   }
   //NOTREACHED
@@ -368,7 +314,3 @@ int Fl_Native_File_Chooser_FLTK_Driver::exist_dialog() {
  \}
  \endcond
  */
-
-//
-// End of "$Id: Fl_Native_File_Chooser_FLTK.cxx 11931 2016-09-11 08:09:00Z manolo $".
-//

@@ -11,7 +11,7 @@ DEFINES=
 
 OBJ=..\obj
 SRC=..\src
-LIB=..\lib
+LIB=..\..\lib
 INC=..\include
 
 RM=del

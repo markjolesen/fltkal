@@ -1,71 +1,17 @@
-// browser_.h
-//
-// "$Id: Fl_Browser_.H 12459 2017-09-14 00:50:36Z greg.ercolano $"
 //
 // Common browser header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /* \file
@@ -79,17 +25,16 @@
 #ifndef Fl_Group_H
 #include "group.h"
 #endif
-
 #include "scrlbar.h"
-#include <fl/fl.h> // Fl::scrollbar_size()
+#include <fl/fl.h>              // Fl::scrollbar_size()
 
-#define FL_NORMAL_BROWSER	0	/**< type() of Fl_Browser */
-#define FL_SELECT_BROWSER	1	/**< type() of FL_Select_Browser */
-#define FL_HOLD_BROWSER		2	/**< type() of Fl_Hold_Browser */
-#define FL_MULTI_BROWSER	3	/**< type() of Fl_Multi_Browser */
+#define FL_NORMAL_BROWSER       0       /**< type() of Fl_Browser */
+#define FL_SELECT_BROWSER       1       /**< type() of FL_Select_Browser */
+#define FL_HOLD_BROWSER         2       /**< type() of Fl_Hold_Browser */
+#define FL_MULTI_BROWSER        3       /**< type() of Fl_Multi_Browser */
 
-#define FL_SORT_ASCENDING	0	/**< sort browser items in ascending alphabetic order. */
-#define FL_SORT_DESCENDING	1	/**< sort in descending order */
+#define FL_SORT_ASCENDING       0       /**< sort browser items in ascending alphabetic order. */
+#define FL_SORT_DESCENDING      1       /**< sort in descending order */
 
 /**
   This is the base class for browsers.  To be useful it must be
@@ -97,7 +42,7 @@
   browser and the file chooser's browser are subclassed off of this.
 
   This has been designed so that the subclass has complete control
-  over the storage of the data, although because next() and 
+  over the storage of the data, although because next() and
   prev() functions are used to index, it works best as a linked list
   or as a large block of characters in which the line breaks must be
   searched for.
@@ -129,21 +74,21 @@ Keyboard navigation of browser items
   extend a selection or de-selection.
 */
 class FL_EXPORT Fl_Browser_ : public Fl_Group {
-  int position_;	// where user wants it scrolled to
-  int real_position_;	// the current vertical scrolling position
-  int hposition_;	// where user wants it panned to
-  int real_hposition_;	// the current horizontal scrolling position
-  int offset_;		// how far down top_ item the real_position is
-  int max_width;	// widest object seen so far
-  uchar has_scrollbar_;	// which scrollbars are enabled
+  int position_;        // where user wants it scrolled to
+  int real_position_;   // the current vertical scrolling position
+  int hposition_;       // where user wants it panned to
+  int real_hposition_;  // the current horizontal scrolling position
+  int offset_;          // how far down top_ item the real_position is
+  int max_width;        // widest object seen so far
+  uchar has_scrollbar_; // which scrollbars are enabled
   Fl_Font textfont_;
   Fl_Fontsize textsize_;
   Fl_Color textcolor_;
-  void* top_;		// which item scrolling position is in
-  void* selection_;	// which is selected (except for FL_MULTI_BROWSER)
+  void* top_;           // which item scrolling position is in
+  void* selection_;     // which is selected (except for FL_MULTI_BROWSER)
   void *redraw1,*redraw2; // minimal update pointers
-  void* max_width_item;	// which item has max_width_
-  int scrollbar_size_;	// size of scrollbar trough
+  void* max_width_item; // which item has max_width_
+  int scrollbar_size_;  // size of scrollbar trough
 
   void update_top();
 
@@ -151,7 +96,7 @@ protected:
 
   // All of the following must be supplied by the subclass:
   /**
-    This method must be provided by the subclass 
+    This method must be provided by the subclass
     to return the first item in the list.
     \see item_first(), item_next(), item_last(), item_prev()
    */
@@ -174,8 +119,8 @@ protected:
     \see item_first(), item_next(), item_last(), item_prev()
    */
   virtual void *item_last() const { return 0L; }
-  /** 
-    This method must be provided by the subclass to return 
+  /**
+    This method must be provided by the subclass to return
     the height of \p item in pixels.
     Allow for two additional pixels for the list selection box.
     \param[in] item The item whose height is returned.
@@ -198,28 +143,28 @@ protected:
   */
   virtual void item_draw(void *item,int X,int Y,int W,int H) const = 0;
   /**
-    This optional method returns a string (label) that may be used for sorting. 
+    This optional method returns a string (label) that may be used for sorting.
     \param[in] item The item whose label text is returned.
     \returns The item's text label. (Can be NULL if blank)
    */
   virtual const char *item_text(void *item) const { (void)item; return 0L; }
   /**
-    This optional method should be provided by the subclass 
+    This optional method should be provided by the subclass
     to efficiently swap browser items \p a and \p b, such as for sorting.
     \param[in] a,b The two items to be swapped.
    */
   virtual void item_swap(void *a,void *b) { (void)a; (void)b; }
   /**
-    This method must be provided by the subclass 
-    to return the item for the specified \p index. 
+    This method must be provided by the subclass
+    to return the item for the specified \p index.
     \param[in] index The \p index of the item to be returned
     \returns The item at the specified \p index.
    */
   virtual void *item_at(int index) const { (void)index; return 0L; }
   // you don't have to provide these but it may help speed it up:
-  virtual int full_width() const ;	// current width of all items
-  virtual int full_height() const ;	// current height of all items
-  virtual int incr_height() const ;	// average height of an item
+  virtual int full_width() const ;      // current width of all items
+  virtual int full_height() const ;     // current height of all items
+  virtual int incr_height() const ;     // average height of an item
   // These only need to be done by subclass if you want a multi-browser:
   virtual void item_select(void *item,int val=1);
   virtual int item_selected(void *item) const ;
@@ -231,9 +176,9 @@ protected:
   void *top() const { return top_; }
   /**
     Returns the item currently selected, or NULL if there is no selection.
-    
+
     For multiple selection browsers this call returns the currently focused item,
-    even if it is not selected. To find all selected items, call 
+    even if it is not selected. To find all selected items, call
     Fl_Multi_Browser::selected() for every item in question.
   */
   void *selection() const { return selection_; }
@@ -250,9 +195,9 @@ protected:
    */
   void redraw_lines() { damage(FL_DAMAGE_SCROLL); } // redraw all of them
   void bbox(int &X,int &Y,int &W,int &H) const;
-  int leftedge() const;	// x position after scrollbar & border
+  int leftedge() const; // x position after scrollbar & border
   void *find_item(int ypos); // item under mouse
-  
+
   void draw();
   Fl_Browser_(int X,int Y,int W,int H,const char *L=0);
 
@@ -276,7 +221,7 @@ public:
   /**
     Gets the vertical scroll position of the list as a pixel position \p pos.
     The position returned is how many pixels of the list are scrolled off the top edge
-    of the screen.  Example: A position of '3' indicates the top 3 pixels of 
+    of the screen.  Example: A position of '3' indicates the top 3 pixels of
     the list are scrolled off the top edge of the screen.
     \see position(), hposition()
   */
@@ -303,13 +248,13 @@ public:
      -  bit 3-31: reserved for future use
    */
   enum { // values for has_scrollbar()
-    HORIZONTAL = 1,		///< Only show horizontal scrollbar.
-    VERTICAL = 2,		///< Only show vertical scrollbar.
-    BOTH = 3,			///< Show both scrollbars. (default)
-    ALWAYS_ON = 4,		///< Specified scrollbar(s) should 'always' be shown (to be used with HORIZONTAL/VERTICAL)
-    HORIZONTAL_ALWAYS = 5,	///< Horizontal scrollbar always on.
-    VERTICAL_ALWAYS = 6,	///< Vertical scrollbar always on.
-    BOTH_ALWAYS = 7		///< Both scrollbars always on.
+    HORIZONTAL = 1,             ///< Only show horizontal scrollbar.
+    VERTICAL = 2,               ///< Only show vertical scrollbar.
+    BOTH = 3,                   ///< Show both scrollbars. (default)
+    ALWAYS_ON = 4,              ///< Specified scrollbar(s) should 'always' be shown (to be used with HORIZONTAL/VERTICAL)
+    HORIZONTAL_ALWAYS = 5,      ///< Horizontal scrollbar always on.
+    VERTICAL_ALWAYS = 6,        ///< Vertical scrollbar always on.
+    BOTH_ALWAYS = 7             ///< Both scrollbars always on.
   };
   /**
     Returns the current scrollbar mode, see Fl_Browser_::has_scrollbar(uchar)
@@ -318,9 +263,9 @@ public:
   /**
     Sets whether the widget should have scrollbars or not (default Fl_Browser_::BOTH).
     By default you can scroll in both directions, and the scrollbars
-    disappear if the data will fit in the widget.  
+    disappear if the data will fit in the widget.
     has_scrollbar() changes this based on the value of \p mode:
-  
+
     - 0 - No scrollbars.
 
     - Fl_Browser_::HORIZONTAL - Only a horizontal scrollbar.
@@ -370,9 +315,9 @@ public:
   /**
     Gets the current size of the scrollbars' troughs, in pixels.
 
-    If this value is zero (default), this widget will use the 
+    If this value is zero (default), this widget will use the
     Fl::scrollbar_size() value as the scrollbar's width.
-  
+
     \returns Scrollbar size in pixels, or 0 if the global Fl::scrollbar_size() is being used.
     \see Fl::scrollbar_size(int)
   */
@@ -383,39 +328,35 @@ public:
     Sets the pixel size of the scrollbars' troughs to \p newSize, in pixels.
 
     Normally you should not need this method, and should use
-    Fl::scrollbar_size(int) instead to manage the size of ALL 
-    your widgets' scrollbars. This ensures your application 
+    Fl::scrollbar_size(int) instead to manage the size of ALL
+    your widgets' scrollbars. This ensures your application
     has a consistent UI, is the default behavior, and is normally
     what you want.
 
     Only use THIS method if you really need to override the global
     scrollbar size. The need for this should be rare.
-    
+
     Setting \p newSize to the special value of 0 causes the widget to
     track the global Fl::scrollbar_size(), which is the default.
-    
+
     \param[in] newSize Sets the scrollbar size in pixels.\n
                     If 0 (default), scrollbar size tracks the global Fl::scrollbar_size()
     \see Fl::scrollbar_size()
   */
   void scrollbar_size(int newSize) {
       scrollbar_size_ = newSize;
-  }   
+  }
   /**
-    This method has been deprecated, existing for backwards compatibility only.
-    Use scrollbar_size() instead.
-    This method always returns the global value Fl::scrollbar_size().
-    \returns Always returns the global value Fl::scrollbar_size().
+    Returns the global value Fl::scrollbar_size().
+   \deprecated Use scrollbar_size() instead.
     \todo This method should eventually be removed in 1.4+
   */
   int scrollbar_width() const {
       return(Fl::scrollbar_size());
   }
   /**
-    This method has been deprecated, existing for backwards compatibility only.
-    Use scrollbar_size(int) instead.
-    This method sets the global Fl::scrollbar_size(), and forces this
-    instance of the widget to use it.
+    Sets the global Fl::scrollbar_size(), and forces this instance of the widget to use it.
+   \deprecated Use scrollbar_size() instead.
     \todo This method should eventually be removed in 1.4+
   */
   void scrollbar_width(int width) {
@@ -436,7 +377,3 @@ public:
 };
 
 #endif
-
-//
-// End of "$Id: Fl_Browser_.H 12459 2017-09-14 00:50:36Z greg.ercolano $".
-//

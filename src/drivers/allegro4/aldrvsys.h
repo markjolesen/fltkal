@@ -65,230 +65,268 @@
 //
 #if !defined(FL_ALLEGRO_SYSTEM_DRIVER_H)
 
-#include "../../drvsys.h"
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#if defined(__DJGPP__) || defined(__WATCOMC__)
-#include <dos.h>
-#else
-#include <sys/time.h>
-#endif
+#  include <sys/stat.h>
+
+#  include <fcntl.h>
+#  include <stdlib.h>
+#  include <unistd.h>
+
+#  include "../../drvsys.h"
+#  if defined(__DJGPP__) || defined(__WATCOMC__)
+#    include <dos.h>
+#  else
+#    include <sys/time.h>
+#  endif
 
 class FL_EXPORT Fl_Allegro_System_Driver : public Fl_System_Driver
 {
+public:
+  Fl_Allegro_System_Driver();
 
-  public:
+  virtual ~Fl_Allegro_System_Driver();
 
-    Fl_Allegro_System_Driver();
+  virtual void
+    newUUID(char *uuidBuffer);
 
-    virtual ~Fl_Allegro_System_Driver();
+  virtual char *
+    preference_rootnode(Fl_Preferences *prefs,
+                        Fl_Preferences::Root root,
+                        const char *vendor,
+                        const char *application);
 
-    virtual void newUUID(char* uuidBuffer);
+  virtual char const *
+    preference_ext() const;
 
-    virtual char* preference_rootnode(Fl_Preferences* prefs,
-                                      Fl_Preferences::Root root, const char* vendor, const char* application);
+  virtual char *
+    getenv(const char *v);
 
-    virtual char const* preference_ext() const;
+  virtual int
+    putenv(char *v);
 
-    virtual char* getenv(const char* v);
+  virtual char *
+    strdup(const char *s);
 
-    virtual int putenv(char* v);
+  virtual int
+    open(const char *f, int oflags, int pmode);
 
-    virtual int open(const char* f, int oflags, int pmode);
+  virtual int
+    system(const char *cmd);
 
-    virtual int system(const char* cmd);
+  virtual int
+    chmod(const char *f, int mode);
 
-    virtual int chmod(const char* f, int mode);
+  virtual int
+    access(const char *f, int mode);
 
-    virtual int access(const char* f, int mode);
+  virtual int
+    stat(const char *f, struct stat *b);
 
-    virtual int stat(const char* f, struct stat* b);
+  virtual char *
+    getcwd(char *b, int l);
 
-    virtual char* getcwd(char* b, int l);
+  virtual int
+    chdir(const char *path);
 
-    virtual int chdir(const char* path);
+  virtual int
+    unlink(const char *fname);
 
-    virtual int unlink(const char* fname);
+  virtual int
+    mkdir(const char *f, int mode);
 
-    virtual int mkdir(const char* f, int mode);
+  virtual int
+    rmdir(const char *f);
 
-    virtual int rmdir(const char* f);
+  virtual int
+    rename(const char *f, const char *n);
 
-    virtual int rename(const char* f, const char* n);
+  virtual int
+    colon_is_drive();
 
-    virtual int colon_is_drive();
+  virtual int
+    dot_file_hidden();
 
-    virtual int dot_file_hidden();
+  virtual int
+    case_insensitive_filenames();
 
-    virtual int case_insensitive_filenames();
+  virtual void
+    gettime(time_t *sec, int *usec);
 
-    virtual void gettime(time_t* sec, int* usec);
+  virtual int
+    filename_list(const char *d,
+                  dirent ***list,
+                  int (*sort)(struct dirent **, struct dirent **));
 
-    virtual int filename_list(const char* d, dirent*** list,
-                              int (*sort)(struct dirent**, struct dirent**));
+  virtual void
+    copy(const char *stuff, int len, int clipboard, const char *type);
 
-    virtual void copy(const char* stuff, int len, int clipboard, const char* type);
+  virtual void
+    paste(Fl_Widget &receiver, int clipboard, const char *type);
 
-    virtual void paste(Fl_Widget& receiver, int clipboard, const char* type);
+  virtual int
+    clipboard_contains(const char *type);
 
-    virtual int clipboard_contains(const char* type);
+  virtual void
+    clipboard_notify_change();
 
-    virtual void clipboard_notify_change();
+protected:
+  struct blob
+  {
+    void *data;
+    size_t alloc_length;
+    size_t data_length;
+    char const *type;
+  };
 
-  protected:
-
-    struct blob
-    {
-      void* data;
-      size_t alloc_length;
-      size_t data_length;
-      char const* type;
-    };
-
-    struct blob clipboard_[2]; // clip[0]=selection text clip[1]=clipboard
-
+  struct blob clipboard_[2]; // clip[0]=selection text clip[1]=clipboard
 };
 
-inline char*
-Fl_Allegro_System_Driver::getenv(const char* v)
+inline char *
+  Fl_Allegro_System_Driver::getenv(const char *v)
 {
   return ::getenv(v);
 }
 
 inline int
-Fl_Allegro_System_Driver::putenv(char* v)
+  Fl_Allegro_System_Driver::putenv(char *v)
 {
   return ::putenv(v);
 }
 
 inline int
-Fl_Allegro_System_Driver::open(const char* f, int oflags, int)
+  Fl_Allegro_System_Driver::open(const char *f, int oflags, int)
 {
   return ::open(f, oflags);
 }
 
 inline int
-Fl_Allegro_System_Driver::system(const char* cmd)
+  Fl_Allegro_System_Driver::system(const char *cmd)
 {
   return ::system(cmd);
 }
 
 inline int
-Fl_Allegro_System_Driver::chmod(const char* f, int mode)
+  Fl_Allegro_System_Driver::chmod(const char *f, int mode)
 {
   return ::chmod(f, mode);
 }
 
 inline int
-Fl_Allegro_System_Driver::access(const char* f, int mode)
+  Fl_Allegro_System_Driver::access(const char *f, int mode)
 {
   return ::access(f, mode);
 }
 
 inline int
-Fl_Allegro_System_Driver::stat(const char* f, struct stat* b)
+  Fl_Allegro_System_Driver::stat(const char *f, struct stat *b)
 {
   return ::stat(f, b);
 }
 
-inline char*
-Fl_Allegro_System_Driver::getcwd(char* b, int l)
+inline char *
+  Fl_Allegro_System_Driver::getcwd(char *b, int l)
 {
   return ::getcwd(b, l);
 }
 
 inline int
-Fl_Allegro_System_Driver::chdir(const char* path)
+  Fl_Allegro_System_Driver::chdir(const char *path)
 {
   return ::chdir(path);
 }
 
 inline int
-Fl_Allegro_System_Driver::unlink(const char* fname)
+  Fl_Allegro_System_Driver::unlink(const char *fname)
 {
   return ::unlink(fname);
 }
 
 inline int
-Fl_Allegro_System_Driver::mkdir(const char* f, int mode)
+  Fl_Allegro_System_Driver::mkdir(const char *f, int mode)
 {
-#if defined(__WATCOMC__)
+#  if defined(__WATCOMC__)
   return ::mkdir(f);
-#else
+#  else
   return ::mkdir(f, mode);
-#endif
+#  endif
 }
 
 inline int
-Fl_Allegro_System_Driver::rmdir(const char* f)
+  Fl_Allegro_System_Driver::rmdir(const char *f)
 {
   return ::rmdir(f);
 }
 
 inline int
-Fl_Allegro_System_Driver::rename(const char* f, const char* n)
+  Fl_Allegro_System_Driver::rename(const char *f, const char *n)
 {
   return ::rename(f, n);
 }
 
 inline int
-Fl_Allegro_System_Driver::colon_is_drive()
+  Fl_Allegro_System_Driver::colon_is_drive()
 {
-#if defined(__DJGPP__)
+#  if defined(__DJGPP__)
   return 1;
-#else
+#  else
   return 0;
-#endif
+#  endif
 }
 
 inline int
-Fl_Allegro_System_Driver::dot_file_hidden()
+  Fl_Allegro_System_Driver::dot_file_hidden()
 {
   return 0;
 }
 
 inline int
-Fl_Allegro_System_Driver::case_insensitive_filenames()
+  Fl_Allegro_System_Driver::case_insensitive_filenames()
 {
-#if defined(__DJGPP__)
+#  if defined(__DJGPP__)
   return 1;
-#else
+#  else
   return 0;
-#endif
+#  endif
 }
 
 inline void
-Fl_Allegro_System_Driver::gettime(time_t* sec, int* usec)
+  Fl_Allegro_System_Driver::gettime(time_t *sec, int *usec)
 {
-#if defined(__DJGPP__)
+#  if defined(__DJGPP__)
   struct time tv;
   ::gettime(&tv);
   (*sec) = tv.ti_sec;
   (*usec) = 0;
-#elif defined(__WATCOMC__)
+#  elif defined(__WATCOMC__)
   (*sec) = 0;
   (*usec) = 0;
-#else
+#  else
   struct timeval tv;
   ::gettimeofday(&tv, NULL);
   (*sec) = tv.tv_sec;
   (*usec) = tv.tv_usec;
-#endif
+#  endif
 }
 
 extern "C" int
-fl_scandir(const char* dir, struct dirent*** namelist,
-           int (*sel)(struct dirent*),
-           int (*compar)(struct dirent**, struct dirent**));
+  fl_scandir(const char *dir,
+             struct dirent ***namelist,
+             int (*sel)(struct dirent *),
+             int (*compar)(struct dirent **, struct dirent **));
 
 inline int
-Fl_Allegro_System_Driver::filename_list(const char* d, dirent*** list,
-                                        int (*sort)(struct dirent**, struct dirent**))
+  Fl_Allegro_System_Driver::filename_list(const char *d,
+                                          dirent ***list,
+                                          int (*sort)(struct dirent **,
+                                                      struct dirent **))
 {
   return fl_scandir(d, list, 0, sort);
 }
 
-#define FL_ALLEGRO_SYSTEM_DRIVER_H
+inline char *
+  Fl_Allegro_System_Driver::strdup(const char *s)
+{
+  return ::strdup(s);
+}
+
+#  define FL_ALLEGRO_SYSTEM_DRIVER_H
 #endif

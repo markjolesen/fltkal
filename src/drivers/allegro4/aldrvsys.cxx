@@ -66,19 +66,20 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "aldrvsys.h"
-#include <fl/widget.h>
+
 #include <stdlib.h>
 #include <string.h>
-#include "../../flstring.h"
 
-Fl_System_Driver*
-Fl_System_Driver::newSystemDriver()
+#include "../../flstring.h"
+#include <fl/widget.h>
+
+Fl_System_Driver *
+  Fl_System_Driver::newSystemDriver()
 {
   return new Fl_Allegro_System_Driver();
 }
 
-Fl_Allegro_System_Driver::Fl_Allegro_System_Driver() :
-  Fl_System_Driver()
+Fl_Allegro_System_Driver::Fl_Allegro_System_Driver() : Fl_System_Driver()
 {
   memset(&clipboard_[0], 0, sizeof(clipboard_));
   return;
@@ -89,23 +90,23 @@ Fl_Allegro_System_Driver::~Fl_Allegro_System_Driver()
 }
 
 void
-Fl_Allegro_System_Driver::newUUID(char* uuidBuffer)
+  Fl_Allegro_System_Driver::newUUID(char *uuidBuffer)
 {
   // void Fl_X11_System_Driver::newUUID(char *uuidBuffer)
   // warning Unix implementation of Fl_Preferences::newUUID() incomplete!
   unsigned char b[16];
-  unsigned char* p = &b[0];
-  time_t t = time(0);           // first 4 byte
+  unsigned char *p = &b[0];
+  time_t t = time(0); // first 4 byte
   *p++ = (unsigned char)t;
   *p++ = (unsigned char)(t >> 8);
   *p++ = (unsigned char)(t >> 16);
   *p++ = (unsigned char)(t >> 24);
-  int r = rand();           // four more bytes
+  int r = rand(); // four more bytes
   *p++ = (unsigned char)r;
   *p++ = (unsigned char)(r >> 8);
   *p++ = (unsigned char)(r >> 16);
   *p++ = (unsigned char)(r >> 24);
-  unsigned long a = (unsigned long)&t;  // four more bytes
+  unsigned long a = (unsigned long)&t; // four more bytes
   *p++ = (unsigned char)a;
   *p++ = (unsigned char)(a >> 8);
   *p++ = (unsigned char)(a >> 16);
@@ -116,10 +117,10 @@ Fl_Allegro_System_Driver::newUUID(char* uuidBuffer)
   // This is now done via a union to make it compile OK on 64-bit systems.
   union
   {
-    void* pv;
-    unsigned char a[sizeof(void*)];
+    void *pv;
+    unsigned char a[sizeof(void *)];
   } v;
-  v.pv = (void*)(&t);
+  v.pv = (void *)(&t);
   *p++ = v.a[0];
   *p++ = v.a[1];
   *p++ = v.a[2];
@@ -130,47 +131,61 @@ Fl_Allegro_System_Driver::newUUID(char* uuidBuffer)
   *p++ = (r % 'O');
   *p++ = (r % 'S');
   sprintf(uuidBuffer,
-          "%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
-          b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7],
-          b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]);
+          "%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%"
+          "02X",
+          b[0],
+          b[1],
+          b[2],
+          b[3],
+          b[4],
+          b[5],
+          b[6],
+          b[7],
+          b[8],
+          b[9],
+          b[10],
+          b[11],
+          b[12],
+          b[13],
+          b[14],
+          b[15]);
   return;
 }
 
-char const*
-Fl_Allegro_System_Driver::preference_ext() const
+char const *
+  Fl_Allegro_System_Driver::preference_ext() const
 {
   return "cfg";
 }
 
 #if defined(__DJGPP__)
 
-extern char** __crt0_argv;
+extern char **__crt0_argv;
 
-char*
-Fl_Allegro_System_Driver::preference_rootnode(
-  Fl_Preferences* prefs,
-  Fl_Preferences::Root root,
-  const char* vendor,
-  const char* application)
+char *
+  Fl_Allegro_System_Driver::preference_rootnode(Fl_Preferences *prefs,
+                                                Fl_Preferences::Root root,
+                                                const char *vendor,
+                                                const char *application)
 {
   static char filename[FL_PATH_MAX];
 
   if (':' == __crt0_argv[0][1])
-  {
-    filename[0] = __crt0_argv[0][0];
-    filename[1] = ':';
-    filename[2] = 0;
-  }
+    {
+      filename[0] = __crt0_argv[0][0];
+      filename[1] = ':';
+      filename[2] = 0;
+    }
 
   else
-  {
-    filename[0] = 0;
-  }
+    {
+      filename[0] = 0;
+    }
 
   strlcat(filename, "\\config", sizeof(filename));
 
   switch (root)
-  {
+    {
     case Fl_Preferences::USER:
       strlcat(filename, "\\fltk\\user", sizeof(filename));
       break;
@@ -178,64 +193,61 @@ Fl_Allegro_System_Driver::preference_rootnode(
     case Fl_Preferences::SYSTEM:
       strlcat(filename, "\\fltk\\system", sizeof(filename));
       break;
-  }
+    }
 
-  snprintf(
-    filename + strlen(filename),
-    sizeof(filename) - strlen(filename),
-    "\\%s\\%s.%s",
-    vendor,
-    application,
-    preference_ext());
+  snprintf(filename + strlen(filename),
+           sizeof(filename) - strlen(filename),
+           "\\%s\\%s.%s",
+           vendor,
+           application,
+           preference_ext());
 
   return filename;
 }
 
 #else
 
-char*
-Fl_Allegro_System_Driver::preference_rootnode(
-  Fl_Preferences* prefs,
-  Fl_Preferences::Root root,
-  const char* vendor,
-  const char* application)
+char *
+  Fl_Allegro_System_Driver::preference_rootnode(Fl_Preferences *prefs,
+                                                Fl_Preferences::Root root,
+                                                const char *vendor,
+                                                const char *application)
 {
-  static char filename[ FL_PATH_MAX ];
+  static char filename[FL_PATH_MAX];
   filename[0] = 0;
-  const char* e;
+  const char *e;
 
   switch (root)
-  {
+    {
     case Fl_Preferences::USER:
       if ((e = getenv("HOME")) != NULL)
-      {
-        strlcpy(filename, e, sizeof(filename));
-
-        if (filename[strlen(filename) - 1] != '/')
         {
-          strlcat(filename, "/.fltk/", sizeof(filename));
-        }
+          strlcpy(filename, e, sizeof(filename));
 
-        else
-        {
-          strlcat(filename, ".fltk/", sizeof(filename));
-        }
+          if (filename[strlen(filename) - 1] != '/')
+            {
+              strlcat(filename, "/.fltk/", sizeof(filename));
+            }
 
-        break;
-      }
+          else
+            {
+              strlcat(filename, ".fltk/", sizeof(filename));
+            }
+
+          break;
+        }
 
     case Fl_Preferences::SYSTEM:
       strcpy(filename, "/etc/fltk/");
       break;
-  }
+    }
 
-  snprintf(
-    filename + strlen(filename),
-    sizeof(filename) - strlen(filename),
-    "%s/%s.%s",
-    vendor,
-    application,
-    preference_ext());
+  snprintf(filename + strlen(filename),
+           sizeof(filename) - strlen(filename),
+           "%s/%s.%s",
+           vendor,
+           application,
+           preference_ext());
 
   return filename;
 }
@@ -243,123 +255,120 @@ Fl_Allegro_System_Driver::preference_rootnode(
 #endif
 
 void
-Fl_Allegro_System_Driver::copy(const char* stuff, int len, int clipboard,
-                               const char* type)
+  Fl_Allegro_System_Driver::copy(const char *stuff,
+                                 int len,
+                                 int clipboard,
+                                 const char *type)
 {
-
   do
-  {
-
-    if (0 == stuff)
     {
-      break;
+      if (0 == stuff)
+        {
+          break;
+        }
+
+      if (0 > len)
+        {
+          break;
+        }
+
+      if (0 == type)
+        {
+          break;
+        }
+
+      int rc = strcmp(Fl::clipboard_plain_text, type);
+
+      if (rc)
+        {
+          break;
+        }
+
+      if (clipboard >= 2)
+        {
+          copy(stuff, len, 0, type);
+          copy(stuff, len, 1, type);
+        }
+
+      struct blob *blob = &clipboard_[clipboard];
+
+      if (static_cast<size_t>(len + 1) > blob->alloc_length)
+        {
+          void *data = realloc(blob->data, static_cast<size_t>(len + 1));
+
+          if (0 == data)
+            {
+              blob->data_length = 0;
+              break;
+            }
+
+          blob->data = data;
+          blob->alloc_length = static_cast<size_t>(len + 1);
+        }
+
+      memset(blob->data, 0, blob->alloc_length);
+      memcpy(blob->data, stuff, static_cast<size_t>(len));
+      blob->data_length = static_cast<size_t>(len);
+      blob->type = type;
     }
-
-    if (0 > len)
-    {
-      break;
-    }
-
-    if (0 == type)
-    {
-      break;
-    }
-
-    int rc = strcmp(Fl::clipboard_plain_text, type);
-
-    if (rc)
-    {
-      break;
-    }
-
-    if (clipboard >= 2)
-    {
-      copy(stuff, len, 0, type);
-      copy(stuff, len, 1, type);
-    }
-
-    struct blob* blob = &clipboard_[clipboard];
-
-    if (static_cast<size_t>(len + 1) > blob->alloc_length)
-    {
-      void* data = realloc(blob->data, static_cast<size_t>(len + 1));
-
-      if (0 == data)
-      {
-        blob->data_length = 0;
-        break;
-      }
-
-      blob->data = data;
-      blob->alloc_length = static_cast<size_t>(len + 1);
-    }
-
-    memset(blob->data, 0, blob->alloc_length);
-    memcpy(blob->data, stuff, static_cast<size_t>(len));
-    blob->data_length = static_cast<size_t>(len);
-    blob->type = type;
-
-  }
   while (0);
 
   return;
 }
 
 void
-Fl_Allegro_System_Driver::paste(Fl_Widget& receiver, int clipboard,
-                                const char* type)
+  Fl_Allegro_System_Driver::paste(Fl_Widget &receiver,
+                                  int clipboard,
+                                  const char *type)
 {
-
   do
-  {
-
-    if (0 == type)
     {
-      break;
+      if (0 == type)
+        {
+          break;
+        }
+
+      if (0 > clipboard)
+        {
+          break;
+        }
+
+      if (2 <= clipboard)
+        {
+          break;
+        }
+
+      int rc = strcmp(Fl::clipboard_plain_text, type);
+
+      if (rc)
+        {
+          break;
+        }
+
+      struct blob *blob = &clipboard_[clipboard];
+
+      if (0 == blob->data_length)
+        {
+          break;
+        }
+
+      Fl::e_text = reinterpret_cast<char *>(blob->data);
+      Fl::e_length = blob->data_length;
+      receiver.handle(FL_PASTE);
     }
-
-    if (0 > clipboard)
-    {
-      break;
-    }
-
-    if (2 <= clipboard)
-    {
-      break;
-    }
-
-    int rc = strcmp(Fl::clipboard_plain_text, type);
-
-    if (rc)
-    {
-      break;
-    }
-
-    struct blob* blob = &clipboard_[clipboard];
-
-    if (0 == blob->data_length)
-    {
-      break;
-    }
-
-    Fl::e_text = reinterpret_cast<char*>(blob->data);
-    Fl::e_length = blob->data_length;
-    receiver.handle(FL_PASTE);
-
-  }
   while (0);
 
   return;
 }
 
 int
-Fl_Allegro_System_Driver::clipboard_contains(const char* type)
+  Fl_Allegro_System_Driver::clipboard_contains(const char *type)
 {
   return 0;
 }
 
 void
-Fl_Allegro_System_Driver::clipboard_notify_change()
+  Fl_Allegro_System_Driver::clipboard_notify_change()
 {
   return;
 }

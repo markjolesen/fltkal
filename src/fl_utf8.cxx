@@ -1,73 +1,19 @@
-// fl_utf8.cxx
-//
-// "$Id: fl_utf8.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Unicode to UTF-8 conversion functions.
 //
 // Author: Jean-Marc Lienher ( http://oksid.ch )
-// Copyright 2017-2018 The fltkal authors
 // Copyright 2000-2010 by O'ksi'D.
+// Copyright 2016-2020 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
-// Copyright 2016-2017 by Bill Spitzak and others.
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <fl/fl.h>
@@ -87,7 +33,7 @@
 */
 
 // *** NOTE : All functions are LIMITED to 24 bits Unicode values !!! ***
-// ***        But only 16 bits are really used under GNU/Linux and win32  ***
+// ***        But only 16 bits are really used under Linux and win32  ***
 
 
 #define NBC 0xFFFF + 1
@@ -98,7 +44,7 @@ static int Toupper(int ucs) {
 
   if (!table) {
     table = (unsigned short*) malloc(
-	    sizeof(unsigned short) * (NBC));
+            sizeof(unsigned short) * (NBC));
     for (i = 0; i < NBC; i++) {
       table[i] = (unsigned short) i;
     }
@@ -176,8 +122,8 @@ int fl_utf8len1(char c)
 */
 int
 fl_utf_nb_char(
-	const unsigned char 	*buf,
-	int 			len)
+        const unsigned char     *buf,
+        int                     len)
 {
   int i = 0;
   int nbc = 0;
@@ -347,7 +293,7 @@ char * fl_utf2mbcs(const char *s)
 
   The return value is a pointer to an implementation defined buffer:
     - an internal buffer that is (re)allocated as needed (Windows) or
-    - the string in the environment itself (Unix, GNU/Linux, MaOS) or
+    - the string in the environment itself (Unix, Linux, MaOS) or
     - any other implementation (other platforms).
   This string must be considered read-only and must not be freed by the caller.
 
@@ -363,6 +309,38 @@ char * fl_utf2mbcs(const char *s)
 
 char *fl_getenv(const char* v) {
   return Fl::system_driver()->getenv(v);
+}
+
+
+/** Cross-platform function to write environment variables with a UTF-8
+  encoded name or value.
+
+  This function is especially useful on the Windows platform where
+  non-ASCII environment variables are encoded as wide characters.
+
+  The given argument \p var must be encoded in UTF-8 in the form "name=value".
+  The \p 'name' part must conform to platform dependent restrictions on
+  environment variable names.
+
+  The string given in \p var is copied and optionally converted to the
+  required encoding for the platform. On platforms other than Windows
+  this function calls putenv directly.
+
+  The return value is zero on success and non-zero in case of error.
+  The value in case of error is platform specific and returned as-is.
+
+  \note The copied string is allocated on the heap and "lost" on some platforms,
+    i.e. calling fl_putenv() to change environment variables frequently may cause
+    memory leaks. There may be an option to avoid this in a future implementation.
+
+  \note This function is not thread-safe.
+
+  \param[in] var the UTF-8 encoded environment variable \p 'name=value'
+  \return  0 on success, non-zero in case of error.
+*/
+
+int fl_putenv(const char* var) {
+  return Fl::system_driver()->putenv(var);
 }
 
 
@@ -395,9 +373,9 @@ int fl_open(const char* fname, int oflags, ...) {
 
   \param[in] fname  the UTF-8 encoded filename
   \param[in] binary if non-zero, the file is to be accessed in binary
-		    (a.k.a. untranslated) mode.
+                    (a.k.a. untranslated) mode.
   \param[in] oflags,...  these arguments are as in the standard open() function.
-			 Setting \p oflags to zero opens the file for reading.
+                         Setting \p oflags to zero opens the file for reading.
 
   \return  a file descriptor upon successful completion, or -1 in case of error.
 */
@@ -596,6 +574,9 @@ int fl_rename(const char* f, const char *n) {
 
   This function creates a \p path in the file system by recursively creating
   all directories.
+
+  \param[in] path a Unix style ('/' forward slashes) absolute or relative pathname
+  \return 1 if the path was created, 0 if creating the path failed at some point
 */
 char fl_make_path( const char *path ) {
   if (fl_access(path, 0)) {
@@ -627,11 +608,6 @@ void fl_make_path_for_file( const char *path ) {
   fl_make_path( p );
   free( p );
 } // fl_make_path_for_file()
-
-
-//============================================================
-// this part comes from file src/fl_utf.c of FLTK 1.3
-//============================================================
 
 /** Set to 1 to turn bad UTF-8 bytes into ISO-8859-1. If this is zero
   they are instead turned into the Unicode REPLACEMENT CHARACTER, of
@@ -1251,7 +1227,7 @@ int fl_wcwidth(const char* src) {
   indicates truncation, you can then allocate a new array of size
   return+1 and call this again.
 
-  Notice that sizeof(wchar_t) is 2 on Windows and is 4 on GNU/Linux
+  Notice that sizeof(wchar_t) is 2 on Windows and is 4 on Linux
   and most other systems. Where wchar_t is 16 bits, Unicode
   characters in the range 0x10000 to 0x10ffff are converted to
   "surrogate pairs" which take two words each (this is called UTF-16
@@ -1380,12 +1356,4 @@ unsigned fl_utf8from_mb(char* dst, unsigned dstlen, const char* src, unsigned sr
   return Fl::system_driver()->utf8from_mb(dst, dstlen, src, srclen);
 }
 
-//============================================================
-// end of the part from file src/fl_utf.c of FLTK 1.3
-//============================================================
-
 /** @} */
-
-//
-// End of "$Id: fl_utf8.cxx 12976 2018-06-26 14:12:43Z manolo $".
-//

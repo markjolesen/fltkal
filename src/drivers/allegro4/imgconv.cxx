@@ -64,200 +64,196 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "imgconv.h"
+
 #include <stdlib.h>
 #include <string.h>
 
-BITMAP *rgb_staged_to_image(
-    Fl_Draw_Image_Cb cb,
-    void *data,
-    unsigned int const width,
-    unsigned int const height,
-    unsigned int const depth)
+BITMAP *
+  rgb_staged_to_image(Fl_Draw_Image_Cb cb,
+                      void *data,
+                      unsigned int const width,
+                      unsigned int const height,
+                      unsigned int const depth)
 {
-    BITMAP *bmp = 0;
+  BITMAP *bmp = 0;
 
-    do
+  do
     {
-
-        if (0 >= static_cast<int>(width))
+      if (0 >= static_cast<int>(width))
         {
-            break;
+          break;
         }
 
-        if (0 >= static_cast<int>(height))
+      if (0 >= static_cast<int>(height))
         {
-            break;
+          break;
         }
 
-        switch (depth)
+      switch (depth)
         {
         case 4:
-            // TODO:
-            break;
+          // TODO:
+          break;
         case 3:
-            bmp = rgb24cb_to_bitmap(cb, data, width, height);
-            break;
+          bmp = rgb24cb_to_bitmap(cb, data, width, height);
+          break;
         case 2:
-            // TODO:
-            break;
+          // TODO:
+          break;
         case 1:
-            // TODO:
-            break;
+          // TODO:
+          break;
         default:
-            break;
+          break;
         };
-
     }
-    while (0);
+  while (0);
 
-    return bmp;
+  return bmp;
 }
 
-BITMAP *rgb_data_to_bitmap(
-    unsigned int const width,
-    unsigned int const height,
-    unsigned int const depth,
-    unsigned int const stride,
-    unsigned char const *bits)
+BITMAP *
+  rgb_data_to_bitmap(unsigned int const width,
+                     unsigned int const height,
+                     unsigned int const depth,
+                     unsigned int const stride,
+                     unsigned char const *bits)
 {
-    BITMAP *bmp = 0;
+  BITMAP *bmp = 0;
 
-    do
+  do
     {
-
-        if (0 >= static_cast<int>(width))
+      if (0 >= static_cast<int>(width))
         {
-            break;
+          break;
         }
 
-        if (0 >= static_cast<int>(height))
+      if (0 >= static_cast<int>(height))
         {
-            break;
+          break;
         }
 
-        switch (depth)
+      switch (depth)
         {
         case 4:
-            bmp = rgb32_to_bitmap(width, height, stride, bits);
-            break;
+          bmp = rgb32_to_bitmap(width, height, stride, bits);
+          break;
         case 3:
-            bmp = rgb24_to_bitmap(width, height, stride, bits);
-            break;
+          bmp = rgb24_to_bitmap(width, height, stride, bits);
+          break;
         case 2:
-            bmp = rgb16_to_bitmap(width, height, stride, bits);
-            break;
+          bmp = rgb16_to_bitmap(width, height, stride, bits);
+          break;
         case 1:
-            bmp = rgb8_to_bitmap(width, height, stride, bits);
-            break;
+          bmp = rgb8_to_bitmap(width, height, stride, bits);
+          break;
         default:
-            break;
+          break;
         };
-
     }
-    while (0);
+  while (0);
 
-    return bmp;
+  return bmp;
 }
 
-BITMAP *rgb_image_to_bitmap(Fl_RGB_Image const &rgb)
+BITMAP *
+  rgb_image_to_bitmap(Fl_RGB_Image const &rgb)
 {
+  unsigned int width = static_cast<unsigned int>(rgb.w());
+  unsigned int height = static_cast<unsigned int>(rgb.h());
+  unsigned int depth = static_cast<unsigned int>(rgb.d());
+  unsigned int stride = static_cast<unsigned int>(rgb.ld());
+  unsigned char const *raw = rgb.array;
 
-    unsigned int width = static_cast<unsigned int>(rgb.w());
-    unsigned int height = static_cast<unsigned int>(rgb.h());
-    unsigned int depth = static_cast<unsigned int>(rgb.d());
-    unsigned int stride = static_cast<unsigned int>(rgb.ld());
-    unsigned char const *raw = rgb.array;
+  BITMAP *bmp = rgb_data_to_bitmap(width, height, depth, stride, raw);
 
-    BITMAP *bmp = rgb_data_to_bitmap(width, height, depth, stride, raw);
-
-    return bmp;
+  return bmp;
 }
 
-BITMAP *pxm_to_bitmap(Fl_Pixmap const &pxm)
+BITMAP *
+  pxm_to_bitmap(Fl_Pixmap const &pxm)
 {
-    BITMAP *bmp = 0;
-    unsigned char *bits = 0;
+  BITMAP *bmp = 0;
+  unsigned char *bits = 0;
 
-    do
+  do
     {
+      unsigned int width = static_cast<unsigned int>(pxm.w());
 
-        unsigned int width = static_cast<unsigned int>(pxm.w());
-
-        if (0 >= static_cast<int>(width))
+      if (0 >= static_cast<int>(width))
         {
-            break;
+          break;
         }
 
-        unsigned int height = static_cast<unsigned int>(pxm.h());
+      unsigned int height = static_cast<unsigned int>(pxm.h());
 
-        if (0 >= static_cast<int>(height))
+      if (0 >= static_cast<int>(height))
         {
-            break;
+          break;
         }
 
-        static unsigned int const depth = 4;
-        unsigned int bytes = (width * height * depth);
+      static unsigned int const depth = 4;
+      unsigned int bytes = (width * height * depth);
 
-        bits = reinterpret_cast<unsigned char *>(malloc(bytes));
-        char const *const *raw = pxm.data();
-        int rc = fl_convert_pixmap(raw, bits, 0xFF00FF00);
+      bits = reinterpret_cast<unsigned char *>(malloc(bytes));
+      char const *const *raw = pxm.data();
+      int rc = fl_convert_pixmap(raw, bits, 0xFF00FF00);
 
-        if (0 == rc)
+      if (0 == rc)
         {
-            break;
+          break;
         }
 
-        static unsigned int const stride = 0;
-        bmp = rgb32_to_bitmap(width, height, stride, bits);
-
+      static unsigned int const stride = 0;
+      bmp = rgb32_to_bitmap(width, height, stride, bits);
     }
-    while (0);
+  while (0);
 
-    free(bits);
+  free(bits);
 
-    return bmp;
+  return bmp;
 }
 
-BITMAP *bitmap_to_bitmap(Fl_Bitmap const &bit)
+BITMAP *
+  bitmap_to_bitmap(Fl_Bitmap const &bit)
 {
-    BITMAP *bmp = 0;
+  BITMAP *bmp = 0;
 
-    do
+  do
     {
+      unsigned int width = static_cast<unsigned int>(bit.w());
 
-        unsigned int width = static_cast<unsigned int>(bit.w());
-
-        if (0 >= static_cast<int>(width))
+      if (0 >= static_cast<int>(width))
         {
-            break;
+          break;
         }
 
-        unsigned int height = static_cast<unsigned int>(bit.h());
+      unsigned int height = static_cast<unsigned int>(bit.h());
 
-        if (0 >= static_cast<int>(height))
+      if (0 >= static_cast<int>(height))
         {
-            break;
+          break;
         }
 
-        unsigned int depth = static_cast<unsigned int>(bit.d());
+      unsigned int depth = static_cast<unsigned int>(bit.d());
 
-        if (0 != depth)
+      if (0 != depth)
         {
-            break;
+          break;
         }
 
-        unsigned char const *raw = bit.array;
-        bmp = xbm_to_bitmap(width, height, raw);
-
+      unsigned char const *raw = bit.array;
+      bmp = xbm_to_bitmap(width, height, raw);
     }
-    while (0);
+  while (0);
 
-    return bmp;
+  return bmp;
 }
 
-BITMAP *xpm_to_bitmap(char const *const *xpm)
+BITMAP *
+  xpm_to_bitmap(char const *const *xpm)
 {
-    Fl_Pixmap pxm(xpm);
-    BITMAP *bmp = pxm_to_bitmap(pxm);
-    return bmp;
+  Fl_Pixmap pxm(xpm);
+  BITMAP *bmp = pxm_to_bitmap(pxm);
+  return bmp;
 }

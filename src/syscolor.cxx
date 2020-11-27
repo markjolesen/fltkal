@@ -1,71 +1,17 @@
-// syscolor.cxx
-//
-// "$Id: Fl_get_system_colors.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // System color support for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2015 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <fl/fl.h>
@@ -75,6 +21,7 @@
 #include <fl/platform.h>
 #include <fl/fl_math.h>
 #include <fl/fl_utf8.h>
+#include <fl/fl_str.h>
 #include "flstring.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -83,9 +30,9 @@
 #include "tile.xpm"
 
 /**
-    Changes fl_color(FL_BACKGROUND_COLOR) to the given color, 
-    and changes the gray ramp from 32 to 56 to black to white.  These are 
-    the colors used as backgrounds by almost all widgets and used to draw 
+    Changes fl_color(FL_BACKGROUND_COLOR) to the given color,
+    and changes the gray ramp from 32 to 56 to black to white.  These are
+    the colors used as backgrounds by almost all widgets and used to draw
     the edges of all the boxtypes.
 */
 void Fl::background(uchar r, uchar g, uchar b) {
@@ -101,9 +48,9 @@ void Fl::background(uchar r, uchar g, uchar b) {
   for (int i = 0; i < FL_NUM_GRAY; i++) {
     double gray = i/(FL_NUM_GRAY-1.0);
     Fl::set_color(fl_gray_ramp(i),
-		  uchar(pow(gray,powr)*255+.5),
-		  uchar(pow(gray,powg)*255+.5),
-		  uchar(pow(gray,powb)*255+.5));
+                  uchar(pow(gray,powr)*255+.5),
+                  uchar(pow(gray,powg)*255+.5),
+                  uchar(pow(gray,powb)*255+.5));
   }
 }
 
@@ -117,9 +64,9 @@ void Fl::foreground(uchar r, uchar g, uchar b) {
 
 
 /**
-    Changes the alternative background color. This color is used as a 
+    Changes the alternative background color. This color is used as a
     background by Fl_Input and other text widgets.
-    <P>This call may change fl_color(FL_FOREGROUND_COLOR) if it 
+    <P>This call may change fl_color(FL_FOREGROUND_COLOR) if it
     does not provide sufficient contrast to FL_BACKGROUND2_COLOR.
 */
 void Fl::background2(uchar r, uchar g, uchar b) {
@@ -148,7 +95,7 @@ int fl_parse_color(const char* p, uchar& r, uchar& g, uchar& b) {
 
     This is done by Fl_Window::show(argc,argv) before applying
     the -fg and -bg switches.
-    
+
     On X this reads some common values from the Xdefaults database.
     KDE users can set these values by running the "krdb" program, and
     newer versions of KDE set this automatically if you check the "apply
@@ -164,24 +111,24 @@ void Fl::get_system_colors()
 #define D1 BORDER_WIDTH
 #define D2 (BORDER_WIDTH+BORDER_WIDTH)
 
-extern void	fl_up_box(int, int, int, int, Fl_Color);
-extern void	fl_down_box(int, int, int, int, Fl_Color);
-extern void	fl_thin_up_box(int, int, int, int, Fl_Color);
-extern void	fl_thin_down_box(int, int, int, int, Fl_Color);
-extern void	fl_round_up_box(int, int, int, int, Fl_Color);
-extern void	fl_round_down_box(int, int, int, int, Fl_Color);
+extern void     fl_up_box(int, int, int, int, Fl_Color);
+extern void     fl_down_box(int, int, int, int, Fl_Color);
+extern void     fl_thin_up_box(int, int, int, int, Fl_Color);
+extern void     fl_thin_down_box(int, int, int, int, Fl_Color);
+extern void     fl_round_up_box(int, int, int, int, Fl_Color);
+extern void     fl_round_down_box(int, int, int, int, Fl_Color);
 
-extern void	fl_up_frame(int, int, int, int, Fl_Color);
-extern void	fl_down_frame(int, int, int, int, Fl_Color);
-extern void	fl_thin_up_frame(int, int, int, int, Fl_Color);
-extern void	fl_thin_down_frame(int, int, int, int, Fl_Color);
+extern void     fl_up_frame(int, int, int, int, Fl_Color);
+extern void     fl_down_frame(int, int, int, int, Fl_Color);
+extern void     fl_thin_up_frame(int, int, int, int, Fl_Color);
+extern void     fl_thin_down_frame(int, int, int, int, Fl_Color);
 
 #ifndef FL_DOXYGEN
-const char	*Fl::scheme_ = (const char *)0;	    // current scheme 
-Fl_Image	*Fl::scheme_bg_ = (Fl_Image *)0;    // current background image for the scheme
+const char      *Fl::scheme_ = (const char *)0;     // current scheme
+Fl_Image        *Fl::scheme_bg_ = (Fl_Image *)0;    // current background image for the scheme
 #endif
 
-static Fl_Pixmap	tile(tile_xpm);
+static Fl_Pixmap        tile(tile_xpm);
 
 
 /**
@@ -217,9 +164,9 @@ int Fl::scheme(const char *s) {
 
   if (s) {
     if (!fl_ascii_strcasecmp(s, "none") || !fl_ascii_strcasecmp(s, "base") || !*s) s = 0;
-    else if (!fl_ascii_strcasecmp(s, "gtk+")) s = strdup("gtk+");
-    else if (!fl_ascii_strcasecmp(s, "plastic")) s = strdup("plastic");
-    else if (!fl_ascii_strcasecmp(s, "gleam")) s = strdup("gleam");
+    else if (!fl_ascii_strcasecmp(s, "gtk+")) s = fl_strdup("gtk+");
+    else if (!fl_ascii_strcasecmp(s, "plastic")) s = fl_strdup("plastic");
+    else if (!fl_ascii_strcasecmp(s, "gleam")) s = fl_strdup("gleam");
     else s = 0;
   }
   if (scheme_) free((void*)scheme_);
@@ -373,8 +320,3 @@ int Fl::reload_scheme() {
 
   return 1;
 }
-
-
-//
-// End of "$Id: Fl_get_system_colors.cxx 12976 2018-06-26 14:12:43Z manolo $".
-//

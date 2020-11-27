@@ -59,6 +59,7 @@
 -+..\obj\fl.obj 
 -+..\obj\flprintf.obj 
 -+..\obj\fl_rect.obj 
+-+..\obj\fl_str.obj 
 -+..\obj\flstring.obj 
 -+..\obj\fl_uri.obj 
 -+..\obj\fl_utf8.obj 

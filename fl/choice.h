@@ -1,71 +1,17 @@
-// choice.h
-//
-// "$Id: Fl_Choice.H 10513 2015-01-10 22:05:15Z greg.ercolano $"
 //
 // Choice header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /* \file
@@ -79,6 +25,9 @@
 /**
   \class Fl_Choice
   \brief A button that is used to pop up a menu.
+
+  \image html choice.png
+  \image latex choice.png  "Fl_Choice" width=4cm
 
   This is a button that, when pushed, pops up a menu (or hierarchy of menus)
   defined by an array of Fl_Menu_Item objects.
@@ -94,7 +43,7 @@
   and then:
 
       - The item's callback is done if one has been set; the
-        Fl_Choice is passed as the Fl_Widget* argument, 
+        Fl_Choice is passed as the Fl_Widget* argument,
         along with any userdata configured for the callback.
 
       - If the item does not have a callback, the Fl_Choice widget's
@@ -114,8 +63,6 @@
   you pick the item with the mouse.  The '\&' character in item names are
   only looked at when the menu is popped up, however.
 
-  \image html choice.png
-  \image latex choice.png  "Fl_Choice" width=4cm
   \todo Refactor the doxygen comments for Fl_Choice changed() documentation.
 
   \li <tt>int Fl_Widget::changed() const</tt>
@@ -131,6 +78,27 @@
       The default down box type is \c FL_DOWN_BOX.
   \li <tt>void Fl_Choice::down_box(Fl_Boxtype b)</tt>
       Sets the current down box type to \p b.
+
+ Simple example:
+ \par
+ \code
+   #include <FL/Fl.H>
+   #include <FL/Fl_Window.H>
+   #include <FL/Fl_Choice.H>
+   int main() {
+     Fl_Window *win = new Fl_Window(300,200);
+     Fl_Choice *choice = new Fl_Choice(100,10,100,25,"Choice:");
+     choice->add("Zero");
+     choice->add("One");
+     choice->add("Two");
+     choice->add("Three");
+     choice->value(2);    // make "Two" selected by default (zero based!)
+     win->end();
+     win->show();
+     return Fl::run();
+   }
+ \endcode
+
  */
 class FL_EXPORT Fl_Choice : public Fl_Menu_ {
 protected:
@@ -142,7 +110,7 @@ public:
 
   /**
     Gets the index of the last item chosen by the user.
-    The index is zero initially.
+    The index is -1 initially.
    */
   int value() const {return Fl_Menu_::value();}
 
@@ -152,7 +120,3 @@ public:
 };
 
 #endif
-
-//
-// End of "$Id: Fl_Choice.H 10513 2015-01-10 22:05:15Z greg.ercolano $".
-//

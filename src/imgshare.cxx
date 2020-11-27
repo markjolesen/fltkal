@@ -1,71 +1,17 @@
-// imgshare.cxx
-//
-// "$Id: Fl_Shared_Image.cxx 12776 2018-03-19 17:43:18Z manolo $"
 //
 // Shared image code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2017 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <stdio.h>
@@ -84,13 +30,13 @@
 // Global class vars...
 //
 
-Fl_Shared_Image **Fl_Shared_Image::images_ = 0;	// Shared images
-int	Fl_Shared_Image::num_images_ = 0;	// Number of shared images
-int	Fl_Shared_Image::alloc_images_ = 0;	// Allocated shared images
+Fl_Shared_Image **Fl_Shared_Image::images_ = 0; // Shared images
+int     Fl_Shared_Image::num_images_ = 0;       // Number of shared images
+int     Fl_Shared_Image::alloc_images_ = 0;     // Allocated shared images
 
 Fl_Shared_Handler *Fl_Shared_Image::handlers_ = 0;// Additional format handlers
-int	Fl_Shared_Image::num_handlers_ = 0;	// Number of format handlers
-int	Fl_Shared_Image::alloc_handlers_ = 0;	// Allocated format handlers
+int     Fl_Shared_Image::num_handlers_ = 0;     // Number of format handlers
+int     Fl_Shared_Image::alloc_handlers_ = 0;   // Allocated format handlers
 
 
 //
@@ -143,15 +89,15 @@ int Fl_Shared_Image::num_images() {
   same width and height. The second step will match if there is an image
   marked \p original with the same name, regardless of width and height.
 
-  \returns	Whether the images match or their relative sort order (see text).
+  \returns      Whether the images match or their relative sort order (see text).
 
-  \retval	0	the images match
-  \retval	<0	Image \p i0 is \e less than image \p i1
-  \retval	>0	Image \p i0 is \e greater than image \p i1
+  \retval       0       the images match
+  \retval       <0      Image \p i0 is \e less than image \p i1
+  \retval       >0      Image \p i0 is \e greater than image \p i1
 */
 int
-Fl_Shared_Image::compare(Fl_Shared_Image **i0,		// I - First image
-                         Fl_Shared_Image **i1) {	// I - Second image
+Fl_Shared_Image::compare(Fl_Shared_Image **i0,          // I - First image
+                         Fl_Shared_Image **i1) {        // I - Second image
   int i = strcmp((*i0)->name(), (*i1)->name());
 
   if (i) return i;
@@ -185,8 +131,8 @@ Fl_Shared_Image::Fl_Shared_Image() : Fl_Image(0,0,0) {
   The constructors are protected and cannot be used directly
   from a program. Use the get() method instead.
 */
-Fl_Shared_Image::Fl_Shared_Image(const char *n,		// I - Filename
-                                 Fl_Image   *img)	// I - Image
+Fl_Shared_Image::Fl_Shared_Image(const char *n,         // I - Filename
+                                 Fl_Image   *img)       // I - Image
   : Fl_Image(0,0,0) {
   name_ = new char[strlen(n) + 1];
   strcpy((char *)name_, n);
@@ -211,7 +157,7 @@ Fl_Shared_Image::Fl_Shared_Image(const char *n,		// I - Filename
 */
 void
 Fl_Shared_Image::add() {
-  Fl_Shared_Image	**temp;		// New image pointer array...
+  Fl_Shared_Image       **temp;         // New image pointer array...
 
   if (num_images_ >= alloc_images_) {
     // Allocate more memory...
@@ -271,7 +217,7 @@ Fl_Shared_Image::~Fl_Shared_Image() {
   so that no hole will occur.
 */
 void Fl_Shared_Image::release() {
-  int	i;	// Looping var...
+  int   i;      // Looping var...
 
   refcount_ --;
   if (refcount_ > 0) return;
@@ -302,10 +248,10 @@ void Fl_Shared_Image::release() {
 /** Reloads the shared image from disk. */
 void Fl_Shared_Image::reload() {
   // Load image from disk...
-  int		i;		// Looping var
-  FILE		*fp;		// File pointer
-  uchar		header[64];	// Buffer for auto-detecting files
-  Fl_Image	*img;		// New image
+  int           i;              // Looping var
+  FILE          *fp;            // File pointer
+  uchar         header[64];     // Buffer for auto-detecting files
+  Fl_Image      *img;           // New image
 
   if (!name_) return;
 
@@ -357,8 +303,8 @@ void Fl_Shared_Image::reload() {
 
 Fl_Image *
 Fl_Shared_Image::copy(int W, int H) {
-  Fl_Image		*temp_image;	// New image file
-  Fl_Shared_Image	*temp_shared;	// New shared image
+  Fl_Image              *temp_image;    // New image file
+  Fl_Shared_Image       *temp_shared;   // New shared image
 
   // Make a copy of the image we're sharing...
   if (!image_) temp_image = 0;
@@ -385,8 +331,8 @@ Fl_Shared_Image::copy(int W, int H) {
 //
 
 void
-Fl_Shared_Image::color_average(Fl_Color c,	// I - Color to blend with
-                               float    i) {	// I - Blend fraction
+Fl_Shared_Image::color_average(Fl_Color c,      // I - Color to blend with
+                               float    i) {    // I - Blend fraction
   if (!image_) return;
 
   image_->color_average(c, i);
@@ -450,8 +396,8 @@ void Fl_Shared_Image::uncache()
   when no longer needed.
 */
 Fl_Shared_Image* Fl_Shared_Image::find(const char *name, int W, int H) {
-  Fl_Shared_Image	*key,		// Image key
-			**match;	// Matching image
+  Fl_Shared_Image       *key,           // Image key
+                        **match;        // Matching image
 
   if (num_images_) {
     key = new Fl_Shared_Image();
@@ -493,10 +439,10 @@ Fl_Shared_Image* Fl_Shared_Image::find(const char *name, int W, int H) {
   copy with width \p W and height \p H is also added to the list of
   shared images.
 
-  \note	If the sizes differ, then \e two images are created as mentioned above.
-	This is intentional so the original image is cached and preserved.
-	If you request the same image with another size later, then the
-	\b original image will be found, copied, resized, and returned.
+  \note If the sizes differ, then \e two images are created as mentioned above.
+        This is intentional so the original image is cached and preserved.
+        If you request the same image with another size later, then the
+        \b original image will be found, copied, resized, and returned.
 
   Shared JPEG and PNG images can also be created from memory by using their
   named memory access constructor.
@@ -512,7 +458,7 @@ Fl_Shared_Image* Fl_Shared_Image::find(const char *name, int W, int H) {
   \see Fl_PNG_Image::Fl_PNG_Image (const char *name_png, const unsigned char *buffer, int maxsize)
 */
 Fl_Shared_Image* Fl_Shared_Image::get(const char *name, int W, int H) {
-  Fl_Shared_Image	*temp;		// Image
+  Fl_Shared_Image       *temp;          // Image
 
   if ((temp = find(name, W, H)) != NULL) return temp;
 
@@ -537,9 +483,9 @@ Fl_Shared_Image* Fl_Shared_Image::get(const char *name, int W, int H) {
 
 /** Builds a shared image from a pre-existing Fl_RGB_Image.
 
- \param[in] rgb		an Fl_RGB_Image used to build a new shared image.
- \param[in] own_it	1 if the shared image should delete \p rgb when
-			it is itself deleted, 0 otherwise
+ \param[in] rgb         an Fl_RGB_Image used to build a new shared image.
+ \param[in] own_it      1 if the shared image should delete \p rgb when
+                        it is itself deleted, 0 otherwise
 
  \version 1.3.4
 */
@@ -556,8 +502,8 @@ Fl_Shared_Image *Fl_Shared_Image::get(Fl_RGB_Image *rgb, int own_it)
     for adding new formats.
 */
 void Fl_Shared_Image::add_handler(Fl_Shared_Handler f) {
-  int			i;		// Looping var...
-  Fl_Shared_Handler	*temp;		// New image handler array...
+  int                   i;              // Looping var...
+  Fl_Shared_Handler     *temp;          // New image handler array...
 
   // First see if we have already added the handler...
   for (i = 0; i < num_handlers_; i ++) {
@@ -585,7 +531,7 @@ void Fl_Shared_Image::add_handler(Fl_Shared_Handler f) {
 
 /** Removes a shared image handler. */
 void Fl_Shared_Image::remove_handler(Fl_Shared_Handler f) {
-  int	i;				// Looping var...
+  int   i;                              // Looping var...
 
   // First see if the handler has been added...
   for (i = 0; i < num_handlers_; i ++) {
@@ -603,8 +549,3 @@ void Fl_Shared_Image::remove_handler(Fl_Shared_Handler f) {
            (num_handlers_ - i) * sizeof(Fl_Shared_Handler ));
   }
 }
-
-
-//
-// End of "$Id: Fl_Shared_Image.cxx 12776 2018-03-19 17:43:18Z manolo $".
-//

@@ -5,7 +5,6 @@
 // Copyright 2018-2019 The fltkal authors
 //
 //                              FLTK License
-//                            December 11, 2001
 //
 // The FLTK library and included programs are provided under the terms
 // of the GNU Library General Public License (LGPL) with the following
@@ -64,74 +63,73 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "fontft.h"
-#include "util.h"
-#include "utf8proc.h"
-#include "../../flstring.h"
-#include <fl/fl_utf8.h>
-#include <fl/filename.h>
+
 #include <sys/stat.h>
-#include <string.h>
-#include <stdlib.h>
+
 #include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
-#if (7 > FREETYPE_MINOR)
-#define FT_LOAD_BITMAP_METRICS_ONLY FT_LOAD_DEFAULT
-#endif
-
+#include "../../flstring.h"
+#include "utf8proc.h"
+#include "util.h"
+#include <fl/filename.h>
+#include <fl/fl_utf8.h>
 
 FT_Error
-face_requester(
-  FTC_FaceID  face_id,
-  FT_Library  library,
-  FT_Pointer  req_data,
-  FT_Face*    aface)
+  face_requester(FTC_FaceID face_id,
+                 FT_Library library,
+                 FT_Pointer req_data,
+                 FT_Face *aface)
 {
-  Fl_Font font = static_cast<Fl_Font>(reinterpret_cast<ptrdiff_t>((face_id)));
-  font--;
-  fontft* cache = reinterpret_cast<fontft*>(req_data);
-  const char* path = cache->get_path(font);
   FT_Error error = ENOENT;
-  char const* fname = 0;
-  char const* envpath = 0;
-  char* prgpath = 0;
-  char* fontpath = 0;
+  fontft *fft = reinterpret_cast<fontft *>(req_data);
+  struct fontdir::id *id = reinterpret_cast<struct fontdir::id *>(face_id);
+  char *prgpath = 0;
+  char *fontpath = 0;
 
   do
-  {
-
-    if (0 == path)
     {
-      break;
-    }
-
-    error = FT_New_Face(cache->get_library(), path, 0, aface);
-
-    if (0 == error)
-    {
-      break;
-    }
-
-    fname = filename_extract(path);
-    fontpath = reinterpret_cast<char*>(malloc(FL_PATH_MAX));
-    envpath = fl_getenv("FLFONT");
-
-    if (envpath)
-    {
-      snprintf(fontpath, FL_PATH_MAX, "%s/%s", envpath, fname);
-      error = FT_New_Face(cache->get_library(), fontpath, 0, aface);
+      error = FT_New_Face(fft->get_library(), id->path_, 0, aface);
 
       if (0 == error)
-      {
-        break;
-      }
+        {
+          break;
+        }
+
+      fontpath = reinterpret_cast<char *>(malloc(FL_PATH_MAX));
+
+      char const *name = filename_extract(id->path_);
+
+      char const *envpath = fl_getenv("FLFONT");
+
+      if (envpath)
+        {
+          snprintf(fontpath, FL_PATH_MAX, "%s/%s", envpath, name);
+
+          error = FT_New_Face(fft->get_library(), fontpath, 0, aface);
+
+          if (0 == error)
+            {
+              break;
+            }
+        }
+      *aface = 0;
     }
-
-    prgpath = program_path();
-    snprintf(fontpath, FL_PATH_MAX, "%s/%s", prgpath, fname);
-    error = FT_New_Face(cache->get_library(), fontpath, 0, aface);
-
-  }
   while (0);
+
+  if (*aface)
+    {
+      if (0 == id->cmap_cache_)
+        {
+          FTC_CMapCache_New(fft->get_manager(), &id->cmap_cache_);
+        }
+
+      if (0 == id->image_cache_)
+        {
+          FTC_ImageCache_New(fft->get_manager(), &id->image_cache_);
+        }
+    }
 
   free(prgpath);
   free(fontpath);
@@ -139,70 +137,44 @@ face_requester(
   return error;
 }
 
-fontft::fontft() :
-  lib_(0),
-  manager_(0),
-  cmap_cache_(0),
-  image_cache_(0),
-  dir_()
+fontft::fontft() : lib_(0), manager_(0), dir_()
 {
   FT_Error error;
 
   do
-  {
-
-    error = FT_Init_FreeType(&lib_);
-
-    if (error)
     {
-      break;
+      error = FT_Init_FreeType(&lib_);
+
+      if (error)
+        {
+          break;
+        }
+
+      error = FTC_Manager_New(lib_, 0, 0, 0, face_requester, this, &manager_);
+
+      Fl_Preferences *prefs = fltkcfg();
+
+      if (0 == prefs)
+        {
+          break;
+        }
+
+      dir_.load(*prefs);
+
+      delete prefs;
     }
-
-    dir_.clear();
-
-    Fl_Preferences* prefs = fltkcfg();
-
-    if (0 == prefs)
-    {
-      break;
-    }
-
-    dir_.load(*prefs);
-    delete prefs;
-
-    error = FTC_Manager_New(lib_, 3, 0, 0, face_requester, this, &manager_);
-
-    if (error)
-    {
-      break;
-    }
-
-    error = FTC_CMapCache_New(manager_, &cmap_cache_);
-
-    if (error)
-    {
-      break;
-    }
-
-    error = FTC_ImageCache_New(manager_, &image_cache_);
-
-  }
   while (0);
 
-  if (error)
-  {
-    FTC_Manager_Done(manager_);
-    FT_Done_FreeType(lib_);
-    manager_ = 0;
-    lib_ = 0;
-  }
+  if (error || (0 == dir_.get_count()))
+    {
+      abort();
+    }
 
   return;
 }
 
 fontft::~fontft()
 {
-
   FTC_Manager_Done(manager_);
   FT_Done_FreeType(lib_);
 
@@ -210,61 +182,62 @@ fontft::~fontft()
 }
 
 FT_Size
-fontft::get_size(Fl_Font const font, int const height) const
+  fontft::get_size(Fl_Font const index, Fl_Fontsize const size) const
 {
-  FT_Size  size = 0;
+  FT_Size ftsize = 0;
 
   do
-  {
-
-    if (0 == manager_)
     {
-      break;
+      struct fontdir::id *id = dir_.get_id(index);
+
+      if (0 == id)
+        {
+          break;
+        }
+
+      FTC_ScalerRec scaler;
+
+      memset(&scaler, 0, sizeof(scaler));
+
+      scaler.face_id = id;
+      scaler.height = (size << 6);
+      scaler.x_res = 72;
+      scaler.y_res = 72;
+
+      FT_Error error = FTC_Manager_LookupSize(manager_, &scaler, &ftsize);
     }
-
-    FTC_ScalerRec scaler;
-    memset(&scaler, 0, sizeof(scaler));
-    scaler.face_id = reinterpret_cast<FTC_FaceID>(font + 1);
-    scaler.height = height;
-    scaler.pixel = 1;
-    FTC_Manager_LookupSize(manager_, &scaler, &size);
-
-  }
   while (0);
 
-  return size;
+  return ftsize;
 }
 
 #if defined(USE_ALLEGRO)
 
 void
-fontft::draw(
-  BITMAP* surface,
-  FT_Bitmap* bitmap,
-  int const x,
-  int const y,
-  int const alcolor) const
+  fontft::draw(BITMAP *surface,
+               FT_Bitmap *bitmap,
+               int const x,
+               int const y,
+               int const alcolor) const
 {
-
-  unsigned char* src_line = bitmap->buffer;
+  unsigned char *src_line = bitmap->buffer;
 
   for (unsigned int row = 0; row < bitmap->rows; row++)
-  {
-    unsigned char* src = src_line;
-
-    for (unsigned int col = 0; col < bitmap->width; col++)
     {
-      if (*src)
-      {
-        // putpixel(surface, x + col, y + row, alcolor);
-        _putpixel32(surface, x + col, y + row, alcolor);
-      }
+      unsigned char *src = src_line;
 
-      *src++;
+      for (unsigned int col = 0; col < bitmap->width; col++)
+        {
+          if (*src)
+            {
+              _putpixel32(surface, x + col, y + row, alcolor);
+            }
+
+          *src++;
+        }
+
+      src_line += bitmap->pitch;
     }
-
-    src_line += bitmap->pitch;
-  }
 
   return;
 }
@@ -272,12 +245,11 @@ fontft::draw(
 #else /* USE_OWD32 */
 
 inline void
-fontft::draw(
-  struct image* surface,
-  FT_Bitmap* bitmap,
-  int const x,
-  int const y,
-  int const alcolor) const
+  fontft::draw(struct image *surface,
+               FT_Bitmap *bitmap,
+               int const x,
+               int const y,
+               int const alcolor) const
 {
   struct bitmap bmp;
 
@@ -294,282 +266,257 @@ fontft::draw(
 #endif
 
 void
-fontft::draw(
+  fontft::draw(
 #if defined(USE_ALLEGRO)
-  BITMAP* surface,
+    BITMAP *surface,
 #else
-  struct image* surface,
+    struct image *surface,
 #endif
-  char const* text,
-  unsigned int const len,
-  int const x,
-  int const y,
-  Fl_Font const font,
-  int const height,
-  int const alcolor) const
+    char const *text,
+    unsigned int const len,
+    int const x,
+    int const y,
+    Fl_Font const index,
+    Fl_Fontsize const size,
+    int const alcolor) const
 {
-  bool fallback = false;
-  FT_Error error;
-  FT_Face face = 0;
-  FTC_ScalerRec scaler;
-  FT_Int pen_x = x;
-  FT_Int pen_y = y;
-
-  memset(&scaler, 0, sizeof(scaler));
-  scaler.face_id = reinterpret_cast<FTC_FaceID>(font + 1);
-  scaler.height = height;
-  scaler.pixel = 1;
-
   do
-  {
-
-    if (0 == manager_)
     {
-      fallback = true;
-      break;
-    }
+      struct fontdir::id *id = dir_.get_id(index);
 
-    error = FTC_Manager_LookupFace(manager_, scaler.face_id, &face);
+      if (0 == id)
+        {
+          break;
+        }
 
-    if (error)
-    {
-      fallback = true;
-      break;
-    }
+      FTC_ScalerRec scaler;
 
-    FT_Int charmap_index = FT_Get_Charmap_Index(face->charmap);
+      memset(&scaler, 0, sizeof(scaler));
 
-    utf8proc_uint8_t const* ptr =
-      reinterpret_cast<utf8proc_uint8_t const*>(text);
-    utf8proc_ssize_t left = len;
+      scaler.face_id = id;
+      scaler.height = (size << 6);
+      scaler.x_res = 72;
+      scaler.y_res = 72;
 
-    do
-    {
+      FT_Face face = 0;
 
-      if (0 >= left)
-      {
-        break;
-      }
+      FT_Error error = FTC_Manager_LookupFace(manager_, id, &face);
 
-      utf8proc_int32_t codepoint;
-      utf8proc_ssize_t ate = utf8proc_iterate(ptr, left, &codepoint);
+      if (error)
+        {
+          break;
+        }
 
-      if (0 < ate)
-      {
-        ptr += ate;
-        left -= ate;
-      }
+      FT_UInt advance_def = (face->glyph->advance.x >> 16);
+      FT_Int cmap_index = FT_Get_Charmap_Index(face->charmap);
+      FT_UInt glyph_index = 0;
+      FT_UInt glyph_index_prev = 0;
+      // bool use_kerning = FT_HAS_KERNING(face);
 
-      else
-      {
-        ptr++;
-        left--;
-        continue;
-      }
+      utf8proc_uint8_t const *ptr
+        = reinterpret_cast<utf8proc_uint8_t const *>(text);
+      utf8proc_ssize_t left = len;
 
-      FT_UInt glyph_index = FTC_CMapCache_Lookup(
-                              cmap_cache_,
-                              scaler.face_id,
-                              charmap_index,
-                              codepoint);
+      int pen_x = x;
 
-      if (0 == glyph_index)
-      {
-        continue;
-      }
+      do
+        {
+          if (0 >= left)
+            {
+              break;
+            }
 
-      FT_Glyph glyph = 0;
+          utf8proc_int32_t codepoint;
+          utf8proc_ssize_t ate = utf8proc_iterate(ptr, left, &codepoint);
 
-      error = FTC_ImageCache_LookupScaler(
-                image_cache_,
-                &scaler,
-                FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL,
-                glyph_index,
-                &glyph,
-                0);
+          if (0 < ate)
+            {
+              ptr += ate;
+              left -= ate;
+            }
+          else
+            {
+              ptr++;
+              left--;
+              codepoint = 0xc2bf;
+            }
 
-      FT_BitmapGlyph slot = reinterpret_cast<FT_BitmapGlyph>(glyph);
+          FT_UInt glyph_index
+            = FTC_CMapCache_Lookup(id->cmap_cache_, id, cmap_index, codepoint);
 
-      if (0 == error)
-      {
-        draw(
-          surface,
-          &slot->bitmap,
-          pen_x + slot->left,
-          pen_y - slot->top,
-          alcolor);
-      }
+          if (0 == glyph_index)
+            {
+              continue;
+            }
 
-      pen_x += (glyph->advance.x >> 16);
-    }
-    while (1);
+#if 0
+          if (glyph_index_prev)
+            {
+              if (use_kerning)
+                {
+                  FT_Vector delta;
 
-  }
-  while (0);
+                  FT_Get_Kerning(face,
+                                 glyph_index_prev,
+                                 glyph_index,
+                                 FT_KERNING_DEFAULT,
+                                 &delta);
 
-#if defined(USE_ALLEGRO)
-
-  if (fallback)
-  {
-    char* buf = reinterpret_cast<char*>(::malloc((len + 1)));
-
-    if (buf)
-    {
-      ::memcpy(buf, text, len);
-      buf[len] = 0;
-      ::textout_ex(surface, ::font, buf, x, (y - 8), alcolor, -1);
-      ::free(buf);
-    }
-  }
-
+                  pen_x += (delta.x >> 6);
+                }
+            }
 #endif
+
+          FT_Glyph glyph = 0;
+
+          error = FTC_ImageCache_LookupScaler(id->image_cache_,
+                                              &scaler,
+                                              FT_LOAD_DEFAULT | FT_LOAD_RENDER
+                                                | FT_LOAD_FORCE_AUTOHINT,
+                                              glyph_index,
+                                              &glyph,
+                                              0);
+
+          FT_BitmapGlyph slot = reinterpret_cast<FT_BitmapGlyph>(glyph);
+
+          draw(surface,
+               &slot->bitmap,
+               (pen_x + slot->left),
+               (y - slot->top),
+               alcolor);
+
+          //        pen_x += (glyph->advance.x >> 16);
+          pen_x += size;
+          glyph_index_prev = glyph_index;
+        }
+      while (1);
+    }
+  while (0);
 
   return;
 }
 
 int
-fontft::width(
-  char const* text,
-  unsigned int const len,
-  Fl_Font const font,
-  int const height) const
+  fontft::width(char const *text,
+                unsigned int const len,
+                Fl_Font const index,
+                Fl_Fontsize const size) const
 {
-  FT_Error error;
-  FT_Face face = 0;
-  FTC_ScalerRec scaler;
-  FT_Int pen_x = 0;
+  // int pen_x= 0;
+  int pen_x = (len * size);
 
-  memset(&scaler, 0, sizeof(scaler));
-  scaler.face_id = reinterpret_cast<FTC_FaceID>(font + 1);
-  scaler.height = height;
-  scaler.pixel = 1;
-
+#if 0
   do
-  {
-
-    if (0 == manager_)
     {
-      pen_x = (8 * len);
-      break;
+      struct fontdir::id *id = dir_.get_id(index);
+
+      if (0 == id)
+        {
+          break;
+        }
+
+      FTC_ScalerRec scaler;
+
+      memset(&scaler, 0, sizeof(scaler));
+
+      scaler.face_id = id;
+      scaler.height = (size << 6);
+      scaler.x_res = 72;
+      scaler.y_res = 72;
+
+      FT_Face face = 0;
+
+      FT_Error error = FTC_Manager_LookupFace(manager_, id, &face);
+
+      if (error)
+        {
+          break;
+        }
+
+      FT_UInt advance_def = (face->glyph->advance.x >> 16);
+      FT_Int cmap_index = FT_Get_Charmap_Index(face->charmap);
+      FT_UInt glyph_index = 0;
+      FT_UInt glyph_index_prev = 0;
+      // bool use_kerning = FT_HAS_KERNING(face);
+      utf8proc_uint8_t const *ptr
+        = reinterpret_cast<utf8proc_uint8_t const *>(text);
+      utf8proc_ssize_t left = len;
+
+      do
+        {
+          if (0 >= left)
+            {
+              break;
+            }
+
+          utf8proc_int32_t codepoint;
+          utf8proc_ssize_t ate = utf8proc_iterate(ptr, left, &codepoint);
+
+          if (0 < ate)
+            {
+              ptr += ate;
+              left -= ate;
+            }
+
+          else
+            {
+              ptr++;
+              left--;
+              codepoint = 0xc2bf;
+            }
+
+          glyph_index
+            = FTC_CMapCache_Lookup(id->cmap_cache_, id, cmap_index, codepoint);
+
+#  if 0
+          if (glyph_index)
+            {
+              if (glyph_index_prev)
+                {
+                  if (use_kerning)
+                    {
+                      FT_Vector delta;
+
+                      FT_Get_Kerning(face,
+                                     glyph_index_prev,
+                                     glyph_index,
+                                     FT_KERNING_DEFAULT,
+                                     &delta);
+
+                      pen_x += (delta.x >> 6);
+                    }
+                }
+#  endif
+
+              FT_Glyph glyph = 0;
+
+              FTC_ImageCache_LookupScaler(id->image_cache_,
+                                          &scaler,
+                                          FT_LOAD_DEFAULT | FT_LOAD_RENDER
+                                            | FT_LOAD_FORCE_AUTOHINT,
+                                          glyph_index,
+                                          &glyph,
+                                          0);
+
+              pen_x += (glyph->advance.x >> 16);
+              glyph_index_prev = glyph_index;
+            }
+        }
+      while (1);
     }
-
-    error = FTC_Manager_LookupFace(manager_, scaler.face_id, &face);
-
-    if (error)
-    {
-      pen_x = (8 * len);
-      break;
-    }
-
-    FT_Int charmap_index = FT_Get_Charmap_Index(face->charmap);
-
-    utf8proc_uint8_t const* ptr =
-      reinterpret_cast<utf8proc_uint8_t const*>(text);
-    utf8proc_ssize_t left = len;
-
-    do
-    {
-
-      if (0 >= left)
-      {
-        break;
-      }
-
-      utf8proc_int32_t codepoint;
-      utf8proc_ssize_t ate = utf8proc_iterate(ptr, left, &codepoint);
-
-      if (0 < ate)
-      {
-        ptr += ate;
-        left -= ate;
-      }
-
-      else
-      {
-        ptr++;
-        left--;
-        continue;
-      }
-
-      FT_UInt glyph_index = FTC_CMapCache_Lookup(
-                              cmap_cache_,
-                              scaler.face_id,
-                              charmap_index,
-                              codepoint);
-
-      if (0 == glyph_index)
-      {
-        continue;
-      }
-
-      FT_Glyph glyph = 0;
-
-      error = FTC_ImageCache_LookupScaler(
-                image_cache_,
-                &scaler,
-                FT_LOAD_BITMAP_METRICS_ONLY,
-                glyph_index,
-                &glyph,
-                0);
-
-      pen_x += (glyph->advance.x >> 16);
-
-    }
-    while (1);
-
-  }
   while (0);
+#endif
 
   return pen_x;
 }
 
 unsigned int
-fontft::get_font_sizes(Fl_Font const font, int*& sizep) const
+  fontft::get_font_sizes(Fl_Font const index, int *&sizep) const
 {
-  unsigned int count = 0;
-  static int sizes[128];
-
-  do
-  {
-
-    count = 1;
-    sizes[0] = 8;
-
-    if (0 == manager_)
-    {
-      break;
-    }
-
-    FT_Face face;
-
-    FT_Error error = FTC_Manager_LookupFace(
-                       manager_,
-                       reinterpret_cast<FTC_FaceID>(font + 1),
-                       &face);
-
-    if (error)
-    {
-      break;
-    }
-
-    if (0 == face->num_fixed_sizes)
-    {
-      for (count = 0; count < 127; count++)
-      {
-        sizes[count] = (1 + count);
-      };
-
-      break;
-    }
-
-    for (count = 0; count < face->num_fixed_sizes; count++)
-    {
-      sizes[count] = face->available_sizes[count].height;
-    }
-
-  }
-  while (0);
+  static int sizes[]
+    = { 6, 8, 9, 10, 11, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
 
   sizep = sizes;
-  return count;
+
+  return (sizeof(sizes) / sizeof(sizes[0]));
 }

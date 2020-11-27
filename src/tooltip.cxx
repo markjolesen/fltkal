@@ -1,84 +1,31 @@
-// tooltip.cxx
-//
-// "$Id: Fl_Tooltip.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Tooltip source file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2015 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <fl/tooltip.h>
 #include <fl/fl_draw.h>
 #include <fl/winmenu.h>
 #include <fl/fl.h>
+#include <fl/fl_str.h>
 #include "drvsys.h"
 #include "drvwin.h"
 
 #include <stdio.h>
-#include <string.h>   // strdup()
 
 float     Fl_Tooltip::delay_ = 1.0f;
+float     Fl_Tooltip::hidedelay_ = 12.0f;
 float     Fl_Tooltip::hoverdelay_ = 0.2f;
 Fl_Color  Fl_Tooltip::color_ = fl_color_cube(FL_NUM_RED - 1,
                                              FL_NUM_GREEN - 1,
@@ -92,6 +39,8 @@ int       Fl_Tooltip::wrap_width_ = 400;
 const int Fl_Tooltip::draw_symbols_ = 1;
 
 static const char* tip;
+
+static void tooltip_hide_timeout(void*);
 
 /**
     This widget creates a tooltip box window, with no caption.
@@ -110,13 +59,14 @@ public:
   /** Shows the tooltip windows only if a tooltip text is available. */
   void show() {
     if (!tip) return;
-    
+
     Fl_Menu_Window::show();
   }
 
   int handle(int e) {
     if (e == FL_PUSH || e == FL_KEYDOWN) {
       hide();
+      Fl::remove_timeout(tooltip_hide_timeout);
       return 1;
     }
     return Fl_Menu_Window::handle(e);
@@ -125,7 +75,7 @@ public:
 
 Fl_Widget* Fl_Tooltip::widget_ = 0;
 static Fl_TooltipBox *window = 0;
-static int Y,H;
+static int currentTooltipY, currentTooltipH;
 
 Fl_Window *Fl_Tooltip::current_window(void)
 {
@@ -142,7 +92,7 @@ void Fl_TooltipBox::layout() {
 
   // find position on the screen of the widget:
   int ox = Fl::event_x_root();
-  int oy = Y + H+2;
+  int oy = currentTooltipY + currentTooltipH+2;
   for (Fl_Widget* p = Fl_Tooltip::current(); p; p = p->window()) {
     oy += p->y();
   }
@@ -150,11 +100,11 @@ void Fl_TooltipBox::layout() {
   Fl::screen_xywh(scr_x, scr_y, scr_w, scr_h);
   if (ox+ww > scr_x+scr_w) ox = scr_x+scr_w - ww;
   if (ox < scr_x) ox = scr_x;
-  if (H > 30) {
+  if (currentTooltipH > 30) {
     oy = Fl::event_y_root()+13;
     if (oy+hh > scr_y+scr_h) oy -= 23+hh;
   } else {
-    if (oy+hh > scr_y+scr_h) oy -= (4+hh+H);
+    if (oy+hh > scr_y+scr_h) oy -= (4+hh+currentTooltipH);
   }
   if (oy < scr_y) oy = scr_y;
 
@@ -195,6 +145,11 @@ static int top_win_iconified_() {
   return !topwin->visible() ? 1 : 0;
 }
 
+static void tooltip_hide_timeout(void*) {
+  if (window) window->hide();
+  recent_tooltip = 0;
+}
+
 static void tooltip_timeout(void*) {
 #ifdef DEBUG
   puts("tooltip_timeout();");
@@ -205,6 +160,7 @@ static void tooltip_timeout(void*) {
   if (!top_win_iconified_()) {   // no tooltip if top win iconified (STR #3157)
     if (!tip || !*tip) {
       if (window) window->hide();
+      Fl::remove_timeout(tooltip_hide_timeout);
     } else {
       int condition = 1;
 // bugfix: no need to refactor
@@ -218,6 +174,7 @@ static void tooltip_timeout(void*) {
         // printf("tooltip_timeout: Showing window %p with tooltip \"%s\"...\n",
         //        window, tip ? tip : "(null)");
         window->show();
+        Fl::add_timeout(Fl_Tooltip::hidedelay(), tooltip_hide_timeout);
       }
     }
   }
@@ -258,8 +215,8 @@ void Fl_Tooltip::enter_(Fl_Widget* w) {
   }
   enter_area(w, 0, 0, w->w(), w->h(), tw->tooltip());
 }
-/** 
-     Sets the current widget target. 
+/**
+     Sets the current widget target.
      Acts as though enter(widget) was done but does not pop up a
      tooltip.  This is useful to prevent a tooltip from reappearing when
      a modal overlapping window is deleted. FLTK does this automatically
@@ -294,7 +251,10 @@ void Fl_Tooltip::exit_(Fl_Widget *w) {
   widget_ = 0;
   Fl::remove_timeout(tooltip_timeout);
   Fl::remove_timeout(recent_timeout);
-  if (window && window->visible()) window->hide();
+  if (window && window->visible()) {
+    window->hide();
+    Fl::remove_timeout(tooltip_hide_timeout);
+  }
   if (recent_tooltip) {
     if (Fl::event_state() & FL_BUTTONS) recent_tooltip = 0;
     else Fl::add_timeout(Fl_Tooltip::hoverdelay(), recent_timeout);
@@ -333,21 +293,30 @@ void Fl_Tooltip::enter_area(Fl_Widget* wid, int x,int y,int w,int h, const char*
     return;
   }
   // do nothing if it is the same:
-  if (wid==widget_ /*&& x==X && y==Y && w==W && h==H*/ && t==tip) return;
+  if (wid==widget_ /*&& x==X && y==currentTooltipY && w==W && h==currentTooltipH*/ && t==tip) return;
   Fl::remove_timeout(tooltip_timeout);
   Fl::remove_timeout(recent_timeout);
   // remember it:
-  widget_ = wid; Y = y; H = h; tip = t;
+  widget_ = wid; currentTooltipY = y; currentTooltipH = h; tip = t;
   // popup the tooltip immediately if it was recently up:
   if (recent_tooltip) {
-    if (window) window->hide();
+    if (window) {
+      window->hide();
+      Fl::remove_timeout(tooltip_hide_timeout);
+    }
     Fl::add_timeout(Fl_Tooltip::hoverdelay(), tooltip_timeout);
     // possible fix for the Windows titlebar, it seems to want the
     // window to be destroyed, moving it messes up the parenting:
-    if (Fl::system_driver()->use_recent_tooltip_fix() && window && window->visible()) window->hide();
+    if (Fl::system_driver()->use_recent_tooltip_fix() && window && window->visible()) {
+      window->hide();
+      Fl::remove_timeout(tooltip_hide_timeout);
+    }
     tooltip_timeout(0);
   } else {
-    if (window && window->visible()) window->hide();
+    if (window && window->visible()) {
+      window->hide();
+      Fl::remove_timeout(tooltip_hide_timeout);
+    }
     Fl::add_timeout(Fl_Tooltip::delay(), tooltip_timeout);
   }
 
@@ -367,18 +336,18 @@ void Fl_Tooltip::set_enter_exit_once_() {
 }
 
 /**
-  Sets the current tooltip text. 
+  Sets the current tooltip text.
 
-  Sets a string of text to display in a popup tooltip window when the user 
-  hovers the mouse over the widget. The string is <I>not</I> copied, so 
-  make sure any formatted string is stored in a static, global, 
+  Sets a string of text to display in a popup tooltip window when the user
+  hovers the mouse over the widget. The string is <I>not</I> copied, so
+  make sure any formatted string is stored in a static, global,
   or allocated buffer. If you want a copy made and managed for you,
   use the copy_tooltip() method, which will manage the tooltip string
   automatically.
 
-  If no tooltip is set, the tooltip of the parent is inherited. Setting a 
-  tooltip for a group and setting no tooltip for a child will show the 
-  group's tooltip instead. To avoid this behavior, you can set the child's 
+  If no tooltip is set, the tooltip of the parent is inherited. Setting a
+  tooltip for a group and setting no tooltip for a child will show the
+  group's tooltip instead. To avoid this behavior, you can set the child's
   tooltip to an empty string ("").
   \param[in] text New tooltip text (no copy is made)
   \see copy_tooltip(const char*), tooltip()
@@ -395,16 +364,16 @@ void Fl_Widget::tooltip(const char *text) {
 }
 
 /**
-  Sets the current tooltip text. 
-  Unlike tooltip(), this method allocates a copy of the tooltip 
+  Sets the current tooltip text.
+  Unlike tooltip(), this method allocates a copy of the tooltip
   string instead of using the original string pointer.
 
   The internal copy will automatically be freed whenever you assign
   a new tooltip or when the widget is destroyed.
 
-  If no tooltip is set, the tooltip of the parent is inherited. Setting a 
-  tooltip for a group and setting no tooltip for a child will show the 
-  group's tooltip instead. To avoid this behavior, you can set the child's 
+  If no tooltip is set, the tooltip of the parent is inherited. Setting a
+  tooltip for a group and setting no tooltip for a child will show the
+  group's tooltip instead. To avoid this behavior, you can set the child's
   tooltip to an empty string ("").
   \param[in] text New tooltip text (an internal copy is made and managed)
   \see tooltip(const char*), tooltip()
@@ -414,13 +383,9 @@ void Fl_Widget::copy_tooltip(const char *text) {
   if (flags() & COPIED_TOOLTIP) free((void *)(tooltip_));
   if (text) {
     set_flag(COPIED_TOOLTIP);
-    tooltip_ = strdup(text);
+    tooltip_ = fl_strdup(text);
   } else {
     clear_flag(COPIED_TOOLTIP);
     tooltip_ = (char *)0;
   }
 }
-
-//
-// End of "$Id: Fl_Tooltip.cxx 12976 2018-06-26 14:12:43Z manolo $".
-//

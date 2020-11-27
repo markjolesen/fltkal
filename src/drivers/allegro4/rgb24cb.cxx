@@ -65,79 +65,79 @@
 //
 #include <fl/drvgr.h>
 #if defined(USE_ALLEGRO)
-#include <allegro.h>
+#  include <allegro.h>
 
-BITMAP *rgb24cb_to_bitmap(
-    Fl_Draw_Image_Cb cb,
-    void *data,
-    unsigned int const img_width,
-    unsigned int const img_height)
+BITMAP *
+  rgb24cb_to_bitmap(Fl_Draw_Image_Cb cb,
+                    void *data,
+                    unsigned int const img_width,
+                    unsigned int const img_height)
 {
-    BITMAP *bmp = 0;
+  BITMAP *bmp = 0;
 
-    do
+  do
     {
-        bmp = create_bitmap_ex(32, img_width, img_height);
+      bmp = create_bitmap_ex(32, img_width, img_height);
 
-        if (0 == bmp)
+      if (0 == bmp)
         {
-            break;
+          break;
         }
 
-        unsigned char *line = reinterpret_cast<unsigned char *>(
-                                  malloc(3 * img_width));
+      unsigned char *line
+        = reinterpret_cast<unsigned char *>(malloc(3 * img_width));
 
-        for (unsigned int row = 0; row < img_height; row++)
+      for (unsigned int row = 0; row < img_height; row++)
         {
-            (*cb)(data, 0, row, img_width, line);
-            uint32_t *dest = reinterpret_cast<uint32_t *>(bmp->line[row]);
-            unsigned char *src = &line[0];
-            for (unsigned int index = 0; index < img_width; index++)
+          (*cb)(data, 0, row, img_width, line);
+          uint32_t *dest = reinterpret_cast<uint32_t *>(bmp->line[row]);
+          unsigned char *src = &line[0];
+          for (unsigned int index = 0; index < img_width; index++)
             {
-                uint32_t color = makecol24(*src++, *src++, *src++);
-                *dest++ = color;
+              uint32_t color = makecol24(*src++, *src++, *src++);
+              *dest++ = color;
             }
         }
 
-        free(line);
-
+      free(line);
     }
-    while (0);
+  while (0);
 
-    return bmp;
+  return bmp;
 }
 #else
 
-#include "bitmap.h"
+#  include "bitmap.h"
 
-struct bitmap *rgb24cb_to_bitmap(
-    Fl_Draw_Image_Cb cb,
-    void *data,
-    unsigned int const img_width,
-    unsigned int const img_height)
+struct bitmap *
+  rgb24cb_to_bitmap(Fl_Draw_Image_Cb cb,
+                    void *data,
+                    unsigned int const img_width,
+                    unsigned int const img_height)
 {
-    struct bitmap *bmp = bitmap_new(img_width, img_height);
+  struct bitmap *bmp = bitmap_new(img_width, img_height);
 
-    unsigned char *line = reinterpret_cast<unsigned char *>(malloc(3 * img_width));
+  unsigned char *line
+    = reinterpret_cast<unsigned char *>(malloc(3 * img_width));
 
-    for (unsigned int row = 0; row < img_height; row++)
+  for (unsigned int row = 0; row < img_height; row++)
     {
-        (*cb)(data, 0, row, img_width, line);
-	unsigned char* buf= reinterpret_cast<unsigned char *>(bmp->bits.buf);
-        unsigned char* dest = &buf[4*row*img_width];
-        unsigned char *src = &line[0];
-        for (unsigned int index = 0; index < img_width; index++)
+      (*cb)(data, 0, row, img_width, line);
+      unsigned char *buf = reinterpret_cast<unsigned char *>(bmp->bits.buf);
+      unsigned char *dest = &buf[4 * row * img_width];
+      unsigned char *src = &line[0];
+      for (unsigned int index = 0; index < img_width; index++)
         {
-	    *dest++= 0;
-	    *dest++= *src++;
-	    *dest++= *src++;
-	    *dest++= *src++;
+          *dest++ = 0;
+          *dest++ = *src++;
+          *dest++ = *src++;
+          *dest++ = *src++;
         }
     }
 
-    free(line);
+  free(line);
 
-    return bmp;
+  return bmp;
 }
 
 #endif

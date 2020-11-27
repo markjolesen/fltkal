@@ -1,71 +1,17 @@
-// scrlbar.h
-//
-// "$Id: Fl_Scrollbar.H 9116 2011-10-02 06:25:13Z matt $"
 //
 // Scroll bar header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /* \file
@@ -89,7 +35,7 @@
   have to use casts to get at the floating-point versions of value()
   from Fl_Slider.
 
-  \image html  scrollbar.png 
+  \image html  scrollbar.png
   \image latex scrollbar.png "Fl_Scrollbar" width=4cm
 */
 class FL_EXPORT Fl_Scrollbar : public Fl_Slider {
@@ -128,8 +74,8 @@ public:
     Sets the position, size and range of the slider in the scrollbar.
     \param[in] pos   position, first line displayed
     \param[in] windowSize  number of lines displayed
-    \param[in] first number of first line
-    \param[in] total total number of lines
+    \param[in] first_line number of first line
+    \param[in] total_lines total number of lines
 
     You should call this every time your window changes size, your data
     changes size, or your scroll position changes (even if in response
@@ -138,8 +84,8 @@ public:
 
     Calls Fl_Slider::scrollvalue(int pos, int size, int first, int total).
   */
-  int value(int pos, int windowSize, int first, int total) {
-    return scrollvalue(pos, windowSize, first, total);
+  int value(int pos, int windowSize, int first_line, int total_lines) {
+    return scrollvalue(pos, windowSize, first_line, total_lines);
   }
 
   /**
@@ -157,7 +103,3 @@ public:
 };
 
 #endif
-
-//
-// End of "$Id: Fl_Scrollbar.H 9116 2011-10-02 06:25:13Z matt $".
-//

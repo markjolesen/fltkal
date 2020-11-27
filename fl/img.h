@@ -1,71 +1,17 @@
-// img.h
-//
-// "$Id: Fl_Image.H 12811 2018-03-28 13:00:12Z manolo $"
 //
 // Image header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2018 by Bill Spitzak and others.
+// Copyright 1998-2017 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /** \file
@@ -96,19 +42,19 @@ enum Fl_RGB_Scaling {
 
 /**
  \brief Base class for image caching, scaling and drawing.
- 
+
  Fl_Image is the base class used for caching, scaling and drawing all kinds of images
- in FLTK. This class keeps track of common image data such as the pixels, 
- colormap, width, height, and depth. Virtual methods are used to provide 
+ in FLTK. This class keeps track of common image data such as the pixels,
+ colormap, width, height, and depth. Virtual methods are used to provide
  type-specific image handling.
- 
+
  Each image possesses two (width, height) pairs. 1) The width and height of the
  image raw data are returned by data_w() and data_h(). These values are set
  when the image is created and remain unchanged. 2) The width and height
  of the area filled by the image when it gets drawn are returned by w() and h().
  The values are equal to data_w() and data_h() when the image is created,
  and can be changed by the scale() member function.
-  
+
  Since the Fl_Image class does not support image
  drawing by itself, calling the draw() method results in
  a box with an X in it being drawn instead.
@@ -119,7 +65,7 @@ public:
   static const int ERR_NO_IMAGE    = -1;
   static const int ERR_FILE_ACCESS = -2;
   static const int ERR_FORMAT      = -3;
-    
+
 private:
   int w_, h_, d_, ld_, count_;
   int data_w_, data_h_;
@@ -129,6 +75,8 @@ private:
   // Forbid use of copy constructor and assign operator
   Fl_Image & operator=(const Fl_Image &);
   Fl_Image(const Fl_Image &);
+  // Presently redefined in Fl_SVG_Image
+  virtual void cache_size_(int &width, int &height) {}
 
 protected:
 
@@ -160,7 +108,7 @@ protected:
    to account for the extra data per line.
    */
   void ld(int LD) {ld_ = LD;}
-  /** 
+  /**
    Sets the current array pointer and count of pointers in the array.
    */
   void data(const char * const *p, int c) {data_ = p; count_ = c;}
@@ -172,14 +120,14 @@ protected:
 
 public:
 
-  /** 
-   Returns the current image width in FLTK units.
+  /**
+   Returns the current image drawing width in FLTK units.
    The values of w() and data_w() are identical unless scale() has been called
    after which they may differ.
    */
   int w() const {return w_;}
   /**
-   Returns the current image height in FLTK units.
+   Returns the current image drawing height in FLTK units.
    The values of h() and data_h() are identical unless scale() has been called
    after which they may differ.
    */
@@ -193,7 +141,7 @@ public:
    */
   int data_h() const {return data_h_;}
   /**
-   Returns the current image depth.
+   Returns the image depth.
    The return value will be 0 for bitmaps, 1 for
    pixmaps, and 1 to 4 for color images.</P>
    */
@@ -216,6 +164,50 @@ public:
    */
   const char * const *data() const {return data_;}
   int fail();
+  /**
+    Releases an Fl_Image - the same as '\p delete \p this'.
+
+    This virtual method is for almost all image classes the same as calling
+    \code
+      delete image;
+    \endcode
+    where image is an \p Fl_Image \p * pointer.
+
+    However, for subclass Fl_Shared_Image this virtual method is
+    reimplemented and maintains shared images.
+
+    This virtual method makes it possible to \p delete all image types in
+    the same way by calling
+    \code
+      image->release();
+    \endcode
+
+    Reasoning: If you have an 'Fl_Image *' pointer and don't know if the
+    object is one of the class Fl_Shared_Image or any other subclass of
+    Fl_Image (for instance Fl_RGB_Image) then you can't just use operator
+    delete since this is not appropriate for Fl_Shared_Image objects.
+
+    The virtual method release() handles this properly.
+
+    \since 1.4.0 in the base class Fl_Image and virtual in Fl_Shared_Image
+  */
+  virtual void release() {
+    delete this;
+  }
+
+  /** Returns whether an image is an Fl_Shared_Image or not.
+
+    This virtual method returns a pointer to an Fl_Shared_Image if this
+    object is an instance of Fl_Shared_Image or NULL if not. This can be
+    used to detect if a given Fl_Image object is a shared image, i.e.
+    derived from Fl_Shared_Image.
+
+    \since 1.4.0
+  */
+  virtual class Fl_Shared_Image *as_shared_image() {
+    return 0;
+  }
+
   Fl_Image(int W, int H, int D);
   virtual ~Fl_Image();
   virtual Fl_Image *copy(int W, int H);
@@ -241,10 +233,10 @@ public:
   /**
    Draws the image to the current drawing surface with a bounding box.
    Arguments <tt>X,Y,W,H</tt> specify
-   a bounding box for the image, with the origin        
+   a bounding box for the image, with the origin
    (upper-left corner) of the image offset by the \c cx
    and \c cy arguments.
-   
+
    In other words:  <tt>fl_push_clip(X,Y,W,H)</tt> is applied,
    the image is drawn with its upper-left corner at <tt>X-cx,Y-cy</tt> and its own width and height,
    <tt>fl_pop_clip</tt><tt>()</tt> is applied.
@@ -264,13 +256,7 @@ public:
   static void RGB_scaling(Fl_RGB_Scaling);
   // get RGB image scaling method
   static Fl_RGB_Scaling RGB_scaling();
-  
-  /** Use this method if you have an Fl_Image object and want to know whether it is derived 
-   from class Fl_RGB_Image. 
-   If the method returns non-NULL, then the image in question is
-   derived from Fl_RGB_Image, and the returned value is a pointer to this image.
-   */
-  virtual Fl_RGB_Image *as_rgb_image() {return NULL;}
+
   // set the image drawing size
   virtual void scale(int width, int height, int proportional = 1, int can_expand = 0);
   /** Sets what algorithm is used when resizing a source image to draw it.
@@ -284,8 +270,10 @@ public:
   static void scaling_algorithm(Fl_RGB_Scaling algorithm) {scaling_algorithm_ = algorithm; }
   /** Gets what algorithm is used when resizing a source image to draw it. */
   static Fl_RGB_Scaling scaling_algorithm() {return scaling_algorithm_;}
+  static bool register_images_done;
 };
 
+class Fl_SVG_Image;
 
 /**
   The Fl_RGB_Image class supports caching and drawing
@@ -304,6 +292,7 @@ class FL_EXPORT Fl_RGB_Image : public Fl_Image {
 public:
 
   /** Points to the start of the object's data array
+   \see class Fl_SVG_Image which delays initialization of this member variable.
    */
   const uchar *array;
   /** If non-zero, the object's data array is delete[]'d when deleting the object.
@@ -315,7 +304,6 @@ private:
   fl_uintptr_t id_;
   fl_uintptr_t mask_;
   int cache_w_, cache_h_; // size of image when cached
-
 public:
 
   Fl_RGB_Image(const uchar *bits, int W, int H, int D=3, int LD=0);
@@ -331,25 +319,26 @@ public:
   virtual void label(Fl_Menu_Item*m);
   virtual void uncache();
   /** Sets the maximum allowed image size in bytes when creating an Fl_RGB_Image object.
-   
+
    The image size in bytes of an Fl_RGB_Image object is the value of the product w() * h() * d().
-   If this product exceeds size, the created object of a derived class of Fl_RGB_Image 
+   If this product exceeds size, the created object of a derived class of Fl_RGB_Image
    won't be loaded with the image data.
-   This does not apply to direct RGB image creation with 
+   This does not apply to direct RGB image creation with
    Fl_RGB_Image::Fl_RGB_Image(const uchar *bits, int W, int H, int D, int LD).
-   The default max_size() value is essentially infinite. 
+   The default max_size() value is essentially infinite.
    */
   static void max_size(size_t size) { max_size_ = size;}
   /** Returns the maximum allowed image size in bytes when creating an Fl_RGB_Image object.
-   
+
    \sa  void Fl_RGB_Image::max_size(size_t)
    */
   static size_t max_size() {return max_size_;}
-  virtual Fl_RGB_Image *as_rgb_image() {return this;}
+  /** Returns whether an image is an Fl_SVG_Image or not.
+  This virtual method returns a pointer to the Fl_SVG_Image if this object is an instance of Fl_SVG_Image or NULL if not. */
+  virtual Fl_SVG_Image *as_svg_image() { return NULL; }
+  /** Makes sure the object is fully initialized.
+   In particular, makes sure member variable \ref array is non-null. */
+  virtual void normalize() {}
 };
 
 #endif // !Fl_Image_H
-
-//
-// End of "$Id: Fl_Image.H 12811 2018-03-28 13:00:12Z manolo $".
-//

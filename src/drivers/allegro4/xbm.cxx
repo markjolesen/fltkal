@@ -65,68 +65,67 @@
 //
 #include <allegro.h>
 
-BITMAP *xbm_to_bitmap(
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned char const *img_bits)
+BITMAP *
+  xbm_to_bitmap(unsigned int const img_width,
+                unsigned int const img_height,
+                unsigned char const *img_bits)
 {
-    BITMAP *bmp = 0;
+  BITMAP *bmp = 0;
 
-    do
+  do
     {
-        bmp = create_bitmap_ex(32, img_width, img_height);
+      bmp = create_bitmap_ex(32, img_width, img_height);
 
-        if (0 == bmp)
+      if (0 == bmp)
         {
-            break;
+          break;
         }
 
-        clear_to_color(bmp, MASK_COLOR_32);
+      clear_to_color(bmp, MASK_COLOR_32);
 
-        unsigned char const *src = &img_bits[0];
-        unsigned int stride = ((img_width + 7) / 8);
+      unsigned char const *src = &img_bits[0];
+      unsigned int stride = ((img_width + 7) / 8);
 
-        for (unsigned int row = 0; row < img_height; row++)
+      for (unsigned int row = 0; row < img_height; row++)
         {
-            unsigned char *dest = bmp->line[row];
-            for (unsigned int index = 0; index < stride; index++)
+          unsigned char *dest = bmp->line[row];
+          for (unsigned int index = 0; index < stride; index++)
             {
-                unsigned char byte = src[0];
-                unsigned int pos = 0;
-                if (byte)
+              unsigned char byte = src[0];
+              unsigned int pos = 0;
+              if (byte)
                 {
-                    do
+                  do
                     {
-                        unsigned int state = (byte >> pos) & 1;
-                        if (state)
+                      unsigned int state = (byte >> pos) & 1;
+                      if (state)
                         {
-                            dest[0] = 0;
-                            dest[1] = 0;
-                            dest[2] = 0;
-                            dest[3] = 0;
+                          dest[0] = 0;
+                          dest[1] = 0;
+                          dest[2] = 0;
+                          dest[3] = 0;
                         }
-                        if (7 == pos)
+                      if (7 == pos)
                         {
-                            break;
+                          break;
                         }
-                        dest++;
-                        dest++;
-                        dest++;
-                        dest++;
-                        pos++;
+                      dest++;
+                      dest++;
+                      dest++;
+                      dest++;
+                      pos++;
                     }
-                    while (1);
+                  while (1);
                 }
-                else
+              else
                 {
-                    dest += 32;
+                  dest += 32;
                 }
-                src++;
+              src++;
             }
         }
-
     }
-    while (0);
+  while (0);
 
-    return bmp;
+  return bmp;
 }

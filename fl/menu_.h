@@ -1,71 +1,17 @@
-// menu_.h
-//
-// "$Id: Fl_Menu_.H 12816 2018-03-31 17:29:23Z greg.ercolano $"
 //
 // Menu base class header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2018 by Bill Spitzak and others.
+// Copyright 1998-2019 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /* \file
@@ -102,7 +48,7 @@
 
   The line spacing between menu items can be controlled with the global setting
   Fl::menu_linespacing().
-
+ \see Fl_Widget::shortcut_label(int)
 */
 class FL_EXPORT Fl_Menu_ : public Fl_Widget {
 
@@ -111,7 +57,7 @@ class FL_EXPORT Fl_Menu_ : public Fl_Widget {
 
 protected:
 
-  uchar alloc;			// flag indicates if menu_ is a dynamic copy (=1) or not (=0)
+  uchar alloc;                  // flag indicates if menu_ is a dynamic copy (=1) or not (=0)
   uchar down_box_;
   Fl_Font textfont_;
   Fl_Fontsize textsize_;
@@ -147,8 +93,25 @@ public:
 
   /**
     Returns a pointer to the array of Fl_Menu_Items.  This will either be
-    the value passed to menu(value) or the private copy.
-    \sa size() -- returns the size of the Fl_Menu_Item array.
+    the value passed to menu(value) or the private copy or an internal
+    (temporary) location (see note below).
+
+    \note <b>Implementation details - may be changed in the future.</b>
+      All modifications of the menu array are done by copying the entire
+      menu array to an internal storage for optimization of memory
+      allocations, for instance when using add() or insert(). While this
+      is done, menu() returns the pointer to this internal location. The
+      entire menu will be copied back to private storage when needed,
+      i.e. when \b another Fl_Menu_ is modified. You can force this
+      reallocation after you're done with all menu modifications by calling
+      Fl_Menu_::menu_end() to make sure menu() returns a permanent pointer
+      to private storage (until the menu is modified again).
+      Note also that some menu methods (e.g. Fl_Menu_Button::popup()) call
+      menu_end() internally to ensure a consistent menu array while the
+      menu is open.
+
+    \see size() -- returns the size of the Fl_Menu_Item array.
+    \see menu_end() -- finish %menu modifications (optional)
 
     \b Example: How to walk the array:
     \code
@@ -164,6 +127,7 @@ public:
 
   */
   const Fl_Menu_Item *menu() const {return menu_;}
+  const Fl_Menu_Item *menu_end(); // in src/Fl_Menu_add.cxx
   void menu(const Fl_Menu_Item *m);
   void copy(const Fl_Menu_Item *m, void* user_data = 0);
   int insert(int index, const char*, int shortcut, Fl_Callback*, void* = 0, int = 0);
@@ -238,7 +202,3 @@ public:
 };
 
 #endif
-
-//
-// End of "$Id: Fl_Menu_.H 12816 2018-03-31 17:29:23Z greg.ercolano $".
-//

@@ -65,58 +65,58 @@
 //
 #include <allegro.h>
 
-BITMAP *rgb16_to_bitmap(
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned int const img_stride,
-    unsigned char const *img_bits)
+BITMAP *
+  rgb16_to_bitmap(unsigned int const img_width,
+                  unsigned int const img_height,
+                  unsigned int const img_stride,
+                  unsigned char const *img_bits)
 {
-    BITMAP *bmp = 0;
-    unsigned int delta = 0;
+  BITMAP *bmp = 0;
+  unsigned int delta = 0;
 
-    if (img_stride)
+  if (img_stride)
     {
-        delta = ((img_stride - img_width) / 2);
+      delta = ((img_stride - img_width) / 2);
     }
 
-    do
+  do
     {
-        bmp = create_bitmap_ex(32, img_width, img_height);
+      bmp = create_bitmap_ex(32, img_width, img_height);
 
-        if (0 == bmp)
+      if (0 == bmp)
         {
-            break;
+          break;
         }
 
-        clear_to_color(bmp, MASK_COLOR_32);
+      clear_to_color(bmp, MASK_COLOR_32);
 
-        unsigned short const *src = reinterpret_cast<unsigned short const *>(&img_bits[0]);
+      unsigned short const *src
+        = reinterpret_cast<unsigned short const *>(&img_bits[0]);
 
-        for (unsigned int row = 0; row < img_height; row++)
+      for (unsigned int row = 0; row < img_height; row++)
         {
-            unsigned char *dest = bmp->line[row];
-            for (unsigned int index = 0; index < (img_width / 2); index++)
+          unsigned char *dest = bmp->line[row];
+          for (unsigned int index = 0; index < (img_width / 2); index++)
             {
-                static unsigned short const red_mask = 0x7c00;
-                static unsigned short const green_mask =  0x3e0;
-                static unsigned short const blue_mask = 0x1f;
-                unsigned short rgb555 = *src++;
-                unsigned char red = ((red_mask & rgb555) >> 10);
-                unsigned char green = ((green_mask & rgb555) >> 5);
-                unsigned char blue = (blue_mask & rgb555);
-                red <<= 3;
-                green <<= 3;
-                blue <<= 3;
-                *dest++ = red;
-                *dest++ = green;
-                *dest++ = blue;
-                dest++;
+              static unsigned short const red_mask = 0x7c00;
+              static unsigned short const green_mask = 0x3e0;
+              static unsigned short const blue_mask = 0x1f;
+              unsigned short rgb555 = *src++;
+              unsigned char red = ((red_mask & rgb555) >> 10);
+              unsigned char green = ((green_mask & rgb555) >> 5);
+              unsigned char blue = (blue_mask & rgb555);
+              red <<= 3;
+              green <<= 3;
+              blue <<= 3;
+              *dest++ = red;
+              *dest++ = green;
+              *dest++ = blue;
+              dest++;
             }
-            src += delta;
+          src += delta;
         }
-
     }
-    while (0);
+  while (0);
 
-    return bmp;
+  return bmp;
 }

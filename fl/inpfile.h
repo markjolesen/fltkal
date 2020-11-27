@@ -1,73 +1,18 @@
-// inpfile.h
-//
-// "$Id: Fl_File_Input.H 8864 2011-07-19 04:49:30Z greg.ercolano $"
 //
 // File_Input header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
-//
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
-//
-//
 // Original version Copyright 1998 by Curtis Edwards.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /* \file
@@ -89,7 +34,7 @@
   FL_WHEN_RELEASE callback won't be called if the directory clicked
   is the same as the current one.
 
-  <P align=CENTER> \image html Fl_File_Input.png </P> 
+  <P align=CENTER> \image html Fl_File_Input.png </P>
   \image latex Fl_File_Input.png "Fl_File_Input"  width=6cm
 
   \note As all Fl_Input derived objects, Fl_File_Input may call its callback
@@ -98,16 +43,15 @@
   to avoid reentrant calls if you plan to show another window or dialog box in the callback.
 */
 class FL_EXPORT Fl_File_Input : public Fl_Input {
-  
-  Fl_Color	errorcolor_;
-  char		ok_entry_;
-  uchar		down_box_;
-  short		buttons_[200];
-  short		pressed_;
 
-  void		draw_buttons();
-  int		handle_button(int event);
-  void		update_buttons();
+  char          ok_entry_;
+  uchar         down_box_;
+  short         buttons_[200];
+  short         pressed_;
+
+  void          draw_buttons();
+  int           handle_button(int event);
+  void          update_buttons();
 
 public:
 
@@ -120,31 +64,39 @@ protected:
 
 public:
   /** Gets the box type used for the navigation bar. */
-  Fl_Boxtype	down_box() const { return (Fl_Boxtype)down_box_; }
+  Fl_Boxtype    down_box() const { return (Fl_Boxtype)down_box_; }
   /** Sets the box type to use for the navigation bar.  */
-  void		down_box(Fl_Boxtype b) { down_box_ = b; }
+  void          down_box(Fl_Boxtype b) { down_box_ = b; }
 
   /**
     Gets the current error color.
-    \todo Better docs for Fl_File_Input::errorcolor() - is it even used?
-  */
-  Fl_Color	errorcolor() const { return errorcolor_; }
-  /** Sets the current error color to \p c */
-  void		errorcolor(Fl_Color c) { errorcolor_ = c; }
 
-  int	value(const char *str);
-  int	value(const char *str, int len);
+    Returns \p FL_RED since FLTK 1.4.0 (default in 1.3.x).
+    Retained for backwards compatibility.
+
+    \deprecated Will be removed in FLTK 1.5.0 or higher.
+    \todo Remove Fl_File_Input::errorcolor() in FLTK 1.5.0 or higher.
+  */
+  Fl_Color      errorcolor() const { return FL_RED; }
+
+  /**
+    Sets the current error color to \p c.
+
+    Does nothing since FLTK 1.4.0. Retained for backwards compatibility.
+
+    \deprecated Will be removed in FLTK 1.5.0 or higher.
+    \todo Remove Fl_File_Input::errorcolor(Fl_Color) in FLTK 1.5.0 or higher.
+    */
+  void          errorcolor(Fl_Color c) {}
+
+  int   value(const char *str);
+  int   value(const char *str, int len);
 
   /**
     Returns the current value, which is a pointer to an internal buffer
     and is valid only until the next event is handled.
   */
-  const char	*value() { return Fl_Input_::value(); }
+  const char    *value() { return Fl_Input_::value(); }
 };
 
 #endif // !Fl_File_Input_H
-
-
-//
-// End of "$Id: Fl_File_Input.H 8864 2011-07-19 04:49:30Z greg.ercolano $".
-//

@@ -157,6 +157,7 @@ OBJ_FLTK=&
     $(OBJ)\fl.obj &
     $(OBJ)\flprintf.obj &
     $(OBJ)\fl_rect.obj &
+    $(OBJ)\fl_str.obj &
     $(OBJ)\flstring.obj &
     $(OBJ)\fl_uri.obj &
     $(OBJ)\fl_utf8.obj &
@@ -461,6 +462,9 @@ $(OBJ)\flprintf.obj : $(SRC_FLTK)\flprintf.c .AUTODEPEND
     *$(CC) $(CFLAGS) -fo=$@ $<
     
 $(OBJ)\fl_rect.obj : $(SRC_FLTK)\fl_rect.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<
+    
+$(OBJ)\fl_str.obj : $(SRC_FLTK)\fl_str.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
     
 $(OBJ)\flstring.obj : $(SRC_FLTK)\flstring.c .AUTODEPEND

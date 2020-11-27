@@ -1,0 +1,145 @@
+#
+# CC0 1.0 Universal --- Public Domain
+#
+# To the extent possible under law, Mark J. Olesen has waived all copyright
+# and related or neighboring rights to this file (_clang-format).
+# This work is published from:United States.
+#
+# Full text of this license can be found by visting
+# <https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt> or
+# send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+#
+BasedOnStyle: GNU
+AccessModifierOffset: -2
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Right
+AlignOperands: true
+AlignTrailingComments: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: All
+AlwaysBreakAfterReturnType: All
+AlwaysBreakBeforeMultilineStrings: true
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: true
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+BreakBeforeBinaryOperators: All
+BreakBeforeBraces: GNU
+BreakBeforeInheritanceComma: false
+BreakInheritanceList: BeforeColon
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+BreakStringLiterals: true
+BreakConstructorInitializersBeforeComma: false
+ColumnLimit: 79
+CompactNamespaces: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+Cpp11BracedListStyle: false
+DerivePointerAlignment: false
+DisableFormat: false
+ExperimentalAutoDetectBinPacking: false
+FixNamespaceComments: true
+ForEachMacros:
+  - foreach
+  - Q_FOREACH
+  - BOOST_FOREACH
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<sys/param\.h>;'
+    Priority: 1
+  - Regex: '^<sys/types\.h>;'
+    Priority: 1
+  - Regex: '^<sys.*/'
+    Priority: 1
+  - Regex: '^<uvm/'
+    Priority: 2
+  - Regex: '^<machine/'
+    Priority: 3
+  - Regex: '^<dev/'
+    Priority: 4
+  - Regex: '^<net.*/'
+    Priority: 5
+  - Regex: '^<protocols/'
+    Priority: 6
+  - Regex: '^<(fs|miscfs|msdosfs|nfs|ufs)/'
+    Priority: 7
+  - Regex: '^<(x86|amd64|i386|xen)/'
+    Priority: 8
+  - Regex: '^<path'
+    Priority: 9
+  - Regex: '^<[^/]*\.h'
+    Priority: 10
+  - Regex: '^<FL*\.H'
+    Priority: 16
+  - Regex: '^<*'
+    Priority: 11
+  - Regex: '^\"mjo_sys*\.h\"'
+    Priority: 12
+  - Regex: '^\"mjo*\.h\"'
+    Priority: 13
+  - Regex: '^\"*\.h\"'
+    Priority: 14
+  - Regex: '^\"*\.hxx\"'
+    Priority: 15
+IndentCaseLabels: false
+IndentPPDirectives: AfterHash
+IndentWidth: 2
+IndentWrappedFunctionNames: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+Language: Cpp
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
+PenaltyBreakAssignment: 10
+PenaltyBreakBeforeFirstCallParameter: 30
+PenaltyBreakComment: 10
+PenaltyBreakFirstLessLess: 0
+PenaltyBreakString: 10
+PenaltyBreakTemplateDeclaration: 30
+PenaltyExcessCharacter: 100
+PenaltyReturnTypeOnItsOwnLine: 60
+ReflowComments: false
+PointerAlignment: Right
+SortIncludes: true
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: true
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+Standard: Cpp03
+TabWidth: 2
+UseTab: Never

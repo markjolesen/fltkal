@@ -65,26 +65,27 @@
 //
 #if !defined(FL_ALLEGRO_IMAGE_SURFACE_DRIVER_H)
 
-#include <fl/drvimg.h>
+#  include <fl/drvimg.h>
 
 class Fl_Allegro_Image_Surface_Driver : public Fl_Image_Surface_Driver
 {
-
 protected:
+  Fl_Allegro_Image_Surface_Driver(int w, int h, int high_res, Fl_Offscreen off);
 
-    Fl_Allegro_Image_Surface_Driver(int w, int h, int high_res, Fl_Offscreen off);
+  virtual ~Fl_Allegro_Image_Surface_Driver();
 
-    virtual ~Fl_Allegro_Image_Surface_Driver();
+  virtual void
+    set_current();
 
-    virtual void set_current();
+  virtual void
+    translate(int x, int y);
 
-    virtual void translate(int x, int y);
+  virtual void
+    untranslate();
 
-    virtual void untranslate();
-
-    virtual Fl_RGB_Image *image();
-
+  virtual Fl_RGB_Image *
+    image();
 };
 
-#define FL_ALLEGRO_IMAGE_SURFACE_DRIVER_H
+#  define FL_ALLEGRO_IMAGE_SURFACE_DRIVER_H
 #endif

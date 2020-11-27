@@ -1,71 +1,17 @@
-// pack.h
-//
-// "$Id: Fl_Pack.H 8864 2011-07-19 04:49:30Z greg.ercolano $"
 //
 // Pack header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2010 by Bill Spitzak and others.
+// Copyright 1998-2020 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /* \file
@@ -79,18 +25,31 @@
 /**
   This widget was designed to add the functionality of compressing and
   aligning widgets.
-  <P>If type() is Fl_Pack::HORIZONTAL all the children are
+
+  If type() is Fl_Pack::HORIZONTAL all the children are
   resized to the height of the Fl_Pack, and are moved next to
   each other horizontally. If type() is not Fl_Pack::HORIZONTAL
   then the children are resized to the width and are stacked below each
-  other.  Then the Fl_Pack resizes itself to surround the child
-  widgets.
-  <P>This widget is needed for the Fl_Tabs.
-  In addition you may want to put the Fl_Pack inside an 
-  Fl_Scroll.
+  other.  Then the Fl_Pack resizes itself to surround the child widgets.
 
-  <P>The resizable for Fl_Pack is set to NULL by default.</p>
-  <P>See also: Fl_Group::resizable()
+  You may want to put the Fl_Pack inside an Fl_Scroll.
+
+  The \p 'resizable()' for Fl_Pack is set to NULL by default. Its behavior
+  is slightly different than in a normal Fl_Group widget: only if the
+  resizable() widget is the last widget in the group it is extended to take
+  the full available width or height, respectively, of the Fl_Pack group.
+
+  \note You can nest Fl_Pack widgets or put them inside Fl_Scroll widgets
+    or inside other group widgets but their behavior can sometimes be
+    <i>"surprising"</i>. This is partly due to the fact that Fl_Pack widgets
+    resize themselves during their draw() operation, trying to react on
+    their child widgets resizing themselves during \b their draw() operations
+    which can be confusing. If you want to achieve special resize behavior
+    of nested group widgets it can sometimes be easier to derive your own
+    specialized group widget than to try to make nested Fl_Pack widgets
+    behave as expected.
+
+  \see Fl_Group::resizable()
 */
 class FL_EXPORT Fl_Pack : public Fl_Group {
   int spacing_;
@@ -105,7 +64,7 @@ protected:
   void draw();
 
 public:
-  Fl_Pack(int x,int y,int w ,int h,const char *l = 0);
+  Fl_Pack(int X, int Y, int W, int H, const char *L = 0);
   /**
     Gets the number of extra pixels of blank space that are added
     between the children.
@@ -116,12 +75,19 @@ public:
     between the children.
   */
   void spacing(int i) {spacing_ = i;}
-  /** Same as Fl_Group::type() */
+  /** Returns non-zero if Fl_Pack alignment is horizontal.
+
+    \returns non-zero if Fl_Pack alignment is horizontal (Fl_Pack::HORIZONTAL)
+
+    \note Currently the return value is the same as Fl_Group::type(), but
+      this may change in the future. Do not set any other values than the
+      following with Fl_Pack::type():
+      - Fl_Pack::VERTICAL (Default)
+      - Fl_Pack::HORIZONTAL
+
+    See class Fl_Pack documentation for details.
+  */
   uchar horizontal() const {return type();}
 };
 
 #endif
-
-//
-// End of "$Id: Fl_Pack.H 8864 2011-07-19 04:49:30Z greg.ercolano $".
-//

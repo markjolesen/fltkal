@@ -1,72 +1,24 @@
-// drvgr.cxx
-//
-// "$Id: Fl_Graphics_Driver.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Fl_Graphics_Driver class for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 2010-2018 by Bill Spitzak and others.
+// Copyright 2010-2020 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
 //
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
+//
+
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
 
 #include <fl/fl.h>
 #include "cfg_lib.h"
@@ -82,6 +34,7 @@ FL_EXPORT Fl_Graphics_Driver *fl_graphics_driver; // the current driver of graph
 
 const Fl_Graphics_Driver::matrix Fl_Graphics_Driver::m0 = {1, 0, 0, 1, 0, 0};
 
+/** Used by the Windows platform to print Fl_Pixmap objects. */
 unsigned Fl_Graphics_Driver::need_pixmap_bg_color = 0;
 
 /** Constructor */
@@ -89,11 +42,11 @@ Fl_Graphics_Driver::Fl_Graphics_Driver()
 {
   font_ = 0;
   size_ = 0;
-  sptr=0; rstackptr=0; 
+  sptr=0; rstackptr=0;
   rstack[0] = NULL;
   fl_clip_state_number=0;
-  m = m0; 
-  fl_matrix = &m; 
+  m = m0;
+  fl_matrix = &m;
   font_descriptor_ = NULL;
   scale_ = 1;
 };
@@ -107,9 +60,9 @@ Fl_Graphics_Driver &Fl_Graphics_Driver::default_driver()
 
 
 /** see fl_text_extents() */
-void Fl_Graphics_Driver::text_extents(const char*t, int n, int& dx, int& dy, int& w, int& h)
+void Fl_Graphics_Driver::text_extents(const char*t, int nChars, int& dx, int& dy, int& w, int& h)
 {
-  w = (int)width(t, n);
+  w = (int)width(t, nChars);
   h = - height();
   dx = 0;
   dy = descent();
@@ -240,6 +193,7 @@ void Fl_Graphics_Driver::uncache_pixmap(fl_uintptr_t p) {
 void Fl_Graphics_Driver::set_current_() {
 }
 
+/** Support for Fl::set_font() */
 unsigned Fl_Graphics_Driver::font_desc_size() {
   return (unsigned)sizeof(Fl_Fontdesc);
 }
@@ -253,9 +207,10 @@ void Fl_Graphics_Driver::cache_size(Fl_Image *img, int &width, int &height)
     width  = width * scale();
     height = height * scale();
   } else {
-    width  = (width+1) * scale() - 1;
-    height = (height+1) * scale() - 1;
+    width  = (width+1) * scale();
+    height = (height+1) * scale();
   }
+  img->cache_size_(width, height);
 }
 
 /** Draws an Fl_Pixmap object using this graphics driver.
@@ -377,6 +332,295 @@ Fl_Offscreen Fl_Graphics_Driver::get_offscreen_and_delete_image_surface(Fl_Image
   delete surface;
   return off;
 }
+
+void Fl_Graphics_Driver::xyline(int x, int y, int x1) {
+  line(x, y, x1, y);
+}
+
+void Fl_Graphics_Driver::xyline(int x, int y, int x1, int y2) {
+  line(x, y, x1, y);
+  line(x1, y, x1, y2);
+}
+
+void Fl_Graphics_Driver::xyline(int x, int y, int x1, int y2, int x3) {
+  line(x, y, x1, y);
+  line(x1, y, x1, y2);
+  line(x1, y2, x3, y2);
+}
+
+void Fl_Graphics_Driver::yxline(int x, int y, int y1) {
+  line(x, y, x, y1);
+}
+
+void Fl_Graphics_Driver::yxline(int x, int y, int y1, int x2) {
+  line(x, y, x, y1);
+  line(x, y1, x2, y1);
+}
+
+void Fl_Graphics_Driver::yxline(int x, int y, int y1, int x2, int y3) {
+  line(x, y, x, y1);
+  line(x, y1, x2, y1);
+  line(x2, y1, x2, y3);
+}
+
+void Fl_Graphics_Driver::line(int x, int y, int x1, int y1, int x2, int y2) {
+  line(x, y, x1, y1);
+  line(x1, y1, x2, y2);
+}
+
+void Fl_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2) {
+  line(x0, y0, x1, y1);
+  line(x1, y1, x2, y2);
+  line(x2, y2, x0, y0);
+}
+
+void Fl_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3) {
+  line(x0, y0, x1, y1);
+  line(x1, y1, x2, y2);
+  line(x2, y2, x3, y3);
+  line(x3, y3, x0, y0);
+}
+
+void Fl_Graphics_Driver::polygon(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3) {
+  polygon(x0, y0, x1, y1, x3, y3);
+  polygon(x1, y1, x2, y2, x3, y3);
+}
+
+void Fl_Graphics_Driver::push_no_clip() {
+  if (rstackptr < region_stack_max) rstack[++rstackptr] = 0;
+  else Fl::warning("Fl_Graphics_Driver::push_no_clip: clip stack overflow!\n");
+  restore_clip();
+}
+
+void Fl_Graphics_Driver::pop_clip() {
+  if (rstackptr > 0) {
+    Fl_Region oldr = rstack[rstackptr--];
+    if (oldr) XDestroyRegion(oldr);
+  } else Fl::warning("Fl_Graphics_Driver::pop_clip: clip stack underflow!\n");
+  restore_clip();
+}
+
+/** Sets the current value of the scaling factor */
+void Fl_Graphics_Driver::scale(float f) { scale_ = f; }
+
+/** Return whether the graphics driver can do alpha blending */
+char Fl_Graphics_Driver::can_do_alpha_blending() { return 0; }
+
+void Fl_Graphics_Driver::draw_fixed(Fl_Pixmap *pxm,int XP, int YP, int WP, int HP, int cx, int cy) {}
+
+void Fl_Graphics_Driver::draw_fixed(Fl_Bitmap *bm,int XP, int YP, int WP, int HP, int cx, int cy) {}
+
+void Fl_Graphics_Driver::draw_fixed(Fl_RGB_Image *rgb,int XP, int YP, int WP, int HP, int cx, int cy) {}
+
+void Fl_Graphics_Driver::make_unused_color_(unsigned char &r, unsigned char &g, unsigned char &b) {}
+
+/** Support function for Fl_Pixmap drawing */
+void Fl_Graphics_Driver::cache(Fl_Pixmap *img) { }
+
+/** Support function for Fl_Bitmap drawing */
+void Fl_Graphics_Driver::cache(Fl_Bitmap *img) { }
+
+/** Support function for Fl_RGB_Image drawing */
+void Fl_Graphics_Driver::cache(Fl_RGB_Image *img) { }
+
+/** Support function for Fl_RGB_Image drawing */
+void Fl_Graphics_Driver::uncache(Fl_RGB_Image *img, fl_uintptr_t &id_, fl_uintptr_t &mask_) { }
+
+/** see fl_draw_image(const uchar* buf, int X,int Y,int W,int H, int D, int L) */
+void Fl_Graphics_Driver::draw_image(const uchar* buf, int X,int Y,int W,int H, int D, int L) {}
+
+/** see fl_draw_image_mono(const uchar* buf, int X,int Y,int W,int H, int D, int L) */
+void Fl_Graphics_Driver::draw_image_mono(const uchar* buf, int X,int Y,int W,int H, int D, int L) {}
+
+/** see fl_draw_image(Fl_Draw_Image_Cb cb, void* data, int X,int Y,int W,int H, int D) */
+void Fl_Graphics_Driver::draw_image(Fl_Draw_Image_Cb cb, void* data, int X,int Y,int W,int H, int D) {}
+
+/** see fl_draw_image_mono(Fl_Draw_Image_Cb cb, void* data, int X,int Y,int W,int H, int D) */
+void Fl_Graphics_Driver::draw_image_mono(Fl_Draw_Image_Cb cb, void* data, int X,int Y,int W,int H, int D) {}
+
+/** Support function for image drawing */
+Fl_Bitmask Fl_Graphics_Driver::create_bitmask(int w, int h, const uchar *array) {return 0; }
+
+/** Support function for image drawing */
+void Fl_Graphics_Driver::delete_bitmask(Fl_Bitmask bm) {}
+
+/** see fl_point() */
+void Fl_Graphics_Driver::point(int x, int y) {}
+
+/** see fl_rect() */
+void Fl_Graphics_Driver::rect(int x, int y, int w, int h) {}
+
+/** see fl_rectf() */
+void Fl_Graphics_Driver::rectf(int x, int y, int w, int h) {}
+
+/** see fl_line(int, int, int, int) */
+void Fl_Graphics_Driver::line(int x, int y, int x1, int y1) {}
+
+/** see fl_polygon(int, int, int, int, int, int) */
+void Fl_Graphics_Driver::polygon(int x0, int y0, int x1, int y1, int x2, int y2) {}
+
+/** see fl_push_clip() */
+void Fl_Graphics_Driver::push_clip(int x, int y, int w, int h) {}
+
+/**
+  Default graphics driver implementation of fl_clip_box().
+
+  This default implementation is sufficient for a graphics driver that does not
+  support clipping. Drivers that support clipping must override this virtual method.
+
+  It returns
+  - in (X, Y, W, H) the same values as given in (x, y, w, h) respectively
+  - 0 (zero) as the function return value
+  which means that \b nothing was clipped.
+
+  \returns 0 (zero) - nothing was clipped
+
+  \see fl_clip_box()
+*/
+int Fl_Graphics_Driver::clip_box(int x, int y, int w, int h, int &X, int &Y, int &W, int &H) {
+  X = x;
+  Y = y;
+  W = w;
+  H = h;
+  return 0;
+}
+
+/** see fl_not_clipped() */
+int Fl_Graphics_Driver::not_clipped(int x, int y, int w, int h) {return 1;}
+
+/** see fl_begin_complex_polygon() */
+void Fl_Graphics_Driver::begin_complex_polygon() {}
+
+/** see fl_transformed_vertex() */
+void Fl_Graphics_Driver::transformed_vertex(double xf, double yf) {}
+
+/** see fl_vertex() */
+void Fl_Graphics_Driver::vertex(double x, double y) {}
+
+/** see fl_end_points() */
+void Fl_Graphics_Driver::end_points() {}
+
+/** see fl_end_line() */
+void Fl_Graphics_Driver::end_line() {}
+
+/** see fl_end_loop() */
+void Fl_Graphics_Driver::end_loop() {}
+
+/** see fl_end_polygon() */
+void Fl_Graphics_Driver::end_polygon() {}
+
+/** see fl_end_complex_polygon() */
+void Fl_Graphics_Driver::end_complex_polygon() {}
+
+/** see fl_gap() */
+void Fl_Graphics_Driver::gap() {}
+
+/** see fl_circle() */
+void Fl_Graphics_Driver::circle(double x, double y, double r) {}
+
+/** see fl_arc(int x, int y, int w, int h, double a1, double a2) */
+void Fl_Graphics_Driver::arc(int x, int y, int w, int h, double a1, double a2) {}
+
+/** see fl_pie() */
+void Fl_Graphics_Driver::pie(int x, int y, int w, int h, double a1, double a2) {}
+
+/** see fl_line_style() */
+void Fl_Graphics_Driver::line_style(int style, int width, char* dashes) {}
+
+/** see fl_color(Fl_Color) */
+void Fl_Graphics_Driver::color(Fl_Color c) { color_ = c; }
+
+/** see fl_color(void) */
+Fl_Color Fl_Graphics_Driver::color() { return color_; }
+
+/** see fl_color(uchar, uchar, uchar) */
+void Fl_Graphics_Driver::color(uchar r, uchar g, uchar b) {}
+
+/** see fl_draw(const char *str, int n, int x, int y) */
+void Fl_Graphics_Driver::draw(const char *str, int nChars, int x, int y) {}
+
+/** Draw the first \p n bytes of the string \p str starting at position \p x , \p y */
+void Fl_Graphics_Driver::draw(const char *str, int nChars, float x, float y) {
+  draw(str, nChars, (int)(x+0.5), (int)(y+0.5));
+}
+
+/** see fl_draw(int angle, const char *str, int n, int x, int y) */
+void Fl_Graphics_Driver::draw(int angle, const char *str, int nChars, int x, int y) {
+  draw(str, nChars, x, y);
+}
+
+/** see fl_rtl_draw(const char *str, int n, int x, int y) */
+void Fl_Graphics_Driver::rtl_draw(const char *str, int nChars, int x, int y) {
+  draw(str, nChars, x, y);
+}
+
+/** Returns non-zero if the graphics driver possesses the \p feature */
+int Fl_Graphics_Driver::has_feature(driver_feature feature) { return 0; }
+
+/** see fl_font(Fl_Font, Fl_Fontsize) */
+void Fl_Graphics_Driver::font(Fl_Font face, Fl_Fontsize fsize) {font_ = face; size_ = fsize;}
+
+/** see fl_font(void) */
+Fl_Font Fl_Graphics_Driver::font() {return font_; }
+
+/** Return the current font size */
+Fl_Fontsize Fl_Graphics_Driver::size() {return size_; }
+
+/** Compute the width of the first \p n bytes of the string \p str if drawn with current font */
+double Fl_Graphics_Driver::width(const char *str, int nChars) { return 0; }
+
+/** Compute the width of Unicode character \p c if drawn with current font */
+double Fl_Graphics_Driver::width(unsigned int c) { char ch = (char)c; return width(&ch, 1); }
+
+/** Return the current line height */
+int Fl_Graphics_Driver::height() { return size(); }
+
+/** Return the current line descent */
+int Fl_Graphics_Driver::descent() { return 0; }
+
+/** Set the current Fl_Font_Descriptor */
+void Fl_Graphics_Driver::font_descriptor(Fl_Font_Descriptor *d) { font_descriptor_ = d;}
+
+/** Sets the value of the driver-specific graphics context. */
+void Fl_Graphics_Driver::gc(void*) {}
+
+/** Returns the driver-specific graphics context, of NULL if there's none. */
+void *Fl_Graphics_Driver::gc(void) {return NULL;}
+
+/** Support for pixmap drawing */
+uchar **Fl_Graphics_Driver::mask_bitmap() { return 0; }
+
+/** Support for PostScript drawing */
+float Fl_Graphics_Driver::scale_font_for_PostScript(Fl_Font_Descriptor *desc, int s) {
+  return float(s);
+}
+
+/** Support for PostScript drawing */
+float Fl_Graphics_Driver::scale_bitmap_for_PostScript() { return 2; }
+
+/** Support for Fl::get_font_name() */
+const char* Fl_Graphics_Driver::get_font_name(Fl_Font fnum, int* ap) {return NULL;}
+
+/** Support for Fl::get_font_sizes() */
+int Fl_Graphics_Driver::get_font_sizes(Fl_Font fnum, int*& sizep) {return 0;}
+
+/** Support for Fl::set_fonts() */
+Fl_Font Fl_Graphics_Driver::set_fonts(const char *name) {return 0;}
+
+/** Some platforms may need to implement this to support fonts */
+Fl_Fontdesc* Fl_Graphics_Driver::calc_fl_fonts(void) {return NULL;}
+
+/** Support for Fl::get_font() */
+const char *Fl_Graphics_Driver::font_name(int num) {return NULL;}
+
+/** Support for Fl::set_font() */
+void Fl_Graphics_Driver::font_name(int num, const char *name) {}
+
+/** Support function for fl_overlay_rect() and scaled GUI.*/
+void Fl_Graphics_Driver::overlay_rect(int x, int y, int w , int h) {
+  loop(x, y, x+w-1, y, x+w-1, y+h-1, x, y+h-1);
+}
+
 
 /**
  \}
@@ -637,8 +881,66 @@ void Fl_Scalable_Graphics_Driver::unscale_clip(Fl_Region r) {
   }
 }
 
-#endif
+Fl_Region Fl_Scalable_Graphics_Driver::scale_clip(float f) { return 0; }
 
-//
-// End of "$Id: Fl_Graphics_Driver.cxx 12975 2018-06-26 14:04:09Z manolo $".
-//
+void Fl_Scalable_Graphics_Driver::point_unscaled(float x, float y) {}
+
+void Fl_Scalable_Graphics_Driver::rect_unscaled(float x, float y, float w, float h) {}
+
+void Fl_Scalable_Graphics_Driver::rectf_unscaled(float x, float y, float w, float h) {}
+
+void Fl_Scalable_Graphics_Driver::line_unscaled(float x, float y, float x1, float y1) {}
+
+void Fl_Scalable_Graphics_Driver::line_unscaled(float x, float y, float x1, float y1, float x2, float y2) {}
+
+void Fl_Scalable_Graphics_Driver::xyline_unscaled(float x, float y, float x1) {}
+
+void Fl_Scalable_Graphics_Driver::yxline_unscaled(float x, float y, float y1) {}
+
+void Fl_Scalable_Graphics_Driver::loop_unscaled(float x0, float y0, float x1, float y1, float x2, float y2) {}
+
+void Fl_Scalable_Graphics_Driver::loop_unscaled(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) {}
+
+void Fl_Scalable_Graphics_Driver::polygon_unscaled(float x0, float y0, float x1, float y1, float x2, float y2) {}
+
+void Fl_Scalable_Graphics_Driver::polygon_unscaled(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) {}
+
+void Fl_Scalable_Graphics_Driver::ellipse_unscaled(double xt, double yt, double rx, double ry) {}
+
+void Fl_Scalable_Graphics_Driver::font_unscaled(Fl_Font face, Fl_Fontsize size) {}
+
+double Fl_Scalable_Graphics_Driver::width_unscaled(const char *str, int n) { return 0.0; }
+
+double Fl_Scalable_Graphics_Driver::width_unscaled(unsigned int c) { return 0.0; }
+
+Fl_Fontsize Fl_Scalable_Graphics_Driver::size_unscaled() { return 0; }
+
+void Fl_Scalable_Graphics_Driver::text_extents_unscaled(const char *str, int n, int &dx, int &dy, int &w, int &h) {}
+
+int Fl_Scalable_Graphics_Driver::height_unscaled() { return 0; }
+
+int Fl_Scalable_Graphics_Driver::descent_unscaled() { return 0; }
+
+void Fl_Scalable_Graphics_Driver::draw_unscaled(const char *str, int n, int x, int y) {}
+
+void Fl_Scalable_Graphics_Driver::draw_unscaled(int angle, const char *str, int n, int x, int y) {}
+
+void Fl_Scalable_Graphics_Driver::rtl_draw_unscaled(const char* str, int n, int x, int y) {}
+
+void Fl_Scalable_Graphics_Driver::arc_unscaled(float x, float y, float w, float h, double a1, double a2) {}
+
+void Fl_Scalable_Graphics_Driver::pie_unscaled(float x, float y, float w, float h, double a1, double a2) {}
+
+void Fl_Scalable_Graphics_Driver::line_style_unscaled(int style, float width, char* dashes) {}
+
+void Fl_Scalable_Graphics_Driver::draw_image_unscaled(const uchar* buf, int X,int Y,int W,int H, int D, int L) {}
+
+void Fl_Scalable_Graphics_Driver::draw_image_unscaled(Fl_Draw_Image_Cb cb, void* data, int X,int Y,int W,int H, int D) {}
+
+void Fl_Scalable_Graphics_Driver::draw_image_mono_unscaled(const uchar* buf, int x, int y, int w, int h, int d, int l) {}
+
+void Fl_Scalable_Graphics_Driver::draw_image_mono_unscaled(Fl_Draw_Image_Cb cb, void* data, int X,int Y,int W,int H, int D) {}
+
+void Fl_Scalable_Graphics_Driver::transformed_vertex0(float x, float y) {}
+
+#endif

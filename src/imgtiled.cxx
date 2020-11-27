@@ -1,71 +1,17 @@
-// imgtiled.cxx
-//
-// "$Id: Fl_Tiled_Image.cxx 10602 2015-03-02 10:23:20Z AlbrechtS $"
 //
 // Tiled image code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2015 by Bill Spitzak and others.
+// Copyright 1998-2020 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 
@@ -106,9 +52,9 @@
   \todo Fix Fl_Tiled_Image as background image for widgets and windows
     and fix the implementation of Fl::scheme(const char *).
 */
-Fl_Tiled_Image::Fl_Tiled_Image(Fl_Image *i,	// I - Image to tile
-                               int      W,	// I - Width of tiled area
-			       int      H) :	// I - Height of tiled area
+Fl_Tiled_Image::Fl_Tiled_Image(Fl_Image *i,     // I - Image to tile
+                               int      W,      // I - Width of tiled area
+                               int      H) :    // I - Height of tiled area
   Fl_Image(W,H,0) {
   image_       = i;
   alloc_image_ = 0;
@@ -131,9 +77,9 @@ Fl_Tiled_Image::Fl_Tiled_Image(Fl_Image *i,	// I - Image to tile
 // 'Fl_Tiled_Image::copy()' - Copy and resize a tiled image...
 //
 
-Fl_Image *			// O - New image
-Fl_Tiled_Image::copy(int W,	// I - New width
-                     int H) {	// I - New height
+Fl_Image *                      // O - New image
+Fl_Tiled_Image::copy(int W,     // I - New width
+                     int H) {   // I - New height
   if (W == w() && H == h()) return this;
   else return new Fl_Tiled_Image(image_, W, H);
 }
@@ -144,8 +90,8 @@ Fl_Tiled_Image::copy(int W,	// I - New width
 //
 
 void
-Fl_Tiled_Image::color_average(Fl_Color c,	// I - Color to blend with
-                              float    i) {	// I - Blend fraction
+Fl_Tiled_Image::color_average(Fl_Color c,       // I - Color to blend with
+                              float    i) {     // I - Blend fraction
   if (!alloc_image_) {
     image_       = image_->copy();
     alloc_image_ = 1;
@@ -202,20 +148,20 @@ Fl_Tiled_Image::desaturate() {
   This may be improved in a later version of the library.
 */
 void
-Fl_Tiled_Image::draw(int X,	// I - Starting X position
-                     int Y,	// I - Starting Y position
-		     int W,	// I - Width of area to be filled
-		     int H,	// I - Height of area to be filled
-		     int cx,	// I - "Source" X position
-		     int cy) {	// I - "Source" Y position
+Fl_Tiled_Image::draw(int X,     // I - Starting X position
+                     int Y,     // I - Starting Y position
+                     int W,     // I - Width of area to be filled
+                     int H,     // I - Height of area to be filled
+                     int cx,    // I - "Source" X position
+                     int cy) {  // I - "Source" Y position
 
-  int iw = image_->w();		// effective image width
-  int ih = image_->h();		// effective image height
+  int iw = image_->w();         // effective image width
+  int ih = image_->h();         // effective image height
 
   if (!iw || !ih) return;
   if (cx >= iw || cy >= ih) return;
 
-  if (cx < 0) cx = 0;		// ignore negative values
+  if (cx < 0) cx = 0;           // ignore negative values
   if (cy < 0) cy = 0;
 
   // W and H null means the image is potentially as large as the current window
@@ -233,22 +179,17 @@ Fl_Tiled_Image::draw(int X,	// I - Starting X position
 
   fl_push_clip(X, Y, W, H);
 
-  if (cx > 0) iw -= cx;		// crop image
+  if (cx > 0) iw -= cx;         // crop image
   if (cy > 0) ih -= cy;
 
-  for (int yy = Y; yy < H; yy += ih) {
+  for (int yy = Y; yy < Y+H; yy += ih) {
     if (fl_not_clipped(X,yy,W,ih)) {
-      for (int xx = X; xx < W; xx += iw) {
-	if (fl_not_clipped(xx,yy,iw,ih)) {
-	  image_->draw(xx,yy,iw,ih,cx,cy);
-	}
+      for (int xx = X; xx < X+W; xx += iw) {
+        if (fl_not_clipped(xx,yy,iw,ih)) {
+          image_->draw(xx,yy,iw,ih,cx,cy);
+        }
       }
     }
   }
   fl_pop_clip();
 }
-
-
-//
-// End of "$Id: Fl_Tiled_Image.cxx 10602 2015-03-02 10:23:20Z AlbrechtS $".
-//

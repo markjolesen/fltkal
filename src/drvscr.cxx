@@ -1,79 +1,28 @@
-// drvscr.cxx
-//
-// "$Id: Fl_Screen_Driver.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // All screen related calls in a driver style class.
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2018 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
-#include <fl/drvdev.h>
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
+
 #include "drvscr.h"
 #include <fl/img.h>
 #include <fl/fl.h>
-#include <fl/platform.h> // for fl_window
-#include <fl/plugin.h>
 #include <fl/group.h>
 #include <fl/win.h>
 #include <fl/input.h>
@@ -86,6 +35,7 @@ char Fl_Screen_Driver::bg_set = 0;
 char Fl_Screen_Driver::bg2_set = 0;
 char Fl_Screen_Driver::fg_set = 0;
 
+int Fl_Screen_Driver::keyboard_screen_scaling = 1;
 
 Fl_Screen_Driver::Fl_Screen_Driver() :
 num_screens(-1), text_editor_extra_key_bindings(NULL)
@@ -184,7 +134,7 @@ int Fl_Screen_Driver::screen_num(int x, int y, int w, int h)
 
 const char *Fl_Screen_Driver::get_system_scheme()
 {
-  return 0L;
+  return fl_getenv("FLTK_SCHEME");
 }
 
 /** The bullet character used by default by Fl_Secret_Input */
@@ -220,36 +170,37 @@ Image depths can differ between "to" and "from".
 
 /* Captures rectangle x,y,w,h from a mapped window or GL window.
  All sub-GL-windows that intersect x,y,w,h, and their subwindows, are also captured.
- 
+
  Arguments when this function is initially called:
  g: a window or GL window
  x,y,w,h: a rectangle in window g's coordinates
  full_img: NULL
- 
+
  Arguments when this function recursively calls itself:
  g: an Fl_Group
  x,y,w,h: a rectangle in g's coordinates if g is a window, or in g's parent window coords if g is a group
  full_img: NULL, or a previously captured image that encompasses the x,y,w,h rectangle and that
  will be partially overwritten with the new capture
- 
+
  Return value:
- An Fl_RGB_Image*, the depth of which is platform-dependent, containing the captured pixels.
+ An Fl_RGB_Image*, the depth of which is platform-dependent, containing the captured pixels,
+ or NULL if capture failed.
  */
 Fl_RGB_Image *Fl_Screen_Driver::traverse_to_gl_subwindows(Fl_Group *g, int x, int y, int w, int h,
                                                           Fl_RGB_Image *full_img)
 {
+  bool captured_subwin = false;
   if ( g->as_gl_window() ) {
-    Fl_Plugin_Manager pm("fltk:device");
-    Fl_Device_Plugin *pi = (Fl_Device_Plugin*)pm.plugin("opengl.device.fltk.org");
-    if (!pi) return full_img;
-    full_img = pi->rectangle_capture(g, x, y, w, h);
+    Fl_Device_Plugin *plugin = Fl_Device_Plugin::opengl_plugin();
+    if (!plugin) return full_img;
+    full_img = plugin->rectangle_capture(g, x, y, w, h);
   }
   else if ( g->as_window() ) {
-    if (Fl_Window::current() != g) g->as_window()->make_current();
-    full_img = Fl::screen_driver()->read_win_rectangle(x, y, w, h);
+    full_img = Fl::screen_driver()->read_win_rectangle(x, y, w, h, g->as_window(), true, &captured_subwin);
   }
+  if (!full_img) return NULL;
   float full_img_scale =  (full_img && w > 0 ? float(full_img->data_w())/w : 1);
-  int n = g->children();
+  int n = (captured_subwin ? 0 : g->children());
   for (int i = 0; i < n; i++) {
     Fl_Widget *c = g->child(i);
     if ( !c->visible() || !c->as_group()) continue;
@@ -282,62 +233,62 @@ int Fl_Screen_Driver::input_widget_handle_key(int key, unsigned mods, unsigned s
     case FL_Delete: {
       int selected = (input->position() != input->mark()) ? 1 : 0;
       if (mods==0 && shift && selected)
-        return input->kf_copy_cut();		// Shift-Delete with selection (WP,NP,WOW,GE,KE,OF)
+        return input->kf_copy_cut();            // Shift-Delete with selection (WP,NP,WOW,GE,KE,OF)
       if (mods==0 && shift && !selected)
-        return input->kf_delete_char_right();	// Shift-Delete no selection (WP,NP,WOW,GE,KE,!OF)
-      if (mods==0)          return input->kf_delete_char_right();	// Delete         (Standard)
-      if (mods==FL_CTRL)    return input->kf_delete_word_right();	// Ctrl-Delete    (WP,!NP,WOW,GE,KE,!OF)
-      return 0;							// ignore other combos, pass to parent
+        return input->kf_delete_char_right();   // Shift-Delete no selection (WP,NP,WOW,GE,KE,!OF)
+      if (mods==0)          return input->kf_delete_char_right();       // Delete         (Standard)
+      if (mods==FL_CTRL)    return input->kf_delete_word_right();       // Ctrl-Delete    (WP,!NP,WOW,GE,KE,!OF)
+      return 0;                                                 // ignore other combos, pass to parent
     }
-      
+
     case FL_Left:
-      if (mods==0)          return input->kf_move_char_left();		// Left           (WP,NP,WOW,GE,KE,OF)
-      if (mods==FL_CTRL)    return input->kf_move_word_left();		// Ctrl-Left      (WP,NP,WOW,GE,KE,!OF)
-      if (mods==FL_META)    return input->kf_move_char_left();		// Meta-Left      (WP,NP,?WOW,GE,KE)
-      return 0;							// ignore other combos, pass to parent
-      
+      if (mods==0)          return input->kf_move_char_left();          // Left           (WP,NP,WOW,GE,KE,OF)
+      if (mods==FL_CTRL)    return input->kf_move_word_left();          // Ctrl-Left      (WP,NP,WOW,GE,KE,!OF)
+      if (mods==FL_META)    return input->kf_move_char_left();          // Meta-Left      (WP,NP,?WOW,GE,KE)
+      return 0;                                                 // ignore other combos, pass to parent
+
     case FL_Right:
-      if (mods==0)          return input->kf_move_char_right();	// Right          (WP,NP,WOW,GE,KE,OF)
-      if (mods==FL_CTRL)    return input->kf_move_word_right();	// Ctrl-Right     (WP,NP,WOW,GE,KE,!OF)
-      if (mods==FL_META)    return input->kf_move_char_right();	// Meta-Right     (WP,NP,?WOW,GE,KE,!OF)
-      return 0;							// ignore other combos, pass to parent
-      
+      if (mods==0)          return input->kf_move_char_right(); // Right          (WP,NP,WOW,GE,KE,OF)
+      if (mods==FL_CTRL)    return input->kf_move_word_right(); // Ctrl-Right     (WP,NP,WOW,GE,KE,!OF)
+      if (mods==FL_META)    return input->kf_move_char_right(); // Meta-Right     (WP,NP,?WOW,GE,KE,!OF)
+      return 0;                                                 // ignore other combos, pass to parent
+
     case FL_Up:
-      if (mods==0)          return input->kf_lines_up(1);		// Up             (WP,NP,WOW,GE,KE,OF)
-      if (mods==FL_CTRL)    return input->kf_move_up_and_sol();	// Ctrl-Up        (WP,!NP,WOW,GE,!KE,OF)
-      return 0;							// ignore other combos, pass to parent
-      
+      if (mods==0)          return input->kf_lines_up(1);               // Up             (WP,NP,WOW,GE,KE,OF)
+      if (mods==FL_CTRL)    return input->kf_move_up_and_sol(); // Ctrl-Up        (WP,!NP,WOW,GE,!KE,OF)
+      return 0;                                                 // ignore other combos, pass to parent
+
     case FL_Down:
-      if (mods==0)          return input->kf_lines_down(1);		// Dn             (WP,NP,WOW,GE,KE,OF)
-      if (mods==FL_CTRL)    return input->kf_move_down_and_eol();	// Ctrl-Down      (WP,!NP,WOW,GE,!KE,OF)
-      return 0;							// ignore other combos, pass to parent
-      
+      if (mods==0)          return input->kf_lines_down(1);             // Dn             (WP,NP,WOW,GE,KE,OF)
+      if (mods==FL_CTRL)    return input->kf_move_down_and_eol();       // Ctrl-Down      (WP,!NP,WOW,GE,!KE,OF)
+      return 0;                                                 // ignore other combos, pass to parent
+
     case FL_Page_Up:
       // Fl_Input has no scroll control, so instead we move the cursor by one page
-      if (mods==0)          return input->kf_page_up();		// PageUp         (WP,NP,WOW,GE,KE)
-      if (mods==FL_CTRL)    return input->kf_page_up();		// Ctrl-PageUp    (!WP,!NP,!WOW,!GE,KE,OF)
-      if (mods==FL_ALT)     return input->kf_page_up();		// Alt-PageUp     (!WP,!NP,!WOW,!GE,KE,OF)
-      return 0;							// ignore other combos, pass to parent
-      
+      if (mods==0)          return input->kf_page_up();         // PageUp         (WP,NP,WOW,GE,KE)
+      if (mods==FL_CTRL)    return input->kf_page_up();         // Ctrl-PageUp    (!WP,!NP,!WOW,!GE,KE,OF)
+      if (mods==FL_ALT)     return input->kf_page_up();         // Alt-PageUp     (!WP,!NP,!WOW,!GE,KE,OF)
+      return 0;                                                 // ignore other combos, pass to parent
+
     case FL_Page_Down:
-      if (mods==0)          return input->kf_page_down();		// PageDn         (WP,NP,WOW,GE,KE)
-      if (mods==FL_CTRL)    return input->kf_page_down();		// Ctrl-PageDn    (!WP,!NP,!WOW,!GE,KE,OF)
-      if (mods==FL_ALT)     return input->kf_page_down();		// Alt-PageDn     (!WP,!NP,!WOW,!GE,KE,OF)
-      return 0;							// ignore other combos, pass to parent
-      
+      if (mods==0)          return input->kf_page_down();               // PageDn         (WP,NP,WOW,GE,KE)
+      if (mods==FL_CTRL)    return input->kf_page_down();               // Ctrl-PageDn    (!WP,!NP,!WOW,!GE,KE,OF)
+      if (mods==FL_ALT)     return input->kf_page_down();               // Alt-PageDn     (!WP,!NP,!WOW,!GE,KE,OF)
+      return 0;                                                 // ignore other combos, pass to parent
+
     case FL_Home:
-      if (mods==0)          return input->kf_move_sol();		// Home           (WP,NP,WOW,GE,KE,OF)
-      if (mods==FL_CTRL)    return input->kf_top();			// Ctrl-Home      (WP,NP,WOW,GE,KE,OF)
-      return 0;							// ignore other combos, pass to parent
-      
+      if (mods==0)          return input->kf_move_sol();                // Home           (WP,NP,WOW,GE,KE,OF)
+      if (mods==FL_CTRL)    return input->kf_top();                     // Ctrl-Home      (WP,NP,WOW,GE,KE,OF)
+      return 0;                                                 // ignore other combos, pass to parent
+
     case FL_End:
-      if (mods==0)          return input->kf_move_eol();		// End            (WP,NP,WOW,GE,KE,OF)
-      if (mods==FL_CTRL)    return input->kf_bottom();			// Ctrl-End       (WP,NP,WOW,GE,KE,OF)
-      return 0;							// ignore other combos, pass to parent
-      
+      if (mods==0)          return input->kf_move_eol();                // End            (WP,NP,WOW,GE,KE,OF)
+      if (mods==FL_CTRL)    return input->kf_bottom();                  // Ctrl-End       (WP,NP,WOW,GE,KE,OF)
+      return 0;                                                 // ignore other combos, pass to parent
+
     case FL_BackSpace:
-      if (mods==0)          return input->kf_delete_char_left();	// Backspace      (WP,NP,WOW,GE,KE,OF)
-      if (mods==FL_CTRL)    return input->kf_delete_word_left();	// Ctrl-Backspace (WP,!NP,WOW,GE,KE,!OF)
+      if (mods==0)          return input->kf_delete_char_left();        // Backspace      (WP,NP,WOW,GE,KE,OF)
+      if (mods==FL_CTRL)    return input->kf_delete_word_left();        // Ctrl-Backspace (WP,!NP,WOW,GE,KE,!OF)
       return 0;
       // ignore other combos, pass to parent
   }
@@ -355,15 +306,21 @@ void Fl_Screen_Driver::rescale_all_windows_from_screen(int screen, float f)
   int i = 0, count = 0; // count top-level windows, except transient scale-displaying window
   Fl_Window *win = Fl::first_window();
   while (win) {
-    if (!win->parent() && (Fl_Window_Driver::driver(win)->screen_num() == screen || rescalable() == SYSTEMWIDE_APP_SCALING) &&
-        win->user_data() != &Fl_Screen_Driver::transient_scale_display) count++;
+    if (!win->parent() &&
+        (Fl_Window_Driver::driver(win)->screen_num() == screen || rescalable() == SYSTEMWIDE_APP_SCALING) &&
+        win->user_data() != &Fl_Screen_Driver::transient_scale_display) {
+      count++;
+    }
     win = Fl::next_window(win);
   }
+  if (count == 0)
+    return;
   Fl_Window **win_array = new Fl_Window*[count];
   win = Fl::first_window(); // memorize all top-level windows
   while (win) {
-    if (!win->parent() && win->user_data() != &Fl_Screen_Driver::transient_scale_display &&
-        (Fl_Window_Driver::driver(win)->screen_num() == screen  || rescalable() == SYSTEMWIDE_APP_SCALING) ) {
+    if (!win->parent() &&
+        (Fl_Window_Driver::driver(win)->screen_num() == screen || rescalable() == SYSTEMWIDE_APP_SCALING) &&
+        win->user_data() != &Fl_Screen_Driver::transient_scale_display) {
       win_array[i++] = win;
     }
     win = Fl::next_window(win);
@@ -376,14 +333,28 @@ void Fl_Screen_Driver::rescale_all_windows_from_screen(int screen, float f)
   delete[] win_array;
 }
 
-static void del_transient_window(void *data) {
-  Fl_Window *win = (Fl_Window*)data;
-  delete (Fl_RGB_Image*)win->child(0)->user_data();
-  Fl::delete_widget(win);
+struct WinAndTracker {
+  Fl_Window *win;
+  Fl_Widget_Tracker *tracker;
+};
+
+static void del_transient_window(WinAndTracker *data) {
+  delete (Fl_Image*)data->win->shape();
+  Fl::delete_widget(data->win);
+  if (data->tracker) {
+    if (data->tracker->exists()) {
+      Fl::focus(data->tracker->widget());
+      data->tracker->widget()->handle(FL_FOCUS);
+    }
+    delete data->tracker;
+  }
+  delete data;
 }
 
 void Fl_Screen_Driver::transient_scale_display(float f, int nscreen)
-{ // transiently show the new scaling value using a shaped window
+{
+  if (!Fl::option(Fl::OPTION_SHOW_SCALING)) return;
+  // transiently show the new scaling value using a shaped window
   int w = 150;
   // draw a white rounded box on black background
   Fl_Screen_Driver *d = Fl::screen_driver();
@@ -415,19 +386,23 @@ void Fl_Screen_Driver::transient_scale_display(float f, int nscreen)
   b->color(Fl_Tooltip::color());
   win->end();
   win->shape(img);
-  b->user_data(img);
   win->user_data((void*)&transient_scale_display); // prevent this window from being rescaled later
   win->set_output();
   win->set_non_modal();
   Fl_Window_Driver::driver(win)->screen_num(nscreen);
   Fl_Window_Driver::driver(win)->force_position(1);
+  WinAndTracker *data = new WinAndTracker;
+  data->win = win;
+  Fl_Widget *widget = Fl::focus();
+  data->tracker = (widget ? new Fl_Widget_Tracker(widget) : NULL);
   win->show();
-  Fl::add_timeout(1, del_transient_window, win); // delete after 1 sec
+  Fl::add_timeout(1, (Fl_Timeout_Handler)del_transient_window, data); // delete after 1 sec
 }
 
 // respond to Ctrl-'+' and Ctrl-'-' and Ctrl-'0' (Ctrl-'=' is same as Ctrl-'+') by rescaling all windows
 int Fl_Screen_Driver::scale_handler(int event)
 {
+  if (!keyboard_screen_scaling) return 0;
   if ( event != FL_SHORTCUT || (!Fl::event_command()) ) return 0;
   int key = Fl::event_key() & ~(FL_SHIFT+FL_COMMAND);
   if (key == '=' || key == '-' || key == '+' || key == '0' || key == 0xE0/* for '0' on Fr keyboard */) {
@@ -473,7 +448,7 @@ int Fl_Screen_Driver::scale_handler(int event)
     if (f == old_f) return 1;
     screen_dr->rescale_all_windows_from_screen(screen, f*initial_scale);
     Fl_Screen_Driver::transient_scale_display(f, screen);
-    screen_dr->init_workarea();
+    Fl::handle(FL_ZOOM_EVENT, NULL);
     return 1;
   }
   return 0;
@@ -481,20 +456,16 @@ int Fl_Screen_Driver::scale_handler(int event)
 
 
 // use the startup time scaling value
-float Fl_Screen_Driver::use_startup_scale_factor()
+void Fl_Screen_Driver::use_startup_scale_factor()
 {
-  float factor;
-  char *p = 0;
+  char *p;
+  int s_count = screen_count();
+  desktop_scale_factor();
   if ((p = fl_getenv("FLTK_SCALING_FACTOR"))) {
+    float factor = 1;
     sscanf(p, "%f", &factor);
-    // checks to prevent potential crash (factor <= 0) or very large factors
-    if (factor < 0.25) factor = 0.25;
-    else if (factor > 10.0) factor = 10.0;
+    for (int i = 0; i < s_count; i++)  scale(i, factor * scale(i));
   }
-  else {
-    factor = desktop_scale_factor();
-  }
-  return factor;
 }
 
 
@@ -504,11 +475,10 @@ void Fl_Screen_Driver::open_display()
   static bool been_here = false;
   if (!been_here) {
     been_here = true;
-    int scount = screen_count(); // keep here
     if (rescalable()) {
-      float factor = use_startup_scale_factor();
-      if (factor) for (int i = 0; i < scount; i++)  scale(i, factor);
-      Fl::add_handler(Fl_Screen_Driver::scale_handler);
+      use_startup_scale_factor();
+      if (keyboard_screen_scaling)
+        Fl::add_handler(Fl_Screen_Driver::scale_handler);
       int mx, my;
       int ns = Fl::screen_driver()->get_mouse(mx, my);
       Fl_Graphics_Driver::default_driver().scale(scale(ns));
@@ -541,11 +511,9 @@ int Fl_Screen_Driver::parse_color(const char* p, uchar& r, uchar& g, uchar& b)
   return 1;
 }
 
+void Fl_Screen_Driver::default_icons(const Fl_RGB_Image *icons[], int count) {}
+
 /**
  \}
  \endcond
  */
-
-//
-// End of "$Id: Fl_Screen_Driver.cxx 12975 2018-06-26 14:04:09Z manolo $".
-//

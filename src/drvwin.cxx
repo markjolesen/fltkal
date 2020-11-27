@@ -1,74 +1,25 @@
-// drvwin.cxx
-//
-// "$Id: Fl_Window_Driver.cxx 12974 2018-06-26 13:43:18Z manolo $"
 //
 // A base class for platform specific window handling code
 // for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2017 by Bill Spitzak and others.
+// Copyright 1998-2018 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
+/**
+ \cond DriverDev
+ \addtogroup DriverDeveloper
+ \{
+ */
 
 #include "drvwin.h"
 #include <fl/winovlay.h>
@@ -186,54 +137,6 @@ void Fl_Window_Driver::destroy_double_buffer() {
   other_xid = 0;
 }
 
-
-/** Assigns a non-rectangular shape to the window.
- This function gives an arbitrary shape (not just a rectangular region) to an Fl_Window.
- An Fl_Image of any dimension can be used as mask; it is rescaled to the window's dimension as needed.
- 
- The layout and widgets inside are unaware of the mask shape, and most will act as though the window's
- rectangular bounding box is available
- to them. It is up to you to make sure they adhere to the bounds of their masking shape.
- 
- The \p img argument can be an Fl_Bitmap, Fl_Pixmap, Fl_RGB_Image or Fl_Shared_Image:
- \li With Fl_Bitmap or Fl_Pixmap, the shaped window covers the image part where bitmap bits equal one,
- or where the pixmap is not fully transparent.
- \li With an Fl_RGB_Image with an alpha channel (depths 2 or 4), the shaped window covers the image part
- that is not fully transparent.
- \li With an Fl_RGB_Image of depth 1 (gray-scale) or 3 (RGB), the shaped window covers the non-black image part.
- \li With an Fl_Shared_Image, the shape is determined by rules above applied to the underlying image.
- The shared image should not have been scaled through Fl_Shared_Image::scale().
- 
- Platform details:
- \li On the unix/linux platform, the SHAPE extension of the X server is required.
- This function does control the shape of Fl_Gl_Window instances.
- \li On the Windows platform, this function does nothing with class Fl_Gl_Window.
- \li On the Mac platform, OS version 10.4 or above is required.
- An 8-bit shape-mask is used when \p img is an Fl_RGB_Image:
- with depths 2 or 4, the image alpha channel becomes the shape mask such that areas with alpha = 0
- are out of the shaped window;
- with depths 1 or 3, white and black are in and out of the
- shaped window, respectively, and other colors give intermediate masking scores.
- This function does nothing with class Fl_Gl_Window.
- 
- The window borders and caption created by the window system are turned off by default. They
- can be re-enabled by calling Fl_Window::border(1).
- 
- A usage example is found at example/shapedwindow.cxx.
- 
- \version 1.3.3
- */
-void Fl_Window::shape(const Fl_Image* img) {pWindowDriver->shape(img);}
-
-
-/** Set the window's shape with an Fl_Image.
- \see void shape(const Fl_Image* img)
- */
-void Fl_Window::shape(const Fl_Image& img) {pWindowDriver->shape(&img);}
-
-/** Returns non NULL when the window has been assigned a non-rectangular shape */
-int Fl_Window::is_shaped() {return pWindowDriver->shape_data_ != NULL;}
-
 void Fl_Window_Driver::shape_pixmap_(Fl_Image* pixmap) {
   Fl_RGB_Image* rgba = new Fl_RGB_Image((Fl_Pixmap*)pixmap);
   shape_alpha_(rgba, 3);
@@ -248,17 +151,17 @@ void Fl_Window_Driver::capture_titlebar_and_borders(Fl_RGB_Image*& top, Fl_RGB_I
 // This function is available for use by platform-specific, Fl_Window_Driver-derived classes
 int Fl_Window_Driver::hide_common() {
   pWindow->clear_visible();
-  
+
   if (!shown()) return 1;
-  
+
   // remove from the list of windows:
   Fl_X* ip = Fl_X::i(pWindow);
   Fl_X** pp = &Fl_X::first;
   for (; *pp != ip; pp = &(*pp)->next) if (!*pp) return 1;
   *pp = ip->next;
-  
+
   pWindow->i = 0;
-  
+
   // recursively remove any subwindows:
   for (Fl_X *wi = Fl_X::first; wi;) {
     Fl_Window* W = wi->w;
@@ -268,14 +171,14 @@ int Fl_Window_Driver::hide_common() {
       wi = Fl_X::first;
     } else wi = wi->next;
   }
-  
+
   if (pWindow == Fl::modal_) { // we are closing the modal window, find next one:
     Fl_Window* W;
     for (W = Fl::first_window(); W; W = Fl::next_window(W))
       if (W->modal()) break;
     Fl::modal_ = W;
   }
-  
+
   // Make sure no events are sent to this window:
   fl_throw_focus(pWindow);
   pWindow->handle(FL_HIDE);
@@ -286,6 +189,7 @@ int Fl_Window_Driver::hide_common() {
 void Fl_Window_Driver::use_border() {
   if (shown()) {
     pWindow->hide(); // hide and then show to reflect the new state of the window border
+    pWindow->force_position(1);
     pWindow->show();
   }
 }
@@ -359,7 +263,3 @@ void Fl_Window_Driver::resize_after_scale_change(int ns, float old_f, float new_
  \}
  \endcond
  */
-
-//
-// End of "$Id: Fl_Window_Driver.cxx 12974 2018-06-26 13:43:18Z manolo $".
-//

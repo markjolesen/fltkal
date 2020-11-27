@@ -65,96 +65,70 @@
 //
 #if !defined(__FONTDIR_H__)
 
-#include <fl/fl_enums.h>
-#include <fl/pref.h>
+#  include <ft2build.h>
+
+#  include <fl/fl_enums.h>
+#  include <fl/pref.h>
+#  include FT_FREETYPE_H
+#  include FT_CACHE_H
 
 class fontdir
 {
-
 public:
+  struct id
+  {
+    char *face_;
+    char *path_;
+    FTC_CMapCache cmap_cache_;
+    FTC_ImageCache image_cache_;
+  };
 
-    fontdir();
+  fontdir();
 
-    virtual ~fontdir();
+  virtual ~fontdir();
 
-    void clear();
+  void
+    add(char const *face, char const *path);
 
-    void add(char const *face, char const *path);
+  void
+    load(Fl_Preferences &pref);
 
-    void load(Fl_Preferences &pref);
+  unsigned int
+    get_count() const;
 
-    unsigned int get_count() const;
-
-    char const *get_face(Fl_Font const font) const;
-
-    char const *get_path(Fl_Font const font) const;
-
-    void set_invalid(Fl_Font const font);
+  struct id *
+    get_id(Fl_Font const index) const;
 
 protected:
-
-    struct fontdir_element
-    {
-        char face[32];
-        char path[128];
-        bool valid;
-    };
-
-    struct fontdir_element *fonts;
-    unsigned int size;
+  struct id *id_;
+  unsigned int count_;
+  unsigned int size_;
 
 private:
+  fontdir(fontdir const &);
 
-    fontdir(fontdir const &);
-
-    fontdir &operator=(fontdir const &);
+  fontdir &
+    operator=(fontdir const &);
 };
 
-inline unsigned int fontdir::get_count() const
+inline unsigned int
+  fontdir::get_count() const
 {
-    return size;
+  return count_;
 }
 
-inline char const *fontdir::get_face(Fl_Font const font) const
+inline struct fontdir::id *
+  fontdir::get_id(Fl_Font const index) const
 {
-    char const *face = 0;
+  struct fontdir::id *id = 0;
 
-    if (size && size > font)
+  if (count_ > index)
     {
-        if (fonts[font].valid)
-        {
-            face = fonts[font].face;
-        }
+      id = &id_[index];
     }
 
-    return face;
+  return id;
 }
 
-inline char const *fontdir::get_path(Fl_Font const font) const
-{
-    char const *path = 0;
-
-    if (size && size > font)
-    {
-        if (fonts[font].valid)
-        {
-            path = fonts[font].path;
-        }
-    }
-
-    return path;
-}
-
-inline void fontdir::set_invalid(Fl_Font const font)
-{
-
-    if (size && size > font)
-    {
-        fonts[font].valid = false;
-    }
-
-    return;
-}
-
-#define __FONTDIR_H__
+#  define __FONTDIR_H__
 #endif

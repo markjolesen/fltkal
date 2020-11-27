@@ -65,87 +65,110 @@
 //
 #if !defined(FL_ALLEGRO_SCREEN_DRIVER_H)
 
-#include "../../drvscr.h"
-#include <fl/fl_enums.h>
-#include <time.h>
-#include "wm.h"
-#include "timeout.h"
+#  include <time.h>
+
+#  include "../../drvscr.h"
+#  include "timeout.h"
+#  include "wm.h"
+#  include <fl/fl_enums.h>
 
 class FL_EXPORT Fl_Allegro_Screen_Driver : public Fl_Screen_Driver
 {
+private:
+  int
+    screen_init();
 
-  private:
+  bool
+    wait_keyboard(Fl_Window *window);
 
-    int screen_init();
+  bool
+    wait_mouse(Fl_Window *window);
 
-    bool wait_keyboard(Fl_Window* window);
+  wm::hit_type
+    hit(Fl_Window *window, int const x, int const y);
 
-    bool wait_mouse(Fl_Window* window);
+protected:
+  wm wm_;
+  timeout timer_;
+  ticker dclick_;
+  ticks_t clock_;
+  int btn_state_;
+  Fl_Cursor cursor_;
 
-    wm::hit_type hit(Fl_Window* window, int const x, int const y);
+public:
+  Fl_Allegro_Screen_Driver();
 
-  protected:
+  virtual ~Fl_Allegro_Screen_Driver();
 
-    wm wm_;
-    timeout timer_;
-    ticker dclick_;
-    ticks_t clock_;
-    int btn_state_;
-    Fl_Cursor cursor_;
+  virtual void
+    init();
 
-  public:
+  virtual int
+    x();
 
-    Fl_Allegro_Screen_Driver();
+  virtual int
+    y();
 
-    virtual ~Fl_Allegro_Screen_Driver();
+  virtual int
+    w();
 
-    virtual void init();
+  virtual int
+    h();
 
-    virtual int x();
+  virtual void
+    screen_xywh(int &X, int &Y, int &W, int &H, int n);
 
-    virtual int y();
+  virtual void
+    screen_work_area(int &X, int &Y, int &W, int &H, int n);
 
-    virtual int w();
+  virtual void
+    screen_dpi(float &h, float &v, int n = 0);
 
-    virtual int h();
+  virtual void
+    beep(int type);
 
-    virtual void screen_xywh(int& X, int& Y, int& W, int& H, int n);
+  virtual void
+    flush();
 
-    virtual void screen_work_area(int& X, int& Y, int& W, int& H, int n);
+  virtual double
+    wait(double time_to_wait);
 
-    virtual void screen_dpi(float& h, float& v, int n = 0);
+  virtual int
+    ready();
 
-    virtual void beep(int type);
+  virtual void
+    grab(Fl_Window *win);
 
-    virtual void flush();
+  virtual void
+    get_system_colors();
 
-    virtual double wait(double time_to_wait);
+  virtual const char *
+    get_system_scheme();
 
-    virtual int ready();
+  virtual void
+    add_timeout(double time, Fl_Timeout_Handler cb, void *argp);
 
-    virtual void grab(Fl_Window* win);
+  virtual void
+    repeat_timeout(double time, Fl_Timeout_Handler cb, void *argp);
 
-    virtual void get_system_colors();
+  virtual int
+    has_timeout(Fl_Timeout_Handler cb, void *argp);
 
-    virtual const char* get_system_scheme();
+  virtual void
+    remove_timeout(Fl_Timeout_Handler cb, void *argp);
 
-    virtual void add_timeout(double time, Fl_Timeout_Handler cb, void* argp);
+  virtual int
+    get_mouse(int &x, int &y);
 
-    virtual void repeat_timeout(double time, Fl_Timeout_Handler cb, void* argp);
+  virtual void
+    open_display_platform();
 
-    virtual int has_timeout(Fl_Timeout_Handler cb, void* argp);
+  virtual void
+    close_display();
 
-    virtual void remove_timeout(Fl_Timeout_Handler cb, void* argp);
-
-    virtual int get_mouse(int& x, int& y);
-
-    virtual void open_display_platform();
-
-    virtual void close_display();
-
-    virtual int compose(int& del);
-
+  virtual int
+    compose(int &del);
 };
 
-#define FL_ALLEGRO_SCREEN_DRIVER_H
+#  define FL_ALLEGRO_SCREEN_DRIVER_H
 #endif

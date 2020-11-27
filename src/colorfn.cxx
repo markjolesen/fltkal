@@ -1,71 +1,17 @@
-// colorfn.cxx
-//
-// "$Id: fl_show_colormap.cxx 9727 2012-11-20 12:29:46Z manolo $"
 //
 // Colormap color selection dialog for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <fl/fl.h>
@@ -77,7 +23,7 @@
 #define BOXSIZE 14
 #define BORDER 4
 
-/** 
+/**
  This widget creates a modal window for selecting a color from the colormap.
  Pretty much unchanged from Forms.
 */
@@ -109,7 +55,7 @@ void ColorMenu::drawbox(Fl_Color c) {
   else fl_draw_box(FL_BORDER_BOX, X, Y, BOXSIZE+1, BOXSIZE+1, c);
 #else
   fl_draw_box(c == which ? FL_DOWN_BOX : FL_BORDER_BOX,
-	      X, Y, BOXSIZE+1, BOXSIZE+1, c);
+              X, Y, BOXSIZE+1, BOXSIZE+1, c);
 #endif
 }
 
@@ -185,7 +131,7 @@ Fl_Color ColorMenu::run() {
     position(Fl::event_x_root()-w()/2, Fl::event_y_root()-y()/2);
   } else {
     position(Fl::event_x_root()-(initial%8)*BOXSIZE-BOXSIZE/2-BORDER,
-	     Fl::event_y_root()-(initial/8)*BOXSIZE-BOXSIZE/2-BORDER);
+             Fl::event_y_root()-(initial/8)*BOXSIZE-BOXSIZE/2-BORDER);
   }
   show();
   Fl::grab(*this);
@@ -199,7 +145,3 @@ Fl_Color fl_show_colormap(Fl_Color oldcol) {
   ColorMenu m(oldcol);
   return m.run();
 }
-
-//
-// End of "$Id: fl_show_colormap.cxx 9727 2012-11-20 12:29:46Z manolo $".
-//

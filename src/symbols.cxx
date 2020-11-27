@@ -1,71 +1,17 @@
-// symbols.cxx
-//
-// "$Id: fl_symbols.cxx 8864 2011-07-19 04:49:30Z greg.ercolano $"
 //
 // Symbol drawing code for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 // These are small graphics drawn by the normal label-drawing
@@ -131,7 +77,7 @@ int fl_add_symbol(const char *name, void (*drawit)(Fl_Color), int scalable)
 {
   fl_init_symbols();
   int pos;
-  if (symbnumb > MAXSYMBOL / 2) return 0;	// table is full
+  if (symbnumb > MAXSYMBOL / 2) return 0;       // table is full
   pos = find(name);
   symbols[pos].name = name;
   symbols[pos].drawit = drawit;
@@ -152,7 +98,7 @@ int fl_return_arrow(int x,int y,int w,int h);
   \returns 1 on success, 0 on failure
   */
 // provided for back compatibility:
-int fl_draw_symbol(const char *label,int x,int y,int w,int h,Fl_Color col) {  
+int fl_draw_symbol(const char *label,int x,int y,int w,int h,Fl_Color col) {
   const char *p = label;
   if (*p++ != '@') return 0;
   fl_init_symbols();
@@ -244,7 +190,7 @@ static void rectangle(double x,double y,double x2,double y2,Fl_Color col) {
 
 /* The drawing routines */
 
-static void draw_fltk(Fl_Color col) 
+static void draw_fltk(Fl_Color col)
 {
   fl_color(col);
   // F fill
@@ -278,7 +224,7 @@ static void draw_fltk(Fl_Color col)
   vv(1.3, 0.15); vv(1.3, 0.5); vv(1.1, 0.5); EC;
 }
 
-static void draw_search(Fl_Color col) 
+static void draw_search(Fl_Color col)
 {
   fl_color(col);
   BP; vv(-.4, .13); vv(-1.0, .73); vv(-.73, 1.0); vv(-.13, .4); EP;
@@ -353,9 +299,9 @@ static void draw_bararrow(Fl_Color col)
   BC; vv(-0.5,0.8); vv(-0.1,0.8); vv(-0.1,-0.8); vv(-0.5,-0.8); EC;
 }
 
-static void draw_doublebar(Fl_Color col) { 
+static void draw_doublebar(Fl_Color col) {
   rectangle(-0.6,-0.8,-.1,.8,col);
-  rectangle(.1,-0.8,.6,.8,col); 
+  rectangle(.1,-0.8,.6,.8,col);
 }
 
 static void draw_arrow01(Fl_Color col)
@@ -708,33 +654,33 @@ static void fl_init_symbols(void) {
   beenhere = 1;
   symbnumb = 0;
 
-  fl_add_symbol("",		draw_arrow1,		1);
-  fl_add_symbol("->",		draw_arrow1,		1);
-  fl_add_symbol(">",		draw_arrow2,		1);
-  fl_add_symbol(">>",		draw_arrow3,		1);
-  fl_add_symbol(">|",		draw_arrowbar,		1);
-  fl_add_symbol(">[]",		draw_arrowbox,		1);
-  fl_add_symbol("|>",		draw_bararrow,		1);
-  fl_add_symbol("<-",		draw_arrow01,		1);
-  fl_add_symbol("<",		draw_arrow02,		1);
-  fl_add_symbol("<<",		draw_arrow03,		1);
-  fl_add_symbol("|<",		draw_0arrowbar,		1);
-  fl_add_symbol("[]<",		draw_0arrowbox,		1);
-  fl_add_symbol("<|",		draw_0bararrow,		1);
-  fl_add_symbol("<->",		draw_doublearrow,	1);
-  fl_add_symbol("-->",		draw_arrow,		1);
-  fl_add_symbol("+",		draw_plus,		1);
-  fl_add_symbol("->|",		draw_arrow1bar,		1);
-  fl_add_symbol("arrow",	draw_arrow,		1);
-  fl_add_symbol("returnarrow",	0,			3);
-  fl_add_symbol("square",	draw_square,		1);
-  fl_add_symbol("circle",	draw_circle,		1);
-  fl_add_symbol("line",		draw_line,		1);
-  fl_add_symbol("plus",		draw_plus,		1);
-  fl_add_symbol("menu",		draw_menu,		1);
-  fl_add_symbol("UpArrow",	draw_uparrow,		1);
-  fl_add_symbol("DnArrow",	draw_downarrow,		1);
-  fl_add_symbol("||",		draw_doublebar,		1);
+  fl_add_symbol("",             draw_arrow1,            1);
+  fl_add_symbol("->",           draw_arrow1,            1);
+  fl_add_symbol("",            draw_arrow2,            1);
+  fl_add_symbol(">",           draw_arrow3,            1);
+  fl_add_symbol("|",           draw_arrowbar,          1);
+  fl_add_symbol("[]",          draw_arrowbox,          1);
+  fl_add_symbol("|>",           draw_bararrow,          1);
+  fl_add_symbol("<-",           draw_arrow01,           1);
+  fl_add_symbol("",            draw_arrow02,           1);
+  fl_add_symbol("<",           draw_arrow03,           1);
+  fl_add_symbol("|",           draw_0arrowbar,         1);
+  fl_add_symbol("[]",          draw_0arrowbox,         1);
+  fl_add_symbol("<|",           draw_0bararrow,         1);
+  fl_add_symbol("<->",          draw_doublearrow,       1);
+  fl_add_symbol("-->",          draw_arrow,             1);
+  fl_add_symbol("+",            draw_plus,              1);
+  fl_add_symbol("->|",          draw_arrow1bar,         1);
+  fl_add_symbol("arrow",        draw_arrow,             1);
+  fl_add_symbol("returnarrow",  0,                      3);
+  fl_add_symbol("square",       draw_square,            1);
+  fl_add_symbol("circle",       draw_circle,            1);
+  fl_add_symbol("line",         draw_line,              1);
+  fl_add_symbol("plus",         draw_plus,              1);
+  fl_add_symbol("menu",         draw_menu,              1);
+  fl_add_symbol("UpArrow",      draw_uparrow,           1);
+  fl_add_symbol("DnArrow",      draw_downarrow,         1);
+  fl_add_symbol("||",           draw_doublebar,         1);
   fl_add_symbol("search",       draw_search,            1);
   fl_add_symbol("FLTK",         draw_fltk,              1);
 
@@ -751,7 +697,3 @@ static void fl_init_symbols(void) {
 
 //  fl_add_symbol("file",      draw_file,           1);
 }
-
-//
-// End of "$Id: fl_symbols.cxx 8864 2011-07-19 04:49:30Z greg.ercolano $".
-//

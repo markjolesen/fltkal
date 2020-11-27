@@ -65,99 +65,116 @@
 //
 #if !defined(FL_ALLEGRO_WINDOW_DRIVER_H)
 
-#include "../../drvwin.h"
-#include <fl/fl_enums.h>
+#  include "../../drvwin.h"
+#  include <fl/fl_enums.h>
 
-#if defined(USE_ALLEGRO)
-#include <allegro.h>
-#else
-#include "bitmap.h"
-#include "cursor.h"
-#endif
+#  if defined(USE_ALLEGRO)
+#    include <allegro.h>
+#  else
+#    include "bitmap.h"
+#    include "cursor.h"
+#  endif
 
 class Fl_Allegro_Window_Driver : public Fl_Window_Driver
 {
-
-  protected:
-
-#if defined(USE_ALLEGRO)
+protected:
+#  if defined(USE_ALLEGRO)
+  struct
+  {
+    Fl_Cursor pointer_;
     struct
     {
-      Fl_Cursor pointer_;
-      struct
-      {
-        BITMAP* bmp_;
-        int hot_x_;
-        int hot_y_;
-      } custom_;
-    } cursor_;
-#else
-    struct
-    {
-      Fl_Cursor pointer_;
-      struct cursor* current_;
-      struct cursor custom_;
-    } cursor_;
-#endif
+      BITMAP *bmp_;
+      int hot_x_;
+      int hot_y_;
+    } custom_;
+  } cursor_;
+#  else
+  struct
+  {
+    Fl_Cursor pointer_;
+    struct cursor *current_;
+    struct cursor custom_;
+  } cursor_;
+#  endif
 
-    struct
-    {
-      int x_;
-      int y_;
-#if defined(USE_ALLEGRO)
-      BITMAP* bmp_;
-#else
-      struct bitmap* bmp_;
-#endif
-    } store_;
+  struct
+  {
+    int x_;
+    int y_;
+#  if defined(USE_ALLEGRO)
+    BITMAP *bmp_;
+#  else
+    struct bitmap *bmp_;
+#  endif
+  } store_;
 
-  public:
+public:
+  enum
+  {
+    title_bar_height = 24,
+    window_min_height = 50,
+    window_min_width = 50
+  };
 
-    enum
-    {
-      title_bar_height = 24,
-      window_min_height = 50,
-      window_min_width = 50
-    };
+  Fl_Allegro_Window_Driver(Fl_Window *);
 
-    Fl_Allegro_Window_Driver(Fl_Window*);
+  virtual ~Fl_Allegro_Window_Driver();
 
-    virtual ~Fl_Allegro_Window_Driver();
+  virtual int
+    decorated_w();
 
-    virtual int decorated_w();
+  virtual int
+    decorated_h();
 
-    virtual int decorated_h();
+  virtual void
+    draw_begin();
 
-    virtual void draw_begin();
+  virtual void
+    draw_end();
 
-    virtual void draw_end();
+  virtual Fl_X *
+    makeWindow();
 
-    virtual Fl_X* makeWindow();
+  virtual void
+    take_focus();
 
-    virtual void take_focus();
+  virtual void
+    show();
 
-    virtual void show();
+  virtual void
+    hide();
 
-    virtual void hide();
+  virtual void
+    resize(int X, int Y, int W, int H);
 
-    virtual void resize(int X, int Y, int W, int H);
+  virtual int
+    scroll(int src_x,
+           int src_y,
+           int src_w,
+           int src_h,
+           int dest_x,
+           int dest_y,
+           void (*draw_area)(void *, int, int, int, int),
+           void *data);
 
-    virtual int scroll(int src_x, int src_y, int src_w, int src_h, int dest_x,
-                       int dest_y, void (*draw_area)(void*, int, int, int, int), void* data);
+  virtual void
+    redisplay_cursor() const;
 
-    virtual void redisplay_cursor() const;
+  virtual Fl_Cursor
+    get_cursor() const;
 
-    virtual Fl_Cursor get_cursor() const;
+  virtual int set_cursor(Fl_Cursor);
 
-    virtual int set_cursor(Fl_Cursor);
+  virtual int
+    set_cursor(const Fl_RGB_Image *, int, int);
 
-    virtual int set_cursor(const Fl_RGB_Image*, int, int);
+  virtual void
+    backing_create();
 
-    virtual void backing_create();
-
-    virtual void backing_show();
-
+  virtual void
+    backing_show();
 };
 
-#define FL_ALLEGRO_WINDOW_DRIVER_H
+#  define FL_ALLEGRO_WINDOW_DRIVER_H
 #endif

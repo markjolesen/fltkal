@@ -64,18 +64,21 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "aldrvimg.h"
+
 #include <fl/fl_draw.h>
 
 Fl_Image_Surface_Driver *
-Fl_Image_Surface_Driver::newImageSurfaceDriver(
-    int w, int h, int high_res, Fl_Offscreen off)
+  Fl_Image_Surface_Driver::newImageSurfaceDriver(int w,
+                                                 int h,
+                                                 int high_res,
+                                                 Fl_Offscreen off)
 {
-    return reinterpret_cast<Fl_Image_Surface_Driver *>(0);
+  return reinterpret_cast<Fl_Image_Surface_Driver *>(0);
 }
 
 Fl_Allegro_Image_Surface_Driver::Fl_Allegro_Image_Surface_Driver(
-    int w, int h, int high_res, Fl_Offscreen off) :
-    Fl_Image_Surface_Driver(w, h, high_res, off)
+  int w, int h, int high_res, Fl_Offscreen off) :
+  Fl_Image_Surface_Driver(w, h, high_res, off)
 {
 }
 
@@ -83,30 +86,31 @@ Fl_Allegro_Image_Surface_Driver::~Fl_Allegro_Image_Surface_Driver()
 {
 }
 
-void Fl_Allegro_Image_Surface_Driver::set_current()
+void
+  Fl_Allegro_Image_Surface_Driver::set_current()
 {
-
 }
 
-void Fl_Allegro_Image_Surface_Driver::translate(int x, int y)
+void
+  Fl_Allegro_Image_Surface_Driver::translate(int x, int y)
 {
-
 }
 
-void Fl_Allegro_Image_Surface_Driver::untranslate()
+void
+  Fl_Allegro_Image_Surface_Driver::untranslate()
 {
-
 }
 
-Fl_RGB_Image *Fl_Allegro_Image_Surface_Driver::image()
+Fl_RGB_Image *
+  Fl_Allegro_Image_Surface_Driver::image()
 {
-    return 0;
+  return 0;
 }
 
 // _mjo should this be in aldrvgr.cxx?
-void fl_rectf(int x, int y, int w, int h, uchar r, uchar g, uchar b)
+void
+  fl_rectf(int x, int y, int w, int h, uchar r, uchar g, uchar b)
 {
-    fl_color(r, g, b);
-    fl_rectf(x, y, w, h);
+  fl_color(r, g, b);
+  fl_rectf(x, y, w, h);
 }
-

@@ -65,73 +65,76 @@
 //
 #if !defined(__IMGCONV_H__)
 
-#include <allegro.h>
-#include <fl/drvgr.h>
-#include <fl/fl.h>
-#include <fl/img.h>
-#include <fl/imgbit.h>
+#  include <allegro.h>
 
-extern int fl_convert_pixmap(
-    const char *const *cdata,
-    uchar *out,
-    Fl_Color bg);
+#  include <fl/drvgr.h>
+#  include <fl/fl.h>
+#  include <fl/img.h>
+#  include <fl/imgbit.h>
 
-extern BITMAP *rgb_image_to_bitmap(Fl_RGB_Image const &rgb);
+extern int
+  fl_convert_pixmap(const char *const *cdata, uchar *out, Fl_Color bg);
 
-extern BITMAP *rgb_data_to_bitmap(
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned int const img_depth,
-    unsigned int const img_stride,
-    unsigned char const *img_bits);
+extern BITMAP *
+  rgb_image_to_bitmap(Fl_RGB_Image const &rgb);
 
-extern BITMAP *rgb_staged_to_image(
-    Fl_Draw_Image_Cb cb,
-    void *data,
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned int const img_depth);
+extern BITMAP *
+  rgb_data_to_bitmap(unsigned int const img_width,
+                     unsigned int const img_height,
+                     unsigned int const img_depth,
+                     unsigned int const img_stride,
+                     unsigned char const *img_bits);
 
-extern BITMAP *rgb32_to_bitmap(
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned int const img_stride,
-    unsigned char const *img_bits);
+extern BITMAP *
+  rgb_staged_to_image(Fl_Draw_Image_Cb cb,
+                      void *data,
+                      unsigned int const img_width,
+                      unsigned int const img_height,
+                      unsigned int const img_depth);
 
-extern BITMAP *rgb24_to_bitmap(
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned int const img_stride,
-    unsigned char const *img_bits);
+extern BITMAP *
+  rgb32_to_bitmap(unsigned int const img_width,
+                  unsigned int const img_height,
+                  unsigned int const img_stride,
+                  unsigned char const *img_bits);
 
-extern BITMAP *rgb24cb_to_bitmap(
-    Fl_Draw_Image_Cb cb,
-    void *data,
-    unsigned int const img_width,
-    unsigned int const img_height);
+extern BITMAP *
+  rgb24_to_bitmap(unsigned int const img_width,
+                  unsigned int const img_height,
+                  unsigned int const img_stride,
+                  unsigned char const *img_bits);
 
-extern BITMAP *rgb16_to_bitmap(
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned int const img_stride,
-    unsigned char const *img_bits);
+extern BITMAP *
+  rgb24cb_to_bitmap(Fl_Draw_Image_Cb cb,
+                    void *data,
+                    unsigned int const img_width,
+                    unsigned int const img_height);
 
-extern BITMAP *rgb8_to_bitmap(
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned int const img_stride,
-    unsigned char const *img_bits);
+extern BITMAP *
+  rgb16_to_bitmap(unsigned int const img_width,
+                  unsigned int const img_height,
+                  unsigned int const img_stride,
+                  unsigned char const *img_bits);
 
-extern BITMAP *xbm_to_bitmap(
-    unsigned int const img_width,
-    unsigned int const img_height,
-    unsigned char const *img_bits);
+extern BITMAP *
+  rgb8_to_bitmap(unsigned int const img_width,
+                 unsigned int const img_height,
+                 unsigned int const img_stride,
+                 unsigned char const *img_bits);
 
-extern BITMAP *xpm_to_bitmap(char const *const *xpm);
+extern BITMAP *
+  xbm_to_bitmap(unsigned int const img_width,
+                unsigned int const img_height,
+                unsigned char const *img_bits);
 
-extern BITMAP *pxm_to_bitmap(Fl_Pixmap const &pxm);
+extern BITMAP *
+  xpm_to_bitmap(char const *const *xpm);
 
-extern BITMAP *bitmap_to_bitmap(Fl_Bitmap const &bit);
+extern BITMAP *
+  pxm_to_bitmap(Fl_Pixmap const &pxm);
 
-#define __IMGCONV_H__
+extern BITMAP *
+  bitmap_to_bitmap(Fl_Bitmap const &bit);
+
+#  define __IMGCONV_H__
 #endif

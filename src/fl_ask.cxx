@@ -1,71 +1,17 @@
-// fl_ask.cxx
-//
-// "$Id: fl_ask.cxx 12975 2018-06-26 14:04:09Z manolo $"
 //
 // Standard dialog functions for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2011, 2018 by Bill Spitzak and others.
+// Copyright 1998-2020 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /**
@@ -83,6 +29,7 @@
 #include "flstring.h"
 
 #include <fl/fl.h>
+#include <fl/fl_str.h>
 
 #include <fl/fl_ask.h>
 
@@ -107,6 +54,9 @@ static const char *message_title_default;
 Fl_Font fl_message_font_ = FL_HELVETICA;
 Fl_Fontsize fl_message_size_ = -1;
 static int enableHotspot = 1;
+static int form_x = 0;
+static int form_y = 0;
+static int form_position = 0; // 0 = not set, 1 = absolute, 2 = centered
 
 static char avoidRecursion = 0;
 
@@ -176,12 +126,12 @@ static Fl_Window *makeform() {
  */
 
 static void resizeform() {
-  int	i;
-  int	message_w, message_h;
-  int	text_height;
-  int	button_w[3], button_h[3];
-  int	x, w, h, max_w, max_h;
-	const int icon_size = 50;
+  int   i;
+  int   message_w, message_h;
+  int   text_height;
+  int   button_w[3], button_h[3];
+  int   x, w, h, max_w, max_h;
+        const int icon_size = 50;
 
   message_form->size(410,103);
 
@@ -246,8 +196,9 @@ static void resizeform() {
 
 //      printf("button %d (%s) is %dx%d+%d,%d\n", i, button[i]->label(),
 //             button[i]->w(), button[i]->h(),
-//	     button[i]->x(), button[i]->y());
+//           button[i]->x(), button[i]->y());
     }
+  message_form->init_sizes();
 }
 
 static int innards(const char* fmt, va_list ap,
@@ -287,8 +238,19 @@ static int innards(const char* fmt, va_list ap,
 
   if (button[1]->visible() && !input->visible())
     button[1]->take_focus();
-  if (enableHotspot)
+
+  if (form_position) {
+    if (form_position == 2) { // centered
+      form_x -= message_form->w()/2;
+      form_y -= message_form->h()/2;
+    }
+    message_form->position(form_x, form_y);
+    form_x = form_y = form_position = 0;
+  } else if (enableHotspot)
     message_form->hotspot(button[0]);
+  else
+    message_form->free_position();
+
   if (b0 && Fl_Widget::label_shortcut(b0))
     button[0]->shortcut(0);
   else
@@ -413,8 +375,9 @@ int fl_ask(const char *fmt, ...) {
   return r;
 }
 
-/** Shows a dialog displaying the printf style \p fmt message,
-    this dialog features up to 3 customizable choice buttons
+/** Shows a dialog displaying the printf style \p fmt message.
+
+    This dialog features up to 3 customizable choice buttons
     which are specified in order of *right-to-left* in the dialog, e.g.
     \image html  fl_choice_left_middle_right.png
     \image latex fl_choice_left_middle_right.png  "fl_choice() button ordering" width=4cm
@@ -493,7 +456,7 @@ int fl_choice(const char*fmt,const char *b0,const char *b1,const char *b2,...){
 Fl_Widget *fl_message_icon() {makeform(); return icon;}
 
 static const char* input_innards(const char* fmt, va_list ap,
-				 const char* defstr, uchar type) {
+                                 const char* defstr, uchar type) {
   makeform();
   message_form->size(410,103);
   message->position(60,10);
@@ -557,6 +520,82 @@ const char *fl_password(const char *fmt, const char *defstr, ...) {
   return r;
 }
 
+/** Sets the preferred position for the common message box used in
+    many common dialogs like fl_message(), fl_alert(),
+    fl_ask(), fl_choice(), fl_input(), fl_password().
+
+    Resets after every call to any of the common dialogs.
+
+    The position set with this method overrides the hotspot setting,
+    i.e. setting a position has higher priority than the hotspot mode
+    set by fl_message_hotspot(int).
+
+    If the optional argument \p center is non-zero (true) the message box
+    will be centered at the given coordinates rather than using the X/Y
+    position as the window position (top left corner).
+
+    \note \#include <FL/fl_ask.H>
+
+    \param[in] x        Preferred X position
+    \param[in] y        Preferred Y position
+    \param[in] center   1 = centered, 0 = absolute
+
+    \see int fl_message_position(int *x, int *y)
+*/
+void fl_message_position(const int x, const int y, const int center) {
+  form_x = x;
+  form_y = y;
+  form_position = center ? 2 : 1;
+}
+
+/** Sets the preferred position for the common message box used in
+    many common dialogs like fl_message(), fl_alert(),
+    fl_ask(), fl_choice(), fl_input(), fl_password().
+
+    The common message box will be centered over the given widget
+    or window extensions.
+
+    Everything else is like fl_message_position(int, int, int) with
+    argument 'center' set to 1.
+
+    \note \#include <FL/fl_ask.H>
+
+    \param[in] widget   Widget or window to position the message box over.
+
+    \see int fl_message_position(int x, int y, int center)
+*/
+void fl_message_position(Fl_Widget *widget) {
+  form_x = widget->x() + widget->w()/2;
+  form_y = widget->y() + widget->h()/2;
+  form_position = 2;
+}
+
+/** Gets the preferred position for the common message box used in
+    many common dialogs like fl_message(), fl_alert(),
+    fl_ask(), fl_choice(), fl_input(), fl_password().
+
+    \note \#include <FL/fl_ask.H>
+
+    \param[out] x  Preferred X position, returns -1 if not set
+    \param[out] y  Preferred Y position, returns -1 if not set
+
+    \returns    whether position is currently set or not
+    \retval     0 position is not set (may be hotspot or not)
+    \retval     1 position is set (window position)
+    \retval     2 position is set (message box centered)
+
+    \see fl_message_position(int, int)
+    \see fl_message_hotspot(int)
+    \see int fl_message_hotspot()
+*/
+int fl_message_position(int *x, int *y) {
+  if (x)
+    *x = form_position ? form_x : -1;
+  if (y)
+    *y = form_position ? form_y : -1;
+  return form_position;
+}
+
 /** Sets whether or not to move the common message box used in
     many common dialogs like fl_message(), fl_alert(),
     fl_ask(), fl_choice(), fl_input(), fl_password() to follow
@@ -565,8 +604,8 @@ const char *fl_password(const char *fmt, const char *defstr, ...) {
     The default is \e enabled, so that the default button is the
     hotspot and appears at the mouse position.
     \note \#include <FL/fl_ask.H>
-    \param[in]	enable	non-zero enables hotspot behavior,
-			0 disables hotspot
+    \param[in]  enable  non-zero enables hotspot behavior,
+                        0 disables hotspot
  */
 void fl_message_hotspot(int enable) {
   enableHotspot = enable ? 1 : 0;
@@ -577,7 +616,7 @@ void fl_message_hotspot(int enable) {
     fl_ask(), fl_choice(), fl_input(), fl_password() to follow
     the mouse pointer.
     \note \#include <FL/fl_ask.H>
-    \return	0 if disable, non-zero otherwise
+    \return     0 if disable, non-zero otherwise
     \see fl_message_hotspot(int)
  */
 int fl_message_hotspot(void) {
@@ -597,7 +636,7 @@ int fl_message_hotspot(void) {
     that call.
 
     \note \#include <FL/fl_ask.H>
-    \param[in] title	window label, string copied internally
+    \param[in] title    window label, string copied internally
 */
 void fl_message_title(const char *title) {
   makeform();
@@ -610,7 +649,7 @@ void fl_message_title(const char *title) {
     common dialogs like fl_message(), fl_alert(), fl_ask(), fl_choice(),
     fl_input(), fl_password(), unless a specific title has been set
     with fl_message_title(const char *title).
-    
+
     The default is no title. You can override the default title for a
     single dialog with fl_message_title(const char *title).
 
@@ -618,7 +657,7 @@ void fl_message_title(const char *title) {
     local variable or free the string immediately after this call.
 
     \note \#include <FL/fl_ask.H>
-    \param[in] title	default window label, string copied internally
+    \param[in] title    default window label, string copied internally
 */
 void fl_message_title_default(const char *title) {
   if (message_title_default) {
@@ -626,11 +665,7 @@ void fl_message_title_default(const char *title) {
     message_title_default = 0;
   }
   if (title)
-    message_title_default = strdup(title);
+    message_title_default = fl_strdup(title);
 }
 
 /** @} */
-
-//
-// End of "$Id: fl_ask.cxx 12975 2018-06-26 14:04:09Z manolo $".
-//

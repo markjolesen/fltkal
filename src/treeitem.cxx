@@ -1,85 +1,33 @@
-// treeitem.cxx
 //
-// "$Id: Fl_Tree_Item.cxx 12824 2018-04-10 18:37:18Z greg.ercolano $"
-//
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fl/fl.h>
+#include <fl/widget.h>
+#include <fl/treeitem.h>
+#include <fl/treepref.h>
+#include <fl/tree.h>
+#include <fl/fl_str.h>
+
 //////////////////////
 // Fl_Tree_Item.cxx
 //////////////////////
 //
 // Fl_Tree -- This file is part of the Fl_Tree widget for FLTK
-// Copyright 2017-2018 The fltkal authors
-// Copyright (C) 2009-2010, 2018 by Greg Ercolano.
+// Copyright (C) 2009-2010 by Greg Ercolano.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 /////////////////////////////////////////////////////////////////////////// 80 /
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fl/widget.h>
-#include <fl/treeitem.h>
-#include <fl/treepref.h>
-#include <fl/tree.h>
-
 
 // Was the last event inside the specified xywh?
 static int event_inside(const int xywh[4]) {
@@ -122,7 +70,7 @@ void Fl_Tree_Item::_Init(const Fl_Tree_Prefs &prefs, Fl_Tree *tree) {
   _userdeicon       = 0;
   _userdata         = 0;
   _parent           = 0;
-  _children.manage_item_destroy(1);	// let array's dtor manage destroying Fl_Tree_Items
+  _children.manage_item_destroy(1);     // let array's dtor manage destroying Fl_Tree_Items
   _prev_sibling     = 0;
   _next_sibling     = 0;
 }
@@ -141,23 +89,23 @@ Fl_Tree_Item::Fl_Tree_Item(Fl_Tree *tree) {
 
 // DTOR
 Fl_Tree_Item::~Fl_Tree_Item() {
-  if ( _label ) { 
+  if ( _label ) {
     free((void*)_label);
     _label = 0;
   }
-  _widget = 0;			// Fl_Group will handle destruction
-  _usericon = 0;		// user handled allocation
-  _userdeicon = 0;		// user handled allocation
+  _widget = 0;                  // Fl_Group will handle destruction
+  _usericon = 0;                // user handled allocation
+  _userdeicon = 0;              // user handled allocation
   // focus item? set to null
   if ( _tree && this == _tree->_item_focus )
     { _tree->_item_focus = 0; }
-  //_children.clear();		// array's destructor handles itself
+  //_children.clear();          // array's destructor handles itself
 }
 
 /// Copy constructor.
 Fl_Tree_Item::Fl_Tree_Item(const Fl_Tree_Item *o) {
   _tree             = o->_tree;
-  _label        = o->label() ? strdup(o->label()) : 0;
+  _label        = o->label() ? fl_strdup(o->label()) : 0;
   _labelfont    = o->labelfont();
   _labelsize    = o->labelsize();
   _labelfgcolor = o->labelfgcolor();
@@ -179,8 +127,8 @@ Fl_Tree_Item::Fl_Tree_Item(const Fl_Tree_Item *o) {
   _usericon         = o->usericon();
   _userdata         = o->user_data();
   _parent           = o->_parent;
-  _prev_sibling     = 0;		// do not copy ptrs! use update_prev_next()
-  _next_sibling     = 0;		// do not copy ptrs! use update_prev_next()
+  _prev_sibling     = 0;                // do not copy ptrs! use update_prev_next()
+  _next_sibling     = 0;                // do not copy ptrs! use update_prev_next()
 }
 
 /// Print the tree as 'ascii art' to stdout.
@@ -189,8 +137,8 @@ Fl_Tree_Item::Fl_Tree_Item(const Fl_Tree_Item *o) {
 void Fl_Tree_Item::show_self(const char *indent) const {
   const char *thelabel = label() ? label() : "(NULL)";
   printf("%s-%s (%d children, this=%p, parent=%p, prev=%p, next=%p, depth=%d)\n",
-	 indent,thelabel,children(),(void*)this, (void*)_parent,
-	 _prev_sibling, _next_sibling, depth());
+         indent,thelabel,children(),(void*)this, (void*)_parent,
+         _prev_sibling, _next_sibling, depth());
   if ( children() ) {
     char *i2 = new char [strlen(indent)+2];
     strcpy(i2, indent);
@@ -208,8 +156,8 @@ void Fl_Tree_Item::show_self(const char *indent) const {
 ///
 void Fl_Tree_Item::label(const char *name) {
   if ( _label ) { free((void*)_label); _label = 0; }
-  _label = name ? strdup(name) : 0;
-  recalc_tree();		// may change label geometry
+  _label = name ? fl_strdup(name) : 0;
+  recalc_tree();                // may change label geometry
 }
 
 /// Return the label.
@@ -225,7 +173,7 @@ const Fl_Tree_Item *Fl_Tree_Item::child(int index) const {
 /// Clear all the children for this item.
 void Fl_Tree_Item::clear_children() {
   _children.clear();
-  recalc_tree();		// may change tree geometry
+  recalc_tree();                // may change tree geometry
 }
 
 /// Return the index of the immediate child of this item
@@ -263,7 +211,7 @@ const Fl_Tree_Item* Fl_Tree_Item::find_child_item(const char *name) const {
 Fl_Tree_Item* Fl_Tree_Item::find_child_item(const char *name) {
   // "Effective C++, 3rd Ed", p.23. Sola fide, Amen.
   return(const_cast<Fl_Tree_Item*>(
-	 static_cast<const Fl_Tree_Item &>(*this).find_child_item(name)));
+         static_cast<const Fl_Tree_Item &>(*this).find_child_item(name)));
 }
 
 /// Find child item by descending array \p 'arr' of names.
@@ -276,10 +224,10 @@ Fl_Tree_Item* Fl_Tree_Item::find_child_item(const char *name) {
 const Fl_Tree_Item *Fl_Tree_Item::find_child_item(char **arr) const {
   for ( int t=0; t<children(); t++ ) {
     if ( child(t)->label() ) {
-      if ( strcmp(child(t)->label(), *arr) == 0 ) {	// match?
-        if ( *(arr+1) ) {				// more in arr? descend
+      if ( strcmp(child(t)->label(), *arr) == 0 ) {     // match?
+        if ( *(arr+1) ) {                               // more in arr? descend
           return(_children[t]->find_child_item(arr+1));
-        } else {					// end of arr? done
+        } else {                                        // end of arr? done
           return(_children[t]);
         }
       }
@@ -292,7 +240,7 @@ const Fl_Tree_Item *Fl_Tree_Item::find_child_item(char **arr) const {
 Fl_Tree_Item *Fl_Tree_Item::find_child_item(char **arr) {
   // "Effective C++, 3rd Ed", p.23. Sola fide, Amen.
   return(const_cast<Fl_Tree_Item*>(
-	 static_cast<const Fl_Tree_Item &>(*this).find_child_item(arr)));
+         static_cast<const Fl_Tree_Item &>(*this).find_child_item(arr)));
 }
 
 /// Find item by descending array of \p 'names'.
@@ -303,11 +251,11 @@ Fl_Tree_Item *Fl_Tree_Item::find_child_item(char **arr) {
 ///
 const Fl_Tree_Item *Fl_Tree_Item::find_item(char **names) const {
   if ( ! *names ) return(0);
-  if ( label() && strcmp(label(), *names) == 0 ) {	// match self?
-    ++names;						// skip self
-    if ( *names == 0 ) return(this);			// end of names, found ourself
+  if ( label() && strcmp(label(), *names) == 0 ) {      // match self?
+    ++names;                                            // skip self
+    if ( *names == 0 ) return(this);                    // end of names, found ourself
   }
-  if ( children() ) {					// check children..
+  if ( children() ) {                                   // check children..
     return(find_child_item(names));
   }
   return(0);
@@ -317,7 +265,7 @@ const Fl_Tree_Item *Fl_Tree_Item::find_item(char **names) const {
 Fl_Tree_Item *Fl_Tree_Item::find_item(char **names) {
   // "Effective C++, 3rd Ed", p.23. Sola fide, Amen.
   return(const_cast<Fl_Tree_Item*>(
-	 static_cast<const Fl_Tree_Item &>(*this).find_item(names)));
+         static_cast<const Fl_Tree_Item &>(*this).find_item(names)));
 }
 
 /// Find the index number for the specified \p 'item'
@@ -340,7 +288,7 @@ int Fl_Tree_Item::find_child(Fl_Tree_Item *item) {
 /// \version 1.3.0 release
 ///
 Fl_Tree_Item *Fl_Tree_Item::add(const Fl_Tree_Prefs &prefs,
-				const char *new_label) {
+                                const char *new_label) {
   return(add(prefs, new_label, (Fl_Tree_Item*)0));
 }
 
@@ -353,11 +301,11 @@ Fl_Tree_Item *Fl_Tree_Item::add(const Fl_Tree_Prefs &prefs,
 /// \version 1.3.3
 ///
 Fl_Tree_Item *Fl_Tree_Item::add(const Fl_Tree_Prefs &prefs,
-			        const char *new_label,
-				Fl_Tree_Item *item) {
+                                const char *new_label,
+                                Fl_Tree_Item *item) {
   if ( !item )
     { item = new Fl_Tree_Item(_tree); item->label(new_label); }
-  recalc_tree();		// may change tree geometry
+  recalc_tree();                // may change tree geometry
   item->_parent = this;
   switch ( prefs.sortorder() ) {
     case FL_TREE_SORT_NONE: {
@@ -408,47 +356,54 @@ Fl_Tree_Item *Fl_Tree_Item::add(const Fl_Tree_Prefs &prefs, char **arr) {
 /// \version 1.3.3 ABI feature
 ///
 Fl_Tree_Item *Fl_Tree_Item::add(const Fl_Tree_Prefs &prefs,
-			        char **arr,
-				Fl_Tree_Item *newitem) {
+                                char **arr,
+                                Fl_Tree_Item *newitem) {
   if ( !*arr ) return 0;
   // See if we can find an existing child with name requested.
   Fl_Tree_Item *child = find_child_item(*arr);
-  if ( child ) {		// Child found?
-    if ( *(arr+1) == 0 ) {	// ..and at end of path?
-      if ( !newitem ) {		// ..and no item specified?
-	return 0;		// ..error: child exists already
+  if ( child ) {                // Child found?
+    if ( *(arr+1) == 0 ) {      // ..and at end of path?
+      if ( !newitem ) {         // ..and no item specified?
+        return 0;               // ..error: child exists already
       } else {
         // Child found, end of path, item specified
-	return child->add(prefs, newitem->label(), newitem);
+        return child->add(prefs, newitem->label(), newitem);
       }
     }
     // Child found: more path elements to go or item specified?
     // Descend into child to handle add..
-    return child->add(prefs, arr+1, newitem);	// recurse
+    return child->add(prefs, arr+1, newitem);   // recurse
   }
   // No child found, see if we reached end of path.
-  //	If so, add as an immediate child, done
-  if ( *(arr+1) == 0 )			// end of path?
-    return add(prefs, *arr, newitem);	// add as immediate child
+  //    If so, add as an immediate child, done
+  if ( *(arr+1) == 0 )                  // end of path?
+    return add(prefs, *arr, newitem);   // add as immediate child
 
   // No child found, but more to path?
-  // 	If so, create new child to handle add()
+  //    If so, create new child to handle add()
   Fl_Tree_Item *newchild;
-  return (newchild=add(prefs, *arr))	      // create new immediate child
+  return (newchild=add(prefs, *arr))          // create new immediate child
          ? newchild->add(prefs,arr+1,newitem) // it worked? recurse to add
-	 : 0;				      // failed? error
+         : 0;                                 // failed? error
 }
 
-/// Insert a new item named \p 'new_label' into current item's
-/// children at a specified position \p 'pos'.
-/// \returns the new item inserted.
-///
+/**
+  Insert a new item named \p 'new_label' into current item's
+  children at a specified position \p 'pos'.
+
+  If \p pos is out of range the new item is
+   - prepended if \p pos \< 0 or
+   - appended  if \p pos \> item->children().
+
+  \returns the new item inserted
+  \see Fl_Tree::insert()
+*/
 Fl_Tree_Item *Fl_Tree_Item::insert(const Fl_Tree_Prefs &prefs, const char *new_label, int pos) {
   Fl_Tree_Item *item = new Fl_Tree_Item(_tree);
   item->label(new_label);
   item->_parent = this;
   _children.insert(pos, item);
-  recalc_tree();		// may change tree geometry
+  recalc_tree();                // may change tree geometry
   return(item);
 }
 
@@ -496,7 +451,7 @@ Fl_Tree_Item* Fl_Tree_Item::deparent(int pos) {
 int Fl_Tree_Item::reparent(Fl_Tree_Item *newchild, int pos) {
   int ret;
   if ( (ret = _children.reparent(newchild, this, pos)) < 0 ) return ret;
-  newchild->parent(this);		// take custody
+  newchild->parent(this);               // take custody
   return 0;
 }
 
@@ -534,20 +489,23 @@ int Fl_Tree_Item::move(Fl_Tree_Item *item, int op, int pos) {
   Fl_Tree_Item *from_parent, *to_parent;
   int from, to;
   switch (op) {
-    case 0:	// "above"
+    case 0:     // "above"
       from_parent = this->parent();
       to_parent   = item->parent();
+      if ( !from_parent || !to_parent ) return -1;
       from        = from_parent->find_child(this);
       to          = to_parent->find_child(item);
       break;
-    case 1:	// "below"
+    case 1:     // "below"
       from_parent = this->parent();
       to_parent   = item->parent();
+      if ( !from_parent || !to_parent ) return -1;
       from        = from_parent->find_child(this);
       to          = to_parent->find_child(item);
       break;
-    case 2:	// "into"
+    case 2:     // "into"
       from_parent = this->parent();
+      if ( !from_parent ) return -1;
       to_parent   = item;
       from        = from_parent->find_child(this);
       to          = pos;
@@ -557,20 +515,20 @@ int Fl_Tree_Item::move(Fl_Tree_Item *item, int op, int pos) {
   }
   if ( !from_parent || !to_parent ) return -1;
   if ( from < 0 || to < 0 ) return -2;
-  if ( from_parent == to_parent ) {		// same parent?
-    switch (op) {				// 'to' offsets due to scroll
+  if ( from_parent == to_parent ) {             // same parent?
+    switch (op) {                               // 'to' offsets due to scroll
       case 0: if ( from < to && to > 0 ) --to; break;
       case 1: if ( from > to && to < to_parent->children() ) ++to; break;
     }
-    if ( from_parent->move(to, from) < 0 )	// simple move among siblings
+    if ( from_parent->move(to, from) < 0 )      // simple move among siblings
       return -4;
-  } else {					// different parent?
-    if ( to > to_parent->children() )		// try to prevent a reparent() error
+  } else {                                      // different parent?
+    if ( to > to_parent->children() )           // try to prevent a reparent() error
       return -4;
-    if ( from_parent->deparent(from) == NULL )	// deparent self from current parent
+    if ( from_parent->deparent(from) == NULL )  // deparent self from current parent
       return -5;
-    if ( to_parent->reparent(this, to) < 0 ) {	// reparent self to new parent at position 'to'
-      to_parent->reparent(this, 0);		// failed? shouldn't happen, reparent at 0
+    if ( to_parent->reparent(this, to) < 0 ) {  // reparent self to new parent at position 'to'
+      to_parent->reparent(this, 0);             // failed? shouldn't happen, reparent at 0
       return -6;
     }
   }
@@ -639,8 +597,8 @@ const Fl_Tree_Prefs& Fl_Tree_Item::prefs() const {
 ///
 Fl_Tree_Item *Fl_Tree_Item::replace(Fl_Tree_Item *newitem) {
   Fl_Tree_Item *p = parent();
-  if ( !p ) {			// no parent? then we're the tree's root..
-    _tree->root(newitem);	// ..tell tree to replace root
+  if ( !p ) {                   // no parent? then we're the tree's root..
+    _tree->root(newitem);       // ..tell tree to replace root
     return newitem;
   }
   // has parent? ask parent to replace us
@@ -662,13 +620,13 @@ Fl_Tree_Item *Fl_Tree_Item::replace(Fl_Tree_Item *newitem) {
 /// \version 1.3.3 ABI feature
 ///
 Fl_Tree_Item *Fl_Tree_Item::replace_child(Fl_Tree_Item *olditem,
-				          Fl_Tree_Item *newitem) {
-  int pos = find_child(olditem);	// find our index for olditem
+                                          Fl_Tree_Item *newitem) {
+  int pos = find_child(olditem);        // find our index for olditem
   if ( pos == -1 ) return(NULL);
   newitem->_parent = this;
   // replace in array (handles stitching neighboring items)
   _children.replace(pos, newitem);
-  recalc_tree();			// newitem may have changed tree geometry
+  recalc_tree();                        // newitem may have changed tree geometry
   return newitem;
 }
 
@@ -680,7 +638,7 @@ int Fl_Tree_Item::remove_child(Fl_Tree_Item *item) {
     if ( child(t) == item ) {
       item->clear_children();
       _children.remove(t);
-      recalc_tree();		// may change tree geometry
+      recalc_tree();            // may change tree geometry
       return(0);
     }
   }
@@ -699,7 +657,7 @@ int Fl_Tree_Item::remove_child(const char *name) {
     if ( child(t)->label() ) {
       if ( strcmp(child(t)->label(), name) == 0 ) {
         _children.remove(t);
-	recalc_tree();		// may change tree geometry
+        recalc_tree();          // may change tree geometry
         return(0);
       }
     }
@@ -718,7 +676,7 @@ void Fl_Tree_Item::swap_children(int ax, int bx) {
 }
 
 /// Swap two of our immediate children, given item pointers.
-/// Use e.g. for sorting. 
+/// Use e.g. for sorting.
 ///
 /// This method is SLOW because it involves linear lookups.<br>
 /// For speed, use swap_children(int,int) instead.
@@ -731,11 +689,11 @@ void Fl_Tree_Item::swap_children(int ax, int bx) {
 ///
 int Fl_Tree_Item::swap_children(Fl_Tree_Item *a, Fl_Tree_Item *b) {
   int ax = -1, bx = -1;
-  for ( int t=0; t<children(); t++ ) {	// find index for a and b
+  for ( int t=0; t<children(); t++ ) {  // find index for a and b
     if ( _children[t] == a ) { ax = t; if ( bx != -1 ) break; else continue; }
     if ( _children[t] == b ) { bx = t; if ( ax != -1 ) break; else continue; }
   }
-  if ( ax == -1 || bx == -1 ) return(-1);	// not found? fail
+  if ( ax == -1 || bx == -1 ) return(-1);       // not found? fail
   swap_children(ax,bx);
   return(0);
 }
@@ -750,15 +708,15 @@ void Fl_Tree_Item::draw_horizontal_connector(int x1, int x2, int y, const Fl_Tre
   fl_color(prefs.connectorcolor());
   switch ( prefs.connectorstyle() ) {
     case FL_TREE_CONNECTOR_SOLID:
-      y |= 1;				// force alignment w/dot pattern
+      y |= 1;                           // force alignment w/dot pattern
       fl_line(x1,y,x2,y);
       return;
-    case FL_TREE_CONNECTOR_DOTTED: 
+    case FL_TREE_CONNECTOR_DOTTED:
     {
-      y  |= 1;				// force alignment w/dot pattern
+      y  |= 1;                          // force alignment w/dot pattern
       x1 |= 1;
       for ( int xx=x1; xx<=x2; xx+=2 ) {
-	fl_point(xx, y);
+        fl_point(xx, y);
       }
       return;
     }
@@ -777,14 +735,14 @@ void Fl_Tree_Item::draw_vertical_connector(int x, int y1, int y2, const Fl_Tree_
   fl_color(prefs.connectorcolor());
   switch ( prefs.connectorstyle() ) {
     case FL_TREE_CONNECTOR_SOLID:
-      y1 |= 1;				// force alignment w/dot pattern
-      y2 |= 1;				// force alignment w/dot pattern
+      y1 |= 1;                          // force alignment w/dot pattern
+      y2 |= 1;                          // force alignment w/dot pattern
       fl_line(x,y1,x,y2);
       return;
     case FL_TREE_CONNECTOR_DOTTED:
     {
-      y1 |= 1;				// force alignment w/dot pattern
-      y2 |= 1;				// force alignment w/dot pattern
+      y1 |= 1;                          // force alignment w/dot pattern
+      y2 |= 1;                          // force alignment w/dot pattern
       for ( int yy=y1; yy<=y2; yy+=2 ) {
         fl_point(x, yy);
       }
@@ -815,16 +773,16 @@ const Fl_Tree_Item *Fl_Tree_Item::find_clicked(const Fl_Tree_Prefs &prefs, int y
         return(this);
       }
     } else {
-      if ( event_inside(_xywh) ) {		// event within this item?
-        return(this);				// found
+      if ( event_inside(_xywh) ) {              // event within this item?
+        return(this);                           // found
       }
     }
   }
-  if ( is_open() ) {				// open? check children of this item
+  if ( is_open() ) {                            // open? check children of this item
     for ( int t=0; t<children(); t++ ) {
       const Fl_Tree_Item *item;
       if ( (item = _children[t]->find_clicked(prefs, yonly)) != NULL)  // recurse into child for descendents
-        return(item);						       // found?
+        return(item);                                                  // found?
     }
   }
   return(0);
@@ -834,7 +792,7 @@ const Fl_Tree_Item *Fl_Tree_Item::find_clicked(const Fl_Tree_Prefs &prefs, int y
 Fl_Tree_Item *Fl_Tree_Item::find_clicked(const Fl_Tree_Prefs &prefs, int yonly) {
   // "Effective C++, 3rd Ed", p.23. Sola fide, Amen.
   return(const_cast<Fl_Tree_Item*>(
-	 static_cast<const Fl_Tree_Item &>(*this).find_clicked(prefs, yonly)));
+         static_cast<const Fl_Tree_Item &>(*this).find_clicked(prefs, yonly)));
 }
 
 static void draw_item_focus(Fl_Boxtype B, Fl_Color fg, Fl_Color bg, int X, int Y, int W, int H) {
@@ -890,8 +848,8 @@ int Fl_Tree_Item::calc_item_height(const Fl_Tree_Prefs &prefs) const {
   if ( ! is_visible() ) return(0);
   int H = 0;
   if ( _label ) {
-    fl_font(_labelfont, _labelsize);	// fl_descent() needs this :/
-    H = _labelsize + fl_descent() + 1;	// at least one pixel space below descender
+    fl_font(_labelfont, _labelsize);    // fl_descent() needs this :/
+    H = _labelsize + fl_descent() + 1;  // at least one pixel space below descender
   }
   if ( widget() &&
        (prefs.item_draw_mode() & FL_TREE_ITEM_HEIGHT_FROM_WIDGET) &&
@@ -913,8 +871,8 @@ int Fl_Tree_Item::calc_item_height(const Fl_Tree_Prefs &prefs) const {
 ///
 Fl_Color Fl_Tree_Item::drawfgcolor() const {
   return is_selected() ? fl_contrast(_labelfgcolor, tree()->selection_color())
-		       : (is_active() && tree()->active_r()) ? _labelfgcolor
-				                             : fl_inactive(_labelfgcolor);
+                       : (is_active() && tree()->active_r()) ? _labelfgcolor
+                                                             : fl_inactive(_labelfgcolor);
 }
 
 /// Returns the recommended background color used for drawing this item.
@@ -923,10 +881,10 @@ Fl_Color Fl_Tree_Item::drawfgcolor() const {
 ///
 Fl_Color Fl_Tree_Item::drawbgcolor() const {
   const Fl_Color unspecified = 0xffffffff;
-  return is_selected() ? is_active() && tree()->active_r() ? tree()->selection_color() 
-				                           : fl_inactive(tree()->selection_color())
-		       : _labelbgcolor == unspecified ? tree()->color()
-						      : _labelbgcolor;
+  return is_selected() ? is_active() && tree()->active_r() ? tree()->selection_color()
+                                                           : fl_inactive(tree()->selection_color())
+                       : _labelbgcolor == unspecified ? tree()->color()
+                                                      : _labelbgcolor;
 }
 
 /// Draw the item content
@@ -945,7 +903,7 @@ Fl_Color Fl_Tree_Item::drawbgcolor() const {
 ///     // DRAW OUR CUSTOM CONTENT FOR THE ITEM
 ///     int draw_item_content(int render) {
 ///       // Our item's dimensions + text content
-///       int X=label_x(), Y=label_y(), W=label_w(), H=label_h(); 
+///       int X=label_x(), Y=label_y(), W=label_w(), H=label_h();
 ///       const char *text = label() ? label() : "";
 ///       // Rendering? Do any drawing that's needed
 ///       if ( render ) {
@@ -965,7 +923,7 @@ Fl_Color Fl_Tree_Item::drawbgcolor() const {
 /// \endcode
 ///
 /// You can draw anything you want inside draw_item_content()
-/// using any of the fl_draw.H functions, as long as it's 
+/// using any of the fl_draw.H functions, as long as it's
 /// within the label's xywh area.
 ///
 /// To add instances of your custom item to the tree, you can use:
@@ -979,7 +937,7 @@ Fl_Color Fl_Tree_Item::drawbgcolor() const {
 /// ..or you can insert or replace existing items:
 ///
 /// \code
-///     // Example #2: using replace() 
+///     // Example #2: using replace()
 ///     MyTreeItem *marge = new MyTreeItem(..); // class derived from Fl_Tree_Item
 ///     item = tree->add("/Simpsons/Marge");    // create item
 ///     item->replace(mi);                      // replace it with our own
@@ -1003,19 +961,19 @@ int Fl_Tree_Item::draw_item_content(int render) {
   int xmax = label_x();
   // Background for this item, only if different from tree's bg
   if ( render && (bg != tree()->color() || is_selected()) ) {
-    if ( is_selected() ) {			// Selected? Use selectbox() style
+    if ( is_selected() ) {                      // Selected? Use selectbox() style
       fl_draw_box(prefs.selectbox(),
-      		  label_x(), label_y(), label_w(), label_h(), bg);
-    } else {					// Not Selected? use plain filled rectangle
+                  label_x(), label_y(), label_w(), label_h(), bg);
+    } else {                                    // Not Selected? use plain filled rectangle
       fl_color(bg);
       fl_rectf(label_x(), label_y(), label_w(), label_h());
     }
-    if ( widget() ) widget()->damage(FL_DAMAGE_ALL);	// if there's a child widget, we just damaged it
+    if ( widget() ) widget()->damage(FL_DAMAGE_ALL);    // if there's a child widget, we just damaged it
   }
   // Draw label
-  if ( _label && 
-       ( !widget() || 
-	 (prefs.item_draw_mode() & FL_TREE_ITEM_DRAW_LABEL_AND_WIDGET) ) ) {
+  if ( _label &&
+       ( !widget() ||
+         (prefs.item_draw_mode() & FL_TREE_ITEM_DRAW_LABEL_AND_WIDGET) ) ) {
     if ( render ) {
       fl_color(fg);
       fl_font(_labelfont, _labelsize);
@@ -1023,9 +981,9 @@ int Fl_Tree_Item::draw_item_content(int render) {
     int lx = label_x()+(_label ? prefs.labelmarginleft() : 0);
     int ly = label_y()+(label_h()/2)+(_labelsize/2)-fl_descent()/2;
     int lw=0, lh=0;
-    fl_measure(_label, lw, lh);		// get box around text (including white space)
+    fl_measure(_label, lw, lh);         // get box around text (including white space)
     if ( render ) fl_draw(_label, lx, ly);
-    xmax = lx + lw;			// update max width of drawn item
+    xmax = lx + lw;                     // update max width of drawn item
   }
   return xmax;
 }
@@ -1048,13 +1006,13 @@ int Fl_Tree_Item::draw_item_content(int render) {
 /// \version 1.3.3 ABI feature: modified parameters
 ///
 void Fl_Tree_Item::draw(int X, int &Y, int W, Fl_Tree_Item *itemfocus,
-			int &tree_item_xmax, int lastchild, int render) {
+                        int &tree_item_xmax, int lastchild, int render) {
   Fl_Tree_Prefs &prefs = _tree->_prefs;
-  if ( !is_visible() ) return; 
+  if ( !is_visible() ) return;
   int tree_top = tree()->_tiy;
   int tree_bot = tree_top + tree()->_tih;
-  int H = calc_item_height(prefs);	// height of item
-  int H2 = H + prefs.linespacing();	// height of item with line spacing
+  int H = calc_item_height(prefs);      // height of item
+  int H2 = H + prefs.linespacing();     // height of item with line spacing
 
   // Update the xywh of this item
   _xywh[0] = X;
@@ -1087,7 +1045,7 @@ void Fl_Tree_Item::draw(int X, int &Y, int W, Fl_Tree_Item *itemfocus,
 
   // Usericon position
   int uicon_x = X+(icon_w/2-1+conn_w) + ( (usericon() || prefs.usericon())
-  					  ? prefs.usericonmarginleft() : 0);
+                                          ? prefs.usericonmarginleft() : 0);
   int uicon_w = usericon() ? usericon()->w()
                            : prefs.usericon() ? prefs.usericon()->w() : 0;
 
@@ -1110,23 +1068,23 @@ void Fl_Tree_Item::draw(int X, int &Y, int W, Fl_Tree_Item *itemfocus,
   if ( widget() ) {
     int wx = uicon_x + uicon_w + (_label ? prefs.labelmarginleft() : 0);
     int wy = label_y();
-    int ww = widget()->w();		// use widget's width
+    int ww = widget()->w();             // use widget's width
     int wh = (prefs.item_draw_mode() & FL_TREE_ITEM_HEIGHT_FROM_WIDGET)
              ? widget()->h() : H;
-    if ( _label && 
+    if ( _label &&
          (prefs.item_draw_mode() & FL_TREE_ITEM_DRAW_LABEL_AND_WIDGET) ) {
-      fl_font(_labelfont, _labelsize);	// fldescent() needs this
+      fl_font(_labelfont, _labelsize);  // fldescent() needs this
       int lw=0, lh=0;
-      fl_measure(_label,lw,lh);		// get box around text (including white space)
+      fl_measure(_label,lw,lh);         // get box around text (including white space)
       wx += (lw + prefs.widgetmarginleft());
     }
     if ( widget()->x() != wx || widget()->y() != wy ||
-	 widget()->w() != ww || widget()->h() != wh ) {
-      widget()->resize(wx,wy,ww,wh);		// we'll handle redraw below
+         widget()->w() != ww || widget()->h() != wh ) {
+      widget()->resize(wx,wy,ww,wh);            // we'll handle redraw below
     }
   }
   char clipped = ((Y+H) < tree_top) || (Y>tree_bot) ? 1 : 0;
-  if (!render) clipped = 0;			// NOT rendering? Then don't clip, so we calc unclipped items
+  if (!render) clipped = 0;                     // NOT rendering? Then don't clip, so we calc unclipped items
   char active = (is_active() && tree()->active_r()) ? 1 : 0;
   char drawthis = ( is_root() && prefs.showroot() == 0 ) ? 0 : 1;
   if ( !clipped ) {
@@ -1136,89 +1094,89 @@ void Fl_Tree_Item::draw(int X, int &Y, int W, Fl_Tree_Item *itemfocus,
     //    If this item is root, and showroot() is disabled, don't draw.
     //    'clipped' is an optimization to prevent drawing anything offscreen.
     //
-    if ( drawthis ) {						// draw this item at all?
-      if ( (tree()->damage() & ~FL_DAMAGE_CHILD) || !render ) {	// non-child damage?
-	// Draw connectors
-	if ( render && prefs.connectorstyle() != FL_TREE_CONNECTOR_NONE ) {
-	  // Horiz connector between center of icon and text
-	  // if this is root, the connector should not dangle in thin air on the left
-	  if (is_root()) draw_horizontal_connector(hconn_x_center, hconn_x2, item_y_center, prefs);
-	  else           draw_horizontal_connector(hconn_x, hconn_x2, item_y_center, prefs);
-	  // Small vertical line down to children
-	  if ( has_children() && is_open() )
-	    draw_vertical_connector(hconn_x_center, item_y_center, Y+H2, prefs);
-	  // Connectors for last child
-	  if ( !is_root() ) {
-	    if ( lastchild ) draw_vertical_connector(hconn_x, Y, item_y_center, prefs);
-	    else             draw_vertical_connector(hconn_x, Y, Y+H2, prefs);
-	  }
-	}
-	// Draw collapse icon
-	if ( render && has_children() && prefs.showcollapse() ) {
-	  // Draw icon image
-	  if ( is_open() ) {
-	    if ( active ) prefs.closeicon()->draw(icon_x,icon_y);
-	    else          prefs.closedeicon()->draw(icon_x,icon_y);
-	  } else {
-	    if ( active ) prefs.openicon()->draw(icon_x,icon_y);
-	    else          prefs.opendeicon()->draw(icon_x,icon_y);
-	  }
-	}
-	// Draw user icon (if any)
-	if ( render && usericon() ) {
-	  // Item has user icon? Use it
-	  int uicon_y = item_y_center - (usericon()->h() >> 1);
-	  if ( active ) usericon()->draw(uicon_x,uicon_y);
-	  else if ( userdeicon() ) userdeicon()->draw(uicon_x,uicon_y);
-	} else if ( render && prefs.usericon() ) {
-	  // Prefs has user icon? Use it
-	  int uicon_y = item_y_center - (prefs.usericon()->h() >> 1);
-	  if ( active ) prefs.usericon()->draw(uicon_x,uicon_y);
-	  else if ( prefs.userdeicon() ) prefs.userdeicon()->draw(uicon_x,uicon_y);
-	}
-	// Draw item's content
-	xmax = draw_item_content(render);
-      }			// end non-child damage
+    if ( drawthis ) {                                           // draw this item at all?
+      if ( (tree()->damage() & ~FL_DAMAGE_CHILD) || !render ) { // non-child damage?
+        // Draw connectors
+        if ( render && prefs.connectorstyle() != FL_TREE_CONNECTOR_NONE ) {
+          // Horiz connector between center of icon and text
+          // if this is root, the connector should not dangle in thin air on the left
+          if (is_root()) draw_horizontal_connector(hconn_x_center, hconn_x2, item_y_center, prefs);
+          else           draw_horizontal_connector(hconn_x, hconn_x2, item_y_center, prefs);
+          // Small vertical line down to children
+          if ( has_children() && is_open() )
+            draw_vertical_connector(hconn_x_center, item_y_center, Y+H2, prefs);
+          // Connectors for last child
+          if ( !is_root() ) {
+            if ( lastchild ) draw_vertical_connector(hconn_x, Y, item_y_center, prefs);
+            else             draw_vertical_connector(hconn_x, Y, Y+H2, prefs);
+          }
+        }
+        // Draw collapse icon
+        if ( render && has_children() && prefs.showcollapse() ) {
+          // Draw icon image
+          if ( is_open() ) {
+            if ( active ) prefs.closeicon()->draw(icon_x,icon_y);
+            else          prefs.closedeicon()->draw(icon_x,icon_y);
+          } else {
+            if ( active ) prefs.openicon()->draw(icon_x,icon_y);
+            else          prefs.opendeicon()->draw(icon_x,icon_y);
+          }
+        }
+        // Draw user icon (if any)
+        if ( render && usericon() ) {
+          // Item has user icon? Use it
+          int uicon_y = item_y_center - (usericon()->h() >> 1);
+          if ( active ) usericon()->draw(uicon_x,uicon_y);
+          else if ( userdeicon() ) userdeicon()->draw(uicon_x,uicon_y);
+        } else if ( render && prefs.usericon() ) {
+          // Prefs has user icon? Use it
+          int uicon_y = item_y_center - (prefs.usericon()->h() >> 1);
+          if ( active ) prefs.usericon()->draw(uicon_x,uicon_y);
+          else if ( prefs.userdeicon() ) prefs.userdeicon()->draw(uicon_x,uicon_y);
+        }
+        // Draw item's content
+        xmax = draw_item_content(render);
+      }                 // end non-child damage
       // Draw child FLTK widget?
       if ( widget() ) {
         if (render)
-	  tree()->draw_child(*widget());	// let group handle drawing child
-	if ( widget()->label() && render )
-	  tree()->draw_outside_label(*widget());// label too
-        xmax = widget()->x() + widget()->w();	// update max width of widget
+          tree()->draw_child(*widget());        // let group handle drawing child
+        if ( widget()->label() && render )
+          tree()->draw_outside_label(*widget());// label too
+        xmax = widget()->x() + widget()->w();   // update max width of widget
       }
       // Draw focus box around item's bg last
       if ( render &&
            this == itemfocus &&
-           Fl::visible_focus() && 
-	   Fl::focus() == tree() &&
-	   prefs.selectmode() != FL_TREE_SELECT_NONE ) {
-	draw_item_focus(FL_NO_BOX,fg,bg,label_x()+1,label_y()+1,label_w()-1,label_h()-1);
+           Fl::visible_focus() &&
+           Fl::focus() == tree() &&
+           prefs.selectmode() != FL_TREE_SELECT_NONE ) {
+        draw_item_focus(FL_NO_BOX,fg,bg,label_x()+1,label_y()+1,label_w()-1,label_h()-1);
       }
-    }			// end drawthis
-  }			// end clipped
-  if ( drawthis ) Y += H2;					// adjust Y (even if clipped)
+    }                   // end drawthis
+  }                     // end clipped
+  if ( drawthis ) Y += H2;                                      // adjust Y (even if clipped)
   // Manage tree_item_xmax
   if ( xmax > tree_item_xmax )
     tree_item_xmax = xmax;
   // Draw child items (if any)
   if ( has_children() && is_open() ) {
-    int child_x = drawthis ? (hconn_x_center - (icon_w/2) + 1)	// offset children to right,
-                           : X;					// unless didn't drawthis
+    int child_x = drawthis ? (hconn_x_center - (icon_w/2) + 1)  // offset children to right,
+                           : X;                                 // unless didn't drawthis
     int child_w = W - (child_x-X);
     int child_y_start = Y;
     for ( int t=0; t<children(); t++ ) {
-      int lastchild = ((t+1)==children()) ? 1 : 0;
-      _children[t]->draw(child_x, Y, child_w, itemfocus, tree_item_xmax, lastchild, render);
+      int is_lastchild = ((t+1)==children()) ? 1 : 0;
+      _children[t]->draw(child_x, Y, child_w, itemfocus, tree_item_xmax, is_lastchild, render);
     }
     if ( has_children() && is_open() ) {
-      Y += prefs.openchild_marginbottom();		// offset below open child tree
+      Y += prefs.openchild_marginbottom();              // offset below open child tree
     }
     if ( ! lastchild ) {
       // Special 'clipped' calculation. (intentional variable shadowing)
-      int clipped = ((child_y_start < tree_top) && (Y < tree_top)) ||
-                    ((child_y_start > tree_bot) && (Y > tree_bot));
-      if (render && !clipped )
+      int is_clipped = ((child_y_start < tree_top) && (Y < tree_top)) ||
+                       ((child_y_start > tree_bot) && (Y > tree_bot));
+      if (render && !is_clipped )
         draw_vertical_connector(hconn_x, child_y_start, Y, prefs);
     }
   }
@@ -1235,8 +1193,37 @@ int Fl_Tree_Item::event_on_collapse_icon(const Fl_Tree_Prefs &prefs) const {
   }
 }
 
-/// Was event on the label() of this item?
+/// Was the event on the 'user icon' of this item, if any?
 ///
+int Fl_Tree_Item::event_on_user_icon(const Fl_Tree_Prefs &prefs) const {
+  // NOTE: Fl_Tree_Item doesn't keep an _xywh[] for usericon, but we can derive it as
+  //       by elimitation of all other possibilities.
+  if ( !is_visible() )  return 0;                       // item not visible? not us
+  if ( !event_inside(_xywh) ) return 0;                 // not inside item? not us
+  if ( event_on_collapse_icon(prefs) ) return 0;        // inside collapse icon? not us
+  if ( Fl::event_x() >= _label_xywh[0] ) return 0;      // inside label or beyond (e.g. widget())? not us
+  // Is a user icon being shown?
+  // TBD: Determining usericon xywh and 'if displayed' should be class methods used here and by draw_*()
+  Fl_Image *ui = 0;
+  if ( is_active() ) {
+    if ( usericon() )              ui = usericon();         // user icon for item?
+    else if ( prefs.usericon() )   ui = prefs.usericon();   // user icon for tree?
+  } else {
+    if ( userdeicon() )            ui = userdeicon();       // user deicon for this item?
+    else if ( prefs.userdeicon() ) ui = prefs.userdeicon(); // user deicon for tree?
+  }
+  if ( !ui ) return 0;                                  // no user icon? not us
+  int uix = _label_xywh[0]-ui->w();                     // find x position of usericon
+  if ( Fl::event_x() < uix ) return 0;                  // event left of usericon? not us
+  return 1;                                             // must be inside usericon by elimination
+}
+
+/// Was event anywhere on the item?
+int Fl_Tree_Item::event_on_item(const Fl_Tree_Prefs &prefs) const {
+    return(event_inside(_xywh) ? 1 : 0);
+}
+
+/// Was event on the label() of this item?
 int Fl_Tree_Item::event_on_label(const Fl_Tree_Prefs &prefs) const {
   if ( is_visible() && is_active() ) {
     return(event_inside(_label_xywh) ? 1 : 0);
@@ -1274,7 +1261,7 @@ void Fl_Tree_Item::open() {
   for ( int t=0; t<_children.total(); t++ ) {
     _children[t]->show_widgets();
   }
-  recalc_tree();		// may change tree geometry
+  recalc_tree();                // may change tree geometry
 }
 
 /// Close this item and all its children.
@@ -1284,7 +1271,7 @@ void Fl_Tree_Item::close() {
   for ( int t=0; t<_children.total(); t++ ) {
     _children[t]->hide_widgets();
   }
-  recalc_tree();		// may change tree geometry
+  recalc_tree();                // may change tree geometry
 }
 
 /// Returns how many levels deep this item is in the hierarchy.
@@ -1307,7 +1294,7 @@ int Fl_Tree_Item::depth() const {
 ///
 /// This method can be used to walk the tree forward.
 /// For an example of how to use this method, see Fl_Tree::first().
-/// 
+///
 /// \returns the next item in the tree, or 0 if there's no more items.
 ///
 Fl_Tree_Item *Fl_Tree_Item::next() {
@@ -1315,26 +1302,26 @@ Fl_Tree_Item *Fl_Tree_Item::next() {
   if ( c->has_children() ) {
     return(c->child(0));
   }
-  while ( ( p = c->parent() ) != NULL ) {	// loop upwards through parents
-    if ( c->_next_sibling )			// not last child?
-      return(c->_next_sibling);			// return next child
-    c = p;					// child becomes parent to move up generation
-  }						// loop: moves up to next parent
-  return(0);					// hit root? done
+  while ( ( p = c->parent() ) != NULL ) {       // loop upwards through parents
+    if ( c->_next_sibling )                     // not last child?
+      return(c->_next_sibling);                 // return next child
+    c = p;                                      // child becomes parent to move up generation
+  }                                             // loop: moves up to next parent
+  return(0);                                    // hit root? done
 }
 
 /// Return the previous item in the tree.
 ///
 /// This method can be used to walk the tree backwards.
 /// For an example of how to use this method, see Fl_Tree::last().
-/// 
-/// \returns the previous item in the tree, 
+///
+/// \returns the previous item in the tree,
 ///          or 0 if there's no item above this one (hit the root).
 ///
 Fl_Tree_Item *Fl_Tree_Item::prev() {
-  if ( !parent() ) return(0);	// hit root? done
-  if ( !_prev_sibling ) {	// are we first child?
-    return(parent());		// return parent
+  if ( !parent() ) return(0);   // hit root? done
+  if ( !_prev_sibling ) {       // are we first child?
+    return(parent());           // return parent
   }
   // Tricky: in the following example our current position
   // in the tree is 'j', and we need to move "up one" to 'i':
@@ -1354,9 +1341,9 @@ Fl_Tree_Item *Fl_Tree_Item::prev() {
   //    2. Find b's 'last child' (g)   |_ while loop
   //    3. Find g's 'last child' (i)  _|
   //
-  Fl_Tree_Item *p = _prev_sibling;	// focus on our prev sibling
-  while ( p->has_children() ) {		// item has children?
-    p = p->child(p->children()-1);	// descend hierarchy finding deepest 'last child'
+  Fl_Tree_Item *p = _prev_sibling;      // focus on our prev sibling
+  while ( p->has_children() ) {         // item has children?
+    p = p->child(p->children()-1);      // descend hierarchy finding deepest 'last child'
   }
   return(p);
 }
@@ -1366,7 +1353,7 @@ Fl_Tree_Item *Fl_Tree_Item::prev() {
 /// Moves to the next item below us at the same level (sibling).
 /// Use this to move down the tree without changing depth().
 /// effectively skipping over this item's children/descendents.
-/// 
+///
 /// \returns item's next sibling, or 0 if none.
 ///
 Fl_Tree_Item *Fl_Tree_Item::next_sibling() {
@@ -1377,7 +1364,7 @@ Fl_Tree_Item *Fl_Tree_Item::next_sibling() {
 ///
 /// Moves to the previous item above us at the same level (sibling).
 /// Use this to move up the tree without changing depth().
-/// 
+///
 /// \returns This item's previous sibling, or 0 if none.
 ///
 Fl_Tree_Item *Fl_Tree_Item::prev_sibling() {
@@ -1389,9 +1376,9 @@ Fl_Tree_Item *Fl_Tree_Item::prev_sibling() {
 /// Call this whenever items in the array are added/removed/moved/swapped/etc.
 /// \param[in] index Our index# in the parent.<br>
 ///                  Special case if index=-1: become an orphan; null out all parent/sibling associations.
-/// 
+///
 void Fl_Tree_Item::update_prev_next(int index) {
-  if ( index == -1 ) {	// special case: become an orphan
+  if ( index == -1 ) {  // special case: become an orphan
     _parent = 0;
     _prev_sibling = 0;
     _next_sibling = 0;
@@ -1410,13 +1397,13 @@ void Fl_Tree_Item::update_prev_next(int index) {
   if ( item_prev ) item_prev->_next_sibling = this;
   if ( item_next ) item_next->_prev_sibling = this;
 }
-      
-/// Return the next open(), visible() item. 
+
+/// Return the next open(), visible() item.
 /// (If this item has children and is closed, children are skipped)
 ///
 /// This method can be used to walk the tree forward, skipping items
 /// that are not currently open/visible to the user.
-/// 
+///
 /// \returns the next open() visible() item below us,
 ///          or 0 if there's no more items.
 /// \version 1.3.3
@@ -1437,33 +1424,33 @@ Fl_Tree_Item *Fl_Tree_Item::next_displayed(Fl_Tree_Prefs &prefs) {
   return next_visible(prefs);
 }
 
-/// Return the previous open(), visible() item. 
+/// Return the previous open(), visible() item.
 /// (If this item above us has children and is closed, its children are skipped)
 ///
-/// This method can be used to walk the tree backward, 
+/// This method can be used to walk the tree backward,
 /// skipping items that are not currently open/visible to the user.
-/// 
+///
 /// \returns the previous open() visible() item above us,
 ///          or 0 if there's no more items.
 ///
 Fl_Tree_Item *Fl_Tree_Item::prev_visible(Fl_Tree_Prefs &prefs) {
   Fl_Tree_Item *c = this;
   while ( c ) {
-    c = c->prev();					// previous item
-    if ( !c ) break;					// no more items? done
-    if ( c->is_root() )					// root
-      return((prefs.showroot()&&c->visible()) ? c : 0);	// return root if visible
-    if ( !c->visible() ) continue;			// item not visible? skip
+    c = c->prev();                                      // previous item
+    if ( !c ) break;                                    // no more items? done
+    if ( c->is_root() )                                 // root
+      return((prefs.showroot()&&c->visible()) ? c : 0); // return root if visible
+    if ( !c->visible() ) continue;                      // item not visible? skip
     // Check all parents to be sure none are closed.
     // If closed, move up to that level and repeat until sure none are closed.
     Fl_Tree_Item *p = c->parent();
     while (1) {
-      if ( !p || p->is_root() ) return(c);		// hit top? then we're displayed, return c
-      if ( p->is_close() ) c = p;			// found closed parent? make it current
-      p = p->parent();					// continue up tree
+      if ( !p || p->is_root() ) return(c);              // hit top? then we're displayed, return c
+      if ( p->is_close() ) c = p;                       // found closed parent? make it current
+      p = p->parent();                                  // continue up tree
     }
   }
-  return(0);						// hit end: no more items
+  return(0);                                            // hit end: no more items
 }
 
 /// Same as prev_visible().
@@ -1481,7 +1468,7 @@ Fl_Tree_Item *Fl_Tree_Item::prev_displayed(Fl_Tree_Prefs &prefs) {
 int Fl_Tree_Item::visible_r() const {
   if ( !visible() ) return(0);
   for (const Fl_Tree_Item *p=parent(); p; p=p->parent())// move up through parents
-    if (!p->visible() || p->is_close()) return(0);	// any parent not visible or closed?
+    if (!p->visible() || p->is_close()) return(0);      // any parent not visible or closed?
   return(1);
 }
 
@@ -1493,7 +1480,3 @@ int Fl_Tree_Item::visible_r() const {
 void Fl_Tree_Item::recalc_tree() {
   _tree->recalc_tree();
 }
-
-//
-// End of "$Id: Fl_Tree_Item.cxx 12824 2018-04-10 18:37:18Z greg.ercolano $".
-//

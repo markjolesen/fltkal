@@ -2,7 +2,7 @@
 //
 // Exit code the Fast Light Tool Kit (FLTK)
 //
-// Copyright 2018 The fltkcon authors
+// Copyright 2018 The <fltkcon authors
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -20,7 +20,7 @@
 //       contributed to the FLTK project - send all contributions
 //       through the "Software Trouble Report" on the following page:
 //
-//            http://www.fltk.org/str.php
+//            http://www.<fltk.org/str.php
 //
 //     2. Widgets that are subclassed from FLTK widgets do not
 //        constitute a derivative work.
@@ -48,7 +48,7 @@
 //        documentation to satisfy this requirement:
 //
 //            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
+//            the FLTK project (http://www.<fltk.org).
 //
 //     This library is free software; you can redistribute it and/or
 //     modify it under the terms of the GNU Library General Public
@@ -66,7 +66,7 @@
 #include "drvscr.h"
 #include "drvsys.h"
 #include "drvwin.h"
-#include "fl/fl.h"
+#include <fl/fl.h>
 
 class fl_cleanup
 {
@@ -92,13 +92,8 @@ fl_cleanup::fl_cleanup()
 
 fl_cleanup::~fl_cleanup()
 {
-
-  Fl_System_Driver* sys = Fl::system_driver();
-  delete sys;
-
   Fl_Screen_Driver* scr = Fl::screen_driver();
-  delete scr;
-
+  scr->close_display();
   return;
 }
 

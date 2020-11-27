@@ -63,33 +63,37 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
+#include "aldrvscr.h"
+
+#include "aldrvwin.h"
 #include <fl/fl.h>
 #include <fl/fl_enums.h>
 #include <fl/platform.h>
-#include "aldrvscr.h"
-#include "aldrvwin.h"
 
 #if defined(USE_OWD32)
-#define SCREEN_W _screen->width
-#define SCREEN_H _screen->height
-#pragma aux __halt = "hlt";
+#  include "cursor.h"
+#  include "display.h"
+#  include "keyboard.h"
+#  include "mouse.h"
+#  define SCREEN_W _screen->width
+#  define SCREEN_H _screen->height
+#  pragma aux __halt = "hlt";
 #endif
 
-extern void fl_fix_focus(); // in Fl.cxx
+extern void
+  cleanup_dummy();
 
-Fl_Screen_Driver*
-Fl_Screen_Driver::newScreenDriver()
+extern void
+  fl_fix_focus(); // in Fl.cxx
+
+Fl_Screen_Driver *
+  Fl_Screen_Driver::newScreenDriver()
 {
   return new Fl_Allegro_Screen_Driver();
 }
 
 Fl_Allegro_Screen_Driver::Fl_Allegro_Screen_Driver() :
-  Fl_Screen_Driver(),
-  wm_(),
-  timer_(),
-  dclick_(),
-  clock_(),
-  btn_state_(0),
+  Fl_Screen_Driver(), wm_(), timer_(), dclick_(), clock_(), btn_state_(0),
   cursor_(FL_CURSOR_DEFAULT)
 {
   ticks_set(clock_);
@@ -98,31 +102,32 @@ Fl_Allegro_Screen_Driver::Fl_Allegro_Screen_Driver() :
 }
 
 int
-Fl_Allegro_Screen_Driver::x()
+  Fl_Allegro_Screen_Driver::x()
 {
   return 0;
 }
 
 int
-Fl_Allegro_Screen_Driver::y()
+  Fl_Allegro_Screen_Driver::y()
 {
   return 0;
 }
 
 int
-Fl_Allegro_Screen_Driver::w()
+  Fl_Allegro_Screen_Driver::w()
 {
   return SCREEN_W;
 }
 
 int
-Fl_Allegro_Screen_Driver::h()
+  Fl_Allegro_Screen_Driver::h()
 {
   return SCREEN_H;
 }
 
 void
-Fl_Allegro_Screen_Driver::screen_xywh(int& X, int& Y, int& W, int& H, int /*n*/)
+  Fl_Allegro_Screen_Driver::screen_xywh(
+    int &X, int &Y, int &W, int &H, int /*n*/)
 {
   X = 0;
   Y = 0;
@@ -132,8 +137,8 @@ Fl_Allegro_Screen_Driver::screen_xywh(int& X, int& Y, int& W, int& H, int /*n*/)
 }
 
 void
-Fl_Allegro_Screen_Driver::screen_work_area(int& X, int& Y, int& W, int& H,
-                                           int /*n*/)
+  Fl_Allegro_Screen_Driver::screen_work_area(
+    int &X, int &Y, int &W, int &H, int /*n*/)
 {
   X = 0;
   Y = 0;
@@ -143,32 +148,32 @@ Fl_Allegro_Screen_Driver::screen_work_area(int& X, int& Y, int& W, int& H,
 }
 
 void
-Fl_Allegro_Screen_Driver::screen_dpi(float& h, float& v, int/*n*/)
+  Fl_Allegro_Screen_Driver::screen_dpi(float &h, float &v, int /*n*/)
 {
   h = 72.0;
   v = 72.0;
 }
 
 void
-Fl_Allegro_Screen_Driver::beep(int type)
+  Fl_Allegro_Screen_Driver::beep(int type)
 {
 }
 
 void
-Fl_Allegro_Screen_Driver::flush()
+  Fl_Allegro_Screen_Driver::flush()
 {
 }
 
 wm::hit_type
-Fl_Allegro_Screen_Driver::hit(Fl_Window* window, int const x, int const y)
+  Fl_Allegro_Screen_Driver::hit(Fl_Window *window, int const x, int const y)
 {
   wm::hit_type hit = wm_.hit((*window), x, y);
-  Fl_Window_Driver& wdriver = *Fl_Window_Driver::driver(window);
+  Fl_Window_Driver &wdriver = *Fl_Window_Driver::driver(window);
   Fl_Cursor curwin = wdriver.get_cursor();
   Fl_Cursor curnew = curwin;
 
   switch (hit)
-  {
+    {
     case wm::HIT_MOVE:
       curnew = FL_CURSOR_MOVE;
       break;
@@ -208,28 +213,28 @@ Fl_Allegro_Screen_Driver::hit(Fl_Window* window, int const x, int const y)
     default:
       curnew = FL_CURSOR_DEFAULT;
       break;
-  }
+    }
 
   if (cursor_ != curnew)
-  {
-    if (curnew != curwin)
     {
-      wdriver.set_cursor(curnew);
-    }
+      if (curnew != curwin)
+        {
+          wdriver.set_cursor(curnew);
+        }
 
-    else
-    {
-      wdriver.redisplay_cursor();
-    }
+      else
+        {
+          wdriver.redisplay_cursor();
+        }
 
-    cursor_ = curnew;
-  }
+      cursor_ = curnew;
+    }
 
   return hit;
 }
 
 double
-Fl_Allegro_Screen_Driver::wait(double time_to_wait)
+  Fl_Allegro_Screen_Driver::wait(double time_to_wait)
 {
   bool triggered = false;
   ticker ticker_loop;
@@ -237,192 +242,215 @@ Fl_Allegro_Screen_Driver::wait(double time_to_wait)
   ticker_loop.set(time_to_wait);
 
   do
-  {
-
-    Fl::run_checks();
-
-    // idle processing
-    static int in_idle = 0;
-
-    if (Fl::idle && !in_idle)
     {
-      in_idle = 1;
-      Fl::idle();
-      in_idle = 0;
-    }
+      Fl::run_checks();
 
-    ticks_t cur;
-    ticks_t elapsed;
-    ticks_set(cur);
-    ticks_subtract(elapsed, clock_, cur);
-    clock_ = cur;
-    timer_.elapse(elapsed);
-    dclick_.elapse(elapsed);
-    ticker_loop.elapse(elapsed);
+      // idle processing
+      static int in_idle = 0;
 
-    if (dclick_.expired())
-    {
-      Fl::e_is_click = 0;
-      dclick_.reset();
-    }
+      if (Fl::idle && !in_idle)
+        {
+          in_idle = 1;
+          Fl::idle();
+          in_idle = 0;
+        }
 
-    Fl::flush();
+      ticks_t cur;
+      ticks_t elapsed;
+      ticks_set(cur);
+      ticks_subtract(elapsed, clock_, cur);
+      clock_ = cur;
+      timer_.elapse(elapsed);
+      dclick_.elapse(elapsed);
+      ticker_loop.elapse(elapsed);
 
-    // Fl::compose_state= 0;
-    Fl::e_state = 0;
+      if (dclick_.expired())
+        {
+          Fl::e_is_click = 0;
+          dclick_.reset();
+        }
 
-    Fl_Window* window = 0;
+      Fl::flush();
 
-    if (Fl::grab_)
-    {
-      window = Fl::grab_;
-    }
+      // Fl::compose_state= 0;
+      Fl::e_state = 0;
 
-    else
-    {
-      if (0 == Fl::focus_)
-      {
-        window = Fl::first_window();
-      }
+      Fl_Window *window = 0;
+
+      if (Fl::grab_)
+        {
+          window = Fl::grab_;
+        }
 
       else
-      {
-        window = Fl::focus_->as_window();
-
-        if (0 == window)
         {
-          window = Fl::focus_->window();
+          if (0 == Fl::focus_)
+            {
+              window = Fl::first_window();
+            }
+
+          else
+            {
+              window = Fl::focus_->as_window();
+
+              if (0 == window)
+                {
+                  window = Fl::focus_->window();
+                }
+            }
         }
-      }
+
+      if (0 == window)
+        {
+          break;
+        }
+
+      if (0 == Fl::focus_)
+        {
+          window->take_focus();
+        }
+
+      triggered = wait_mouse(window);
+
+      if (triggered)
+        {
+          break;
+        }
+
+      triggered = wait_keyboard(window);
+
+      if (triggered)
+        {
+          break;
+        }
+
+      if (ticker_loop.expired())
+        {
+          break;
+        }
     }
-
-    if (0 == window)
-    {
-      break;
-    }
-
-    if (0 == Fl::focus_)
-    {
-      window->take_focus();
-    }
-
-    triggered = wait_mouse(window);
-
-    if (triggered)
-    {
-      break;
-    }
-
-    triggered = wait_keyboard(window);
-
-    if (triggered)
-    {
-      break;
-    }
-
-    if (ticker_loop.expired())
-    {
-      break;
-    }
-  }
   while (1);
 
   return 1;
 }
 
 int
-Fl_Allegro_Screen_Driver::ready()
+  Fl_Allegro_Screen_Driver::ready()
 {
   return 1;
 }
 
 void
-Fl_Allegro_Screen_Driver::grab(Fl_Window* win)
+  Fl_Allegro_Screen_Driver::grab(Fl_Window *win)
 {
-
   if (win)
-  {
-    Fl::grab_ = win;
-  }
+    {
+      Fl::grab_ = win;
+    }
 
   else if (Fl::grab_)
-  {
-    Fl::grab_ = 0;
-    fl_fix_focus();
-  }
+    {
+      Fl::grab_ = 0;
+      fl_fix_focus();
+    }
 
   return;
 }
 
 void
-Fl_Allegro_Screen_Driver::get_system_colors()
+  Fl_Allegro_Screen_Driver::get_system_colors()
 {
 }
 
-const char*
-Fl_Allegro_Screen_Driver::get_system_scheme()
+const char *
+  Fl_Allegro_Screen_Driver::get_system_scheme()
 {
   return fl_getenv("FLTK_SCHEME");
 }
 
 void
-Fl_Allegro_Screen_Driver::add_timeout(double time, Fl_Timeout_Handler cb,
-                                      void* argp)
+  Fl_Allegro_Screen_Driver::add_timeout(double time,
+                                        Fl_Timeout_Handler cb,
+                                        void *argp)
 {
   timer_.add(time, cb, argp);
 }
 
 void
-Fl_Allegro_Screen_Driver::repeat_timeout(double time, Fl_Timeout_Handler cb,
-                                         void* argp)
+  Fl_Allegro_Screen_Driver::repeat_timeout(double time,
+                                           Fl_Timeout_Handler cb,
+                                           void *argp)
 {
   timer_.repeat(time, cb, argp);
 }
 
 int
-Fl_Allegro_Screen_Driver::has_timeout(Fl_Timeout_Handler cb, void* argp)
+  Fl_Allegro_Screen_Driver::has_timeout(Fl_Timeout_Handler cb, void *argp)
 {
   return timer_.contains(cb, argp);
 }
 
 void
-Fl_Allegro_Screen_Driver::remove_timeout(Fl_Timeout_Handler cb, void* argp)
+  Fl_Allegro_Screen_Driver::remove_timeout(Fl_Timeout_Handler cb, void *argp)
 {
   timer_.remove(cb, argp);
 }
 
-
 void
-Fl_Allegro_Screen_Driver::open_display_platform()
+  Fl_Allegro_Screen_Driver::open_display_platform()
 {
+  int rc = display_init_once();
+
+  if (rc)
+    {
+      fprintf(stderr, "Unable to initialize display\n");
+      exit(-1);
+    }
+
+  num_screens = 1;
+
+  mouse_init();
+
+  unsigned x;
+  unsigned y;
+  unsigned state;
+
+  mouse_set_range(_screen->width - 1, _screen->height - 1);
+  mouse_get_position(&x, &y, &state);
+  cursor_image_to_backing(
+    _screen, x, y, _cursor_arrow.width, _cursor_arrow.height);
+  cursor_blt(_screen, x, y, &_cursor_arrow);
 }
 
 void
-Fl_Allegro_Screen_Driver::close_display()
+  Fl_Allegro_Screen_Driver::close_display()
 {
+  mouse_deinit();
+  display_deinit_once();
+  cleanup_dummy();
 }
 
 int
-Fl_Allegro_Screen_Driver::compose(int& del)
+  Fl_Allegro_Screen_Driver::compose(int &del)
 {
   int condition;
   unsigned char ascii = (unsigned char)Fl::e_text[0];
-  condition = (Fl::e_state & (FL_ALT | FL_META | FL_CTRL)) && !(ascii & 128) ;
+  condition = (Fl::e_state & (FL_ALT | FL_META | FL_CTRL)) && !(ascii & 128);
 
   if (condition)
-  {
-    del = 0;    // this stuff is to be treated as a function key
-    return 0;
-  }
+    {
+      del = 0; // this stuff is to be treated as a function key
+      return 0;
+    }
 
   del = Fl::compose_state;
   Fl::compose_state = 0;
 
   // Only insert non-control characters:
   if ((!Fl::compose_state) && !(ascii & ~31 && ascii != 127))
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   return 1;
 }

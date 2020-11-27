@@ -1,71 +1,17 @@
-// chart.cxx
-//
-// "$Id: Fl_Chart.cxx 8864 2011-07-19 04:49:30Z greg.ercolano $"
 //
 // Forms-compatible chart widget for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <fl/fl_math.h>
@@ -75,7 +21,7 @@
 #include "flstring.h"
 #include <stdlib.h>
 
-#define ARCINC	(2.0*M_PI/360.0)
+#define ARCINC  (2.0*M_PI/360.0)
 
 // this function is in fl_boxtype.cxx:
 void fl_rectbound(int x,int y,int w,int h, Fl_Color color);
@@ -83,9 +29,9 @@ void fl_rectbound(int x,int y,int w,int h, Fl_Color color);
 /* Widget specific information */
 
 static void draw_barchart(int x,int y,int w,int h,
-			  int numb, FL_CHART_ENTRY entries[],
-			  double min, double max, int autosize, int maxnumb,
-			  Fl_Color textcolor)
+                          int numb, FL_CHART_ENTRY entries[],
+                          double min, double max, int autosize, int maxnumb,
+                          Fl_Color textcolor)
 /* Draws a bar chart. x,y,w,h is the bounding box, entries the array of
    numb entries and min and max the boundaries. */
 {
@@ -110,27 +56,27 @@ static void draw_barchart(int x,int y,int w,int h,
   for (i=0; i<numb; i++) {
       int hh = (int)rint(entries[i].val*incr);
       if (hh < 0)
-	fl_rectbound(x+i*bwidth,zeroh,bwidth+1,-hh+1, (Fl_Color)entries[i].col);
+        fl_rectbound(x+i*bwidth,zeroh,bwidth+1,-hh+1, (Fl_Color)entries[i].col);
       else if (hh > 0)
-	fl_rectbound(x+i*bwidth,zeroh-hh,bwidth+1,hh+1,(Fl_Color)entries[i].col);
+        fl_rectbound(x+i*bwidth,zeroh-hh,bwidth+1,hh+1,(Fl_Color)entries[i].col);
   }
   /* Draw the labels */
   fl_color(textcolor);
   for (i=0; i<numb; i++)
       fl_draw(entries[i].str,
-	      x+i*bwidth+bwidth/2,zeroh,0,0,
-	      FL_ALIGN_TOP);
+              x+i*bwidth+bwidth/2,zeroh,0,0,
+              FL_ALIGN_TOP);
 }
 
 static void draw_horbarchart(int x,int y,int w,int h,
-			     int numb, FL_CHART_ENTRY entries[],
-			     double min, double max, int autosize, int maxnumb,
-			     Fl_Color textcolor)
+                             int numb, FL_CHART_ENTRY entries[],
+                             double min, double max, int autosize, int maxnumb,
+                             Fl_Color textcolor)
 /* Draws a horizontal bar chart. x,y,w,h is the bounding box, entries the
    array of numb entries and min and max the boundaries. */
 {
   int i;
-  double lw = 0.0;		/* Maximal label width */
+  double lw = 0.0;              /* Maximal label width */
   /* Compute maximal label width */
   for (i=0; i<numb; i++) {
       double w1 = fl_width(entries[i].str);
@@ -156,22 +102,22 @@ static void draw_horbarchart(int x,int y,int w,int h,
   for (i=0; i<numb; i++) {
       int ww = (int)rint(entries[i].val*incr);
       if (ww > 0)
-	fl_rectbound(zeroh,y+i*bwidth,ww+1,bwidth+1, (Fl_Color)entries[i].col);
+        fl_rectbound(zeroh,y+i*bwidth,ww+1,bwidth+1, (Fl_Color)entries[i].col);
       else if (ww < 0)
-	fl_rectbound(zeroh+ww,y+i*bwidth,-ww+1,bwidth+1,(Fl_Color)entries[i].col);
+        fl_rectbound(zeroh+ww,y+i*bwidth,-ww+1,bwidth+1,(Fl_Color)entries[i].col);
   }
   /* Draw the labels */
   fl_color(textcolor);
   for (i=0; i<numb; i++)
       fl_draw(entries[i].str,
-	      zeroh-2,y+i*bwidth+bwidth/2,0,0,
-	      FL_ALIGN_RIGHT);
+              zeroh-2,y+i*bwidth+bwidth/2,0,0,
+              FL_ALIGN_RIGHT);
 }
 
 static void draw_linechart(int type, int x,int y,int w,int h,
-			   int numb, FL_CHART_ENTRY entries[],
-			   double min, double max, int autosize, int maxnumb,
-			   Fl_Color textcolor)
+                           int numb, FL_CHART_ENTRY entries[],
+                           double min, double max, int autosize, int maxnumb,
+                           Fl_Color textcolor)
 /* Draws a line chart. x,y,w,h is the bounding box, entries the array of
    numb entries and min and max the boundaries. */
 {
@@ -189,23 +135,23 @@ static void draw_linechart(int type, int x,int y,int w,int h,
       int yy0 = i ? zeroh - (int)rint(entries[i-1].val*incr) : 0;
       int yy1 = zeroh - (int)rint(entries[i].val*incr);
       if (type == FL_SPIKE_CHART) {
-	  fl_color((Fl_Color)entries[i].col);
-	  fl_line(x1, zeroh, x1, yy1);
+          fl_color((Fl_Color)entries[i].col);
+          fl_line(x1, zeroh, x1, yy1);
       } else if (type == FL_LINE_CHART && i != 0) {
-	  fl_color((Fl_Color)entries[i-1].col);
-	  fl_line(x0,yy0,x1,yy1);
+          fl_color((Fl_Color)entries[i-1].col);
+          fl_line(x0,yy0,x1,yy1);
       } else if (type == FL_FILLED_CHART && i != 0) {
-	  fl_color((Fl_Color)entries[i-1].col);
-	  if ((entries[i-1].val>0.0)!=(entries[i].val>0.0)) {
-	      double ttt = entries[i-1].val/(entries[i-1].val-entries[i].val);
-	      int xt = x + (int)rint((i-.5+ttt)*bwidth);
-	      fl_polygon(x0,zeroh, x0,yy0, xt,zeroh);
-	      fl_polygon(xt,zeroh, x1,yy1, x1,zeroh);
-	  } else {
-	      fl_polygon(x0,zeroh, x0,yy0, x1,yy1, x1,zeroh);
-	  }
-	  fl_color(textcolor);
-	  fl_line(x0,yy0,x1,yy1);
+          fl_color((Fl_Color)entries[i-1].col);
+          if ((entries[i-1].val>0.0)!=(entries[i].val>0.0)) {
+              double ttt = entries[i-1].val/(entries[i-1].val-entries[i].val);
+              int xt = x + (int)rint((i-.5+ttt)*bwidth);
+              fl_polygon(x0,zeroh, x0,yy0, xt,zeroh);
+              fl_polygon(xt,zeroh, x1,yy1, x1,zeroh);
+          } else {
+              fl_polygon(x0,zeroh, x0,yy0, x1,yy1, x1,zeroh);
+          }
+          fl_color(textcolor);
+          fl_line(x0,yy0,x1,yy1);
       }
   }
   /* Draw base line */
@@ -214,22 +160,22 @@ static void draw_linechart(int type, int x,int y,int w,int h,
   /* Draw the labels */
   for (i=0; i<numb; i++)
       fl_draw(entries[i].str,
-	      x+(int)rint((i+.5)*bwidth), zeroh - (int)rint(entries[i].val*incr),0,0,
-	      entries[i].val>=0 ? FL_ALIGN_BOTTOM : FL_ALIGN_TOP);
+              x+(int)rint((i+.5)*bwidth), zeroh - (int)rint(entries[i].val*incr),0,0,
+              entries[i].val>=0 ? FL_ALIGN_BOTTOM : FL_ALIGN_TOP);
 }
 
 static void draw_piechart(int x,int y,int w,int h,
-			  int numb, FL_CHART_ENTRY entries[], int special,
-			  Fl_Color textcolor)
+                          int numb, FL_CHART_ENTRY entries[], int special,
+                          Fl_Color textcolor)
 /* Draws a pie chart. x,y,w,h is the bounding box, entries the array of
    numb entries */
 {
   int i;
-  double xc,yc,rad;	/* center and radius */
-  double tot;		/* sum of values */
-  double incr;		/* increment in angle */
-  double curang;		/* current angle we are drawing */
-  double txc,tyc;	/* temporary center */
+  double xc,yc,rad;     /* center and radius */
+  double tot;           /* sum of values */
+  double incr;          /* increment in angle */
+  double curang;                /* current angle we are drawing */
+  double txc,tyc;       /* temporary center */
   double lh = fl_height();
   /* compute center and radius */
   double h_denom = (special ? 2.3 : 2.0);
@@ -265,10 +211,10 @@ static void draw_piechart(int x,int y,int w,int h,
       /* draw the label */
       double xl = txc + 1.1*rad*cos(ARCINC*curang);
       fl_draw(entries[i].str,
-	      (int)rint(xl),
-	      (int)rint(tyc - 1.1*rad*sin(ARCINC*curang)),
-	      0, 0,
-	      xl<txc ? FL_ALIGN_RIGHT : FL_ALIGN_LEFT);
+              (int)rint(xl),
+              (int)rint(tyc - 1.1*rad*sin(ARCINC*curang)),
+              0, 0,
+              xl<txc ? FL_ALIGN_RIGHT : FL_ALIGN_LEFT);
       curang += 0.5 * incr * entries[i].val;
     }
 }
@@ -286,36 +232,36 @@ void Fl_Chart::draw() {
     ww--; hh--; // adjust for line thickness
 
     if (min >= max) {
-	min = max = 0.0;
-	for (int i=0; i<numb; i++) {
-	    if (entries[i].val < min) min = entries[i].val;
-	    if (entries[i].val > max) max = entries[i].val;
-	}
+        min = max = 0.0;
+        for (int i=0; i<numb; i++) {
+            if (entries[i].val < min) min = entries[i].val;
+            if (entries[i].val > max) max = entries[i].val;
+        }
     }
 
     fl_font(textfont(),textsize());
 
     switch (type()) {
     case FL_BAR_CHART:
-	ww++; // makes the bars fill box correctly
-	draw_barchart(xx,yy,ww,hh, numb, entries, min, max,
-			autosize(), maxnumb, textcolor());
-	break;
+        ww++; // makes the bars fill box correctly
+        draw_barchart(xx,yy,ww,hh, numb, entries, min, max,
+                        autosize(), maxnumb, textcolor());
+        break;
     case FL_HORBAR_CHART:
-	hh++; // makes the bars fill box correctly
-	draw_horbarchart(xx,yy,ww,hh, numb, entries, min, max,
-			autosize(), maxnumb, textcolor());
-	break;
+        hh++; // makes the bars fill box correctly
+        draw_horbarchart(xx,yy,ww,hh, numb, entries, min, max,
+                        autosize(), maxnumb, textcolor());
+        break;
     case FL_PIE_CHART:
-	draw_piechart(xx,yy,ww,hh,numb,entries,0, textcolor());
-	break;
+        draw_piechart(xx,yy,ww,hh,numb,entries,0, textcolor());
+        break;
     case FL_SPECIALPIE_CHART:
-	draw_piechart(xx,yy,ww,hh,numb,entries,1,textcolor());
-	break;
+        draw_piechart(xx,yy,ww,hh,numb,entries,1,textcolor());
+        break;
     default:
-	draw_linechart(type(),xx,yy,ww,hh, numb, entries, min, max,
-			autosize(), maxnumb, textcolor());
-	break;
+        draw_linechart(type(),xx,yy,ww,hh, numb, entries, min, max,
+                        autosize(), maxnumb, textcolor());
+        break;
     }
     draw_label();
     fl_pop_clip();
@@ -323,10 +269,10 @@ void Fl_Chart::draw() {
 
 /*------------------------------*/
 
-#define FL_CHART_BOXTYPE	FL_BORDER_BOX
-#define FL_CHART_COL1		FL_COL1
-#define FL_CHART_LCOL		FL_LCOL
-#define FL_CHART_ALIGN		FL_ALIGN_BOTTOM
+#define FL_CHART_BOXTYPE        FL_BORDER_BOX
+#define FL_CHART_COL1           FL_COL1
+#define FL_CHART_LCOL           FL_LCOL
+#define FL_CHART_ALIGN          FL_ALIGN_BOTTOM
 
 /**
   Create a new Fl_Chart widget using the given position, size and label string.
@@ -386,9 +332,9 @@ void Fl_Chart::add(double val, const char *str, unsigned col) {
   entries[numb].val = float(val);
   entries[numb].col = col;
     if (str) {
-	strlcpy(entries[numb].str,str,FL_CHART_LABEL_MAX + 1);
+        strlcpy(entries[numb].str,str,FL_CHART_LABEL_MAX + 1);
     } else {
-	entries[numb].str[0] = 0;
+        entries[numb].str[0] = 0;
     }
   numb++;
   redraw();
@@ -468,12 +414,8 @@ void Fl_Chart::maxsize(int m) {
   /* Shift entries if required */
   if (numb > maxnumb) {
       for (i = 0; i<maxnumb; i++)
-	  entries[i] = entries[i+numb-maxnumb];
+          entries[i] = entries[i+numb-maxnumb];
       numb = maxnumb;
       redraw();
   }
 }
-
-//
-// End of "$Id: Fl_Chart.cxx 8864 2011-07-19 04:49:30Z greg.ercolano $".
-//

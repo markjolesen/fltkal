@@ -1,72 +1,18 @@
-// inpfile.cxx
-//
-// "$Id: Fl_File_Input.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // File_Input header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2010 by Bill Spitzak and others.
-//
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
-//
 // Original version Copyright 1998 by Curtis Edwards.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <fl/fl.h>
@@ -83,14 +29,14 @@
 // Height of directory buttons...
 //
 
-#define DIR_HEIGHT	10
+#define DIR_HEIGHT      10
 
 
 //
 // Redraw bit for directory bar...
 //
 
-#define FL_DAMAGE_BAR	0x10
+#define FL_DAMAGE_BAR   0x10
 
 
 /**
@@ -102,7 +48,6 @@
 Fl_File_Input::Fl_File_Input(int X, int Y, int W, int H, const char *L)
   : Fl_Input(X, Y, W, H, L) {
   buttons_[0] = 0;
-  errorcolor_ = FL_RED;
   ok_entry_   = 1;
   pressed_    = -1;
 
@@ -113,8 +58,8 @@ Fl_File_Input::Fl_File_Input(int X, int Y, int W, int H, const char *L)
   Draw directory buttons.
 */
 void Fl_File_Input::draw_buttons() {
-  int	i,					// Looping var
-	X;					// Current X position
+  int   i,                                      // Looping var
+        X;                                      // Current X position
 
 
   if (damage() & (FL_DAMAGE_BAR | FL_DAMAGE_ALL)) {
@@ -128,12 +73,12 @@ void Fl_File_Input::draw_buttons() {
         draw_box(pressed_ == i ? fl_down(down_box()) : down_box(),
                  x(), y(), X + buttons_[i] - xscroll(), DIR_HEIGHT, FL_GRAY);
       } else if ((X + buttons_[i] - xscroll()) > w()) {
-	draw_box(pressed_ == i ? fl_down(down_box()) : down_box(),
-        	 x() + X - xscroll(), y(), w() - X + xscroll(), DIR_HEIGHT,
-		 FL_GRAY);
+        draw_box(pressed_ == i ? fl_down(down_box()) : down_box(),
+                 x() + X - xscroll(), y(), w() - X + xscroll(), DIR_HEIGHT,
+                 FL_GRAY);
       } else {
         draw_box(pressed_ == i ? fl_down(down_box()) : down_box(),
-	         x() + X - xscroll(), y(), buttons_[i], DIR_HEIGHT, FL_GRAY);
+                 x() + X - xscroll(), y(), buttons_[i], DIR_HEIGHT, FL_GRAY);
       }
     }
 
@@ -150,9 +95,9 @@ void Fl_File_Input::draw_buttons() {
   Update the sizes of the directory buttons.
 */
 void Fl_File_Input::update_buttons() {
-  int		i;				// Looping var
-  const char	*start,				// Start of path component
-		*end;				// End of path component
+  int           i;                              // Looping var
+  const char    *start,                         // Start of path component
+                *end;                           // End of path component
 
 
 //  puts("update_buttons()");
@@ -186,9 +131,9 @@ void Fl_File_Input::update_buttons() {
   \param[in] str new string value
   \param[in] len lengh of value
 */
-int						// O - TRUE on success
-Fl_File_Input::value(const char *str,		// I - New string value
-                     int        len) {		// I - Length of value
+int                                             // O - TRUE on success
+Fl_File_Input::value(const char *str,           // I - New string value
+                     int        len) {          // I - Length of value
   damage(FL_DAMAGE_BAR);
   return Fl_Input::value(str,len);
 }
@@ -199,8 +144,8 @@ Fl_File_Input::value(const char *str,		// I - New string value
   Returns non 0 on success.
   \param[in] str new string value
 */
-int						// O - TRUE on success
-Fl_File_Input::value(const char *str) {		// I - New string value
+int                                             // O - TRUE on success
+Fl_File_Input::value(const char *str) {         // I - New string value
   damage(FL_DAMAGE_BAR);
   return Fl_Input::value(str);
 }
@@ -213,13 +158,13 @@ void Fl_File_Input::draw() {
   Fl_Boxtype b = box();
   if (damage() & (FL_DAMAGE_BAR | FL_DAMAGE_ALL)) draw_buttons();
   // this flag keeps Fl_Input_::drawtext from drawing a bogus box!
-  char must_trick_fl_input_ = 
+  char must_trick_fl_input_ =
     Fl::focus()!=this && !size() && !(damage()&FL_DAMAGE_ALL);
-  if ((damage() & FL_DAMAGE_ALL) || must_trick_fl_input_) 
+  if ((damage() & FL_DAMAGE_ALL) || must_trick_fl_input_)
     draw_box(b,x(),y()+DIR_HEIGHT,w(),h()-DIR_HEIGHT,color());
-  if (!must_trick_fl_input_) 
+  if (!must_trick_fl_input_)
     Fl_Input_::drawtext(x()+Fl::box_dx(b)+3, y()+Fl::box_dy(b)+DIR_HEIGHT,
-		        w()-Fl::box_dw(b)-6, h()-Fl::box_dh(b)-DIR_HEIGHT);
+                        w()-Fl::box_dw(b)-6, h()-Fl::box_dh(b)-DIR_HEIGHT);
 }
 
 
@@ -229,8 +174,8 @@ void Fl_File_Input::draw() {
   Return non zero if event is handled.
   \param[in] event
 */
-int						// O - TRUE if we handled event
-Fl_File_Input::handle(int event) 		// I - Event
+int                                             // O - TRUE if we handled event
+Fl_File_Input::handle(int event)                // I - Event
 {
 //  printf("handle(event = %d)\n", event);
   static char inButtonBar = 0;
@@ -239,9 +184,9 @@ Fl_File_Input::handle(int event) 		// I - Event
     case FL_MOVE :
     case FL_ENTER :
       if (active_r()) {
-	if (Fl::event_y() < (y() + DIR_HEIGHT)) 
+        if (Fl::event_y() < (y() + DIR_HEIGHT))
           window()->cursor(FL_CURSOR_DEFAULT);
-	else 
+        else
           window()->cursor(FL_CURSOR_INSERT);
       }
 
@@ -251,18 +196,18 @@ Fl_File_Input::handle(int event) 		// I - Event
       inButtonBar = (Fl::event_y() < (y() + DIR_HEIGHT));
     case FL_RELEASE :
     case FL_DRAG :
-      if (inButtonBar) 
+      if (inButtonBar)
         return handle_button(event);
       else
         return Fl_Input::handle(event);
 
     default :
       { Fl_Widget_Tracker wp(this);
-	if (Fl_Input::handle(event)) {
-	  if (wp.exists())
-	    damage(FL_DAMAGE_BAR);
-	  return 1;
-	}
+        if (Fl_Input::handle(event)) {
+          if (wp.exists())
+            damage(FL_DAMAGE_BAR);
+          return 1;
+        }
       }
       return 0;
   }
@@ -275,14 +220,14 @@ Fl_File_Input::handle(int event) 		// I - Event
   Return non zero if event is handled.
   \param[in] event
 */
-int						// O - TRUE if we handled event
-Fl_File_Input::handle_button(int event)		// I - Event
+int                                             // O - TRUE if we handled event
+Fl_File_Input::handle_button(int event)         // I - Event
 {
-  int		i,				// Looping var
-		X;				// Current X position
-  char		*start,				// Start of path component
-		*end;				// End of path component
-  char		newvalue[FL_PATH_MAX];		// New value
+  int           i,                              // Looping var
+                X;                              // Current X position
+  char          *start,                         // Start of path component
+                *end;                           // End of path component
+  char          newvalue[FL_PATH_MAX];          // New value
 
 
   // Figure out which button is being pressed...
@@ -329,8 +274,3 @@ Fl_File_Input::handle_button(int event)		// I - Event
 
   return 1;
 }
-
-
-//
-// End of "$Id: Fl_File_Input.cxx 12976 2018-06-26 14:12:43Z manolo $".
-//

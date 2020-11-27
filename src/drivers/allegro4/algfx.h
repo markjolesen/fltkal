@@ -65,13 +65,16 @@
 //
 #if !defined(__ALGFX_H__)
 
-#include <allegro.h>
+#  include <allegro.h>
 
-extern void line_horiz_xor(BITMAP *bmp, int const x, int const y, unsigned int const len);
+extern void
+  line_horiz_xor(BITMAP *bmp, int const x, int const y, unsigned int const len);
 
-extern void line_vert_xor(BITMAP *bmp, int const x, int const y, unsigned int const len);
+extern void
+  line_vert_xor(BITMAP *bmp, int const x, int const y, unsigned int const len);
 
-extern void rect_xor(BITMAP *bmp, int x, int y, unsigned int width, unsigned int height);
+extern void
+  rect_xor(BITMAP *bmp, int x, int y, unsigned int width, unsigned int height);
 
-#define __ALGFX_H__
+#  define __ALGFX_H__
 #endif

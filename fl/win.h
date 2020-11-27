@@ -1,71 +1,17 @@
-// win.h
-//
-// "$Id: Fl_Window.H 12926 2018-05-22 17:00:27Z manolo $"
 //
 // Window header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2016 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /** \file
@@ -79,7 +25,7 @@
 #include <fl/imgbit.h>
 #include <stdlib.h>
 
-#define FL_WINDOW 0xF0		///< window type id all subclasses have type() >= this
+#define FL_WINDOW 0xF0          ///< window type id: all subclasses have type() >= this
 #define FL_DOUBLE_WINDOW 0xF1   ///< double window type id
 #define FL_CHILD_WINDOW         (FL_DOUBLE_WINDOW + 1) // ALLEGRO:
 #define FL_MENU_WINDOW          (FL_DOUBLE_WINDOW + 2) // ALLEGRO:
@@ -97,8 +43,8 @@ class Fl_Double_Window;
   or a "subwindow" inside a window.  This is controlled by whether or not
   the window has a parent().
 
-  Once you create a window, you usually add children Fl_Widget
-  's to it by using window->add(child) for each new widget.
+  Once you create a window, you usually add children Fl_Widget's to it
+  by using window->add(child) for each new widget.
   See Fl_Group for more information on how to add and remove children.
 
   There are several subclasses of Fl_Window that provide
@@ -126,8 +72,8 @@ private:
   int fullscreen_screen_right;
 
   // TODO: it would make sense to merge the use of Fl_X and Fl_Window_Driver, maybe simply by
-  // TODO: deriving Fl_Window_Driver from Fl_X. However, there are a lot of historic kldges for
-  // TODO: some platforms around Fl_X.
+  // TODO: deriving Fl_Window_Driver from Fl_X. However, there are a lot of historic kludges
+  // TODO: for some platforms around Fl_X.
   Fl_X *i; // points at the system-specific stuff, but exists only after the window is mapped
   Fl_Window_Driver *pWindowDriver; // points at the system-specific stuff at window creation time
 
@@ -139,7 +85,7 @@ private:
   uchar size_range_set;
   // cursor stuff
   Fl_Cursor cursor_default;
-  
+
   void _Fl_Window(); // constructor innards
 
   // unimplemented copy ctor and assignment operator
@@ -181,43 +127,43 @@ protected:
 public:
 
   /**
-    Creates a window from the given size and title. 
-    If Fl_Group::current() is not NULL, the window is created as a 
+    Creates a window from the given width \p w, height \p h, and \p title.
+    If Fl_Group::current() is not NULL, the window is created as a
     subwindow of the parent window.
-    
-    The (w,h) form of the constructor creates a top-level window
-    and asks the window manager to position the window. The (x,y,w,h)
+
+    The (w, h) form of the constructor creates a top-level window
+    and asks the window manager to position the window. The (x, y, w, h)
     form of the constructor either creates a subwindow or a
-    top-level window at the specified location (x,y) , subject to window
+    top-level window at the specified location (x, y), subject to window
     manager configuration. If you do not specify the position of the
     window, the window manager will pick a place to show the window
-    or allow the user to pick a location. Use position(x,y)
+    or allow the user to pick a location. Use position(x, y)
     or hotspot() before calling show() to request a
-    position on the screen. See Fl_Window::resize() 
+    position on the screen. See Fl_Window::resize()
     for some more details on positioning windows.
-    
+
     Top-level windows initially have visible() set to 0
     and parent() set to NULL. Subwindows initially
     have visible() set to 1 and parent() set to
     the parent window pointer.
-    
+
     Fl_Widget::box() defaults to FL_FLAT_BOX. If you plan to
     completely fill the window with children widgets you should
     change this to FL_NO_BOX. If you turn the window border off
     you may want to change this to FL_UP_BOX.
 
-    \see Fl_Window(int x, int y, int w, int h, const char* title)
+    \see Fl_Window(int x, int y, int w, int h, const char *title)
   */
-    Fl_Window(int w, int h, const char* title= 0);
-  /** Creates a window from the given position, size and title.
+    Fl_Window(int w, int h, const char *title = 0);
+  /** Creates a window from the given position (x, y), size (w, h) and title.
 
     \see Fl_Window(int w, int h, const char *title)
   */
-    Fl_Window(int x, int y, int w, int h, const char* title = 0);
+    Fl_Window(int x, int y, int w, int h, const char *title = 0);
   /**
     The destructor <I>also deletes all the children</I>. This allows a
     whole tree to be deleted at once, without having to keep a pointer to
-    all the children in the user code. A kludge has been done so the 
+    all the children in the user code. A kludge has been done so the
     Fl_Window and all of its children can be automatic (local)
     variables, but you must declare the Fl_Window <I>first</I> so
     that it is destroyed last.
@@ -236,30 +182,27 @@ public:
     You can also call the Fl_Widget methods size(x,y) and position(w,h),
     which are inline wrappers for this virtual function.
 
-    A top-level window can not force, but merely suggest a position and 
-    size to the operating system. The window manager may not be willing or 
-    able to display a window at the desired position or with the given 
-    dimensions. It is up to the application developer to verify window 
+    A top-level window can not force, but merely suggest a position and
+    size to the operating system. The window manager may not be willing or
+    able to display a window at the desired position or with the given
+    dimensions. It is up to the application developer to verify window
     parameters after the resize request.
   */
   virtual void resize(int X,int Y,int W,int H);
-  /**
-    Sets whether or not the window manager border is around the
-    window.  The default value is true. void border(int) can be
-    used to turn the border on and off. <I>Under most X window
-    managers this does not work after show() has been called,
-    although SGI's 4DWM does work.</I>
+  /** Sets whether or not the window manager border is around the window.
+  The default value is true. <I>With some X window
+  managers, this does not work after show() has been called.</I>
   */
   void border(int b);
   /**
     Fast inline function to turn the window manager border
     off. It only works before show() is called.
   */
-  void clear_border()	{set_flag(NOBORDER);}
-  /** See void Fl_Window::border(int) */
-  unsigned int border() const	{return !(flags() & NOBORDER);}
+  void clear_border()   {set_flag(NOBORDER);}
+  /** Returns whether the window possesses a border */
+  unsigned int border() const   {return !(flags() & NOBORDER);}
   /** Activates the flags NOBORDER|FL_OVERRIDE */
-  void set_override()	{set_flag(NOBORDER|OVERRIDE);}
+  void set_override()   {set_flag(NOBORDER|OVERRIDE);}
   /** Returns non zero if FL_OVERRIDE flag is set, 0 otherwise. */
   unsigned int override() const  { return flags()&OVERRIDE; }
   /**
@@ -270,16 +213,16 @@ public:
     once, in which case only the last one shown gets events.  You can see
     which window (if any) is modal by calling Fl::modal().
   */
-  void set_modal()	{set_flag(MODAL);}
+  void set_modal()      {set_flag(MODAL);}
   /**  Returns true if this window is modal.  */
-  unsigned int modal() const	{return flags() & MODAL;}
+  unsigned int modal() const    {return flags() & MODAL;}
   /**
     A "non-modal" window (terminology borrowed from Microsoft Windows)
     acts like a modal() one in that it remains on top, but it has
     no effect on event delivery.  There are <I>three</I> states for a
     window: modal, non-modal, and normal.
   */
-  void set_non_modal()	{set_flag(NON_MODAL);}
+  void set_non_modal()  {set_flag(NON_MODAL);}
   /**  Returns true if this window is modal or non-modal. */
   unsigned int non_modal() const {return flags() & (NON_MODAL|MODAL);}
 
@@ -305,7 +248,7 @@ public:
     \code
     win->hide();
     win->clear_modal_states();
-    //Set win to new state as desired, or leave "normal", e.g...
+    // Set win to new state as desired, or leave "normal", e.g...
     win->set_non_modal();
     win->show();
     \endcode
@@ -335,11 +278,11 @@ public:
     This must be called before the window is shown and cannot be changed
     later.
   */
-  void set_menu_window()	{set_flag(MENU_WINDOW);}
+  void set_menu_window()        {set_flag(MENU_WINDOW);}
 
   /**  Returns true if this window is a menu window. */
   unsigned int menu_window() const {return flags() & MENU_WINDOW;}
-  
+
   /**
     Marks the window as a tooltip window.
 
@@ -356,8 +299,8 @@ public:
     \note Since Fl_Tooltip_Window is derived from Fl_Menu_Window, this
     also \b clears the menu_window() state.
   */
-  void set_tooltip_window()	{ set_flag(TOOLTIP_WINDOW);
-				  clear_flag(MENU_WINDOW); }
+  void set_tooltip_window()     { set_flag(TOOLTIP_WINDOW);
+                                  clear_flag(MENU_WINDOW); }
   /**  Returns true if this window is a tooltip window. */
   unsigned int tooltip_window() const {return flags() & TOOLTIP_WINDOW;}
 
@@ -382,13 +325,13 @@ public:
 
     \deprecated please use force_position(0) instead
   */
-  void free_position()	{clear_flag(FORCE_POSITION);}
+  void free_position()  {clear_flag(FORCE_POSITION);}
   void size_range(int minw, int minh, int maxw=0, int maxh=0, int dw=0, int dh=0, int aspect=0);
 
   /** See void Fl_Window::label(const char*)   */
-  const char* label() const	{return Fl_Widget::label();}
+  const char* label() const     {return Fl_Widget::label();}
   /**  See void Fl_Window::iconlabel(const char*)   */
-  const char* iconlabel() const	{return iconlabel_;}
+  const char* iconlabel() const {return iconlabel_;}
   /** Sets the window title bar label. */
   void label(const char*);
   /** Sets the icon label. */
@@ -485,7 +428,7 @@ public:
   /**
     Makes the window completely fill one or more screens, without any
     window manager border visible.  You must use fullscreen_off() to
-    undo this. 
+    undo this.
 
     \note On some platforms, this can result in the keyboard being
     grabbed. The window may also be recreated, meaning hide() and
@@ -499,18 +442,18 @@ public:
   */
   void fullscreen_off();
   /**
-    Turns off any side effects of fullscreen() and does 
+    Turns off any side effects of fullscreen() and does
     resize(x,y,w,h).
   */
   void fullscreen_off(int X,int Y,int W,int H);
   /**
-    Returns non zero if FULLSCREEN flag is set, 0 otherwise. 
+    Returns non zero if FULLSCREEN flag is set, 0 otherwise.
   */
   unsigned int fullscreen_active() const { return flags() & FULLSCREEN; }
   /**
     Sets which screens should be used when this window is in fullscreen
     mode. The window will be resized to the top of the screen with index
-    \p top, the bottom of the screen with index \p bottom, etc. 
+    \p top, the bottom of the screen with index \p bottom, etc.
 
     If this method is never called, or if any argument is < 0, then the
     window will be resized to fill the screen it is currently on.
@@ -526,7 +469,7 @@ public:
     Call show() to restore the window.
 
     When a window is iconified/restored (either by these calls or by the
-    user) the handle() method is called with FL_HIDE and 
+    user) the handle() method is called with FL_HIDE and
     FL_SHOW events and visible() is turned on and off.
 
     There is no way to control what is drawn in the icon except with the
@@ -551,10 +494,11 @@ public:
   void make_current();
 
   /**
-    Changes the cursor for this window.  This always calls the system, if
-    you are changing the cursor a lot you may want to keep track of how
-    you set it in a static variable and call this only if the new cursor
-    is different.
+    Changes the cursor for this window.
+
+    This always calls the system. If you are changing the cursor a lot
+    you may want to keep track of how you set it in a static variable
+    and call this only if the new cursor is different.
 
     The type Fl_Cursor is an enumeration defined in <FL/Enumerations.H>.
 
@@ -569,17 +513,17 @@ public:
   void default_cursor(Fl_Cursor c, Fl_Color, Fl_Color=FL_WHITE);
 
   static void default_callback(Fl_Window*, void* v);
-  
+
   /** Returns the window width including any frame added by the window manager.
-   
-   Same as w() if applied to a subwindow.
+
+   Same as w() if applied to a subwindow, or if window is not yet mapped.
    */
   int decorated_w() const;
 
-  /** Returns the window height including any window title bar and any frame 
+  /** Returns the window height including any window title bar and any frame
    added by the window manager.
-   
-   Same as h() if applied to a subwindow.
+
+   Same as h() if applied to a subwindow, or if window is not yet mapped.
    */
   int decorated_h() const;
 
@@ -595,15 +539,13 @@ public:
    Return non-null if this is an Fl_Double_Window object.
    */
   virtual class Fl_Double_Window *as_double_window() {return 0L;}
-  
+
   void shape(const Fl_Image* img);
   void shape(const Fl_Image& b) ;
-  int is_shaped();
+  const Fl_Image *shape();
   int screen_num();
+  void screen_num(int screen_num);
+  static bool is_a_rescale();
 };
 
 #endif
-
-//
-// End of "$Id: Fl_Window.H 12926 2018-05-22 17:00:27Z manolo $".
-//

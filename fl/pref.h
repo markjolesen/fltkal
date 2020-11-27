@@ -1,71 +1,17 @@
-// pref.h
 //
-// "$Id: Fl_Preferences.H 12305 2017-07-07 21:00:17Z matt $"
+// Preferences implementation for the Fast Light Tool Kit (FLTK).
 //
-// Preferences .
-//
-// Copyright 2017-2018 The fltkal authors
 // Copyright 2002-2010 by Matthias Melcher.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /* \file
@@ -75,7 +21,7 @@
 #  define Fl_Preferences_H
 
 #  include <stdio.h>
-#  include "export.h" 
+#  include "export.h"
 
 /**
    \brief Fl_Preferences provides methods to store user
@@ -86,7 +32,7 @@
    simple configuration mechanism for UNIX.
 
    Fl_Preferences uses a hierarchy to store data. It
-   bundles similar data into groups and manages entries into those
+   bundles similar data into groups and manages entries in these
    groups as name/value pairs.
 
    Preferences are stored in text files that can be edited
@@ -102,34 +48,78 @@
    preferences file should be kept small for performance
    reasons. One application can have multiple preferences files.
    Extensive binary data however should be stored in separate
-   files: see getUserdataPath().
+   files: see \a Fl_Preferences::getUserdataPath() .
 
    \note Starting with FLTK 1.3, preference databases are expected to
-   be in UTF-8 encoding. Previous databases were stored in the
-   current character set or code page which renders them incompatible
-   for text entries using international characters.
+     be in UTF-8 encoding. Previous databases were stored in the
+     current character set or code page which renders them incompatible
+     for text entries using international characters.
+
+   \note Starting with FLTK 1.4, searching a valid path to store
+     the preferences files has changed slightly. Please see
+     Fl_Preferences::Fl_Preferences(Root, const char*, const char*)
+     for details.
  */
 class FL_EXPORT Fl_Preferences {
 
-public: 
+public:
   /**
      Define the scope of the preferences.
    */
-  enum Root { 
-    SYSTEM=0,   ///< Preferences are used system-wide
-    USER        ///< Preferences apply only to the current user
+  enum Root {
+    SYSTEM = 0,        ///< Preferences are used system-wide
+    USER,              ///< Preferences apply only to the current user
+    ROOT_MASK = 0xFF,  ///< masks for the values above
+    CORE = 0x100,      ///< OR'd by FLTK to read and write core library preferences and options
+    CORE_SYSTEM = CORE|SYSTEM,
+    CORE_USER = CORE|USER
   };
-  
+
   /**
    Every Fl_Preferences-Group has a uniqe ID.
-   
+
    ID's can be retrieved from an Fl_Preferences-Group and can then be used
-   to create more Fl_Preference references to the same data set, as long as the 
+   to create more Fl_Preference references to the same data set, as long as the
    database remains open.
    */
   typedef void *ID;
-  
+
   static const char *newUUID();
+
+  /** Set this, if no call to Fl_Preferences shall access the file sytem
+   @see Fl_Preferences::file_access(unsigned int)
+   @see Fl_Preferences::file_access()
+   */
+  static const unsigned int NONE = 0x0000;
+  /** set this if it is ok for applications to read user preference files */
+  static const unsigned int USER_READ_OK = 0x0001;
+  /** set this if it is ok for applications to create and write user preference files */
+  static const unsigned int USER_WRITE_OK = 0x0002;
+  /** set this if it is ok for applications to read, create, and write user preference files */
+  static const unsigned int USER_OK = USER_READ_OK | USER_WRITE_OK;
+  /** set this if it is ok for applications to read system wide preference files */
+  static const unsigned int SYSTEM_READ_OK = 0x0004;
+  /** set this if it is ok for applications to create and write system wide preference files */
+  static const unsigned int SYSTEM_WRITE_OK = 0x0008;
+  /** set this if it is ok for applications to read, create, and write system wide preference files */
+  static const unsigned int SYSTEM_OK = SYSTEM_READ_OK | SYSTEM_WRITE_OK;
+  /** set this if it is ok for applications to read, create, and write any kind of preference files */
+  static const unsigned int APP_OK = SYSTEM_OK | USER_OK;
+  /** Set this if it is ok for FLTK to read preference files. USER_READ_OK and/or SYSTEM_READ_OK must also be set. */
+  static const unsigned int CORE_READ_OK = 0x0010;
+  /** Set this if it is ok for FLTK to create or write preference files. USER_WRITE_OK and/or SYSTEM_WRITE_OK must also be set. */
+  static const unsigned int CORE_WRITE_OK = 0x0020;
+  /** set this if it is ok for FLTK to read, create, or write preference files */
+  static const unsigned int CORE_OK = CORE_READ_OK | CORE_WRITE_OK;
+  /** set this to allow FLTK and applications to read preference files */
+  static const unsigned int ALL_READ_OK = USER_READ_OK | SYSTEM_READ_OK | CORE_READ_OK;
+  /** set this to allow FLTK and applications to create and write preference files */
+  static const unsigned int ALL_WRITE_OK = USER_WRITE_OK | SYSTEM_WRITE_OK | CORE_WRITE_OK;
+  /** set this to give FLTK and applications permission to read, write, and create preference files */
+  static const unsigned int ALL = ALL_READ_OK | ALL_WRITE_OK;
+
+  static void file_access(unsigned int flags);
+  static unsigned int file_access();
 
   Fl_Preferences( Root root, const char *vendor, const char *application );
   Fl_Preferences( const char *path, const char *vendor, const char *application );
@@ -140,11 +130,11 @@ public:
   Fl_Preferences(const Fl_Preferences&);
   Fl_Preferences( ID id );
   virtual ~Fl_Preferences();
-  
+
   /** Return an ID that can later be reused to open more references to this dataset.
    */
   ID id() { return (ID)node; }
-  
+
   /** Remove the group with this ID from a database.
    */
   static char remove(ID id_) { return ((Node*)id_)->remove(); }
@@ -152,11 +142,11 @@ public:
   /** Return the name of this entry.
    */
   const char *name() { return node->name(); }
-  
+
   /** Return the full path to this entry.
    */
   const char *path() { return node->path(); }
-  
+
   int groups();
   const char *group( int num_group );
   char groupExists( const char *key );
@@ -168,7 +158,7 @@ public:
   char entryExists( const char *key );
   char deleteEntry( const char *entry );
   char deleteAllEntries();
-  
+
   char clear();
 
   char set( const char *entry, int value );
@@ -177,8 +167,8 @@ public:
   char set( const char *entry, double value );
   char set( const char *entry, double value, int precision );
   char set( const char *entry, const char *value );
-  char set( const char *entry, const void *value, int size ); 
-  
+  char set( const char *entry, const void *value, int size );
+
   char get( const char *entry, int &value, int defaultValue );
   char get( const char *entry, float &value,  float defaultValue );
   char get( const char *entry, double &value, double defaultValue );
@@ -206,13 +196,13 @@ public:
 
   // char export( const char *filename, Type fileFormat );
   // char import( const char *filename );
-  
+
   /**
      'Name' provides a simple method to create numerical or more complex
      procedural names for entries and groups on the fly.
-     
+
      Example: prefs.set(Fl_Preferences::Name("File%d",i),file[i]);.
-    
+
      See test/preferences.cxx as a sample for writing arrays into preferences.
 
      'Name' is actually implemented as a class inside Fl_Preferences. It casts
@@ -223,7 +213,7 @@ public:
 
     char *data_;
 
-  public: 
+  public:
     Name( unsigned int n );
     Name( const char *format, ... );
 
@@ -240,23 +230,24 @@ public:
     char *name, *value;
   };
 
-private: 
+private:
   Fl_Preferences() : node(0), rootNode(0) { }
   Fl_Preferences &operator=(const Fl_Preferences&);
 
   static char nameBuffer[128];
   static char uuidBuffer[40];
   static Fl_Preferences *runtimePrefs;
+  static unsigned int fileAccess_;
 
 public:  // older Sun compilers need this (public definition of the following classes)
   class RootNode;
-  
-  class FL_EXPORT Node {	// a node contains a list to all its entries 
-            			// and all means to manage the tree structure
+
+  class FL_EXPORT Node {        // a node contains a list to all its entries
+                                // and all means to manage the tree structure
     Node *child_, *next_;
-    union { 			// these two are mutually exclusive
-      Node *parent_;   		// top_ bit clear
-      RootNode *root_; 		// top_ bit set
+    union {                     // these two are mutually exclusive
+      Node *parent_;            // top_ bit clear
+      RootNode *root_;          // top_ bit set
     };
     char *path_;
     Entry *entry_;
@@ -307,10 +298,11 @@ public:  // older Sun compilers need this (public definition of the following cl
   };
   friend class Node;
 
-  class FL_EXPORT RootNode {		// the root node manages file paths and basic reading and writing
+  class FL_EXPORT RootNode {            // the root node manages file paths and basic reading and writing
     Fl_Preferences *prefs_;
     char *filename_;
     char *vendor_, *application_;
+    Root root_;
   public:
     RootNode( Fl_Preferences *, Root root, const char *vendor, const char *application );
     RootNode( Fl_Preferences *, const char *path, const char *vendor, const char *application );
@@ -329,7 +321,3 @@ protected:
 };
 
 #endif // !Fl_Preferences_H
-
-//
-// End of "$Id: Fl_Preferences.H 12305 2017-07-07 21:00:17Z matt $".
-//

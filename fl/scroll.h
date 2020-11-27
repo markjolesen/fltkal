@@ -1,71 +1,17 @@
-// scroll.h
-//
-// "$Id: Fl_Scroll.H 11692 2016-04-24 19:39:27Z manolo $"
 //
 // Scroll header file for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2015 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /* \file
@@ -146,7 +92,7 @@ class FL_EXPORT Fl_Scroll : public Fl_Group {
   void fix_scrollbar_order();
   static void draw_clip(void*,int,int,int,int);
 
-protected:	//  (STR#1895)
+protected:      //  (STR#1895)
   /**
     Structure to manage scrollbar and widget interior sizes.
     This is filled out by recalc_scrollbars() for use in calculations
@@ -158,27 +104,27 @@ protected:	//  (STR#1895)
     typedef struct { int x,y,w,h; } Fl_Region_XYWH;
     /// A local struct to manage a region defined by left/right/top/bottom
     typedef struct {
-      int l;			///< (l)eft "x" position, aka x1
-      int r;			///< (r)ight "x" position, aka x2
-      int t;			///< (t)op "y" position, aka y1
-      int b;			///< (b)ottom "y" position, aka y2
+      int l;                    ///< (l)eft "x" position, aka x1
+      int r;                    ///< (r)ight "x" position, aka x2
+      int t;                    ///< (t)op "y" position, aka y1
+      int b;                    ///< (b)ottom "y" position, aka y2
     } Fl_Region_LRTB;
     /// A local struct to manage a scrollbar's xywh region and tab values
     typedef struct {
       int x,y,w,h;
-      int pos;			///< scrollbar tab's "position of first line displayed"
-      int size;			///< scrollbar tab's "size of window in lines"
-      int first;		///< scrollbar tab's "number of first line"
-      int total;		///< scrollbar tab's "total number of lines"
+      int pos;                  ///< scrollbar tab's "position of first line displayed"
+      int size;                 ///< scrollbar tab's "size of window in lines"
+      int first;                ///< scrollbar tab's "number of first line"
+      int total;                ///< scrollbar tab's "total number of lines"
     } Fl_Scrollbar_Data;
-    int scrollsize;		///< the effective scrollbar thickness (local or global)
-    Fl_Region_XYWH innerbox;	///< widget's inner box, excluding scrollbars
-    Fl_Region_XYWH innerchild;	///< widget's inner box, including scrollbars
-    Fl_Region_LRTB child;	///< child bounding box: left/right/top/bottom
-    int hneeded;		///< horizontal scrollbar visibility
-    int vneeded;		///< vertical scrollbar visibility
-    Fl_Scrollbar_Data hscroll;	///< horizontal scrollbar region + values
-    Fl_Scrollbar_Data vscroll;	///< vertical scrollbar region + values
+    int scrollsize;             ///< the effective scrollbar thickness (local or global)
+    Fl_Region_XYWH innerbox;    ///< widget's inner box, excluding scrollbars
+    Fl_Region_XYWH innerchild;  ///< widget's inner box, including scrollbars
+    Fl_Region_LRTB child;       ///< child bounding box: left/right/top/bottom
+    int hneeded;                ///< horizontal scrollbar visibility
+    int vneeded;                ///< vertical scrollbar visibility
+    Fl_Scrollbar_Data hscroll;  ///< horizontal scrollbar region + values
+    Fl_Scrollbar_Data vscroll;  ///< vertical scrollbar region + values
   } ScrollInfo;
   void recalc_scrollbars(ScrollInfo &si);
 
@@ -251,7 +197,3 @@ public:
 };
 
 #endif
-
-//
-// End of "$Id: Fl_Scroll.H 11692 2016-04-24 19:39:27Z manolo $".
-//

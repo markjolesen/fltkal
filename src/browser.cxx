@@ -1,71 +1,17 @@
-// browser.cxx
-//
-// "$Id: Fl_Browser.cxx 12516 2017-10-18 15:48:29Z greg.ercolano $"
 //
 // Browser widget for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2017 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <fl/fl.h>
@@ -97,14 +43,14 @@
 //       Changes to FL_BLINE *must* be reflected in Fl_File_Chooser.cxx as well.
 //       This hack in Fl_File_Chooser should be solved.
 //
-struct FL_BLINE {	// data is in a linked list of these
+struct FL_BLINE {       // data is in a linked list of these
   FL_BLINE* prev;
   FL_BLINE* next;
   void* data;
   Fl_Image* icon;
-  short length;		// sizeof(txt)-1, may be longer than string
-  char flags;		// selected, displayed
-  char txt[1];		// start of allocated array
+  short length;         // sizeof(txt)-1, may be longer than string
+  char flags;           // selected, displayed
+  char txt[1];          // start of allocated array
 };
 
 /**
@@ -176,7 +122,7 @@ void Fl_Browser::item_select(void *item, int val) {
   \param[in] item The item whose label text is returned.
   \returns The item's text string. (Can be NULL)
 */
-const char *Fl_Browser::item_text(void *item) const { 
+const char *Fl_Browser::item_text(void *item) const {
   return ((FL_BLINE*)item)->txt;
 }
 
@@ -336,7 +282,7 @@ void Fl_Browser::insert(int line, FL_BLINE* item) {
   \param[in] d Optional pointer to user data to be associated with the new line.
 */
 void Fl_Browser::insert(int line, const char* newtext, void* d) {
-  if (!newtext) newtext = "";		// STR #3269
+  if (!newtext) newtext = "";           // STR #3269
   int l = (int) strlen(newtext);
   FL_BLINE* t = (FL_BLINE*)malloc(sizeof(FL_BLINE)+l);
   t->length = (short)l;
@@ -372,7 +318,7 @@ void Fl_Browser::move(int to, int from) {
 void Fl_Browser::text(int line, const char* newtext) {
   if (line < 1 || line > lines) return;
   FL_BLINE* t = find_line(line);
-  if (!newtext) newtext = "";		// STR #3269
+  if (!newtext) newtext = "";           // STR #3269
   int l = (int) strlen(newtext);
   if (l > t->length) {
     FL_BLINE* n = (FL_BLINE*)malloc(sizeof(FL_BLINE)+l);
@@ -430,38 +376,36 @@ int Fl_Browser::item_height(void *item) const {
       Fl_Font font = textfont(); // default font
       int tsize = textsize();    // default size
       if ( format_char() ) {     // can be NULL
-	while (*str==format_char()) {
-	  str++;
-	  switch (*str++) {
-	  case 'l': case 'L': tsize = 24; break;
-	  case 'm': case 'M': tsize = 18; break;
-	  case 's': tsize = 11; break;
-	  case 'b': font = (Fl_Font)(font|FL_BOLD); break;
-	  case 'i': font = (Fl_Font)(font|FL_ITALIC); break;
-	  case 'f': case 't': font = FL_COURIER; break;
-	  case 'B':
-	  case 'C': while (isdigit(*str & 255)) str++; break; // skip a color number
-	  case 'F': font = (Fl_Font)strtol(str,&str,10); break;
-	  case 'S': tsize = strtol(str,&str,10); break;
-	  case 0: case '@': str--;
-	  case '.': goto END_FORMAT;
-	  }
-	}
+        while (*str==format_char() && *str++ && *str!=format_char()) {
+          switch (*str++) {
+          case 'l': case 'L': tsize = 24; break;
+          case 'm': case 'M': tsize = 18; break;
+          case 's': tsize = 11; break;
+          case 'b': font = (Fl_Font)(font|FL_BOLD); break;
+          case 'i': font = (Fl_Font)(font|FL_ITALIC); break;
+          case 'f': case 't': font = FL_COURIER; break;
+          case 'B':
+          case 'C': while (isdigit(*str & 255)) str++; break; // skip a color number
+          case 'F': font = (Fl_Font)strtol(str,&str,10); break;
+          case 'S': tsize = strtol(str,&str,10); break;
+          case '.': goto END_FORMAT;
+          }
+        }
       }
       END_FORMAT:
       char* ptr = str;
       if (ptr && *i++) str = strchr(str, column_char());
       else str = NULL;
       if((!str && *ptr) || (str && ptr < str)) {
-	fl_font(font, tsize); int hh = fl_height();
-	if (hh > hmax) hmax = hh;
+        fl_font(font, tsize); int hh = fl_height();
+        if (hh > hmax) hmax = hh;
       }
       if (!str || !*str) break;
     }
   }
 
   if (l->icon && (l->icon->h()+2)>hmax) {
-    hmax = l->icon->h() + 2;	// leave 2px above/below
+    hmax = l->icon->h() + 2;    // leave 2px above/below
   }
   return hmax; // previous version returned hmax+2!
 }
@@ -493,7 +437,7 @@ int Fl_Browser::item_width(void *item) const {
   Fl_Font font = textfont();
   int done = 0;
 
-  if ( format_char() ) {	// can be NULL
+  if ( format_char() ) {        // can be NULL
     while (*str == format_char_ && str[1] && str[1] != format_char_) {
       str ++;
       switch (*str++) {
@@ -508,11 +452,8 @@ int Fl_Browser::item_width(void *item) const {
       case 'F': font = (Fl_Font)strtol(str, &str, 10); break;
       case 'S': tsize = strtol(str, &str, 10); break;
       case '.':
-	done = 1;
-	break;
-      case '@':
-	str--;
-	done = 1;
+        done = 1;
+        break;
       }
 
     if (done)
@@ -563,21 +504,21 @@ void Fl_Browser::item_draw(void* item, int X, int Y, int W, int H) const {
   char* str = l->txt;
   const int* i = column_widths();
 
-  bool first = true;	// for icon
-  while (W > 6) {	// do each tab-separated field
-    int w1 = W;	// width for this field
+  bool firstLoop = true;        // for icon
+  while (W > 6) {       // do each tab-separated field
+    int w1 = W; // width for this field
     char* e = 0; // pointer to end of field or null if none
     if (*i) { // find end of field and temporarily replace with 0
       e = strchr(str, column_char());
       if (e) {*e = 0; w1 = *i++;}
     }
     // Icon drawing code
-    if (first) {
-      first = false;
+    if (firstLoop) {
+      firstLoop = false;
       if (l->icon) {
-	l->icon->draw(X+2,Y+1);	// leave 2px left, 1px above
-	int iconw = l->icon->w()+2;
-	X += iconw; W -= iconw; w1 -= iconw;
+        l->icon->draw(X+2,Y+1); // leave 2px left, 1px above
+        int iconw = l->icon->w()+2;
+        X += iconw; W -= iconw; w1 -= iconw;
       }
     }
     int tsize = textsize();
@@ -588,51 +529,49 @@ void Fl_Browser::item_draw(void* item, int X, int Y, int W, int H) const {
     //#if defined(__GNUC__)
     //#warning FIXME This maybe needs to be more UTF8 aware now...?
     //#endif /*__GNUC__*/
-    if ( format_char() ) {	// can be NULL
+    if ( format_char() ) {      // can be NULL
       while (*str == format_char() && *++str && *str != format_char()) {
-	switch (*str++) {
-	case 'l': case 'L': tsize = 24; break;
-	case 'm': case 'M': tsize = 18; break;
-	case 's': tsize = 11; break;
-	case 'b': font = (Fl_Font)(font|FL_BOLD); break;
-	case 'i': font = (Fl_Font)(font|FL_ITALIC); break;
-	case 'f': case 't': font = FL_COURIER; break;
-	case 'c': talign = FL_ALIGN_CENTER; break;
-	case 'r': talign = FL_ALIGN_RIGHT; break;
-	case 'B': 
-	  if (!(l->flags & SELECTED)) {
-	    fl_color((Fl_Color)strtoul(str, &str, 10));
-	    fl_rectf(X, Y, w1, H);
-	  } else while (isdigit(*str & 255)) str++; // skip digits
-	  break;
-	case 'C':
-	  lcol = (Fl_Color)strtoul(str, &str, 10);
-	  break;
-	case 'F':
-	  font = (Fl_Font)strtol(str, &str, 10);
-	  break;
-	case 'N':
-	  lcol = FL_INACTIVE_COLOR;
-	  break;
-	case 'S':
-	  tsize = strtol(str, &str, 10);
-	  break;
-	case '-':
-	  fl_color(FL_DARK3);
-	  fl_line(X+3, Y+H/2, X+w1-3, Y+H/2);
-	  fl_color(FL_LIGHT3);
-	  fl_line(X+3, Y+H/2+1, X+w1-3, Y+H/2+1);
-	  break;
-	case 'u':
-	case '_':
-	  fl_color(lcol);
-	  fl_line(X+3, Y+H-1, X+w1-3, Y+H-1);
-	  break;
-	case '.':
-	  goto BREAK;
-	case '@':
-	  str--; goto BREAK;
-	}
+        switch (*str++) {
+        case 'l': case 'L': tsize = 24; break;
+        case 'm': case 'M': tsize = 18; break;
+        case 's': tsize = 11; break;
+        case 'b': font = (Fl_Font)(font|FL_BOLD); break;
+        case 'i': font = (Fl_Font)(font|FL_ITALIC); break;
+        case 'f': case 't': font = FL_COURIER; break;
+        case 'c': talign = FL_ALIGN_CENTER; break;
+        case 'r': talign = FL_ALIGN_RIGHT; break;
+        case 'B':
+          if (!(l->flags & SELECTED)) {
+            fl_color((Fl_Color)strtoul(str, &str, 10));
+            fl_rectf(X, Y, w1, H);
+          } else while (isdigit(*str & 255)) str++; // skip digits
+          break;
+        case 'C':
+          lcol = (Fl_Color)strtoul(str, &str, 10);
+          break;
+        case 'F':
+          font = (Fl_Font)strtol(str, &str, 10);
+          break;
+        case 'N':
+          lcol = FL_INACTIVE_COLOR;
+          break;
+        case 'S':
+          tsize = strtol(str, &str, 10);
+          break;
+        case '-':
+          fl_color(FL_DARK3);
+          fl_line(X+3, Y+H/2, X+w1-3, Y+H/2);
+          fl_color(FL_LIGHT3);
+          fl_line(X+3, Y+H/2+1, X+w1-3, Y+H/2+1);
+          break;
+        case 'u':
+        case '_':
+          fl_color(lcol);
+          fl_line(X+3, Y+H-1, X+w1-3, Y+H-1);
+          break;
+        case '.':
+          goto BREAK;
+        }
       }
     }
   BREAK:
@@ -693,7 +632,7 @@ void Fl_Browser::lineposition(int line, Fl_Line_Position pos) {
     case BOTTOM: final -= H; break;
     case MIDDLE: final -= H/2; break;
   }
-  
+
   if (final > (full_height() - H)) final = full_height() -H;
   position(final);
 }
@@ -898,21 +837,21 @@ void Fl_Browser::swap(FL_BLINE *a, FL_BLINE *b) {
   FL_BLINE *anext  = a->next;
   FL_BLINE *bprev  = b->prev;
   FL_BLINE *bnext  = b->next;
-  if ( b->prev == a ) { 		// A ADJACENT TO B
+  if ( b->prev == a ) {                 // A ADJACENT TO B
      if ( aprev ) aprev->next = b; else first = b;
      b->next = a;
      a->next = bnext;
      b->prev = aprev;
      a->prev = b;
      if ( bnext ) bnext->prev = a; else last = a;
-  } else if ( a->prev == b ) {		// B ADJACENT TO A
+  } else if ( a->prev == b ) {          // B ADJACENT TO A
      if ( bprev ) bprev->next = a; else first = a;
      a->next = b;
      b->next = anext;
      a->prev = bprev;
      b->prev = a;
      if ( anext ) anext->prev = b; else last = b;
-  } else {				// A AND B NOT ADJACENT
+  } else {                              // A AND B NOT ADJACENT
      // handle prev's
      b->prev = aprev;
      if ( anext ) anext->prev = b; else last = b;
@@ -956,22 +895,22 @@ void Fl_Browser::icon(int line, Fl_Image* icon) {
 
   FL_BLINE* bl = find_line(line);
 
-  int old_h = bl->icon ? bl->icon->h()+2 : 0;	// init with *old* icon height
-  bl->icon = 0;					// remove icon, if any
-  int th = item_height(bl);			// height of text only
-  int new_h = icon ? icon->h()+2 : 0;		// init with *new* icon height
+  int old_h = bl->icon ? bl->icon->h()+2 : 0;   // init with *old* icon height
+  bl->icon = 0;                                 // remove icon, if any
+  int th = item_height(bl);                     // height of text only
+  int new_h = icon ? icon->h()+2 : 0;           // init with *new* icon height
   if (th > old_h) old_h = th;
   if (th > new_h) new_h = th;
   int dh = new_h - old_h;
-  full_height_ += dh;				// do this *always*
+  full_height_ += dh;                           // do this *always*
 
-  bl->icon = icon;				// set new icon
+  bl->icon = icon;                              // set new icon
   if (dh>0) {
-    redraw();					// icon larger than item? must redraw widget
+    redraw();                                   // icon larger than item? must redraw widget
   } else {
-    redraw_line(bl);				// icon same or smaller? can redraw just this line
+    redraw_line(bl);                            // icon same or smaller? can redraw just this line
   }
-  replacing(bl,bl);				// recalc Fl_Browser_::max_width et al
+  replacing(bl,bl);                             // recalc Fl_Browser_::max_width et al
 }
 
 /**
@@ -990,32 +929,27 @@ Fl_Image* Fl_Browser::icon(int line) const {
   It's ok to remove an icon if none has been defined.
   \param[in] line The line whose icon is to be removed.
 */
-void Fl_Browser::remove_icon(int line) { 
+void Fl_Browser::remove_icon(int line) {
   icon(line,0);
 }
 
 
 Fl_Hold_Browser::Fl_Hold_Browser(int X,int Y,int W,int H,const char *L)
-: Fl_Browser(X,Y,W,H,L) 
+: Fl_Browser(X,Y,W,H,L)
 {
   type(FL_HOLD_BROWSER);
 }
 
 
 Fl_Multi_Browser::Fl_Multi_Browser(int X,int Y,int W,int H,const char *L)
-: Fl_Browser(X,Y,W,H,L) 
+: Fl_Browser(X,Y,W,H,L)
 {
   type(FL_MULTI_BROWSER);
 }
 
 
 Fl_Select_Browser::Fl_Select_Browser(int X,int Y,int W,int H,const char *L)
-: Fl_Browser(X,Y,W,H,L) 
+: Fl_Browser(X,Y,W,H,L)
 {
   type(FL_SELECT_BROWSER);
 }
-
-
-//
-// End of "$Id: Fl_Browser.cxx 12516 2017-10-18 15:48:29Z greg.ercolano $".
-//

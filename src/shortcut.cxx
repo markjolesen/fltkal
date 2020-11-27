@@ -1,71 +1,17 @@
-// shortcut.cxx
-//
-// "$Id: fl_shortcut.cxx 12976 2018-06-26 14:12:43Z manolo $"
 //
 // Shortcut support routines for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
 // Copyright 1998-2018 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 // Code to test and parse fltk shortcut numbers.
@@ -84,10 +30,10 @@
 // This allows punctuation shortcuts like "#" to work (rather than
 // calling it "shift+3" on a US keyboard)
 
-#include "cfg_lib.h"
 #include <fl/fl.h>
 #include <fl/widget.h>
 #include <fl/btn.h>
+#include <fl/fl.h>
 #include "drvsys.h"
 #include <fl/fl_draw.h>
 #include <stdlib.h>
@@ -199,8 +145,8 @@ const char* fl_shortcut_label(unsigned int shortcut) {
 
 static char *add_modifier_key(char *p, const char *end, const char *name) {
   size_t ln = strlen(name);
-  if (p+ln > end) {		// string too long
-    if (p+4 <= end) {		// can replace with "..." ?
+  if (p+ln > end) {             // string too long
+    if (p+4 <= end) {           // can replace with "..." ?
       strcpy(p,"...");
       p += 3;
     } else
@@ -209,12 +155,12 @@ static char *add_modifier_key(char *p, const char *end, const char *name) {
     strcpy(p,name);
     p += ln;
   }
-  if (p[-1] == '\\')		// remove (last) '\' character
+  if (p[-1] == '\\')            // remove (last) '\' character
     p--;
-  else if (p[-1] == '+')	// don't add another '+' character
+  else if (p[-1] == '+')        // don't add another '+' character
     {/*empty*/}
-  else				// not a '\' or '+'
-    *p++ = '+';			// add a '+' character
+  else                          // not a '\' or '+'
+    *p++ = '+';                 // add a '+' character
   return p;
 }
 
@@ -242,8 +188,8 @@ const char* fl_shortcut_label(unsigned int shortcut, const char **eom) {
 
   // Add modifier key names.
   // Note: if necessary we could change the order here depending on the platform.
-  // However, as discussed in fltk.development, the order appears to be the
-  // same on all platforms, with exceptions in _some_ GNU/Linux applications.
+  // However, as discussed in fltk.coredev, the order appears to be the
+  // same on all platforms, with exceptions in _some_ Linux applications.
 
   if (shortcut & FL_CTRL)  {p = add_modifier_key(p, end, fl_local_ctrl);}
   if (shortcut & FL_ALT)   {p = add_modifier_key(p, end, fl_local_alt);}
@@ -267,7 +213,7 @@ const char* fl_shortcut_label(unsigned int shortcut, const char **eom) {
    + - Shift
    ^ - Control
    ! - Meta
-   @ - Command (Ctrl on GNU/Linux or Win; Meta on OSX)
+   @ - Command (Ctrl on linux/win, Meta on OSX)
   \endverbatim
 
   These special characters can be combined to form chords of modifier
@@ -380,7 +326,7 @@ unsigned int Fl_Widget::label_shortcut(const char *t) {
   \param require_alt if true: match only if Alt key is pressed.
 
   \return true, if the entered text matches the '&x' shortcut in \p t
-	  false (0) otherwise.
+          false (0) otherwise.
 
   \note Internal use only.
 */
@@ -390,8 +336,8 @@ int Fl_Widget::test_shortcut(const char *t, const bool require_alt) {
   // for menubars etc. shortcuts must work only if the Alt modifier is pressed
   if (require_alt && Fl::event_state(FL_ALT)==0) return 0;
   unsigned int c = fl_utf8decode(Fl::event_text(), Fl::event_text()+Fl::event_length(), 0);
-  // this line makes underline shortcuts work the same way they do on MSWindow
-  // and GNU/Linux. 
+  // this line makes underline shortcuts work the same way they do on Windows
+  // and Linux.
   if (extra_test && c && Fl::event_state(FL_ALT))
     c = Fl::event_key();
   if (!c) return 0;
@@ -414,7 +360,7 @@ int Fl_Widget::test_shortcut(const char *t, const bool require_alt) {
   Fl::event_text() is used to get the entered key value.
 
   \return true, if the entered text matches the widget's'&x' shortcut,
-	  false (0) otherwise.
+          false (0) otherwise.
 
   \note Internal use only.
 */
@@ -472,7 +418,3 @@ const char *Fl_System_Driver::shortcut_add_key_name(unsigned key, char *p, char 
  \}
  \endcond
  */
-
-//
-// End of "$Id: fl_shortcut.cxx 12976 2018-06-26 14:12:43Z manolo $".
-//

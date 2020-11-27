@@ -75,11 +75,10 @@
 #define UTF8PROC_VERSION_PATCH 0
 /** @} */
 
+#include <inttypes.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
-
-#  include <stddef.h>
-#  include <stdbool.h>
-#  include <inttypes.h>
 typedef int8_t utf8proc_int8_t;
 typedef uint8_t utf8proc_uint8_t;
 typedef int16_t utf8proc_int16_t;
@@ -91,15 +90,16 @@ typedef ptrdiff_t utf8proc_ssize_t;
 typedef bool utf8proc_bool;
 #include <limits.h>
 
-#  define UTF8PROC_DLLEXPORT
+#define UTF8PROC_DLLEXPORT
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #define UTF8PROC_ERROR_INVALIDUTF8 -3
 
-/**
+  /**
  * Reads a single codepoint from the UTF-8 sequence being pointed to by `str`.
  * The maximum number of bytes read is `strlen`, unless `strlen` is
  * negative (in which case up to 4 bytes are read).
@@ -109,8 +109,12 @@ extern "C" {
  * In case of success, the number of bytes read is returned; otherwise, a
  * negative error code is returned.
  */
-UTF8PROC_DLLEXPORT utf8proc_ssize_t utf8proc_iterate(const utf8proc_uint8_t *str, utf8proc_ssize_t strlen, utf8proc_int32_t *codepoint_ref);
-UTF8PROC_DLLEXPORT utf8proc_ssize_t utf8proc_encode_char(utf8proc_int32_t uc, utf8proc_uint8_t *dst);
+  UTF8PROC_DLLEXPORT utf8proc_ssize_t
+    utf8proc_iterate(const utf8proc_uint8_t *str,
+                     utf8proc_ssize_t strlen,
+                     utf8proc_int32_t *codepoint_ref);
+  UTF8PROC_DLLEXPORT utf8proc_ssize_t
+    utf8proc_encode_char(utf8proc_int32_t uc, utf8proc_uint8_t *dst);
 
 #ifdef __cplusplus
 }

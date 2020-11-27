@@ -63,63 +63,72 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include "fontdir.h"
-#include "../../flstring.h"
-#include <string.h>
-#include <stdlib.h>
 
-fontdir::fontdir() :
-    fonts(0),
-    size(0)
+#include "fontdir.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "../../flstring.h"
+#include <fl/fl_str.h>
+
+fontdir::fontdir() : id_(0), count_(0), size_(0)
 {
-    return;
+  return;
 }
 
 fontdir::~fontdir()
 {
-    clear();
-    return;
-}
+  size_t index;
 
-void fontdir::clear()
-{
-    free(fonts);
-    size = 0;
-    return;
-}
-
-void fontdir::add(char const *face, char const *path)
-{
-    void *arr = realloc(fonts, sizeof(struct fontdir_element) * (1 + size));
-
-    if (arr)
+  for (index = 0; count_ > index; index++)
     {
-        fonts = reinterpret_cast<struct fontdir_element *>(arr);
-        struct fontdir_element *el = &fonts[size];
-        memset(el, 0, sizeof(*el));
-        strlcpy(el->face, face, sizeof(el->face));
-        strlcpy(el->path, path, sizeof(el->path));
-        el->valid = true;
-        size++;
+      struct fontdir::id *id = &id_[index];
+      free(id->face_);
+      free(id->path_);
     }
 
-    return;
+  free(id_);
+
+  return;
 }
 
-static bool enum_fonts_cb(
-    void *user_data,
-    char const *path,
-    char const *key,
-    char const *value,
-    unsigned int const index)
+void
+  fontdir::add(char const *face, char const *path)
 {
-    fontdir &dir = *reinterpret_cast<fontdir *>(user_data);
-    dir.add(key, value);
-    return true;
+  if (size_ < (1 + count_))
+    {
+      size_ += 100;
+      id_ = (struct fontdir::id *)realloc(
+        id_, (size_ * sizeof(struct fontdir::id)));
+    }
+
+  struct fontdir::id *id = &id_[count_];
+
+  memset(id, 0, sizeof(*id));
+  id->face_ = fl_strdup(face);
+  id->path_ = fl_strdup(path);
+
+  count_++;
+
+  return;
 }
 
-void fontdir::load(Fl_Preferences &pref)
+static bool
+  enum_fonts_cb(void *user_data,
+                char const *path,
+                char const *key,
+                char const *value,
+                unsigned int const index)
 {
-    Fl_Preferences fonts(pref, "fonts");
-    fonts.enumerate(enum_fonts_cb, this);
+  fontdir &dir = *reinterpret_cast<fontdir *>(user_data);
+  dir.add(key, value);
+  return true;
+}
+
+void
+  fontdir::load(Fl_Preferences &pref)
+{
+  Fl_Preferences sect(pref, "fonts");
+  sect.enumerate(enum_fonts_cb, this);
 }

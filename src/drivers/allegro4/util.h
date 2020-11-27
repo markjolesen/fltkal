@@ -65,13 +65,16 @@
 //
 #if !defined(__UTIL_H__)
 
-#include <fl/pref.h>
+#  include <fl/pref.h>
 
-extern char const *filename_extract(char const *path);
+extern char const *
+  filename_extract(char const *path);
 
-extern char *program_path();
+extern char *
+  program_path();
 
-extern Fl_Preferences *fltkcfg();
+extern Fl_Preferences *
+  fltkcfg();
 
-#define __UTIL_H__
+#  define __UTIL_H__
 #endif

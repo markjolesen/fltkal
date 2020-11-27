@@ -1,71 +1,18 @@
-// texted.cxx
 //
-// "$Id: Fl_Text_Editor.cxx 12975 2018-06-26 14:04:09Z manolo $"
-//
-// Copyright 2017-2018 The fltkal authors
-// Copyright 2001-2010, 2018 by Bill Spitzak and others.
-//
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright 2001-2018 by Bill Spitzak and others.
 //
 // Original code Copyright Mark Edel.  Permission to distribute under
 // the LGPL for the FLTK library granted by Mark Edel.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 #include <stdio.h>
@@ -80,10 +27,10 @@
 
 /* Keyboard Control Matrix
 
-key\modifier   plain  Ctrl   Alt  Meta  
-  left          1/1  13/9   0/13  0/9  
-  right         2/2  14/10  0/14  0/10  
-  up            3/19 21/7   0/15  0/17 
+key\modifier   plain  Ctrl   Alt  Meta
+  left          1/1  13/9   0/13  0/9
+  right         2/2  14/10  0/14  0/10
+  up            3/19 21/7   0/15  0/17
   down          4/20 22/8   0/16  0/18
   home          9/5  17/0   0/0   0/0
   end          10/6  18/0   0/0   0/0
@@ -183,9 +130,9 @@ static struct {
   { FL_Down,      FL_CTRL|FL_SHIFT,         Fl_Text_Editor::kf_c_s_move   },
   { FL_Page_Up,   FL_CTRL|FL_SHIFT,         Fl_Text_Editor::kf_c_s_move   },
   { FL_Page_Down, FL_CTRL|FL_SHIFT,         Fl_Text_Editor::kf_c_s_move   },
-//{ FL_Clear,	  0,                        Fl_Text_Editor::delete_to_eol },
-  { 'z',          FL_CTRL,                  Fl_Text_Editor::kf_undo	  },
-  { '/',          FL_CTRL,                  Fl_Text_Editor::kf_undo	  },
+//{ FL_Clear,     0,                        Fl_Text_Editor::delete_to_eol },
+  { 'z',          FL_CTRL,                  Fl_Text_Editor::kf_undo       },
+  { '/',          FL_CTRL,                  Fl_Text_Editor::kf_undo       },
   { 'x',          FL_CTRL,                  Fl_Text_Editor::kf_cut        },
   { FL_Delete,    FL_SHIFT,                 Fl_Text_Editor::kf_cut        },
   { 'c',          FL_CTRL,                  Fl_Text_Editor::kf_copy       },
@@ -472,18 +419,18 @@ int Fl_Text_Editor::kf_meta_move(int c, Fl_Text_Editor* e) {
     e->show_insert_position();
   }
   switch (c) {
-    case FL_Up:				// top of buffer
+    case FL_Up:                         // top of buffer
       e->insert_position(0);
       e->scroll(0, 0);
       break;
-    case FL_Down:			// end of buffer
+    case FL_Down:                       // end of buffer
       e->insert_position(e->buffer()->length());
       e->scroll(e->count_lines(0, e->buffer()->length(), 1), 0);
       break;
-    case FL_Left:			// beginning of line
+    case FL_Left:                       // beginning of line
       kf_move(FL_Home, e);
       break;
-    case FL_Right:			// end of line
+    case FL_Right:                      // end of line
       kf_move(FL_End, e);
       break;
   }
@@ -708,7 +655,7 @@ void Fl_Text_Editor::maybe_do_callback() {
 
 int Fl_Text_Editor::handle(int event) {
   static int dndCursorPos;
-  
+
   if (!buffer()) return 0;
 
   switch (event) {
@@ -721,9 +668,9 @@ int Fl_Text_Editor::handle(int event) {
     case FL_UNFOCUS:
       show_cursor(mCursorOn); // redraws the cursor
       if (Fl::screen_driver()->has_marked_text() && buffer()->selected() && Fl::compose_state) {
-	int pos = insert_position();
-	buffer()->select(pos, pos);
-	Fl::reset_marked_text();
+        int pos = insert_position();
+        buffer()->select(pos, pos);
+        Fl::reset_marked_text();
       }
       if (buffer()->selected()) redraw(); // Redraw selections...
     case FL_HIDE:
@@ -731,14 +678,14 @@ int Fl_Text_Editor::handle(int event) {
       return 1;
 
     case FL_KEYBOARD:
-      if (active_r() && window() && this == Fl::belowmouse()) 
+      if (active_r() && window() && this == Fl::belowmouse())
         window()->cursor(FL_CURSOR_NONE);
       return handle_key();
 
     case FL_PASTE:
       if (!Fl::event_text()) {
         fl_beep();
-	return 1;
+        return 1;
       }
       buffer()->remove_selection();
       if (insert_mode()) insert(Fl::event_text());
@@ -759,10 +706,10 @@ int Fl_Text_Editor::handle(int event) {
         // don't let the text_display see this event
         if (Fl_Group::handle(event)) return 1;
         dragType = DRAG_NONE;
-	if(buffer()->selected()) {
-	  buffer()->unselect();
-	  }
-	int pos = xy_to_position(Fl::event_x(), Fl::event_y(), CURSOR_POS);
+        if(buffer()->selected()) {
+          buffer()->unselect();
+          }
+        int pos = xy_to_position(Fl::event_x(), Fl::event_y(), CURSOR_POS);
         insert_position(pos);
         Fl::paste(*this, 0);
         Fl::focus(this);
@@ -780,8 +727,8 @@ int Fl_Text_Editor::handle(int event) {
         return 1;
       }
       break;
-      
-      // Handle drag'n'drop attempt by the user. This is a simplified 
+
+      // Handle drag'n'drop attempt by the user. This is a simplified
       // implementation which allows dnd operations onto the scroll bars.
     case FL_DND_ENTER: // save the current cursor position
       if (Fl::visible_focus() && handle(FL_FOCUS))
@@ -791,10 +738,10 @@ int Fl_Text_Editor::handle(int event) {
       /* fall through */
     case FL_DND_DRAG: // show a temporary insertion cursor
       insert_position(xy_to_position(Fl::event_x(), Fl::event_y(), CURSOR_POS));
-      return 1;      
+      return 1;
     case FL_DND_LEAVE: // restore original cursor
       insert_position(dndCursorPos);
-      return 1;      
+      return 1;
     case FL_DND_RELEASE: // keep insertion cursor and wait for the FL_PASTE event
       if (!dragging) buffer()->unselect(); // FL_PASTE must not destroy current selection if drag comes from outside
       return 1;
@@ -820,7 +767,7 @@ detail may change in the future. Know that changing the editor's
 key bindings for Tab and Shift-Tab may affect tab navigation.
 
 \param [in] val If \p val is 0, Tab inserts a tab character (default).<br>
-		If \p val is 1, Tab navigates widget focus.
+                If \p val is 1, Tab navigates widget focus.
 
 \see tab_nav(), Fl::OPTION_ARROW_FOCUS.
 \version 1.3.4 ABI feature
@@ -841,9 +788,9 @@ editor buffer.
 If enabled, hitting Tab navigates focus to the next widget,
 and Shift-Tab navigates focus to the previous widget.
 
-\returns	if Tab inserts tab characters or moves the focus
-\retval	0	Tab inserts tab characters (default)
-\retval	1	Tab navigation is enabled.
+\returns        if Tab inserts tab characters or moves the focus
+\retval 0       Tab inserts tab characters (default)
+\retval 1       Tab navigation is enabled.
 
 \see tab_nav(int), Fl::OPTION_ARROW_FOCUS.
 \version 1.3.4 ABI feature
@@ -851,7 +798,3 @@ and Shift-Tab navigates focus to the previous widget.
 int Fl_Text_Editor::tab_nav() const {
   return (bound_key_function(FL_Tab,0)==kf_ignore) ? 1 : 0;
 }
-
-//
-// End of "$Id: Fl_Text_Editor.cxx 12975 2018-06-26 14:04:09Z manolo $".
-//

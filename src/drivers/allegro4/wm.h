@@ -65,48 +65,49 @@
 //
 #if !defined(__WM_H__)
 
-#include <fl/win.h>
+#  include <fl/win.h>
 
 class wm
 {
-
 public:
+  wm();
 
-    wm();
+  virtual ~wm();
 
-    virtual ~wm();
+  enum hit_type
+  {
+    HIT_NONE = 0,
+    HIT_WINDOW,
+    HIT_MOVE,
+    HIT_EAST,
+    HIT_WEST,
+    HIT_NORTH,
+    HIT_NORTH_EAST,
+    HIT_NORTH_WEST,
+    HIT_SOUTH,
+    HIT_SOUTH_EAST,
+    HIT_SOUTH_WEST
+  };
 
-    enum hit_type
-    {
-        HIT_NONE = 0,
-        HIT_WINDOW,
-        HIT_MOVE,
-        HIT_EAST,
-        HIT_WEST,
-        HIT_NORTH,
-        HIT_NORTH_EAST,
-        HIT_NORTH_WEST,
-        HIT_SOUTH,
-        HIT_SOUTH_EAST,
-        HIT_SOUTH_WEST
-    };
+  hit_type
+    hit(Fl_Window &window, int const x, int const y) const;
 
-    hit_type hit(Fl_Window &window, int const x, int const y) const;
-
-    bool handle_push(Fl_Window &window, hit_type const what, int const x, int const y) const;
+  bool
+    handle_push(Fl_Window &window,
+                hit_type const what,
+                int const x,
+                int const y) const;
 
 protected:
-
-    void handle_push(Fl_Window &window, hit_type const what) const;
+  void
+    handle_push(Fl_Window &window, hit_type const what) const;
 
 private:
+  wm(wm const &);
 
-
-    wm(wm const &);
-
-    wm &operator=(wm const &);
-
+  wm &
+    operator=(wm const &);
 };
 
-#define __WM_H__
+#  define __WM_H__
 #endif

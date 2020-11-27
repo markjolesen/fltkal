@@ -66,185 +66,184 @@
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "timeout.h"
+
 #include <stdlib.h>
 
-timeout::timeout() :
-    first_(0),
-    free_(0)
+timeout::timeout() : first_(0), free_(0)
 {
-    return;
+  return;
 }
 
 timeout::~timeout()
 {
-    clear();
+  clear();
 }
 
-void timeout::clear(struct slot *const head)
+void
+  timeout::clear(struct slot *const head)
 {
-    struct slot *s;
-    struct slot *n;
+  struct slot *s;
+  struct slot *n;
 
-    s = head;
+  s = head;
 
-    do
+  do
     {
-        if (0 == s)
+      if (0 == s)
         {
-            break;
+          break;
         }
-        n = s->next;
-        free(s);
-        s = n;
+      n = s->next;
+      free(s);
+      s = n;
     }
-    while (1);
+  while (1);
 
-    return;
+  return;
 }
 
-void timeout::clear()
+void
+  timeout::clear()
 {
+  clear(first_);
+  clear(free_);
 
-    clear(first_);
-    clear(free_);
-
-    return;
+  return;
 }
 
-bool timeout::contains(Fl_Timeout_Handler cb, void *arg)
+bool
+  timeout::contains(Fl_Timeout_Handler cb, void *arg)
 {
-    bool found = false;
-    struct slot *s = first_;
+  bool found = false;
+  struct slot *s = first_;
 
-    do
+  do
     {
-
-        if (0 == s)
+      if (0 == s)
         {
-            break;
-        }
-
-        found = (cb == s->cb && arg == s->arg);
-
-        if (found)
-        {
-            break;
+          break;
         }
 
-        s = s->next;
+      found = (cb == s->cb && arg == s->arg);
 
-    }
-    while (1);
-
-    return found;
-}
-
-void timeout::link(double const seconds, Fl_Timeout_Handler cb, void *arg)
-{
-    struct slot *s = free_;
-
-    if (s)
-    {
-        free_ = s->next;
-    }
-    else
-    {
-        s = reinterpret_cast<struct slot *>(malloc(sizeof(*s)));
-    }
-
-    s->timer.set(seconds);
-    s->seconds = seconds;
-    s->cb = cb;
-    s->arg = arg;
-
-    struct slot **p = &first_;
-    while (*p && (*p)->seconds <= seconds)
-    {
-        p = &((*p)->next);
-    }
-
-    s->next = *p;
-    *p = s;
-
-    return;
-}
-
-void timeout::add(double const seconds, Fl_Timeout_Handler cb, void *arg)
-{
-    link(seconds, cb, arg);
-}
-
-void timeout::repeat(double const seconds, Fl_Timeout_Handler cb, void *arg)
-{
-    link(seconds, cb, arg);
-}
-
-void timeout::elapse(ticks_t const &elapsed)
-{
-    struct slot *s;
-
-    do
-    {
-
-        if (0 == first_)
+      if (found)
         {
-            break;
+          break;
         }
 
-        for (s = first_; s; s = s->next)
+      s = s->next;
+    }
+  while (1);
+
+  return found;
+}
+
+void
+  timeout::link(double const seconds, Fl_Timeout_Handler cb, void *arg)
+{
+  struct slot *s = free_;
+
+  if (s)
+    {
+      free_ = s->next;
+    }
+  else
+    {
+      s = reinterpret_cast<struct slot *>(malloc(sizeof(*s)));
+    }
+
+  s->timer.set(seconds);
+  s->seconds = seconds;
+  s->cb = cb;
+  s->arg = arg;
+
+  struct slot **p = &first_;
+  while (*p && (*p)->seconds <= seconds)
+    {
+      p = &((*p)->next);
+    }
+
+  s->next = *p;
+  *p = s;
+
+  return;
+}
+
+void
+  timeout::add(double const seconds, Fl_Timeout_Handler cb, void *arg)
+{
+  link(seconds, cb, arg);
+}
+
+void
+  timeout::repeat(double const seconds, Fl_Timeout_Handler cb, void *arg)
+{
+  link(seconds, cb, arg);
+}
+
+void
+  timeout::elapse(ticks_t const &elapsed)
+{
+  struct slot *s;
+
+  do
+    {
+      if (0 == first_)
         {
-            s->timer.elapse(elapsed);
+          break;
         }
 
-        do
+      for (s = first_; s; s = s->next)
         {
+          s->timer.elapse(elapsed);
+        }
 
-            if (false == first_->timer.expired())
+      do
+        {
+          if (false == first_->timer.expired())
             {
-                break;
+              break;
             }
 
-            Fl_Timeout_Handler cb = first_->cb;
-            void *arg = first_->arg;
+          Fl_Timeout_Handler cb = first_->cb;
+          void *arg = first_->arg;
 
-            s = first_;
-            first_ = s->next;
-            s->next = free_;
-            free_ = s;
+          s = first_;
+          first_ = s->next;
+          s->next = free_;
+          free_ = s;
 
-            (*cb)(arg);
+          (*cb)(arg);
 
-            if (0 == first_)
+          if (0 == first_)
             {
-                break;
+              break;
             }
-
         }
-        while (0);
-
+      while (0);
     }
-    while (0);
+  while (0);
 
-    return;
+  return;
 }
 
-void timeout::remove(Fl_Timeout_Handler cb, void *arg)
+void
+  timeout::remove(Fl_Timeout_Handler cb, void *arg)
 {
-
-    for (struct slot **p = &first_; *p;)
+  for (struct slot **p = &first_; *p;)
     {
-        struct slot *s = *p;
-        if (s->cb == cb && (s->arg == arg || !arg))
+      struct slot *s = *p;
+      if (s->cb == cb && (s->arg == arg || !arg))
         {
-            *p = s->next;
-            s->next = free_;
-            free_ = s;
+          *p = s->next;
+          s->next = free_;
+          free_ = s;
         }
-        else
+      else
         {
-            p = &(s->next);
+          p = &(s->next);
         }
     }
 
-    return;
+  return;
 }

@@ -1,71 +1,17 @@
-// bmp.cxx
-//
-// "$Id: Fl_Bitmap.cxx 12909 2018-05-09 12:27:38Z manolo $"
 //
 // Bitmap drawing routines for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2017-2018 The fltkal authors
-// Copyright 1998-2016, 2018 by Bill Spitzak and others.
+// Copyright 1998-2016 by Bill Spitzak and others.
 //
-//                              FLTK License
-//                            December 11, 2001
-// 
-// The FLTK library and included programs are provided under the terms
-// of the GNU Library General Public License (LGPL) with the following
-// exceptions:
-// 
-//     1. Modifications to the FLTK configure script, config
-//        header file, and makefiles by themselves to support
-//        a specific platform do not constitute a modified or
-//        derivative work.
-// 
-//       The authors do request that such modifications be
-//       contributed to the FLTK project - send all contributions
-//       through the "Software Trouble Report" on the following page:
-//  
-//            http://www.fltk.org/str.php
-// 
-//     2. Widgets that are subclassed from FLTK widgets do not
-//        constitute a derivative work.
-// 
-//     3. Static linking of applications and widgets to the
-//        FLTK library does not constitute a derivative work
-//        and does not require the author to provide source
-//        code for the application or widget, use the shared
-//        FLTK libraries, or link their applications or
-//        widgets against a user-supplied version of FLTK.
-// 
-//        If you link the application or widget to a modified
-//        version of FLTK, then the changes to FLTK must be
-//        provided under the terms of the LGPL in sections
-//        1, 2, and 4.
-// 
-//     4. You do not have to provide a copy of the FLTK license
-//        with programs that are linked to the FLTK library, nor
-//        do you have to identify the FLTK license in your
-//        program or documentation as required by section 6
-//        of the LGPL.
-// 
-//        However, programs must still identify their use of FLTK.
-//        The following example statement can be included in user
-//        documentation to satisfy this requirement:
-// 
-//            [program/widget] is based in part on the work of
-//            the FLTK project (http://www.fltk.org).
-// 
-//     This library is free software; you can redistribute it and/or
-//     modify it under the terms of the GNU Library General Public
-//     License as published by the Free Software Foundation; either
-//     version 2 of the License, or (at your option) any later version.
-// 
-//     This library is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//     Library General Public License for more details.
-// 
-//     You should have received a copy of the GNU Library General Public
-//     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
 //
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 
 /** \fn Fl_Bitmap::Fl_Bitmap(const char *array, int W, int H)
@@ -79,7 +25,6 @@
 #include <fl/widget.h>
 #include <fl/menuitem.h>
 #include <fl/imgbit.h>
-// #include <fl/Fl_Printer.H>
 
 /** Create a bit mask */
 Fl_Bitmask fl_create_bitmask(int w, int h, const uchar *array) {
@@ -150,11 +95,11 @@ Fl_Bitmask fl_create_alphamask(int w, int h, int d, int ld, const uchar *array) 
   for (dataptr = array + d - 1, y = 0; y < h; y ++, dataptr += ld)
     for (bitptr = bitmap + y * bmw, bit = 1, x = 0; x < w; x ++, dataptr += d) {
       if (*dataptr > dither[x & 15][y & 15])
-	*bitptr |= bit;
+        *bitptr |= bit;
       if (bit < 128) bit <<= 1;
       else {
-	bit = 1;
-	bitptr ++;
+        bit = 1;
+        bitptr ++;
       }
     }
 
@@ -193,8 +138,8 @@ void Fl_Bitmap::label(Fl_Menu_Item* m) {
 }
 
 Fl_Image *Fl_Bitmap::copy(int W, int H) {
-  Fl_Bitmap	*new_image;	// New RGB image
-  uchar		*new_array;	// New array for image data
+  Fl_Bitmap     *new_image;     // New RGB image
+  uchar         *new_array;     // New array for image data
 
   // Optimize the simple copy where the width and height are the same...
   if (W == data_w() && H == data_h()) {
@@ -208,16 +153,16 @@ Fl_Image *Fl_Bitmap::copy(int W, int H) {
   }
   if (W <= 0 || H <= 0) return 0;
 
-  // OK, need to resize the image data; allocate memory and 
-  uchar		*new_ptr,	// Pointer into new array
-		new_bit,	// Bit for new array
-		old_bit;	// Bit for old array
-  const uchar	*old_ptr;	// Pointer into old array
-  int		sx, sy,		// Source coordinates
-		dx, dy,		// Destination coordinates
-		xerr, yerr,	// X & Y errors
-		xmod, ymod,	// X & Y moduli
-		xstep, ystep;	// X & Y step increments
+  // OK, need to resize the image data; allocate memory and
+  uchar         *new_ptr,       // Pointer into new array
+                new_bit,        // Bit for new array
+                old_bit;        // Bit for old array
+  const uchar   *old_ptr;       // Pointer into old array
+  int           sx, sy,         // Source coordinates
+                dx, dy,         // Destination coordinates
+                xerr, yerr,     // X & Y errors
+                xmod, ymod,     // X & Y moduli
+                xstep, ystep;   // X & Y step increments
 
 
   // Figure out Bresenham step/modulus values...
@@ -236,23 +181,23 @@ Fl_Image *Fl_Bitmap::copy(int W, int H) {
   // Scale the image using a nearest-neighbor algorithm...
   for (dy = H, sy = 0, yerr = H, new_ptr = new_array; dy > 0; dy --) {
     for (dx = W, xerr = W, old_ptr = array + sy * ((data_w() + 7) / 8), sx = 0, new_bit = 1;
-	 dx > 0;
-	 dx --) {
+         dx > 0;
+         dx --) {
       old_bit = (uchar)(1 << (sx & 7));
       if (old_ptr[sx / 8] & old_bit) *new_ptr |= new_bit;
 
       if (new_bit < 128) new_bit <<= 1;
       else {
         new_bit = 1;
-	new_ptr ++;
+        new_ptr ++;
       }
 
       sx   += xstep;
       xerr -= xmod;
 
       if (xerr <= 0) {
-	xerr += W;
-	sx ++;
+        xerr += W;
+        sx ++;
       }
     }
 
@@ -268,7 +213,3 @@ Fl_Image *Fl_Bitmap::copy(int W, int H) {
 
   return new_image;
 }
-
-//
-// End of "$Id: Fl_Bitmap.cxx 12909 2018-05-09 12:27:38Z manolo $".
-//
