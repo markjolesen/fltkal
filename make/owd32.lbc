@@ -85,6 +85,7 @@
 -+..\obj\imgpix.obj 
 -+..\obj\imgpng.obj 
 -+..\obj\imgpnm.obj 
+-+..\obj\imgrdr.obj 
 -+..\obj\imgread.obj 
 -+..\obj\imgshare.obj 
 -+..\obj\imgtiled.obj 
