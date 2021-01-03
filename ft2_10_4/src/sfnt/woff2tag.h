@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * woff2tags.h
+ * woff2tag.h
  *
  *   WOFFF2 Font table tags (specification).
  *
@@ -21,7 +21,7 @@
 
 
 #include <freetype/internal/ftobjs.h>
-#include <freetype/internal/compiler-macros.h>
+#include <freetype/internal/compilers.h>
 
 
 FT_BEGIN_HEADER

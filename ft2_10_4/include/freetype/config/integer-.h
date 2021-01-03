@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * config/integer-types.h
+ * config/integer.h
  *
  *   FreeType integer types definitions.
  *

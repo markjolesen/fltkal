@@ -24,7 +24,7 @@
 #include FT_CONFIG_CONFIG_H
 #include <freetype/ftimage.h>
 
-#include <freetype/internal/compiler-macros.h>
+#include <freetype/internal/compilers.h>
 
 FT_BEGIN_HEADER
 

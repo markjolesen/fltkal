@@ -16,7 +16,7 @@
  */
 
 #include "sfwoff2.h"
-#include "woff2tags.h"
+#include "woff2tag.h"
 #include <freetype/tttags.h>
 #include <freetype/internal/ftdebug.h>
 #include <freetype/internal/ftstream.h>

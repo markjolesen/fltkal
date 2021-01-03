@@ -41,9 +41,9 @@
 #include FT_CONFIG_OPTIONS_H
 #include FT_CONFIG_STANDARD_LIBRARY_H
 
-#include <freetype/config/integer-types.h>
-#include <freetype/config/public-macros.h>
-#include <freetype/config/mac-support.h>
+#include <freetype/config/integer.h>
+#include <freetype/config/public-m.h>
+#include <freetype/config/mac-supp.h>
 
 #endif /* FTCONFIG_H_ */
 

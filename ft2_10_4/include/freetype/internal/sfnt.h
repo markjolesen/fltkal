@@ -22,7 +22,7 @@
 
 #include <freetype/internal/ftdrv.h>
 #include <freetype/internal/tttypes.h>
-#include <freetype/internal/wofftypes.h>
+#include <freetype/internal/wofftype.h>
 
 
 FT_BEGIN_HEADER

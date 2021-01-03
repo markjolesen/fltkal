@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * config/mac-support.h
+ * config/mac-supp.h
  *
  *   Mac/OS X support configuration header.
  *

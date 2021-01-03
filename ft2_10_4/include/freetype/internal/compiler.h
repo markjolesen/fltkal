@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * internal/compiler-macros.h
+ * internal/compilers.h
  *
  *   Compiler-specific macro definitions used internally by FreeType.
  *
@@ -18,7 +18,7 @@
 #ifndef INTERNAL_COMPILER_MACROS_H_
 #define INTERNAL_COMPILER_MACROS_H_
 
-#include <freetype/config/public-macros.h>
+#include <freetype/config/public-m.h>
 
 FT_BEGIN_HEADER
 

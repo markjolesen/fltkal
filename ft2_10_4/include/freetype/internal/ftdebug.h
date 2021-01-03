@@ -29,7 +29,7 @@
 #include FT_CONFIG_CONFIG_H
 #include <freetype/freetype.h>
 
-#include "compiler-macros.h"
+#include "compilers.h"
 
 
 FT_BEGIN_HEADER

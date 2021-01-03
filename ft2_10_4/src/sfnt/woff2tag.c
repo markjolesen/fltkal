@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * woff2tags.c
+ * woff2tag.c
  *
  *   WOFF2 Font table tags (base).
  *
@@ -17,7 +17,7 @@
 
 
 #include <freetype/tttags.h>
-#include "woff2tags.h"
+#include "woff2tag.h"
 
   /*
    * Return tag from index in the order given in WOFF2 specification.

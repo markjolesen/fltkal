@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * config/public-macros.h
+ * config/public-m.h
  *
  *   Define a set of compiler macros used in public FreeType headers.
  *
@@ -21,7 +21,7 @@
    *
    * Other compiler-specific macro definitions that are not exposed by the
    * FreeType API should go into
-   * `include/freetype/internal/compiler-macros.h` instead.
+   * `include/freetype/internal/compilers.h` instead.
    */
 #ifndef FREETYPE_CONFIG_PUBLIC_MACROS_H_
 #define FREETYPE_CONFIG_PUBLIC_MACROS_H_

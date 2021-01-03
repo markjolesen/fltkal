@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * wofftypes.h
+ * wofftype.h
  *
  *   Basic WOFF/WOFF2 type definitions and interface (specification
  *   only).

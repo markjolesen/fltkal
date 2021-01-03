@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * cffotypes.h
+ * cffootype.h
  *
  *   Basic OpenType/CFF object type definitions (specification).
  *

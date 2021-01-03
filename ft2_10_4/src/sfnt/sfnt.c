@@ -33,7 +33,7 @@
 #include "ttmtx.c"
 #include "ttpost.c"
 #include "ttsbit.c"
-#include "woff2tags.c"
+#include "woff2tag.c"
 
 
 /* END */
