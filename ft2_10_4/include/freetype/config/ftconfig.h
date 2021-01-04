@@ -41,7 +41,7 @@
 #include FT_CONFIG_OPTIONS_H
 #include FT_CONFIG_STANDARD_LIBRARY_H
 
-#include <freetype/config/integer.h>
+#include <freetype/config/integer-.h>
 #include <freetype/config/public-m.h>
 #include <freetype/config/mac-supp.h>
 

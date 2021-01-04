@@ -242,8 +242,15 @@ bool
               break;
             }
 
-          handle_push(window, what);
-          handled = true;
+          Fl_Widget *widget = window.resizable();
+
+          if (reinterpret_cast<ptrdiff_t>(widget)
+              == reinterpret_cast<ptrdiff_t>(&window))
+            {
+              handle_push(window, what);
+              handled = true;
+            }
+
           break;
         }
 

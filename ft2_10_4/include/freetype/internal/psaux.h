@@ -27,7 +27,7 @@
 #include <freetype/internal/tttypes.h>
 #include <freetype/internal/services/svpscmap.h>
 #include <freetype/internal/cfftypes.h>
-#include <freetype/internal/cffootype.h>
+#include <freetype/internal/cffotype.h>
 
 
 
