@@ -116,34 +116,73 @@ int
 int
   Fl_Allegro_Screen_Driver::w()
 {
+  if (-1 == num_screens)
+    {
+      open_display();
+    }
+
   return SCREEN_W;
 }
 
 int
   Fl_Allegro_Screen_Driver::h()
 {
+  if (-1 == num_screens)
+    {
+      open_display();
+    }
+
   return SCREEN_H;
 }
 
 void
-  Fl_Allegro_Screen_Driver::screen_xywh(
-    int &X, int &Y, int &W, int &H, int /*n*/)
+  Fl_Allegro_Screen_Driver::screen_xywh(int &X, int &Y, int &W, int &H, int n)
 {
+  if (0 == n)
+    {
+      if (-1 == num_screens)
+        {
+          open_display();
+        }
+
+      W = SCREEN_W;
+      H = SCREEN_H;
+    }
+  else
+    {
+      W = 0;
+      H = 0;
+    }
+
   X = 0;
   Y = 0;
-  W = SCREEN_W;
-  H = SCREEN_H;
+
   return;
 }
 
 void
   Fl_Allegro_Screen_Driver::screen_work_area(
-    int &X, int &Y, int &W, int &H, int /*n*/)
+    int &X, int &Y, int &W, int &H, int n)
 {
+  if (0 == n)
+    {
+      if (-1 == num_screens)
+        {
+          open_display();
+        }
+
+      W = SCREEN_W;
+      H = SCREEN_H;
+    }
+  else
+    {
+      W = 0;
+      H = 0;
+    }
+
   X = 0;
   Y = 0;
-  W = SCREEN_W;
-  H = SCREEN_H;
+
   return;
 }
 
