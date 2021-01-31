@@ -81,8 +81,9 @@ ALLEGROINC=$(ALLEGRO)/include
 INCLUDES=-I.. -I$(ALLEGROINC) -I$(FREETYPEINC) -I../zlib -I../png -I../jpeg
 REDIRCOMMAND=redir -o $(basename $@).err -eo
 else
-FREETYPEINC=/usr/include/freetype2/
-INCLUDES=-I.. -I$(FREETYPEINC)
+FREETYPEINC=-I /usr/include/freetype2/
+ALLEGROINC=-I ~/usr/local/include
+INCLUDES=-I.. $(FREETYPEINC) $(ALLEGROINC) -I../ow32svga/include
 endif
 
 DEFINES=-DFL_LIBRARY -DUSE_ALLEGRO
@@ -160,6 +161,7 @@ FLTKOBJS=\
 	$(OBJ)/fl.o \
 	$(OBJ)/flprintf.o \
 	$(OBJ)/fl_rect.o \
+	$(OBJ)/fl_str.o \
 	$(OBJ)/flstring.o \
 	$(OBJ)/fl_uri.o \
 	$(OBJ)/fl_utf8.o \
@@ -263,6 +265,7 @@ ALLEGRO4DRVOBJS=\
 	$(OBJ)/aldrvsys.o \
 	$(OBJ)/aldrvwin.o \
 	$(OBJ)/algfx.o \
+	$(OBJ)/drvscral.o \
 	$(OBJ)/fontdir.o \
 	$(OBJ)/fontft.o \
 	$(OBJ)/imgconv.o \
@@ -317,5 +320,4 @@ depend.mk :
 	sed -i -re "s/(.*)\.o/$$\(OBJ\)\/\1.o/" depend.mk
 	sed -i -re "s/\/usr\/include\/freetype2\//$$\(FREETYPEINC\)\//" depend.mk
 
--include depend.mk    
     

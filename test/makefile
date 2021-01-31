@@ -88,15 +88,16 @@ LIBPATHS+= -L $(ALLEGROLIB)
 DEFINES=
 else
 FREETYPELIBA=-l freetype
-DEFINES=-D__DJGPP__
+LIBPATHS+= -L ~/usr/local/lib
+FREETYPEINC=-I /usr/include/freetype2/
+ALLEGROINC=-I ~/usr/local/include
+INCLUDES=-I.. $(FREETYPEINC) $(ALLEGROINC) -I../ow32svga/include
 endif
 
 CXXFLAGS=-g -ggdb $(INCLUDES) $(DEFINES)
 LIBS= $(LIBPATHS) -l fltk  -l alleg -l png -l jpeg -l z $(FREETYPELIBA)
 
-#SOURCES= $(wildcard *.cxx)
-
-SOURCES=aldmpcur.cxx
+SOURCES= $(wildcard *.cxx)
 
 OBJS= $(patsubst %.cxx, $(OBJ)/%.o, $(SOURCES))
 PROGRAMS= $(patsubst %.cxx, $(BIN)/%.exe, $(SOURCES))

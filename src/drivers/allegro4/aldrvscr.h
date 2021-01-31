@@ -75,9 +75,6 @@
 class FL_EXPORT Fl_Allegro_Screen_Driver : public Fl_Screen_Driver
 {
 private:
-  int
-    screen_init();
-
   bool
     wait_keyboard(Fl_Window *window);
 
@@ -99,9 +96,6 @@ public:
   Fl_Allegro_Screen_Driver();
 
   virtual ~Fl_Allegro_Screen_Driver();
-
-  virtual void
-    init();
 
   virtual int
     x();

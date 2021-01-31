@@ -21,6 +21,7 @@
 // Fl_Menu_ widget.
 
 #include <fl/fl.h>
+#include "drvwin.h"
 #include "drvsys.h"
 #include <fl/winmenu.h>
 #include <fl/menu_.h>
@@ -279,6 +280,7 @@ void Fl_Menu_Item::draw(int x, int y, int w, int h, const Fl_Menu_* m,
 menutitle::menutitle(int X, int Y, int W, int H, const Fl_Menu_Item* L) :
   Fl_Menu_Window(X, Y, W, H, 0) {
   end();
+  type(FL_MENU_TITLE_WINDOW); // ALLEGRO:
   set_modal();
   clear_border();
   set_menu_window();
@@ -291,6 +293,7 @@ menuwindow::menuwindow(const Fl_Menu_Item* m, int X, int Y, int Wp, int Hp,
                        int menubar, int menubar_title, int right_edge)
   : Fl_Menu_Window(X, Y, Wp, Hp, 0)
 {
+  type(FL_MENU_WINDOW); // ALLEGRO: 
   int scr_x, scr_y, scr_w, scr_h;
   int tx = X, ty = Y;
 
@@ -506,10 +509,13 @@ void menuwindow::drawentry(const Fl_Menu_Item* m, int n, int eraseit) {
 }
 
 void menutitle::draw() {
+  Fl_Window_Driver::driver(this)->draw_begin(); // ALLEGRO:
   menu->draw(0, 0, w(), h(), button, 2);
+  Fl_Window_Driver::driver(this)->draw_end(); // ALLEGRO:
 }
 
 void menuwindow::draw() {
+  Fl_Window_Driver::driver(this)->draw_begin(); // ALLEGRO:
   if (damage() != FL_DAMAGE_CHILD) {    // complete redraw
     fl_draw_box(box(), 0, 0, w(), h(), button ? button->color() : color());
     if (menu) {
@@ -523,6 +529,7 @@ void menuwindow::draw() {
     }
   }
   drawn_selected = selected;
+  Fl_Window_Driver::driver(this)->draw_end(); // ALLEGRO:
 }
 
 void menuwindow::set_selected(int n) {

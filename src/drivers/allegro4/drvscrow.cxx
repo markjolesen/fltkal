@@ -66,6 +66,7 @@
 #include "aldrvscr.h"
 #include "aldrvwin.h"
 #include "cursor.h"
+#include "display.h"
 #include "keyboard.h"
 #include "mouse.h"
 #include "utf8proc.h"
@@ -76,15 +77,48 @@
 // #include "aldrvgr.h" // <-- remove me
 #pragma aux __halt = "hlt";
 
-Fl_Allegro_Screen_Driver::~Fl_Allegro_Screen_Driver()
+void
+  Fl_Allegro_Screen_Driver::open_display_platform()
 {
-  return;
+if (-1 == num_screens)
+{
+  int rc = display_init_once();
+
+  if (rc)
+    {
+      fprintf(stderr, "Unable to initialize display\n");
+      exit(-1);
+    }
+
+  num_screens = 1;
+
+  mouse_init();
+
+  unsigned x;
+  unsigned y;
+  unsigned state;
+
+  mouse_set_range(_screen->width - 1, _screen->height - 1);
+  mouse_get_position(&x, &y, &state);
+  cursor_image_to_backing(
+    _screen, x, y, _cursor_arrow.width, _cursor_arrow.height);
+  cursor_blt(_screen, x, y, &_cursor_arrow);
+	}
+
+	return;
 }
 
 void
-  Fl_Allegro_Screen_Driver::init()
+  Fl_Allegro_Screen_Driver::close_display()
 {
-  return;
+  if (1 == num_screens)
+	{
+		mouse_deinit();
+		display_deinit_once();
+		num_screens= -1;
+	}
+
+	return;
 }
 
 bool
@@ -665,7 +699,7 @@ bool
 int
   Fl_Allegro_Screen_Driver::get_mouse(int &x, int &y)
 {
-  unsigned state;
-  mouse_get_position((unsigned *)&x, (unsigned *)&y, &state);
-  return 1;
+	x= Fl::e_x_root;
+	y= Fl::e_y_root;
+  return 0; // screen number
 }

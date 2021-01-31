@@ -174,10 +174,10 @@ extern void cursor_set(Fl_Cursor const c)
   BITMAP* bmp= cursor_get(hot_x, hot_y, c);
   if (prev != bmp)
   {
-     fl_graphics_driver->mouse_hide();
+     scare_mouse();
      set_mouse_sprite(bmp);
      set_mouse_sprite_focus(hot_x, hot_y);
-     fl_graphics_driver->mouse_show();
+     unscare_mouse();
      prev= bmp;
   }
   return;
@@ -283,7 +283,7 @@ void Fl_Window::cursor(Fl_Cursor c) {
   if (ret)
     return;
 
-  fallback_cursor(this, c);
+//__mjo  fallback_cursor(this, c);
 }
 
 /**

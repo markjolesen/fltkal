@@ -101,6 +101,13 @@ Fl_Allegro_Screen_Driver::Fl_Allegro_Screen_Driver() :
   return;
 }
 
+Fl_Allegro_Screen_Driver::~Fl_Allegro_Screen_Driver()
+{
+  close_display();
+  cleanup_dummy();
+  return;
+}
+
 int
   Fl_Allegro_Screen_Driver::x()
 {
@@ -433,40 +440,6 @@ void
   Fl_Allegro_Screen_Driver::remove_timeout(Fl_Timeout_Handler cb, void *argp)
 {
   timer_.remove(cb, argp);
-}
-
-void
-  Fl_Allegro_Screen_Driver::open_display_platform()
-{
-  int rc = display_init_once();
-
-  if (rc)
-    {
-      fprintf(stderr, "Unable to initialize display\n");
-      exit(-1);
-    }
-
-  num_screens = 1;
-
-  mouse_init();
-
-  unsigned x;
-  unsigned y;
-  unsigned state;
-
-  mouse_set_range(_screen->width - 1, _screen->height - 1);
-  mouse_get_position(&x, &y, &state);
-  cursor_image_to_backing(
-    _screen, x, y, _cursor_arrow.width, _cursor_arrow.height);
-  cursor_blt(_screen, x, y, &_cursor_arrow);
-}
-
-void
-  Fl_Allegro_Screen_Driver::close_display()
-{
-  mouse_deinit();
-  display_deinit_once();
-  cleanup_dummy();
 }
 
 int

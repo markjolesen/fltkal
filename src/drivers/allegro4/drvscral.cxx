@@ -82,47 +82,9 @@ extern void
 
 #define __halt()
 
-Fl_Allegro_Screen_Driver::~Fl_Allegro_Screen_Driver()
-{
-  cursor_destroy();
-  set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-  allegro_exit();
-  return;
-}
 
-void
-  Fl_Allegro_Screen_Driver::init()
-{
-  allegro_init();
-
-  if (install_keyboard())
-    {
-      allegro_message("Install keyboard error: %s", allegro_error);
-      exit(-1);
-    }
-
-  if (-1 == install_mouse())
-    {
-      allegro_message("Install mouse error: %s", allegro_error);
-      exit(-1);
-    }
-
-  if (screen_init())
-    {
-      set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-      allegro_message("Unable to initialize graphics");
-      exit(-1);
-    }
-
-  num_screens = 1;
-  cursor_create();
-  show_mouse(screen);
-
-  return;
-}
-
-int
-  Fl_Allegro_Screen_Driver::screen_init()
+static int
+  screen_init()
 {
   static struct
   {
@@ -153,6 +115,56 @@ int
     }
 
   return -1;
+}
+
+
+void
+  Fl_Allegro_Screen_Driver::open_display_platform()
+{
+if (-1 == num_screens)
+{
+  allegro_init();
+
+  if (install_keyboard())
+    {
+      allegro_message("Install keyboard error: %s", allegro_error);
+      exit(-1);
+    }
+
+  if (-1 == install_mouse())
+    {
+      allegro_message("Install mouse error: %s", allegro_error);
+      exit(-1);
+    }
+
+  if (screen_init())
+    {
+      set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+      allegro_message("Unable to initialize graphics");
+      exit(-1);
+    }
+
+  num_screens = 1;
+  cursor_create();
+  show_mouse(screen);
+}
+
+  return;
+}
+
+void
+Fl_Allegro_Screen_Driver::close_display()
+{
+#if defined(__DOS__)
+  if (1 == num_screens)
+	{
+		cursor_destroy();
+		set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+		allegro_exit();
+		num_screens= -1;
+	}
+#endif
+  return;
 }
 
 static inline int
@@ -683,427 +695,6 @@ bool
 }
 
 bool
-  Fl_Allegro_Screen_Driver::wait_keyboard(Fl_Window *window)
-{
-  int triggered = false;
-  int rc;
-
-  do
-    {
-      rc = keyboard_query();
-
-      if (0 == rc)
-        {
-          break;
-        }
-
-      unsigned char ascii;
-      unsigned char scan;
-
-      keyboard_read(&scan, &ascii);
-
-      char buf[2];
-      int sym = 0;
-
-      char kb0 = *(char *)0x0417;
-      char kb1 = *(char *)0x0418;
-
-      if (0x3 & kb0)
-        {
-          Fl::e_state |= FL_SHIFT;
-        }
-
-      if (0x4 & kb0)
-        {
-          Fl::e_state |= FL_CTRL;
-        }
-
-      if (0x8 & kb0)
-        {
-          Fl::e_state |= FL_ALT;
-        }
-
-      if (0x1 & kb1)
-        {
-          Fl::e_state |= FL_CTRL;
-        }
-
-      if (0x2 & kb1)
-        {
-          Fl::e_state |= FL_ALT;
-        }
-
-      buf[0] = 0;
-      buf[1] = 0;
-      Fl::e_text = buf;
-      Fl::e_length = 0;
-
-      if (ascii)
-        {
-          switch (ascii)
-            {
-            case ASCII_BS:
-              sym = FL_BackSpace;
-              break;
-
-            case ASCII_TAB:
-              sym = FL_Tab;
-              break;
-
-            case ASCII_ENTER:
-              sym = FL_Enter;
-              break;
-
-            case ASCII_ESC:
-              sym = FL_Escape;
-
-              while (window->parent())
-                {
-                  window = window->window();
-                }
-
-              break;
-
-            default:
-              sym = ascii;
-              break;
-            }
-        }
-
-      else
-        {
-          switch (scan)
-            {
-#if 0
-
-        case SCAN_F1:
-        case SCAN_F2:
-        case SCAN_F3:
-        case SCAN_F4:
-        case SCAN_F5:
-        case SCAN_F6:
-        case SCAN_F7:
-        case SCAN_F8:
-        case SCAN_F9:
-        case SCAN_F10:
-#endif
-            case SCAN_HOME:
-              sym = FL_Home;
-              break;
-
-            case SCAN_UP:
-              sym = FL_Up;
-              break;
-
-            case SCAN_PGUP:
-              sym = FL_Page_Up;
-              break;
-
-            case SCAN_LEFT:
-              sym = FL_Left;
-              break;
-
-            case SCAN_RIGHT:
-              sym = FL_Right;
-              break;
-
-            case SCAN_END:
-              sym = FL_End;
-              break;
-
-            case SCAN_DOWN:
-              sym = FL_Down;
-              break;
-
-            case SCAN_PGDN:
-              sym = FL_Page_Down;
-              break;
-
-            case SCAN_INS:
-              sym = FL_Insert;
-              break;
-
-            case SCAN_DEL:
-              sym = FL_Delete;
-              break;
-
-            case SCAN_SHIFT_TAB:
-              sym = FL_Tab;
-              Fl::e_state |= FL_SHIFT;
-              break;
-#if 0
-
-        case SCAN_SHIFT_F1:
-        case SCAN_SHIFT_F2:
-        case SCAN_SHIFT_F3:
-        case SCAN_SHIFT_F4:
-        case SCAN_SHIFT_F5:
-        case SCAN_SHIFT_F6:
-        case SCAN_SHIFT_F7:
-        case SCAN_SHIFT_F8:
-        case SCAN_SHIFT_F9:
-        case SCAN_SHIFT_F10:
-#endif
-            case SCAN_ALT_1:
-              sym = '1';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_2:
-              sym = '2';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_3:
-              sym = '3';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_4:
-              sym = '4';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_5:
-              sym = '5';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_6:
-              sym = '6';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_7:
-              sym = '7';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_8:
-              sym = '8';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_9:
-              sym = '9';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_0:
-              sym = '0';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_MINUS:
-              sym = '-';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_PLUS:
-              sym = '+';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_Q:
-              sym = 'q';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_W:
-              sym = 'w';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_E:
-              sym = 'e';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_R:
-              sym = 'r';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_T:
-              sym = 't';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_Y:
-              sym = 'y';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_U:
-              sym = 'u';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_I:
-              sym = 'i';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_O:
-              sym = 'o';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_P:
-              sym = 'p';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_A:
-              sym = 'a';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_S:
-              sym = 's';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_D:
-              sym = 'd';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_F:
-              sym = 'f';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_G:
-              sym = 'g';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_H:
-              sym = 'h';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_J:
-              sym = 'j';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_K:
-              sym = 'k';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_L:
-              sym = 'l';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_Z:
-              sym = 'z';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_X:
-              sym = 'x';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_C:
-              sym = 'c';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_V:
-              sym = 'v';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_B:
-              sym = 'r';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_N:
-              sym = 'n';
-              Fl::e_state |= FL_ALT;
-              break;
-
-            case SCAN_ALT_M:
-              sym = 'm';
-              Fl::e_state |= FL_ALT;
-              break;
-#if 0
-
-        case SCAN_ALT_F1:
-        case SCAN_ALT_F2:
-        case SCAN_ALT_F3:
-        case SCAN_ALT_F4:
-        case SCAN_ALT_F5:
-        case SCAN_ALT_F6:
-        case SCAN_ALT_F7:
-        case SCAN_ALT_F8:
-        case SCAN_ALT_F9:
-        case SCAN_ALT_F10:
-        case SCAN_CTL_F1:
-        case SCAN_CTL_F2:
-        case SCAN_CTL_F3:
-        case SCAN_CTL_F4:
-        case SCAN_CTL_F5:
-        case SCAN_CTL_F6:
-        case SCAN_CTL_F7:
-        case SCAN_CTL_F8:
-        case SCAN_CTL_F9:
-        case SCAN_CTL_F10:
-#endif
-            case SCAN_CTL_HOME:
-              sym = FL_Home;
-              Fl::e_state |= FL_CTRL;
-              break;
-
-            case SCAN_CTL_PGUP:
-              sym = FL_Page_Up;
-              Fl::e_state |= FL_CTRL;
-              break;
-
-            case SCAN_CTL_LEFT:
-              sym = FL_Left;
-              Fl::e_state |= FL_CTRL;
-              break;
-
-            case SCAN_CTL_RIGHT:
-              sym = FL_Right;
-              Fl::e_state |= FL_CTRL;
-              break;
-
-            case SCAN_CTL_END:
-              sym = FL_End;
-              Fl::e_state |= FL_CTRL;
-              break;
-
-            case SCAN_CTL_PGDN:
-              sym = FL_Page_Down;
-              Fl::e_state |= FL_CTRL;
-              break;
-            }
-        }
-
-      if (0x20 <= sym && 0x7f > sym)
-        {
-          buf[0] = sym;
-          Fl::e_length = 1;
-        }
-
-      Fl::e_keysym = sym;
-      Fl::e_number = FL_KEYBOARD;
-      Fl::handle(FL_KEYBOARD, window);
-    }
-  while (0);
-
-  return triggered;
-}
-
-bool
   Fl_Allegro_Screen_Driver::wait_mouse(Fl_Window *window)
 {
   int triggered = false;
@@ -1253,5 +844,5 @@ int
   int pos = mouse_pos;
   x = (pos >> 16);
   y = (0xffff & pos);
-  return 1;
+  return 0; // screen number
 }
