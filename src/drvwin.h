@@ -165,7 +165,6 @@ public:
   virtual void redraw_overlay();
 
   // --- window cursor stuff
-  virtual void redisplay_cursor() const = 0; // ALLEGRO:
   virtual Fl_Cursor get_cursor() const = 0; // ALLEGRO:
   virtual int set_cursor(Fl_Cursor);
   virtual int set_cursor(const Fl_RGB_Image*, int, int);

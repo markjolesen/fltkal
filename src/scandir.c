@@ -101,7 +101,7 @@ readentry(DIR *dirp, struct dirent **entryp, size_t *len)
     e = readdir(dirp);
     if (NULL == e)
     {
-      if (!errno)
+      if ((!errno) || (ENOENT == errno))
       {
         /* No more entries in directory */
         *entryp = NULL;

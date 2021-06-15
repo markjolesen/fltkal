@@ -28,8 +28,9 @@ LIBOW32SVGA=$(LIB)\ow32svga.lib
 OBJS=&
     $(OBJ)\bitmap.obj &
     $(OBJ)\bitmap_.obj &
+    $(OBJ)\clip.obj &
     $(OBJ)\clip_.obj &
-    $(OBJ)\cursor_.obj &
+    $(OBJ)\cursor.obj &
     $(OBJ)\display.obj &
     $(OBJ)\dpmi_.obj &
     $(OBJ)\image.obj &
@@ -66,12 +67,15 @@ all : $(LIBOW32SVGA) .SYMBOlIC
 
 $(LIBOW32SVGA) : $(OBJS) $(OBJ_CURSORS)
         wlib $@ @owd32.lbc
+
+$(OBJ)\clip.obj : $(SRC)\clip.c .AUTODEPEND
+        *$(CC) $(CFLAGS) -fo=$@ $<
 	
 $(OBJ)\clip_.obj : $(SRC)\clip_.asm .AUTODEPEND
         *$(AS) $(AFLAGS) -fo=$@ $<
 	
-$(OBJ)\cursor_.obj : $(SRC)\cursor_.asm .AUTODEPEND
-        *$(AS) $(AFLAGS) -fo=$@ $<
+$(OBJ)\cursor.obj : $(SRC)\cursor.c .AUTODEPEND
+        *$(CC) $(CFLAGS) -fo=$@ $<
 	
 $(OBJ)\cursors_.obj : $(SRC)\cursors_.asm .AUTODEPEND
         *$(AS) $(AFLAGS) -fo=$@ $<

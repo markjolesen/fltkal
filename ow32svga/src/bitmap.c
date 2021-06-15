@@ -7,254 +7,247 @@
  and related or neighboring rights to ow32svga Library. This work is published
  from: United States.
 */
-#include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 #include "bitmap.h"
 
-extern struct bitmap*
-bitmap_new(
-    size_t const width,
-    size_t const height)
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h> // delete me
+#include <stdlib.h>
+#include <string.h>
+
+extern struct bitmap *
+  bitmap_new(unsigned const len_x, unsigned const len_y)
 {
-    struct bitmap* bitmap;
-    size_t limit;
+  struct bitmap *bitmap;
+  unsigned limit;
 
-    limit= (width * height * 4);
-    bitmap= (struct bitmap*)malloc(sizeof(*bitmap));
-    bitmap->width= width;
-    bitmap->height= height;
-    bitmap->bits.buf= calloc(1, limit);
-    bitmap->stride= width;
+  bitmap = (struct bitmap *)malloc(sizeof(*bitmap));
+  bitmap->stride = STRIDE(len_x);
+  bitmap->len_x = len_x;
+  bitmap->len_y = len_y;
+  limit = (bitmap->stride * len_y);
+  bitmap->bits.buf = calloc(1, limit);
 
-    return bitmap;
+  return bitmap;
 }
 
 extern void
-bitmap_free(
-    struct bitmap*const bitmap)
+  bitmap_resize(struct bitmap *const bmp,
+                unsigned const len_x,
+                unsigned const len_y)
 {
+  unsigned stride;
+  unsigned limit;
 
-    if (bitmap)
+  stride = STRIDE(len_x);
+
+  if (bmp->stride < stride)
     {
-        free(bitmap->bits.buf);
-        free(bitmap);
+      limit = (stride * len_y);
+      bmp->bits.buf = realloc(bmp->bits.buf, limit);
     }
-  
-    return;
+
+  bmp->stride = stride;
+  bmp->len_x = len_x;
+  bmp->len_y = len_y;
+
+  return;
 }
 
-extern struct bitmap*
-bitmap_new_from_image(
-    struct image const*const src,
-    int const src_x,
-    int const src_y,
-    size_t const src_w,
-    size_t const src_h)
+extern void
+  bitmap_free(struct bitmap *const bitmap)
 {
-    struct bitmap* bitmap;
-    uint32_t* dbits;
-    uint32_t const __far* sbits;
-    int y;
-    int x;
-    size_t row;
-    size_t col;
-
-    bitmap= bitmap_new(src_w, src_h);
-    dbits= (uint32_t*)bitmap->bits.buf;
-
-    for (row= 0, y= src_y; (src_h > row) && (src->height > y); row++, y++)
+  if (bitmap)
     {
-        if (0 <= y)
+      free(bitmap->bits.buf);
+      free(bitmap);
+    }
+
+  return;
+}
+
+extern struct bitmap *
+  bitmap_new_from_image(struct image const *const img,
+                        struct slice const *const slice)
+{
+  struct bitmap *bmp;
+
+  bmp = bitmap_new(slice->len_x, slice->len_y);
+  bitmap_copy_from_image(bmp, img, slice);
+
+  return bmp;
+}
+
+extern void
+  bitmap_blt(struct image *const img,
+             signed const pos_x,
+             signed const pos_y,
+             struct bitmap const *const bmp,
+             struct slice const *const slice,
+             int const use_skip,
+             unsigned const skip_color)
+
+{
+  unsigned const *scolors;
+  unsigned __far *dcolors;
+  struct slice dest;
+  struct slice src;
+  unsigned delta_x;
+  unsigned delta_y;
+  unsigned dest_x;
+  unsigned src_x;
+  unsigned dest_y;
+  unsigned src_y;
+  unsigned color;
+  int rc;
+
+  do
+    {
+      dest.pos_x = pos_x;
+      dest.len_x = bmp->len_x;
+      dest.pos_y = pos_y;
+      dest.len_y = bmp->len_y;
+
+      rc = _clip(&dest, &img->clip);
+
+      if (rc)
         {
-            sbits= (uint32_t const __far *)MK_FP(src->buf.selector, src->buf.line[y]);
-            for (col= 0, x= src_x; (src_w > col) && (src->width > x); col++, x++)
+          break;
+        }
+
+      delta_x = dest.pos_x - pos_x;
+      delta_y = dest.pos_y - pos_y;
+
+      src.pos_x = slice->pos_x + delta_x;
+      src.pos_y = slice->pos_y + delta_y;
+      src.len_x = dest.len_x;
+      src.len_y = dest.len_y;
+
+      dest_y = dest.pos_y;
+      src_y = src.pos_y;
+
+      do
+        {
+          if (dest.pos_y + dest.len_y <= dest_y)
             {
-                if (0 <= x)
+              break;
+            }
+
+          dcolors = (unsigned __far *)MK_FP(img->buf.selector,
+                                            img->buf.line[dest_y]);
+
+          scolors
+            = (unsigned *)&((uint8_t *)bmp->bits.buf)[(bmp->stride * src_y)];
+
+          dest_x = dest.pos_x;
+          src_x = src.pos_x;
+
+          do
+            {
+              if (dest.pos_x + dest.len_x <= dest_x)
                 {
-                    dbits[col]= sbits[x];
+                  break;
                 }
+
+              color = scolors[src_x];
+
+              if (!(use_skip && (skip_color == color)))
+                {
+                  dcolors[dest_x] = color;
+                }
+
+              dest_x++;
+              src_x++;
             }
+          while (1);
+
+          src_y++;
+          dest_y++;
         }
-        dbits+= bitmap->stride;
+      while (1);
     }
+  while (0);
 
-    return bitmap;
+  return;
 }
 
 extern void
-bitmap_xy1bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src,
-    int const src_x,
-    int const src_y)
+  bitmap_copy_from_image(struct bitmap *const bmp,
+                         struct image const *const img,
+                         struct slice const *const slice)
 {
+  unsigned *dbits;
+  unsigned const __far *sbits;
+  struct slice src;
+  unsigned dest_x;
+  unsigned src_x;
+  unsigned dest_y;
+  unsigned src_y;
+  unsigned delta_y;
+  unsigned delta_x;
+  int rc;
 
-    do
+  do
     {
+      bmp->len_x = slice->len_x;
+      bmp->len_y = slice->len_y;
 
-        if ((0 == src_x) && (0 == src_y))
+      src.pos_x = slice->pos_x;
+      src.pos_y = slice->pos_y;
+      src.len_x = slice->len_x;
+      src.len_y = slice->len_y;
+
+      rc = _clip(&src, &img->clip);
+
+      if (rc)
         {
-            bitmap_1bpp_blt(dest, dest_x, dest_y, src, 0xffffff);
-            break;
+          bmp->len_x = 0;
+          bmp->len_y = 0;
+          break;
         }
 
-    }while(0);
+      delta_x = slice->len_x - src.len_x;
+      delta_y = slice->len_y - src.len_y;
 
-    return;
-}
+      dest_y = delta_y;
+      src_y = src.pos_y;
 
-extern void
-bitmap_xy24bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src,
-    int const src_x,
-    int const src_y)
-{
-    struct bitmap bmp;
-    uint32_t color;
-    uint32_t *dbits;
-    uint8_t* line;
-    uint8_t* sbits;
-    size_t limit;
-    size_t row;
-    size_t col;
-
-    do
-    {
-
-        if ((0 == src_x) && (0 == src_y))
+      do
         {
-            bitmap_24bpp_blt(dest, dest_x, dest_y, src);
-            break;
-        }
-
-        if (0 > src_x)
-        {
-            break;
-        }
-
-        if (0 > src_y)
-        {
-            break;
-        }
-
-        if (src->width <= src_x)
-        {
-            break;
-        }
-
-        if (src->height <= src_y)
-        {
-            break;
-        }
-
-        bmp.width= (src->width - src_x);
-        bmp.height= (src->height - src_y); 
-        limit= (bmp.width * bmp.height * 4);
-        bmp.bits.buf= calloc(1, limit);
-        bmp.stride= bmp.width;
-
-        dbits= bmp.bits.buf;
-
-        for (row= src_y; row < src->height; row++)
-        {
-            line= &((uint8_t*)src->bits.buf)[row * src->stride * 3];
-            sbits= &line[src_x * 3];
-            for (col= 0; col < bmp.width; col++)
+          if (src.pos_y + src.len_y <= src_y)
             {
-                color= (*sbits++);
-                color|= (*sbits++ << 8);
-                color|= (*sbits++ << 16);
-                *dbits++= color;
+              break;
             }
-        }
 
-        bitmap_32bpp_blt(dest, dest_x, dest_y, &bmp);
-        free(bmp.bits.buf);
+          dbits
+            = (unsigned *)&((uint8_t *)bmp->bits.buf)[(bmp->stride * dest_y)];
 
-    }while(0);
+          sbits
+            = (unsigned __far *)MK_FP(img->buf.selector, img->buf.line[src_y]);
 
+          dest_x = delta_x;
+          src_x = src.pos_x;
 
-    return;
-}
-
-extern void
-bitmap_xy32bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src,
-    int const src_x,
-    int const src_y)
-{
-    struct bitmap bmp;
-    uint32_t *dbits;
-    uint32_t* line;
-    uint32_t* sbits;
-    uint32_t color;
-    size_t limit;
-    size_t row;
-    size_t col;
-
-    do
-    {
-
-        if ((0 == src_x) && (0 == src_y))
-        {
-            bitmap_32bpp_blt(dest, dest_x, dest_y, src);
-            break;
-        }
-
-        if (0 > src_x)
-        {
-            break;
-        }
-
-        if (0 > src_y)
-        {
-            break;
-        }
-
-        if (src->width <= src_x)
-        {
-            break;
-        }
-
-        if (src->height <= src_y)
-        {
-            break;
-        }
-
-        bmp.width= (src->width - src_x);
-        bmp.height= (src->height - src_y); 
-        limit= (bmp.width * bmp.height * 4);
-        bmp.bits.buf= calloc(1, limit);
-        bmp.stride= bmp.width;
-
-        dbits= bmp.bits.buf;
-
-        for (row= src_y; row < src->height; row++)
-        {
-            line= &((uint32_t*)src->bits.buf)[row * src->stride];
-            sbits= &line[src_x];
-            for (col= 0; col < bmp.width; col++)
+          do
             {
-                color= (*sbits++);
-                *dbits++= color;
+              if (src.pos_x + src.len_x <= src_x)
+                {
+                  break;
+                }
+
+              dbits[dest_x] = sbits[src_x];
+
+              dest_x++;
+              src_x++;
             }
+          while (1);
+
+          src_y++;
+          dest_y++;
         }
+      while (1);
+    }
+  while (0);
 
-        bitmap_32bpp_blt(dest, dest_x, dest_y, &bmp);
-        free(bmp.bits.buf);
-
-    }while(0);
-
-
-    return;
+  return;
 }

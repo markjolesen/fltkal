@@ -254,8 +254,8 @@ inline void
   struct bitmap bmp;
 
   bmp.stride = bitmap->pitch;
-  bmp.width = bitmap->width;
-  bmp.height = bitmap->rows;
+  bmp.len_x = bitmap->width;
+  bmp.len_y = bitmap->rows;
   bmp.bits.ref = bitmap->buffer;
 
   bitmap_8bpp_blt(surface, x, y, &bmp, alcolor);

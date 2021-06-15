@@ -63,7 +63,10 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
+#include "wm.h"
+
 #include "aldrvgr.h"
+#include "aldrvscr.h"
 #include "aldrvwin.h"
 #include <fl/platform.h>
 
@@ -76,8 +79,6 @@
 #  define screen _screen
 #  pragma aux __halt = "hlt";
 #endif
-
-#include "wm.h"
 
 #if defined(USE_OWD32)
 inline void
@@ -94,198 +95,6 @@ inline void
   return;
 }
 #endif
-
-wm::wm()
-{
-}
-
-wm::~wm()
-{
-}
-
-wm::hit_type
-  wm::hit(Fl_Window &window, int const x, int const y) const
-{
-  hit_type what = HIT_NONE;
-
-  do
-    {
-      int top = window.y();
-      int top_actual = top - Fl_Allegro_Window_Driver::title_bar_height;
-      int left = window.x();
-      int right = left + window.w() - 1;
-      int bottom = top + window.h() - 1;
-
-      if (x < (left - 2))
-        {
-          break;
-        }
-
-      if (x > (right + 2))
-        {
-          break;
-        }
-
-      if (y < (top_actual - 2))
-        {
-          break;
-        }
-
-      if (y > (bottom + 2))
-        {
-          break;
-        }
-
-      bool hit_left_edge = ((x >= (left - 2)) && (x <= (left + 2)));
-
-      bool hit_right_edge = false;
-
-      if (false == hit_left_edge)
-        {
-          hit_right_edge = ((x >= (right - 2)) && (x <= (right + 2)));
-        }
-
-      bool hit_top_edge = ((y >= (top_actual - 2)) && (y <= (top_actual + 2)));
-
-      bool hit_bottom_edge = false;
-
-      if (false == hit_top_edge)
-        {
-          hit_bottom_edge = ((y >= (bottom - 2)) && (y <= (bottom + 2)));
-        }
-
-      if (hit_left_edge)
-        {
-          if (hit_top_edge)
-            {
-              what = HIT_NORTH_WEST;
-              break;
-            }
-
-          if (hit_bottom_edge)
-            {
-              what = HIT_SOUTH_WEST;
-              break;
-            }
-
-          what = HIT_WEST;
-          break;
-        }
-
-      if (hit_right_edge)
-        {
-          if (hit_top_edge)
-            {
-              what = HIT_NORTH_EAST;
-              break;
-            }
-
-          if (hit_bottom_edge)
-            {
-              what = HIT_SOUTH_EAST;
-              break;
-            }
-
-          what = HIT_EAST;
-          break;
-        }
-
-      if (hit_top_edge)
-        {
-          what = HIT_NORTH;
-          break;
-        }
-
-      if (hit_bottom_edge)
-        {
-          what = HIT_SOUTH;
-          break;
-        }
-
-      if ((y > top_actual) && (y < top))
-        {
-          what = HIT_MOVE;
-          break;
-        }
-
-      what = HIT_WINDOW;
-    }
-  while (0);
-
-  return what;
-}
-
-bool
-  wm::handle_push(Fl_Window &window,
-                  hit_type const what,
-                  int const x,
-                  int const y) const
-{
-  bool handled = false;
-
-  do
-    {
-      if (!(FL_WINDOW == window.type() || FL_DOUBLE_WINDOW == window.type()))
-        {
-          break;
-        }
-
-      if (HIT_WINDOW == what)
-        {
-          break;
-        }
-
-      if (HIT_NONE != what)
-        {
-          if (window.modal() && HIT_MOVE != what)
-            {
-              break;
-            }
-
-          Fl_Widget *widget = window.resizable();
-
-          if (reinterpret_cast<ptrdiff_t>(widget)
-              == reinterpret_cast<ptrdiff_t>(&window))
-            {
-              handle_push(window, what);
-              handled = true;
-            }
-
-          break;
-        }
-
-      if (window.modal())
-        {
-          break;
-        }
-
-      Fl_X *i;
-
-      for (Fl_X **pp = &Fl_X::first; (i = *pp); pp = &i->next)
-        {
-          Fl_Window *wi = i->w;
-
-          if (wi != &window)
-            {
-              hit_type what2 = hit((*wi), x, y);
-
-              if (what2)
-                {
-                  *pp = i->next;
-                  i->next = Fl_X::first;
-                  Fl_X::first = i;
-                  // wi->take_focus();
-                  Fl::focus(wi); // force focus (empty windows)
-                  wi->redraw();  // paint above all other windows
-                  break;
-                }
-            }
-        }
-    }
-  while (0);
-
-  return handled;
-}
 
 static inline void
   resize_east(int &left,
@@ -409,8 +218,8 @@ static inline void
   resize_west(left, top, width, height, delta_x, delta_y);
 }
 
-void
-  wm::handle_push(Fl_Window &window, hit_type const what) const
+static void
+  handle_push(Fl_Window &window, hit_type const what)
 {
   int left = window.x() - 1;
   int top = window.y() - Fl_Allegro_Window_Driver::title_bar_height;
@@ -464,29 +273,22 @@ void
               break;
             }
 
-          fl_graphics_driver->mouse_hide();
-          fl_graphics_driver->flip_to_offscreen(true);
           window.resize(left + 1,
                         top + Fl_Allegro_Window_Driver::title_bar_height,
                         width - 1,
                         height - Fl_Allegro_Window_Driver::title_bar_height
                           - 1);
-          Fl::redraw();
-          Fl::flush();
-          fl_graphics_driver->flip_to_onscreen();
-          fl_graphics_driver->mouse_show();
+
           break;
         }
 
 #if defined(USE_ALLEGRO)
-      int pos, x, y;
-
-      pos = mouse_pos;
-      x = (pos >> 16);
-      y = (0xffff & pos);
+      int pos = mouse_pos;
+      int x = (pos >> 16);
+      int y = (0xffff & pos);
 #else
-      int x = mouse.m_curs_col - _cursor_current->hot_x;
-      int y = mouse.m_curs_row - _cursor_current->hot_y;
+      int x = mouse.m_curs_col;
+      int y = mouse.m_curs_row;
 #endif
       int delta_x = (x - Fl::e_x_root);
       int delta_y = (y - Fl::e_y_root);
@@ -498,12 +300,7 @@ void
       if (movement)
         {
 #if defined(USE_OWD32)
-          cursor_backing_to_image(_screen);
-
-          cursor_image_to_backing(
-            _screen, x, y, _cursor_current->width, _cursor_current->height);
-
-          cursor_blt(_screen, x, y, _cursor_current);
+          cursor_pos(x, y);
 #endif
           int left1 = left;
           int top1 = top;
@@ -584,4 +381,64 @@ void
   while (1);
 
   return;
+}
+
+bool
+  wm::handle_push(Fl_Window &window,
+                  hit_type const what,
+                  int const x,
+                  int const y)
+{
+  bool handled = false;
+
+  do
+    {
+      if (!(FL_WINDOW == window.type() || FL_DOUBLE_WINDOW == window.type()))
+        {
+          break;
+        }
+
+      if (HIT_WINDOW == what)
+        {
+          break;
+        }
+
+      if (HIT_NONE != what)
+        {
+          ::handle_push(window, what);
+          handled = true;
+          break;
+        }
+
+      if (window.modal())
+        {
+          break;
+        }
+
+      Fl_X *i;
+
+      for (Fl_X **pp = &Fl_X::first; (i = *pp); pp = &i->next)
+        {
+          Fl_Window *wi = i->w;
+
+          if (wi != &window)
+            {
+              hit_type what2 = Fl_Allegro_Screen_Driver::hit((*wi), x, y);
+
+              if (what2)
+                {
+                  *pp = i->next;
+                  i->next = Fl_X::first;
+                  Fl_X::first = i;
+                  wi->take_focus();
+                  Fl::focus(wi); // force focus (empty windows)
+                  wi->redraw();  // paint above all other windows
+                  break;
+                }
+            }
+        }
+    }
+  while (0);
+
+  return handled;
 }

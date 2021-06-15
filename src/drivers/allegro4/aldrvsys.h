@@ -68,6 +68,8 @@
 #  include <sys/stat.h>
 
 #  include <fcntl.h>
+#  include <stddef.h>
+#  include <stdint.h>
 #  include <stdlib.h>
 #  include <unistd.h>
 
@@ -77,6 +79,8 @@
 #  else
 #    include <sys/time.h>
 #  endif
+
+#  include <fl/fl_str.h>
 
 class FL_EXPORT Fl_Allegro_System_Driver : public Fl_System_Driver
 {
@@ -140,6 +144,9 @@ public:
     rename(const char *f, const char *n);
 
   virtual int
+    backslash_as_slash();
+
+  virtual int
     colon_is_drive();
 
   virtual int
@@ -154,7 +161,9 @@ public:
   virtual int
     filename_list(const char *d,
                   dirent ***list,
-                  int (*sort)(struct dirent **, struct dirent **));
+                  int (*sort)(struct dirent **, struct dirent **),
+                  char *errmsg,
+                  int errmsg_sz);
 
   virtual void
     copy(const char *stuff, int len, int clipboard, const char *type);
@@ -263,13 +272,15 @@ inline int
 }
 
 inline int
+  Fl_Allegro_System_Driver::backslash_as_slash()
+{
+  return 1;
+}
+
+inline int
   Fl_Allegro_System_Driver::colon_is_drive()
 {
-#  if defined(__DJGPP__)
   return 1;
-#  else
-  return 0;
-#  endif
 }
 
 inline int
@@ -281,11 +292,7 @@ inline int
 inline int
   Fl_Allegro_System_Driver::case_insensitive_filenames()
 {
-#  if defined(__DJGPP__)
   return 1;
-#  else
-  return 0;
-#  endif
 }
 
 inline void
@@ -311,16 +318,9 @@ extern "C" int
   fl_scandir(const char *dir,
              struct dirent ***namelist,
              int (*sel)(struct dirent *),
-             int (*compar)(struct dirent **, struct dirent **));
-
-inline int
-  Fl_Allegro_System_Driver::filename_list(const char *d,
-                                          dirent ***list,
-                                          int (*sort)(struct dirent **,
-                                                      struct dirent **))
-{
-  return fl_scandir(d, list, 0, sort);
-}
+             int (*compar)(struct dirent **, struct dirent **),
+             char *errmsg,
+             int errmsg_sz);
 
 inline char *
   Fl_Allegro_System_Driver::strdup(const char *s)

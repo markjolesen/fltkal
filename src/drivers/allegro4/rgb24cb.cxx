@@ -63,9 +63,7 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include <fl/drvgr.h>
-#if defined(USE_ALLEGRO)
-#  include <allegro.h>
+#include "imgconv.h"
 
 BITMAP *
   rgb24cb_to_bitmap(Fl_Draw_Image_Cb cb,
@@ -77,12 +75,11 @@ BITMAP *
 
   do
     {
+#if defined(USE_ALLEGRO)
       bmp = create_bitmap_ex(32, img_width, img_height);
-
-      if (0 == bmp)
-        {
-          break;
-        }
+#else
+      bmp = bitmap_new(img_width, img_height);
+#endif
 
       unsigned char *line
         = reinterpret_cast<unsigned char *>(malloc(3 * img_width));
@@ -90,12 +87,23 @@ BITMAP *
       for (unsigned int row = 0; row < img_height; row++)
         {
           (*cb)(data, 0, row, img_width, line);
+#if defined(USE_ALLEGRO)
           uint32_t *dest = reinterpret_cast<uint32_t *>(bmp->line[row]);
+#else
+          uint32_t *dest = reinterpret_cast<uint32_t *>(
+            &reinterpret_cast<uint8_t *>(bmp->bits.buf)[bmp->stride * row]);
+#endif
           unsigned char *src = &line[0];
           for (unsigned int index = 0; index < img_width; index++)
             {
+#if defined(USE_ALLEGRO)
               uint32_t color = makecol24(*src++, *src++, *src++);
               *dest++ = color;
+#else
+              uint32_t color
+                = (((*src++) << 24) | ((*src++) << 16) | ((*src++) << 8));
+              *dest++ = color;
+#endif
             }
         }
 
@@ -105,39 +113,3 @@ BITMAP *
 
   return bmp;
 }
-#else
-
-#  include "bitmap.h"
-
-struct bitmap *
-  rgb24cb_to_bitmap(Fl_Draw_Image_Cb cb,
-                    void *data,
-                    unsigned int const img_width,
-                    unsigned int const img_height)
-{
-  struct bitmap *bmp = bitmap_new(img_width, img_height);
-
-  unsigned char *line
-    = reinterpret_cast<unsigned char *>(malloc(3 * img_width));
-
-  for (unsigned int row = 0; row < img_height; row++)
-    {
-      (*cb)(data, 0, row, img_width, line);
-      unsigned char *buf = reinterpret_cast<unsigned char *>(bmp->bits.buf);
-      unsigned char *dest = &buf[4 * row * img_width];
-      unsigned char *src = &line[0];
-      for (unsigned int index = 0; index < img_width; index++)
-        {
-          *dest++ = 0;
-          *dest++ = *src++;
-          *dest++ = *src++;
-          *dest++ = *src++;
-        }
-    }
-
-  free(line);
-
-  return bmp;
-}
-
-#endif

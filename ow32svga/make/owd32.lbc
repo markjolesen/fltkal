@@ -1,7 +1,8 @@
 -+..\obj\bitmap.obj
 -+..\obj\bitmap_.obj
+-+..\obj\clip.obj
 -+..\obj\clip_.obj
--+..\obj\cursor_.obj
+-+..\obj\cursor.obj
 -+..\obj\display.obj
 -+..\obj\dpmi_.obj
 -+..\obj\image.obj

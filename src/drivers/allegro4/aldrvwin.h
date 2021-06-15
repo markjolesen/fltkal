@@ -109,6 +109,15 @@ protected:
 #  endif
   } store_;
 
+  bool
+    nca_title_bbox(signed &, signed &, unsigned &, unsigned &) const;
+
+  bool
+    nca_frame_bbox(signed &, signed &, unsigned &, unsigned &) const;
+
+  void
+    nca_draw() const;
+
 public:
   enum
   {
@@ -158,9 +167,6 @@ public:
            void (*draw_area)(void *, int, int, int, int),
            void *data);
 
-  virtual void
-    redisplay_cursor() const;
-
   virtual Fl_Cursor
     get_cursor() const;
 
@@ -168,13 +174,39 @@ public:
 
   virtual int
     set_cursor(const Fl_RGB_Image *, int, int);
-
-  virtual void
-    backing_create();
-
-  virtual void
-    backing_show();
 };
+
+inline bool
+  Fl_Allegro_Window_Driver::nca_title_bbox(signed &pos_x,
+                                           signed &pos_y,
+                                           unsigned &len_x,
+                                           unsigned &len_y) const
+{
+  bool has_frame = true;
+
+  pos_x = pWindow->x() - 1;
+  pos_y = pWindow->y() - (Fl_Allegro_Window_Driver::title_bar_height + 2);
+  len_x = pWindow->w() + 2;
+  len_y = (Fl_Allegro_Window_Driver::title_bar_height + 2);
+
+  return has_frame;
+}
+
+inline bool
+  Fl_Allegro_Window_Driver::nca_frame_bbox(signed &pos_x,
+                                           signed &pos_y,
+                                           unsigned &len_x,
+                                           unsigned &len_y) const
+{
+  bool has_frame = true;
+
+  pos_x = pWindow->x() - 1;
+  pos_y = pWindow->y() - (Fl_Allegro_Window_Driver::title_bar_height + 2);
+  len_x = pWindow->w() + 2;
+  len_y = pWindow->h() + (Fl_Allegro_Window_Driver::title_bar_height + 2);
+
+  return has_frame;
+}
 
 #  define FL_ALLEGRO_WINDOW_DRIVER_H
 #endif

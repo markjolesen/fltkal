@@ -356,56 +356,6 @@ mouse_set_range_ proc
     ret
 mouse_set_range_ endp
 
-; get mouse position and button status
-;
-; inputs:
-;   eax address to recieve x pos
-;   edx address to recieve y pos
-;   ebx address to recieve button status
-;
-; outputs:
-;    none
-;
-; destroys:
-;    none
-;
-public mouse_get_position_
-mouse_get_position_ proc
-
-    push eax
-    push ebx
-    push ecx
-    push edx
-    push esi
-    push edi
-
-    mov esi, edx
-    mov edi, ebx
-    
-    push eax
-    mov ax, 03h
-    int 033h
-    pop eax
-    
-    movzx ecx, cx
-    mov dword ptr [eax], ecx
-    
-    movzx edx, dx
-    mov dword ptr [esi], edx
-    
-    movzx ebx, bx
-    mov dword ptr [edi], ebx
-    
-    pop edi
-    pop esi
-    pop edx
-    pop ecx
-    pop ebx
-    pop eax
-
-    ret
-mouse_get_position_ endp
-
 public mouse_deinit_
 mouse_deinit_ PROC
 

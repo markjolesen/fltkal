@@ -363,21 +363,20 @@ public:
   virtual void font_name(int num, const char *name);
   // Defaut implementation may be enough
   virtual void overlay_rect(int x, int y, int w , int h);
+
   // ALLEGRO: 
   /** activate offscreen buffer
     \param[in] clear true to clear the surface
                false to copy the screen surface
-    \return true offscreen buffer activated
-    \return false error or buffer is already activated 
+    \return none
   */
-  virtual bool flip_to_offscreen(bool clear=true) {return false;} 
+  virtual void flip_to_offscreen(bool clear=true) {}
 
   // ALLEGRO: 
   /** activate onscreen buffer
-    \return true onscreen buffer activated
-    \return false error or buffer is already activated 
+    \return none
   */
-  virtual bool flip_to_onscreen() {return false;}
+  virtual void flip_to_onscreen() {}
 
   // ALLEGRO:
   /** hide mouse pointer */
@@ -386,6 +385,10 @@ public:
   // ALLEGRO:
   /** show mouse pointer */
   virtual void mouse_show() {}
+
+  // ALLEGRO:
+  /** clear active surface */
+  virtual void surface_clear() {}
 
 };
 

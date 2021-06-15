@@ -29,6 +29,7 @@
 #include <fl/tooltip.h>
 #include <fl/fl_draw.h>
 
+#include <stddef.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include "flstring.h"
@@ -185,6 +186,7 @@ Fl_Window       *Fl::modal_;       // topmost modal() window
 char const * const Fl::clipboard_plain_text = "text/plain";
 char const * const Fl::clipboard_image = "image";
 
+static int flip_= 0;
 
 //
 // Drivers
@@ -706,7 +708,19 @@ void Fl::first_window(Fl_Window* window) {
   Redraws all widgets.
 */
 void Fl::redraw() {
-  for (Fl_X* i = Fl_X::first; i; i = i->next) i->w->redraw();
+
+  if (0 == flip_)
+  {
+      fl_graphics_driver->mouse_hide();
+      fl_graphics_driver->flip_to_offscreen(true);
+      flip_= 1;
+  }
+
+  for (Fl_X* i = Fl_X::first; i; i = i->next) {
+      if (i->w->visible()) {
+	i->w->redraw();
+      }
+  }
 }
 
 /**
@@ -720,7 +734,7 @@ void Fl::redraw() {
   it should instead call Fl::awake() to get the main thread to process the
   event queue.
 */
-#if !defined(USE_ALLEGRO)
+#if !(defined(USE_ALLEGRO) || defined(USE_OWD32))
 void Fl::flush() {
   if (damage()) {
     damage_ = 0;
@@ -755,38 +769,24 @@ static void _flush(Fl_X *i)
 
         _flush(i->next);
 
-        Fl_Window *wi = i->w;
-
-// _mjo might be needed but omitting for now
-#if 0
-        if (wi->driver()->wait_for_expose_value)
-        {
-            damage_ = 1;
-            break;
-        }
-
-        if (!wi->visible_r())
-        {
-            break;;
-        }
-#endif
-
-        if (wi->damage())
-        {
-            // wi->driver()->flush();
-            Fl_Window_Driver::driver(wi)->flush();
-            wi->clear_damage();
-        }
-
-        // _mjo not sure if this is neccesssary
-#if 0
-        // destroy damage regions for windows that don't use them:
         if (i->region)
         {
             fl_graphics_driver->XDestroyRegion(i->region);
             i->region = 0;
         }
-#endif
+
+        Fl_Window *wi = i->w;
+
+        if (!wi->visible_r())
+        {
+            break;;
+        }
+
+        if (wi->damage())
+        {
+            Fl_Window_Driver::driver(wi)->flush();
+            wi->clear_damage();
+        }
     }
     while (0);
 
@@ -811,19 +811,10 @@ static int flush_propogate(Fl_X *i)
 
         Fl_Window *wi = i->w;
 
-// _mjo might be needed but omitting for now
-#if 0
-        if (wi->driver()->wait_for_expose_value)
-        {
-            damage_ = 1;
-            break;
-        }
-
         if (!wi->visible_r())
         {
             break;
         }
-#endif
 
         if (wi->damage())
         {
@@ -832,8 +823,7 @@ static int flush_propogate(Fl_X *i)
                 for (Fl_X *n = i->next; n; n = n->next)
                 {
                     Fl_Window *nw = n->w;
-                    if (nw->damage())
-                    {
+
                         int sx1 = wi->x();
                         int sx2 = wi->x() + wi->w();
                         int sy1 = wi->y();
@@ -854,7 +844,6 @@ static int flush_propogate(Fl_X *i)
                             wi->damage(FL_DAMAGE_ALL);
                             break;
                         }
-                    }
                 }
             }
             dirty++;
@@ -868,19 +857,51 @@ static int flush_propogate(Fl_X *i)
 
 void Fl::flush()
 {
-    if (damage() && Fl_X::first)
+    int mouse_hidden= 0;
+
+    do
     {
-        damage_ = 0;
-        int dirty = flush_propogate(Fl_X::first);
-        if (dirty)
-        {
-            _flush(Fl_X::first);
-        }
-    }
+	if (0 == damage())
+	{
+	    break;
+	}
+
+	if (0 == flip_)
+	{
+	    fl_graphics_driver->mouse_hide();
+
+	    int dirty = flush_propogate(Fl_X::first);
+
+	    if  (dirty)
+	    {
+		fl_graphics_driver->flip_to_offscreen(false);
+		flip_= 1;
+	    }
+	}
+
+	mouse_hidden= 1;
+
+	_flush(Fl_X::first);
+
+	if (flip_)
+	{
+	    fl_graphics_driver->flip_to_onscreen();
+	}
+    }while(0);
+
+    damage_ = 0;
+    flip_=0;
+
     screen_driver()->flush();
+
+    if (mouse_hidden)
+    {
+	fl_graphics_driver->mouse_show();
+    }
+
+    return;
 }
 #endif
-
 
 ////////////////////////////////////////////////////////////////
 // Event handlers:

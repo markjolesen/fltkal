@@ -75,8 +75,8 @@
 #  include "display.h"
 #  include "keyboard.h"
 #  include "mouse.h"
-#  define SCREEN_W _screen->width
-#  define SCREEN_H _screen->height
+#  define SCREEN_W _screen->len_x
+#  define SCREEN_H _screen->len_y
 #  pragma aux __halt = "hlt";
 #endif
 
@@ -93,8 +93,7 @@ Fl_Screen_Driver *
 }
 
 Fl_Allegro_Screen_Driver::Fl_Allegro_Screen_Driver() :
-  Fl_Screen_Driver(), wm_(), timer_(), dclick_(), clock_(), btn_state_(0),
-  cursor_(FL_CURSOR_DEFAULT)
+  Fl_Screen_Driver(), timer_(), dclick_(), clock_(), btn_state_(0)
 {
   ticks_set(clock_);
   dclick_.set(0.50);
@@ -210,73 +209,189 @@ void
 {
 }
 
-wm::hit_type
+hit_type
+  Fl_Allegro_Screen_Driver::hit(Fl_Window &window, int const x, int const y)
+{
+  hit_type what = HIT_NONE;
+
+  do
+    {
+      if (reinterpret_cast<ptrdiff_t>(window.parent()))
+        {
+          break;
+        }
+
+      int top = window.y();
+      int top_actual = top - Fl_Allegro_Window_Driver::title_bar_height;
+      int left = window.x();
+      int right = left + window.w() - 1;
+      int bottom = top + window.h() - 1;
+
+      if (x < (left - 2))
+        {
+          break;
+        }
+
+      if (x > (right + 2))
+        {
+          break;
+        }
+
+      if (y < (top_actual - 2))
+        {
+          break;
+        }
+
+      if (y > (bottom + 2))
+        {
+          break;
+        }
+
+      bool hit_left_edge = ((x >= (left - 2)) && (x <= (left + 2)));
+
+      bool hit_right_edge = false;
+
+      if (false == hit_left_edge)
+        {
+          hit_right_edge = ((x >= (right - 2)) && (x <= (right + 2)));
+        }
+
+      bool hit_top_edge = ((y >= (top_actual - 2)) && (y <= (top_actual + 2)));
+
+      bool hit_bottom_edge = false;
+
+      if (false == hit_top_edge)
+        {
+          hit_bottom_edge = ((y >= (bottom - 2)) && (y <= (bottom + 2)));
+        }
+
+      if (hit_left_edge)
+        {
+          if (hit_top_edge)
+            {
+              what = HIT_NORTH_WEST;
+              break;
+            }
+
+          if (hit_bottom_edge)
+            {
+              what = HIT_SOUTH_WEST;
+              break;
+            }
+
+          what = HIT_WEST;
+          break;
+        }
+
+      if (hit_right_edge)
+        {
+          if (hit_top_edge)
+            {
+              what = HIT_NORTH_EAST;
+              break;
+            }
+
+          if (hit_bottom_edge)
+            {
+              what = HIT_SOUTH_EAST;
+              break;
+            }
+
+          what = HIT_EAST;
+          break;
+        }
+
+      if (hit_top_edge)
+        {
+          what = HIT_NORTH;
+          break;
+        }
+
+      if (hit_bottom_edge)
+        {
+          what = HIT_SOUTH;
+          break;
+        }
+
+      if ((y > top_actual) && (y < top))
+        {
+          what = HIT_MOVE;
+          break;
+        }
+
+      what = HIT_WINDOW;
+    }
+  while (0);
+
+  switch (what)
+    {
+    case HIT_NONE:
+    case HIT_MOVE:
+    case HIT_WINDOW:
+      break;
+    default:
+      if (0 == reinterpret_cast<ptrdiff_t>(window.resizable()))
+        {
+          what = HIT_NONE;
+        }
+      break;
+    };
+
+  return what;
+}
+
+hit_type
   Fl_Allegro_Screen_Driver::hit(Fl_Window *window, int const x, int const y)
 {
-  wm::hit_type hit = wm_.hit((*window), x, y);
-  Fl_Window_Driver &wdriver = *Fl_Window_Driver::driver(window);
-  Fl_Cursor curwin = wdriver.get_cursor();
-  Fl_Cursor curnew = curwin;
+  hit_type what = hit((*window), x, y);
+  Fl_Cursor cursor;
 
-  switch (hit)
+  switch (what)
     {
-    case wm::HIT_MOVE:
-      curnew = FL_CURSOR_MOVE;
+    case HIT_MOVE:
+      cursor = FL_CURSOR_MOVE;
       break;
 
-    case wm::HIT_EAST:
-      curnew = FL_CURSOR_E;
+    case HIT_EAST:
+      cursor = FL_CURSOR_E;
       break;
 
-    case wm::HIT_WEST:
-      curnew = FL_CURSOR_W;
+    case HIT_WEST:
+      cursor = FL_CURSOR_W;
       break;
 
-    case wm::HIT_NORTH:
-      curnew = FL_CURSOR_N;
+    case HIT_NORTH:
+      cursor = FL_CURSOR_N;
       break;
 
-    case wm::HIT_NORTH_EAST:
-      curnew = FL_CURSOR_NE;
+    case HIT_NORTH_EAST:
+      cursor = FL_CURSOR_NE;
       break;
 
-    case wm::HIT_NORTH_WEST:
-      curnew = FL_CURSOR_NW;
+    case HIT_NORTH_WEST:
+      cursor = FL_CURSOR_NW;
       break;
 
-    case wm::HIT_SOUTH:
-      curnew = FL_CURSOR_S;
+    case HIT_SOUTH:
+      cursor = FL_CURSOR_S;
       break;
 
-    case wm::HIT_SOUTH_EAST:
-      curnew = FL_CURSOR_SE;
+    case HIT_SOUTH_EAST:
+      cursor = FL_CURSOR_SE;
       break;
 
-    case wm::HIT_SOUTH_WEST:
-      curnew = FL_CURSOR_SW;
+    case HIT_SOUTH_WEST:
+      cursor = FL_CURSOR_SW;
       break;
 
     default:
-      curnew = FL_CURSOR_DEFAULT;
+      cursor = FL_CURSOR_DEFAULT;
       break;
     }
 
-  if (cursor_ != curnew)
-    {
-      if (curnew != curwin)
-        {
-          wdriver.set_cursor(curnew);
-        }
+  fl_cursor(cursor);
 
-      else
-        {
-          wdriver.redisplay_cursor();
-        }
-
-      cursor_ = curnew;
-    }
-
-  return hit;
+  return what;
 }
 
 double
@@ -374,6 +489,13 @@ double
         {
           break;
         }
+
+#if defined(USE_OWD32)
+      if (0 == time_to_wait)
+        {
+          __halt();
+        }
+#endif
     }
   while (1);
 

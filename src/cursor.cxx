@@ -27,6 +27,9 @@
 #include <fl/imgrgb.h>
 #include "drvwin.h"
 #include <fl/fl_draw.h>
+
+#if defined(USE_ALLEGRO)
+
 #include <allegro.h>
 
 //#include "fl_cursor_wait.xpm"
@@ -183,6 +186,8 @@ extern void cursor_set(Fl_Cursor const c)
   return;
 }
 
+#endif
+
 /**
   Sets the cursor for the current window to the specified shape and colors.
   The cursors are defined in the <FL/Enumerations.H> header file.
@@ -195,7 +200,6 @@ void fl_cursor(Fl_Cursor c) {
 void fl_cursor(Fl_Cursor c, Fl_Color fg, Fl_Color bg) {
   fl_cursor(c);
 }
-
 
 /**
     Sets the default window cursor. This is the cursor that will be used

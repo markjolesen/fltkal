@@ -9,105 +9,69 @@
 */
 #if !defined(__BITMAP_H__)
 
-#include <stddef.h>
-#include <stdint.h>
-#include "image.h"
+#  include <stddef.h>
+#  include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#  include "image.h"
 
-#pragma pack(push, 0)
+#  pragma pack(push, 0)
 struct bitmap
 {
-    int stride;
-    size_t width;
-    size_t height;
-    union
-    {
-        void const* ref;
-        void* buf;
-    }bits;
+  signed stride;
+  unsigned len_x;
+  unsigned len_y;
+  union
+  {
+    void const *ref;
+    void *buf;
+  } bits;
 };
-#pragma pack(pop)
+#  pragma pack(pop)
 
-extern struct bitmap*
-bitmap_new(
-    size_t const width,
-    size_t const height);
+#  define STRIDE(l) (((((l)*32) + 31) / 32) * 4)
 
-extern struct bitmap*
-bitmap_new_from_image(
-    struct image const*const src,
-    int const src_x,
-    int const src_y,
-    size_t const src_w,
-    size_t const src_h);
+#  ifdef __cplusplus
+extern "C"
+{
+#  endif
 
-extern  void
-bitmap_free(
-    struct bitmap*const bmp);
+  extern struct bitmap *
+    bitmap_new(unsigned const, unsigned const);
 
-extern void
-bitmap_1bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src,
-    uint32_t const color);
+  extern struct bitmap *
+    bitmap_new_from_image(struct image const *const,
+                          struct slice const *const);
 
-extern void
-bitmap_xy1bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src,
-    int const src_x,
-    int const src_y);
+  extern void
+    bitmap_free(struct bitmap *const);
 
-extern void
-bitmap_8bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src,
-    uint32_t const color);
+  extern void
+    bitmap_resize(struct bitmap *const, unsigned const, unsigned const);
 
-extern void
-bitmap_24bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src);
+  extern void
+    bitmap_blt(struct image *const,
+               signed const,
+               signed const,
+               struct bitmap const *const,
+               struct slice const *const,
+               int const,
+               unsigned const);
 
-extern void
-bitmap_xy24bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src,
-    int const src_x,
-    int const src_y);
+  extern void
+    bitmap_8bpp_blt(struct image *constdest,
+                    signed const,
+                    signed const,
+                    struct bitmap const *const,
+                    uint32_t const);
 
-extern void
-bitmap_32bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src);
+  extern void
+    bitmap_copy_from_image(struct bitmap *const dest,
+                           struct image const *const src,
+                           struct slice const *const slice);
 
-extern void
-bitmap_xy32bpp_blt(
-    struct image *const dest,
-    int const dest_x,
-    int const dest_y,
-    struct bitmap const*const src,
-    int const src_x,
-    int const src_y);
-
-#ifdef __cplusplus
+#  ifdef __cplusplus
 }
-#endif
+#  endif
 
-#define __BITMAP_H__
+#  define __BITMAP_H__
 #endif

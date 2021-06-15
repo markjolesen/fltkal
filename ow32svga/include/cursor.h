@@ -7,71 +7,67 @@
  and related or neighboring rights to ow32svga Library. This work is published
  from: United States.
 */
-#if !defined(__CURSOR_H__)
+#if !defined(__cursor_h__)
 
-#include <stddef.h>
-#include <stdint.h>
-#include "image.h"
+#  include <stddef.h>
+#  include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#  include "image.h"
 
-#pragma pack(push, 0)
-struct cursor
+#  ifdef __cplusplus
+extern "C"
 {
-    uint32_t width;
-    uint32_t height;
-    uint32_t hot_x;
-    uint32_t hot_y;
-    uint32_t data;
-};
-#pragma pack(pop)
+#  endif
 
-extern struct cursor* _cursor_current;
+#  pragma pack(push, 0)
+  struct cursor
+  {
+    unsigned len_x;
+    unsigned len_y;
+    unsigned hot_x;
+    unsigned hot_y;
+    unsigned data[1];
+  };
+#  pragma pack(pop)
 
-extern struct cursor _cursor_arrow;
-extern struct cursor _cursor_crossh;
-extern struct cursor _cursor_e;
-extern struct cursor _cursor_ew;
-extern struct cursor _cursor_hand;
-extern struct cursor _cursor_help;
-extern struct cursor _cursor_insert;
-extern struct cursor _cursor_move;
-extern struct cursor _cursor_n;
-extern struct cursor _cursor_ne;
-extern struct cursor _cursor_nesw;
-extern struct cursor _cursor_ns;
-extern struct cursor _cursor_nw;
-extern struct cursor _cursor_nwse;
-extern struct cursor _cursor_s;
-extern struct cursor _cursor_se;
-extern struct cursor _cursor_sw;
-extern struct cursor _cursor_w;
-extern struct cursor _cursor_wait;
+  extern struct cursor _cursor_arrow;
+  extern struct cursor _cursor_crossh;
+  extern struct cursor _cursor_e;
+  extern struct cursor _cursor_ew;
+  extern struct cursor _cursor_hand;
+  extern struct cursor _cursor_help;
+  extern struct cursor _cursor_insert;
+  extern struct cursor _cursor_move;
+  extern struct cursor _cursor_n;
+  extern struct cursor _cursor_ne;
+  extern struct cursor _cursor_nesw;
+  extern struct cursor _cursor_ns;
+  extern struct cursor _cursor_nw;
+  extern struct cursor _cursor_nwse;
+  extern struct cursor _cursor_s;
+  extern struct cursor _cursor_se;
+  extern struct cursor _cursor_sw;
+  extern struct cursor _cursor_w;
+  extern struct cursor _cursor_wait;
 
-extern void
-cursor_blt(
-    struct image*const image,
-    int32_t const dest_x,
-    int32_t const dest_y,
-    struct cursor const*const cursor);
+  extern void
+    cursor_blt();
 
-extern void
-cursor_image_to_backing(
-    struct image const*const image,
-    int32_t const img_x,
-    int32_t const img_y,
-    uint32_t const cursor_len_x /*precond: max 72*/,
-    uint32_t const cursor_len_y /*precond: max 72*/);
+  extern void
+    cursor_pos(signed const, signed const);
 
-extern void
-cursor_backing_to_image(
-    struct image*const image);
+  extern void
+    cursor_shape(struct cursor const *const);
 
-#ifdef __cplusplus
+  extern void
+    cursor_hide();
+
+  extern void
+    cursor_show();
+
+#  ifdef __cplusplus
 }
-#endif
+#  endif
 
-#define __CURSOR_H__
+#  define __cursor_h__
 #endif

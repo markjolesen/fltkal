@@ -152,6 +152,38 @@ void
   return;
 }
 
+int
+  Fl_Allegro_System_Driver::filename_list(const char *d,
+                                          dirent ***list,
+                                          int (*sort)(struct dirent **,
+                                                      struct dirent **),
+                                          char *errmsg,
+                                          int errmsg_sz)
+{
+  int count;
+  char *path = fl_strdup(d);
+  char *slash;
+
+  do
+    {
+      slash = strchr(path, '/');
+
+      if (0 == reinterpret_cast<ptrdiff_t>(slash))
+        {
+          break;
+        }
+
+      *slash = '\\';
+    }
+  while (1);
+
+  count = fl_scandir(path, list, 0, sort, errmsg, errmsg_sz);
+
+  free(path);
+
+  return count;
+}
+
 char const *
   Fl_Allegro_System_Driver::preference_ext() const
 {

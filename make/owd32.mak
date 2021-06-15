@@ -123,7 +123,7 @@ OBJ_FLTK=&
     $(OBJ)\colorfn.obj &
     $(OBJ)\compose.obj &
     $(OBJ)\counter.obj &
-    $(OBJ)\owcursor.obj &
+    $(OBJ)\cursor.obj &
     $(OBJ)\curve.obj &
     $(OBJ)\dial.obj &
     $(OBJ)\diamond.obj &
@@ -261,7 +261,13 @@ OBJ_OW32DRV= &
     $(OBJ)\drvscrow.obj &
     $(OBJ)\fontdir.obj &
     $(OBJ)\fontft.obj &
-    $(OBJ)\rgb24cb.obj &
+	$(OBJ)\imgconv.obj &
+	$(OBJ)\rgb16.obj &
+	$(OBJ)\rgb24cb.obj &
+	$(OBJ)\rgb24.obj &
+	$(OBJ)\rgb32.obj &
+	$(OBJ)\rgb8.obj &
+	$(OBJ)\xbm.obj &
     $(OBJ)\timeout.obj &
     $(OBJ)\utf8proc.obj &
     $(OBJ)\util.obj &
@@ -363,7 +369,7 @@ $(OBJ)\compose.obj : $(SRC_FLTK)\compose.cxx .AUTODEPEND
 $(OBJ)\counter.obj : $(SRC_FLTK)\counter.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
     
-$(OBJ)\owcursor.obj : $(SRC_FLTK)\owcursor.cxx .AUTODEPEND
+$(OBJ)\cursor.obj : $(SRC_FLTK)\cursor.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
     
 $(OBJ)\curve.obj : $(SRC_FLTK)\curve.cxx .AUTODEPEND
@@ -771,9 +777,6 @@ $(OBJ)\fontdir.obj : $(SRC_OW32DRV)\fontdir.cxx .AUTODEPEND
 $(OBJ)\fontft.obj : $(SRC_OW32DRV)\fontft.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
     
-$(OBJ)\rgb24cb.obj : $(SRC_OW32DRV)\rgb24cb.cxx .AUTODEPEND
-    *$(CXX) $(CXXFLAGS) -fo=$@ $<
-    
 $(OBJ)\timeout.obj : $(SRC_OW32DRV)\timeout.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
 
@@ -786,3 +789,23 @@ $(OBJ)\util.obj : $(SRC_OW32DRV)\util.cxx .AUTODEPEND
 $(OBJ)\wm.obj : $(SRC_OW32DRV)\wm.cxx .AUTODEPEND
     *$(CXX) $(CXXFLAGS) -fo=$@ $<
     
+$(OBJ)\imgconv.obj : $(SRC_OW32DRV)\imgconv.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<
+    
+$(OBJ)\rgb16.obj : $(SRC_OW32DRV)\rgb16.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<
+    
+$(OBJ)\rgb24cb.obj : $(SRC_OW32DRV)\rgb24cb.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<
+    
+$(OBJ)\rgb24.obj : $(SRC_OW32DRV)\rgb24.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<
+    
+$(OBJ)\rgb32.obj : $(SRC_OW32DRV)\rgb32.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<
+    
+$(OBJ)\rgb8.obj : $(SRC_OW32DRV)\rgb8.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<
+    
+$(OBJ)\xbm.obj : $(SRC_OW32DRV)\xbm.cxx .AUTODEPEND
+    *$(CXX) $(CXXFLAGS) -fo=$@ $<

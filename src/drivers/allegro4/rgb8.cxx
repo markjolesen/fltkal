@@ -63,7 +63,7 @@
 //     You should have received a copy of the GNU Library General Public
 //     License along with FLTK.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include <allegro.h>
+#include "imgconv.h"
 
 BITMAP *
   rgb8_to_bitmap(unsigned int const img_width,
@@ -81,25 +81,35 @@ BITMAP *
 
   do
     {
+#if defined(USE_ALLEGRO)
       bmp = create_bitmap_ex(32, img_width, img_height);
-
-      if (0 == bmp)
-        {
-          break;
-        }
-
       clear_to_color(bmp, MASK_COLOR_32);
+#else
+      bmp = bitmap_new(img_width, img_height);
+#endif
 
       unsigned char const *src = &img_bits[0];
 
       for (unsigned int row = 0; row < img_height; row++)
         {
+#if defined(USE_ALLEGRO)
           uint32_t *dest = reinterpret_cast<uint32_t *>(bmp->line[row]);
+#else
+          uint32_t *dest = reinterpret_cast<uint32_t *>(
+            &reinterpret_cast<uint8_t *>(bmp->bits.buf)[bmp->stride * row]);
+#endif
           for (unsigned int index = 0; index < img_width; index++)
             {
               unsigned char grey = *src++;
+#if defined(USE_ALLEGRO)
               uint32_t color = makecol24(grey, grey, grey);
               *dest++ = color;
+#else
+              *dest++ = 0;
+              *dest++ = grey;
+              *dest++ = grey;
+              *dest++ = grey;
+#endif
             }
           src += delta;
         }

@@ -70,55 +70,47 @@
 #include "keyboard.h"
 #include "mouse.h"
 #include "utf8proc.h"
+#include "wm.h"
 #include <fl/fl.h>
 #include <fl/fl_enums.h>
 #include <fl/platform.h>
 
-// #include "aldrvgr.h" // <-- remove me
-#pragma aux __halt = "hlt";
-
 void
   Fl_Allegro_Screen_Driver::open_display_platform()
 {
-if (-1 == num_screens)
-{
-  int rc = display_init_once();
-
-  if (rc)
+  if (-1 == num_screens)
     {
-      fprintf(stderr, "Unable to initialize display\n");
-      exit(-1);
+      int rc = display_init_once();
+
+      if (rc)
+        {
+          fprintf(stderr, "Unable to initialize display\n");
+          exit(-1);
+        }
+
+      num_screens = 1;
+
+      mouse_init();
+      mouse_set_range(_screen->len_x - 1, _screen->len_y - 1);
+      cursor_shape(&_cursor_arrow);
+      cursor_pos(Fl::e_x_root, Fl::e_y_root);
+      cursor_show();
     }
 
-  num_screens = 1;
-
-  mouse_init();
-
-  unsigned x;
-  unsigned y;
-  unsigned state;
-
-  mouse_set_range(_screen->width - 1, _screen->height - 1);
-  mouse_get_position(&x, &y, &state);
-  cursor_image_to_backing(
-    _screen, x, y, _cursor_arrow.width, _cursor_arrow.height);
-  cursor_blt(_screen, x, y, &_cursor_arrow);
-	}
-
-	return;
+  return;
 }
 
 void
   Fl_Allegro_Screen_Driver::close_display()
 {
   if (1 == num_screens)
-	{
-		mouse_deinit();
-		display_deinit_once();
-		num_screens= -1;
-	}
+    {
+      mouse_deinit();
+      display_deinit_once();
+      num_screens = -1;
+    }
 
-	return;
+  return;
 }
 
 bool
@@ -548,7 +540,7 @@ bool
 {
   int triggered = false;
 
-  static wm::hit_type what_prev = wm::HIT_NONE;
+  static hit_type what_prev = HIT_NONE;
 
   do
     {
@@ -561,18 +553,13 @@ bool
           break;
         }
 
-      int x = mouse.m_curs_col - _cursor_current->hot_x;
-      int y = mouse.m_curs_row - _cursor_current->hot_y;
+      int x = mouse.m_curs_col;
+      int y = mouse.m_curs_row;
       int movement = (abs(Fl::e_x_root - x) + abs(Fl::e_y_root - y));
 
       if (movement)
         {
-          cursor_backing_to_image(_screen);
-
-          cursor_image_to_backing(
-            _screen, x, y, _cursor_current->width, _cursor_current->height);
-
-          cursor_blt(_screen, x, y, _cursor_current);
+          cursor_pos(x, y);
         }
 
       if (Fl::e_is_click)
@@ -640,7 +627,7 @@ bool
           break;
         }
 
-      wm::hit_type what = what_prev;
+      hit_type what = what_prev;
 
       if (movement)
         {
@@ -651,8 +638,8 @@ bool
 
           if (what != what_prev)
             {
-              x = mouse.m_curs_col - _cursor_current->hot_x;
-              y = mouse.m_curs_row - _cursor_current->hot_y;
+              x = mouse.m_curs_col;
+              y = mouse.m_curs_row;
               Fl::e_x_root = x;
               Fl::e_y_root = y;
               Fl::e_x = x - window->x();
@@ -673,9 +660,9 @@ bool
           if ((0 == Fl::grab_) && (FL_WINDOW == window->type())
               || (FL_DOUBLE_WINDOW == window->type()))
             {
-              if (wm::HIT_NONE != what && wm::HIT_WINDOW != what)
+              if (HIT_NONE != what && HIT_WINDOW != what)
                 {
-                  triggered = wm_.handle_push(
+                  triggered = wm::handle_push(
                     (*window), what, Fl::e_x_root, Fl::e_y_root);
 
                   if (triggered)
@@ -699,7 +686,7 @@ bool
 int
   Fl_Allegro_Screen_Driver::get_mouse(int &x, int &y)
 {
-	x= Fl::e_x_root;
-	y= Fl::e_y_root;
+  x = Fl::e_x_root;
+  y = Fl::e_y_root;
   return 0; // screen number
 }

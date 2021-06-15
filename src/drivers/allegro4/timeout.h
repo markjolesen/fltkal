@@ -97,7 +97,7 @@ protected:
   struct slot
   {
     ticker timer;
-    double seconds; // TODO: _mjo remove
+    double seconds;
     Fl_Timeout_Handler cb;
     void *arg;
     struct slot *next;

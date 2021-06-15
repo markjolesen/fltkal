@@ -69,8 +69,22 @@
 
 #  include "../../drvscr.h"
 #  include "timeout.h"
-#  include "wm.h"
 #  include <fl/fl_enums.h>
+
+enum hit_type
+{
+  HIT_NONE = 0,
+  HIT_WINDOW,
+  HIT_MOVE,
+  HIT_EAST,
+  HIT_WEST,
+  HIT_NORTH,
+  HIT_NORTH_EAST,
+  HIT_NORTH_WEST,
+  HIT_SOUTH,
+  HIT_SOUTH_EAST,
+  HIT_SOUTH_WEST
+};
 
 class FL_EXPORT Fl_Allegro_Screen_Driver : public Fl_Screen_Driver
 {
@@ -81,18 +95,19 @@ private:
   bool
     wait_mouse(Fl_Window *window);
 
-  wm::hit_type
-    hit(Fl_Window *window, int const x, int const y);
-
 protected:
-  wm wm_;
   timeout timer_;
   ticker dclick_;
   ticks_t clock_;
   int btn_state_;
-  Fl_Cursor cursor_;
 
 public:
+  static hit_type
+    hit(Fl_Window &window, int const x, int const y);
+
+  static hit_type
+    hit(Fl_Window *window, int const x, int const y);
+
   Fl_Allegro_Screen_Driver();
 
   virtual ~Fl_Allegro_Screen_Driver();

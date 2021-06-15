@@ -70,7 +70,7 @@
 extern char const *
   filename_extract(char const *path);
 
-extern char *
+extern char const *
   program_path();
 
 extern Fl_Preferences *

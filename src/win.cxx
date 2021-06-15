@@ -485,13 +485,6 @@ void Fl_Window::draw()
   bool to_display = Fl_Display_Device::display_device()->is_current();
   if (!to_display) current_ = this; // so drawing of background Fl_Tiled_Image is correct
 
-#if defined(USE_ALLEGRO) || defined(USE_OWD32)
-  bool buffered= false;
-//  if (FL_DOUBLE_WINDOW == type())
-  {
-    buffered= fl_graphics_driver->flip_to_offscreen(false);
-  }
-#endif
   pWindowDriver->draw_begin();
 
   // The following is similar to Fl_Group::draw(), but ...
@@ -524,9 +517,6 @@ void Fl_Window::draw()
 # if defined(FLTK_USE_CAIRO)
   Fl::cairo_make_current(this); // checkout if an update is necessary
 # endif
-#if defined(USE_ALLEGRO) || defined(USE_OWD32)
-  if (buffered) fl_graphics_driver->flip_to_onscreen();
-#endif
 }
 
 void Fl_Window::make_current()

@@ -65,12 +65,19 @@
 //
 #if !defined(__IMGCONV_H__)
 
-#  include <allegro.h>
+#  if defined(USE_ALLEGRO)
+#    include <allegro.h>
+#  endif
 
 #  include <fl/drvgr.h>
 #  include <fl/fl.h>
 #  include <fl/img.h>
 #  include <fl/imgbit.h>
+
+#  if defined(USE_OWD32)
+#    include "bitmap.h"
+typedef struct bitmap BITMAP;
+#  endif
 
 extern int
   fl_convert_pixmap(const char *const *cdata, uchar *out, Fl_Color bg);

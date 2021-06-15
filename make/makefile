@@ -122,6 +122,7 @@ FLTKOBJS=\
 	$(OBJ)/btnrpt.o \
 	$(OBJ)/chart.o \
 	$(OBJ)/choice.o \
+	$(OBJ)/cleanup.o \
 	$(OBJ)/clock.o \
 	$(OBJ)/colorch.o \
 	$(OBJ)/colorfn.o \
@@ -187,6 +188,7 @@ FLTKOBJS=\
 	$(OBJ)/imgpix.o \
 	$(OBJ)/imgpng.o \
 	$(OBJ)/imgpnm.o \
+	$(OBJ)/imgrdr.o \
 	$(OBJ)/imgread.o \
 	$(OBJ)/imgshare.o \
 	$(OBJ)/imgtiled.o \
@@ -260,6 +262,7 @@ XUTF8SRC=$(SRC)/xutf8
 ALLEGRO4DRVOBJS=\
 	$(OBJ)/aldrvcp.o \
 	$(OBJ)/aldrvgr.o \
+	$(OBJ)/drvgral.o \
 	$(OBJ)/aldrvimg.o \
 	$(OBJ)/aldrvscr.o \
 	$(OBJ)/aldrvsys.o \

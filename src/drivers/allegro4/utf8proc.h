@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2015 Steven G. Johnson, Jiahao Chen, Peter Colberg, Tony Kelman, Scott P. Jones, and other contributors.
- * Copyright (c) 2009 Public Software Group e. V., Berlin, Germany
+ * Copyright (c) 2015 Steven G. Johnson, Jiahao Chen, Peter Colberg, Tony
+ * Kelman, Scott P. Jones, and other contributors. Copyright (c) 2009 Public
+ * Software Group e. V., Berlin, Germany
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -36,15 +37,23 @@
  * The features of utf8proc include:
  *
  * - Transformation of strings (@ref utf8proc_map) to:
- *    - decompose (@ref UTF8PROC_DECOMPOSE) or compose (@ref UTF8PROC_COMPOSE) Unicode combining characters (http://en.wikipedia.org/wiki/Combining_character)
+ *    - decompose (@ref UTF8PROC_DECOMPOSE) or compose (@ref UTF8PROC_COMPOSE)
+ * Unicode combining characters
+ * (http://en.wikipedia.org/wiki/Combining_character)
  *    - canonicalize Unicode compatibility characters (@ref UTF8PROC_COMPAT)
- *    - strip "ignorable" (@ref UTF8PROC_IGNORE) characters, control characters (@ref UTF8PROC_STRIPCC), or combining characters such as accents (@ref UTF8PROC_STRIPMARK)
+ *    - strip "ignorable" (@ref UTF8PROC_IGNORE) characters, control characters
+ * (@ref UTF8PROC_STRIPCC), or combining characters such as accents (@ref
+ * UTF8PROC_STRIPMARK)
  *    - case-folding (@ref UTF8PROC_CASEFOLD)
- * - Unicode normalization: @ref utf8proc_NFD, @ref utf8proc_NFC, @ref utf8proc_NFKD, @ref utf8proc_NFKC
- * - Detecting grapheme boundaries (@ref utf8proc_grapheme_break and @ref UTF8PROC_CHARBOUND)
+ * - Unicode normalization: @ref utf8proc_NFD, @ref utf8proc_NFC, @ref
+ * utf8proc_NFKD, @ref utf8proc_NFKC
+ * - Detecting grapheme boundaries (@ref utf8proc_grapheme_break and @ref
+ * UTF8PROC_CHARBOUND)
  * - Character-width computation: @ref utf8proc_charwidth
- * - Classification of characters by Unicode category: @ref utf8proc_category and @ref utf8proc_category_string
- * - Encode (@ref utf8proc_encode_char) and decode (@ref utf8proc_iterate) Unicode codepoints to/from UTF-8.
+ * - Classification of characters by Unicode category: @ref utf8proc_category
+ * and @ref utf8proc_category_string
+ * - Encode (@ref utf8proc_encode_char) and decode (@ref utf8proc_iterate)
+ * Unicode codepoints to/from UTF-8.
  */
 
 /** @file */
@@ -67,9 +76,11 @@
  *       being based on ABI compatibility rather than API compatibility.
  */
 /** @{ */
-/** The MAJOR version number (increased when backwards API compatibility is broken). */
+/** The MAJOR version number (increased when backwards API compatibility is
+ * broken). */
 #define UTF8PROC_VERSION_MAJOR 2
-/** The MINOR version number (increased when new functionality is added in a backwards-compatible manner). */
+/** The MINOR version number (increased when new functionality is added in a
+ * backwards-compatible manner). */
 #define UTF8PROC_VERSION_MINOR 1
 /** The PATCH version (increased for fixes that do not change the API). */
 #define UTF8PROC_VERSION_PATCH 0

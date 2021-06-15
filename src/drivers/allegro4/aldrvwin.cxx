@@ -67,14 +67,15 @@
 
 #include "../../drvwin.h"
 #include "aldrvgr.h"
+#include "imgconv.h"
 #include <fl/fl.h>
+#include <fl/fl_draw.h>
 #include <fl/fl_enums.h>
 #include <fl/platform.h>
 #include <fl/win.h>
 
-#if defined(USE_ALLEGRO)
-#  include "imgconv.h"
-#else
+#if defined(USE_OWD32)
+#  include "bitmap.h"
 #  include "mouse.h"
 #endif
 
@@ -133,55 +134,56 @@ int
 void
   Fl_Allegro_Window_Driver::draw_begin()
 {
-  Fl_Allegro_Graphics_Driver *gr
-    = reinterpret_cast<Fl_Allegro_Graphics_Driver *>(fl_graphics_driver);
-  // Fl_Window_Driver::draw_begin(); - does nothing
-  gr->mouse_hide();
-  Fl::window_draw_offset_x = pWindow->x();
-  Fl::window_draw_offset_y = pWindow->y();
+  Fl::window_draw_offset_x += pWindow->x();
+  Fl::window_draw_offset_y += pWindow->y();
 
-  if (FL_CHILD_WINDOW == pWindow->type())
-    {
-      Fl_Group *p = pWindow->parent();
-      Fl_Window *w = p->as_window();
-
-      while (w)
-        {
-          Fl::window_draw_offset_x += w->x();
-          Fl::window_draw_offset_y += w->y();
-          p = w->parent();
-
-          if (p)
-            {
-              w = p->as_window();
-            }
-
-          else
-            {
-              break;
-            }
-        }
-    }
-
-  if (FL_DAMAGE_ALL & pWindow->damage())
-    {
-      if (FL_WINDOW == pWindow->type() || FL_DOUBLE_WINDOW == pWindow->type())
-        {
-          gr->nca_draw_frame(pWindow->x() - 1,
-                             pWindow->y() - title_bar_height,
-                             pWindow->w() + 2,
-                             pWindow->h() + title_bar_height + 2,
-                             title_bar_height,
-                             pWindow->label());
-        }
-    }
+  return;
 }
 
 void
   Fl_Allegro_Window_Driver::draw_end()
 {
-  // Fl_Window_Driver::draw_end(); - does nothing
-  fl_graphics_driver->mouse_show();
+  Fl::window_draw_offset_x -= pWindow->x();
+  Fl::window_draw_offset_y -= pWindow->y();
+
+  if (FL_DAMAGE_ALL & pWindow->damage())
+    {
+      if (FL_WINDOW == pWindow->type() || FL_DOUBLE_WINDOW == pWindow->type())
+        {
+          nca_draw();
+        }
+    }
+}
+
+void
+  Fl_Allegro_Window_Driver::nca_draw() const
+{
+  signed x;
+  signed y;
+  unsigned w;
+  unsigned h;
+
+  fl_graphics_driver->push_no_clip();
+
+  nca_title_bbox(x, y, w, h);
+
+  fl_rectf(x, y, w, h, FL_BLUE);
+
+  fl_draw_box(FL_UP_FRAME, x, y, w, h, FL_GRAY);
+
+  char const *title = pWindow->label();
+
+  if (title && *title)
+    {
+      fl_draw(title, x, y, w, h, FL_ALIGN_CENTER, 0, false);
+    }
+
+  nca_frame_bbox(x, y, w, h);
+  fl_draw_box(FL_UP_FRAME, x, y, w, h, FL_GRAY);
+
+  fl_graphics_driver->pop_clip();
+
+  return;
 }
 
 int
@@ -257,86 +259,7 @@ void
   Fl_Allegro_Window_Driver::hide()
 {
   hide_common();
-
-  if (0 == store_.bmp_)
-    {
-      Fl::redraw();
-      Fl_Allegro_Graphics_Driver *gr
-        = reinterpret_cast<Fl_Allegro_Graphics_Driver *>(fl_graphics_driver);
-      bool buffered = gr->flip_to_offscreen(true);
-      Fl::flush(); // _mjo TODO: investigate move flip screen to flush
-
-      if (buffered)
-        {
-          gr->flip_to_onscreen();
-        }
-    }
-}
-
-void
-  Fl_Allegro_Window_Driver::backing_show()
-{
-  if (store_.bmp_)
-    {
-      fl_graphics_driver->mouse_hide();
-#if defined(USE_ALLEGRO)
-      blit(store_.bmp_,
-           screen,
-           0,
-           0,
-           store_.x_,
-           store_.y_,
-           store_.bmp_->w,
-           store_.bmp_->h);
-#else
-      bitmap_32bpp_blt(_screen, store_.x_, store_.y_, store_.bmp_);
-#endif
-      fl_graphics_driver->mouse_show();
-    }
-
-  return;
-}
-
-void
-  Fl_Allegro_Window_Driver::backing_create()
-{
-  if (store_.bmp_)
-    {
-#if defined(USE_ALLEGRO)
-      destroy_bitmap(store_.bmp_);
-#else
-      bitmap_free(store_.bmp_);
-#endif
-      store_.bmp_ = 0;
-    }
-
-  fl_graphics_driver->push_no_clip();
-
-  int bmp_x = pWindow->x();
-  int bmp_y = pWindow->y();
-  int bmp_w = pWindow->w();
-  int bmp_h = pWindow->h();
-
-  fl_graphics_driver->clip_box(
-    bmp_x, bmp_y, bmp_w, bmp_h, bmp_x, bmp_y, bmp_w, bmp_h);
-
-#if defined(USE_ALLEGRO)
-  store_.bmp_ = create_bitmap(bmp_w, bmp_h);
-  fl_graphics_driver->mouse_hide();
-  set_clip_state(store_.bmp_, 1);
-  blit(
-    screen, store_.bmp_, bmp_x, bmp_y, 0, 0, store_.bmp_->w, store_.bmp_->h);
-  fl_graphics_driver->mouse_show();
-#else
-  fl_graphics_driver->mouse_hide();
-  store_.bmp_ = bitmap_new_from_image(_screen, bmp_x, bmp_y, bmp_w, bmp_h);
-  fl_graphics_driver->mouse_show();
-#endif
-
-  store_.x_ = bmp_x;
-  store_.y_ = bmp_y;
-
-  fl_graphics_driver->pop_clip();
+  Fl::redraw();
 
   return;
 }
@@ -351,30 +274,26 @@ void
 
   pWindow->Fl_Group::resize(X, Y, W, H);
 
-  if (shown())
+  do
     {
+      if (!shown())
+        {
+          break;
+        }
+
       int x2 = pWindow->x();
       int y2 = pWindow->y();
       int w2 = pWindow->w();
       int h2 = pWindow->h();
 
-      if (x1 != x2 || y1 != y2 || w1 != w2 || h1 != h2)
+      if (x1 == x2 && y1 == y2 && w1 == w2 && h1 == h2)
         {
-          if (0 == store_.bmp_ && (x1 != x2 || y1 != y2))
-            {
-              Fl_Allegro_Graphics_Driver *gr
-                = reinterpret_cast<Fl_Allegro_Graphics_Driver *>(
-                  fl_graphics_driver);
-              gr->surface_clear();
-              Fl::redraw();
-            }
-
-          else
-            {
-              pWindow->redraw();
-            }
+          break;
         }
+
+      Fl::redraw();
     }
+  while (0);
 
   return;
 }
@@ -441,46 +360,6 @@ int
 }
 
 #endif
-
-void
-  Fl_Allegro_Window_Driver::redisplay_cursor() const
-{
-#if defined(USE_ALLEGRO)
-
-  if (0 == cursor_.custom_.bmp_)
-    {
-      cursor_set(cursor_.pointer_);
-    }
-
-  else
-    {
-      fl_graphics_driver->mouse_hide();
-      set_mouse_sprite(cursor_.custom_.bmp_);
-      set_mouse_sprite_focus(cursor_.custom_.hot_x_, cursor_.custom_.hot_y_);
-      fl_graphics_driver->mouse_show();
-    }
-
-#else
-
-  struct cursor *cursor = cursor_.current_;
-
-  if (cursor)
-    {
-      cursor_backing_to_image(_screen);
-      unsigned x;
-      unsigned y;
-      unsigned state;
-      mouse_get_position(&x, &y, &state);
-      x -= cursor->hot_x;
-      y -= cursor->hot_y;
-      cursor_image_to_backing(_screen, x, y, cursor->width, cursor->height);
-      cursor_blt(_screen, x, y, cursor);
-    }
-
-#endif
-
-  return;
-}
 
 Fl_Cursor
   Fl_Allegro_Window_Driver::get_cursor() const
@@ -614,22 +493,7 @@ int
         }
 
       cursor_.current_ = cursor;
-
-      cursor_backing_to_image(_screen);
-
-      if (0 == cursor)
-        {
-          break;
-        }
-
-      unsigned x;
-      unsigned y;
-      unsigned state;
-      mouse_get_position(&x, &y, &state);
-      x -= cursor->hot_x;
-      y -= cursor->hot_y;
-      cursor_image_to_backing(_screen, x, y, cursor->width, cursor->height);
-      cursor_blt(_screen, x, y, cursor);
+      cursor_shape(cursor);
     }
   while (0);
 

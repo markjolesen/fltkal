@@ -74,11 +74,12 @@
 #    include "mouse.h"
 #  endif
 
+#  include <fl/win.h>
+
 class FL_EXPORT Fl_Allegro_Graphics_Driver : public Fl_Graphics_Driver
 {
 private:
   fontft ft_;
-  size_t hidden_count_;
 #  if defined(USE_ALLEGRO)
   BITMAP *active_;
   BITMAP *backing_;
@@ -86,6 +87,8 @@ private:
   struct image *active_;
   struct image *backing_;
 #  endif
+  unsigned hidden_count_;
+  unsigned flipped_count_;
 
 public:
   Fl_Allegro_Graphics_Driver();
@@ -106,7 +109,7 @@ public:
   };
 #  endif
 
-  void
+  virtual void
     surface_clear();
 
   virtual void
@@ -123,33 +126,6 @@ public:
 
   virtual void
     line(int x, int y, int x1, int y1);
-
-  virtual void
-    line(int x, int y, int x1, int y1, int x2, int y2);
-
-  virtual void
-    xyline(int x, int y, int x1);
-
-  virtual void
-    xyline(int x, int y, int x1, int y2);
-
-  virtual void
-    xyline(int x, int y, int x1, int y2, int x3);
-
-  virtual void
-    yxline(int x, int y, int y1);
-
-  virtual void
-    yxline(int x, int y, int y1, int x2);
-
-  virtual void
-    yxline(int x, int y, int y1, int x2, int y3);
-
-  virtual void
-    loop(int x0, int y0, int x1, int y1, int x2, int y2);
-
-  virtual void
-    loop(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3);
 
   virtual void
     polygon(int x0, int y0, int x1, int y1, int x2, int y2);
@@ -187,10 +163,10 @@ public:
   virtual double
     width(const char *str, int n);
 
-  virtual bool
+  virtual void
     flip_to_offscreen(bool clear);
 
-  virtual bool
+  virtual void
     flip_to_onscreen();
 
   virtual void
@@ -198,14 +174,6 @@ public:
 
   virtual void
     mouse_show();
-
-  void
-    nca_draw_frame(int const nca_x,
-                   int const nca_y,
-                   unsigned int const nca_w,
-                   unsigned int const nca_h,
-                   unsigned int const title_bar_height,
-                   char const *title);
 
   virtual int
     height();
@@ -227,31 +195,35 @@ public:
 
 protected:
   virtual void
-    draw_image(
-      const uchar *buf, int X, int Y, int W, int H, int D = 3, int L = 0);
+    draw_image(const uchar *buf, int X, int Y, int W, int H, int D, int L);
 
   virtual void
     draw_image(
-      Fl_Draw_Image_Cb cb, void *data, int X, int Y, int W, int H, int D = 3);
+      Fl_Draw_Image_Cb cb, void *data, int X, int Y, int W, int H, int D);
 
   virtual void
-    draw_rgb(Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy);
+    draw_fixed(Fl_Pixmap *pxm, int XP, int YP, int WP, int HP, int cx, int cy);
 
   virtual void
-    draw_pixmap(Fl_Pixmap *pxm, int XP, int YP, int WP, int HP, int cx, int cy);
+    draw_fixed(Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy);
 
   virtual void
-    draw_bitmap(Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy);
+    draw_fixed(
+      Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy);
 };
 
 inline void
   Fl_Allegro_Graphics_Driver::surface_clear()
 {
+  mouse_hide();
+// TODO: get background color from somewhere
 #  if (USE_ALLEGRO)
   clear_to_color(surface(), 0);
 #  else
   image_fill(surface(), 0);
 #  endif
+  mouse_show();
+  return;
 }
 
 inline void
@@ -262,11 +234,11 @@ inline void
 #  if defined(USE_ALLEGRO)
       scare_mouse();
 #  else
-      cursor_backing_to_image(_screen);
+      cursor_hide();
 #  endif
     }
 
-  hidden_count_ = true;
+  hidden_count_++;
 
   return;
 }
@@ -281,15 +253,7 @@ inline void
 #  if defined(USE_ALLEGRO)
           unscare_mouse();
 #  else
-          unsigned x;
-          unsigned y;
-          unsigned state;
-          mouse_get_position(&x, &y, &state);
-          x -= _cursor_current->hot_x;
-          y -= _cursor_current->hot_y;
-          cursor_image_to_backing(
-            _screen, x, y, _cursor_current->width, _cursor_current->height);
-          cursor_blt(_screen, x, y, _cursor_current);
+          cursor_show();
 #  endif
         }
 

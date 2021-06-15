@@ -2,7 +2,7 @@
 //
 // Utility code for the Fast Light Tool Kit (FLTK)
 //
-// Copyright 2018 The fltkal authors
+// Copyright 2018, 2021 The fltkal authors
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -73,54 +73,48 @@
 
 #include <fl/filename.h>
 
-extern char const *
-  filename_extract(char const *path)
+class util
 {
-  size_t size = strlen(path);
-  char const *filename = path;
-  char const *eos = &path[size - 1];
+private:
+  char program_path_[FL_PATH_MAX];
 
-  do
-    {
-      if (0 == size)
-        {
-          break;
-        }
+  void
+    init_once_program_path();
 
-#if defined(__DJGPP__)
+public:
+  util();
 
-      if (*eos == '\\' || *eos == '/' || *eos == ':')
-#else
-      if (*eos == '/')
-#endif
-        {
-          filename = &eos[1];
-          break;
-        }
+  ~util();
 
-      size--;
-      eos--;
-    }
-  while (1);
+  char const *
+    program_path() const;
+};
 
-  return filename;
-}
+#undef ARGV0
 
 #if defined(__DJGPP__)
-
 extern char **__crt0_argv;
+#  define ARGV0 __crt0_argv[0]
+#elif defined(__WATCOMC__)
+#  define ARGV0 __argv[0]
+#endif
 
-extern char *
-  program_path()
+void
+  util::init_once_program_path()
 {
-  size_t size = strlen(__crt0_argv[0]);
-  char *path = reinterpret_cast<char *>(calloc(1, 1 + size));
-  memcpy(path, __crt0_argv[0], size);
-  char *eos = &path[size - 1];
+#if defined(ARGV0)
+  strlcpy(program_path_, ARGV0, FL_PATH_MAX);
+#elif defined(__LINUX__)
+  readlink("/proc/self/exe", program_path_, FL_PATH_MAX);
+#else
+  getcwd(program_path_, FL_PATH_MAX);
+#endif
+  size_t len = strlen(program_path_);
+  char *eos = &program_path_[len - 1];
 
   do
     {
-      if (0 == size)
+      if (0 == len)
         {
           eos[0] = 0;
           break;
@@ -138,47 +132,60 @@ extern char *
           break;
         }
 
-      size--;
+      len--;
       eos--;
     }
   while (1);
 
-  return path;
+  return;
 }
 
-#elif defined(__WATCOMC__)
-
-extern char *
-  program_path()
+util::util()
 {
-  return ".\\";
+  init_once_program_path();
+  return;
 }
 
-#else
+util::~util()
+{
+  return;
+}
 
-/* Currently GNU/Linux support only */
+char const *
+  util::program_path() const
+{
+  return program_path_;
+}
 
-extern char *
+static util _util;
+
+extern char const *
   program_path()
 {
-  char *path = reinterpret_cast<char *>(calloc(1, 1024));
+  return _util.program_path();
+}
 
-  readlink("/proc/self/exe", path, 1024);
-
+extern char const *
+  filename_extract(char const *path)
+{
   size_t size = strlen(path);
-  char *eos = &path[size - 1];
+  char const *filename = path;
+  char const *eos = &path[size - 1];
 
   do
     {
       if (0 == size)
         {
-          eos[0] = 0;
           break;
         }
 
+#if defined(__DOS__)
+      if (*eos == '\\' || *eos == ':')
+#else
       if (*eos == '/')
+#endif
         {
-          eos[0] = 0;
+          filename = &eos[1];
           break;
         }
 
@@ -187,10 +194,8 @@ extern char *
     }
   while (1);
 
-  return path;
+  return filename;
 }
-
-#endif
 
 #if defined(__DJGPP__)
 extern unsigned short _djstat_flags;
@@ -219,9 +224,8 @@ extern Fl_Preferences *
         }
 
       path = reinterpret_cast<char *>(malloc(FL_PATH_MAX));
-      char *prgpath = program_path();
+      char const *prgpath = program_path();
       snprintf(path, FL_PATH_MAX, "%s/fltk.cfg", prgpath);
-      free(prgpath);
 
       rc = stat(path, &sbuf);
 

@@ -3,159 +3,158 @@
 
  License CC0 PUBLIC DOMAIN
 
- To the extent possible under law, Mark J. Olesen has waived all copyright 
- and related or neighboring rights to ow32svga Library. This work is published 
+ To the extent possible under law, Mark J. Olesen has waived all copyright
+ and related or neighboring rights to ow32svga Library. This work is published
  from: United States.
 */
+#include "vbe.h"
+
 #include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "vbe.h"
+
 #include "dpmi.h"
 
 struct vbe_info_block _vbe_info;
-static size_t* vbe_modes= 0;
-static size_t vbe_mode_count= 0;
+static size_t *vbe_modes = 0;
+static size_t vbe_mode_count = 0;
 
-extern int
-vbe_cleanup()
+extern void
+  vbe_cleanup()
 {
-    free(vbe_modes);
-    vbe_modes= 0;
+  free(vbe_modes);
+  vbe_modes = 0;
 }
 
 extern int
-vbe_query_installed()
+  vbe_query_installed()
 {
-    static enum {
-        STATE_UNINITIALIZED,
-        STATE_INITIALIZED,
-        STATE_ERROR
-    } state= STATE_UNINITIALIZED;
-    int rc= 0;
-    size_t slot;
-    int16_t* modes;
+  static enum {
+    STATE_UNINITIALIZED,
+    STATE_INITIALIZED,
+    STATE_ERROR
+  } state
+    = STATE_UNINITIALIZED;
+  int rc = 0;
+  size_t slot;
+  int16_t *modes;
 
-    do
+  do
     {
-
-        if (STATE_ERROR == state)
+      if (STATE_ERROR == state)
         {
-            rc= -1;
-            break;
+          rc = -1;
+          break;
         }
 
-        if (STATE_INITIALIZED == state)
+      if (STATE_INITIALIZED == state)
         {
-            break;
+          break;
         }
 
-        rc= vbe_get_info_block(&_vbe_info);
+      rc = vbe_get_info_block(&_vbe_info);
 
-        if (rc)
+      if (rc)
         {
-            break;
+          break;
         }
 
-        if (0x41534556 != *((uint32_t*)&_vbe_info.vbe_signature[0]))
+      if (0x41534556 != *((uint32_t *)&_vbe_info.vbe_signature[0]))
         {
-            rc= -1;
-            break;
+          rc = -1;
+          break;
         }
 
-        if (0x0300 < _vbe_info.vbe_version)
+      if (0x0300 < _vbe_info.vbe_version)
         {
-            rc= -1;
-            break;
+          rc = -1;
+          break;
         }
 
-        modes= (int16_t*)dpmi_real2linear(_vbe_info.vbe_video_mode_ptr);
+      modes = (int16_t *)dpmi_real2linear(_vbe_info.vbe_video_mode_ptr);
 
-        for(vbe_mode_count= 0; -1 != modes[vbe_mode_count]; vbe_mode_count++);
+      for (vbe_mode_count = 0; - 1 != modes[vbe_mode_count]; vbe_mode_count++)
+        ;
 
-        if (0 == modes)
+      if (0 == modes)
         {
-            rc= -1;
-            break;
+          rc = -1;
+          break;
         }
 
-        vbe_modes= (size_t*)calloc(vbe_mode_count, sizeof(size_t));
+      vbe_modes = (size_t *)calloc(vbe_mode_count, sizeof(size_t));
 
-        for(slot= 0; vbe_mode_count > slot; slot++)
+      for (slot = 0; vbe_mode_count > slot; slot++)
         {
-            vbe_modes[slot]= (size_t)modes[slot];
+          vbe_modes[slot] = (size_t)modes[slot];
         }
 
-        state= STATE_INITIALIZED;
+      state = STATE_INITIALIZED;
+    }
+  while (0);
 
-    }while(0);
-
-    if (rc)
+  if (rc)
     {
-        state= STATE_ERROR;
+      state = STATE_ERROR;
     }
 
-    return rc;
+  return rc;
 }
 
 extern int
-vbe_query_mode(
-    size_t const width,
-    size_t const height,
-    size_t const depth)
+  vbe_query_mode(size_t const width, size_t const height, size_t const depth)
 {
-    struct vbe_mode_block info;
-    int rc;
-    size_t slot;
-    int mode;
+  struct vbe_mode_block info;
+  int rc;
+  size_t slot;
+  int mode;
 
-    do
+  do
     {
+      mode = -1;
 
-        mode= -1;
+      rc = vbe_query_installed();
 
-        rc= vbe_query_installed();
-
-        if (rc)
+      if (rc)
         {
-            break;
+          break;
         }
 
-        for (slot= 0; vbe_mode_count > slot; slot++)
+      for (slot = 0; vbe_mode_count > slot; slot++)
         {
-            rc= vbe_get_mode_block(&info, vbe_modes[slot]);
+          rc = vbe_get_mode_block(&info, vbe_modes[slot]);
 
-            if (rc)
+          if (rc)
             {
-                continue;
+              continue;
             }
 
-            if (0x90 != (0x90 & info.mod_attr))
+          if (0x90 != (0x90 & info.mod_attr))
             {
-                continue;
+              continue;
             }
 
-            if (4 != info.mod_memory_model && 6 != info.mod_memory_model)
+          if (4 != info.mod_memory_model && 6 != info.mod_memory_model)
             {
-                continue;
+              continue;
             }
 
-            if (depth != (size_t)info.mod_bits_per_pixel)
+          if (depth != (size_t)info.mod_bits_per_pixel)
             {
-                continue;
+              continue;
             }
 
-            if ((width == (size_t)info.mod_x_resolution) &&
-                (height == (size_t)info.mod_y_resolution))
+          if ((width == (size_t)info.mod_x_resolution)
+              && (height == (size_t)info.mod_y_resolution))
             {
-                mode= (int)vbe_modes[slot];
-                break;
+              mode = (int)vbe_modes[slot];
+              break;
             }
         }
+    }
+  while (0);
 
-    }while(0);
-
-    return mode;
+  return mode;
 }

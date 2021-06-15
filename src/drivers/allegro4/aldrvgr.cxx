@@ -1,8 +1,8 @@
 // aldrvgr.cxx
 //
-// Allegro4 Graphics Driver for the Fast Light Tool Kit (FLTK)
+// Graphics Driver for the Fast Light Tool Kit (FLTK)
 //
-// Copyright 2017-2019 The fltkal authors
+// Copyright 2017-2021 The fltkal authors
 //
 //                              FLTK License
 //                            December 11, 2001
@@ -68,20 +68,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "imgconv.h"
 #include <fl/fl.h>
 
-#if defined(USE_ALLEGRO)
-#  include "imgconv.h"
-#else
-#  define SCREEN_W _screen->width
-#  define SCREEN_H _screen->height
-
-struct bitmap *
-  rgb24cb_to_bitmap(Fl_Draw_Image_Cb cb,
-                    void *data,
-                    unsigned int const img_width,
-                    unsigned int const img_height);
-
+#if defined(USE_OWD32)
+#  define SCREEN_W _screen->len_x
+#  define SCREEN_H _screen->len_y
 #endif
 
 #if !defined(M_PI)
@@ -103,7 +95,8 @@ Fl_Graphics_Driver *
 }
 
 Fl_Allegro_Graphics_Driver::Fl_Allegro_Graphics_Driver() :
-  Fl_Graphics_Driver(), ft_(), hidden_count_(0), active_(0), backing_(0)
+  Fl_Graphics_Driver(), ft_(), active_(0), backing_(0), hidden_count_(0),
+  flipped_count_(0)
 {
   return;
 }
@@ -116,14 +109,15 @@ Fl_Allegro_Graphics_Driver::~Fl_Allegro_Graphics_Driver()
 void
   Fl_Allegro_Graphics_Driver::draw(const char *str, int n, int x, int y)
 {
+  x += Fl::window_draw_offset_x;
+  y += Fl::window_draw_offset_y;
+
   if (n > 0)
     {
-      x += Fl::window_draw_offset_x;
-      y += Fl::window_draw_offset_y;
 #if defined(USE_ALLEGRO)
       unsigned char r, g, b;
       Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
-      int color = makecol(r, g, b);
+      unsigned color = makecol(r, g, b);
 #else
       unsigned color = Fl::get_color(Fl_Graphics_Driver::color());
       color >>= 8;
@@ -207,164 +201,6 @@ void
   unsigned color = Fl::get_color(Fl_Graphics_Driver::color());
   color >>= 8;
   image_line(surface(), x, y, x1, y1, color);
-#endif
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::line(int x, int y, int x1, int y1, int x2, int y2)
-{
-  x += Fl::window_draw_offset_x;
-  x1 += Fl::window_draw_offset_x;
-  x2 += Fl::window_draw_offset_x;
-  y += Fl::window_draw_offset_y;
-  y1 += Fl::window_draw_offset_y;
-  y2 += Fl::window_draw_offset_y;
-#if defined(USE_ALLEGRO)
-  unsigned char r, g, b;
-  Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
-  int color = makecol(r, g, b);
-  ::line(surface(), x, y, x1, y1, color);
-  ::line(surface(), x1, y1, x2, y2, color);
-#else
-  unsigned color = Fl::get_color(Fl_Graphics_Driver::color());
-  color >>= 8;
-  image_line(surface(), x, y, x1, y1, color);
-  image_line(surface(), x1, y1, x2, y2, color);
-#endif
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1)
-{
-  x += Fl::window_draw_offset_x;
-  x1 += Fl::window_draw_offset_x;
-  y += Fl::window_draw_offset_y;
-#if defined(USE_ALLEGRO)
-  unsigned char r, g, b;
-  Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
-  int color = makecol(r, g, b);
-  ::line(surface(), x, y, x1, y, color);
-#else
-  unsigned color = Fl::get_color(Fl_Graphics_Driver::color());
-  color >>= 8;
-  image_line(surface(), x, y, x1, y, color);
-#endif
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1, int y2)
-{
-  xyline(x, y, x1);
-  yxline(x1, y, y2);
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::xyline(int x, int y, int x1, int y2, int x3)
-{
-  xyline(x, y, x1);
-  yxline(x1, y, y2);
-  xyline(x1, y2, x3);
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1)
-{
-  x += Fl::window_draw_offset_x;
-  y += Fl::window_draw_offset_y;
-  y1 += Fl::window_draw_offset_y;
-#if defined(USE_ALLEGRO)
-  unsigned char r, g, b;
-  Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
-  int color = makecol(r, g, b);
-  ::line(surface(), x, y, x, y1, color);
-#else
-  unsigned color = Fl::get_color(Fl_Graphics_Driver::color());
-  color >>= 8;
-  image_line(surface(), x, y, x, y1, color);
-#endif
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1, int x2)
-{
-  yxline(x, y, y1);
-  xyline(x, y1, x2);
-
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::yxline(int x, int y, int y1, int x2, int y3)
-{
-  yxline(x, y, y1);
-  xyline(x, y1, x2);
-  yxline(x2, y1, y3);
-
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::loop(
-    int x0, int y0, int x1, int y1, int x2, int y2)
-{
-  x0 += Fl::window_draw_offset_x;
-  x1 += Fl::window_draw_offset_x;
-  x2 += Fl::window_draw_offset_x;
-  y0 += Fl::window_draw_offset_y;
-  y1 += Fl::window_draw_offset_y;
-  y2 += Fl::window_draw_offset_y;
-#if defined(USE_ALLEGRO)
-  unsigned char r, g, b;
-  Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
-  int color = makecol(r, g, b);
-  ::line(surface(), x0, y0, x1, y1, color);
-  ::line(surface(), x1, y1, x2, y2, color);
-  ::line(surface(), x2, y2, x0, y0, color);
-#else
-  unsigned color = Fl::get_color(Fl_Graphics_Driver::color());
-  color >>= 8;
-  image_line(surface(), x0, y0, x1, y1, color);
-  image_line(surface(), x1, y1, x2, y2, color);
-  image_line(surface(), x2, y2, x0, y0, color);
-#endif
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::loop(
-    int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3)
-{
-  x0 += Fl::window_draw_offset_x;
-  x1 += Fl::window_draw_offset_x;
-  x2 += Fl::window_draw_offset_x;
-  x3 += Fl::window_draw_offset_x;
-  y0 += Fl::window_draw_offset_y;
-  y1 += Fl::window_draw_offset_y;
-  y2 += Fl::window_draw_offset_y;
-  y3 += Fl::window_draw_offset_y;
-#if defined(USE_ALLEGRO)
-  unsigned char r, g, b;
-  Fl::get_color(Fl_Graphics_Driver::color(), r, g, b);
-  int color = makecol(r, g, b);
-  ::line(surface(), x0, y0, x1, y1, color);
-  ::line(surface(), x0, y0, x1, y1, color);
-  ::line(surface(), x1, y1, x2, y2, color);
-  ::line(surface(), x2, y2, x3, y3, color);
-  ::line(surface(), x3, y3, x0, y0, color);
-#else
-  unsigned color = Fl::get_color(Fl_Graphics_Driver::color());
-  color >>= 8;
-  image_line(surface(), x0, y0, x1, y1, color);
-  image_line(surface(), x0, y0, x1, y1, color);
-  image_line(surface(), x1, y1, x2, y2, color);
-  image_line(surface(), x2, y2, x3, y3, color);
-  image_line(surface(), x3, y3, x0, y0, color);
 #endif
   return;
 }
@@ -1076,14 +912,14 @@ void
       if (0 > x1)
         x1 = 0;
 
-      if (bmp->width <= (unsigned)x2)
-        x2 = (bmp->width - 1);
+      if (bmp->len_x <= (unsigned)x2)
+        x2 = (bmp->len_x - 1);
 
       if (0 > y1)
         y1 = 0;
 
-      if (bmp->height <= (unsigned)y2)
-        y2 = (bmp->height - 1);
+      if (bmp->len_y <= (unsigned)y2)
+        y2 = (bmp->len_y - 1);
 
       image_set_clip(surface(), x1, y1, x2, y2);
 #endif
@@ -1094,7 +930,7 @@ void
 #if defined(USE_ALLEGRO)
       ::set_clip_rect(bmp, 0, 0, (bmp->w - 1), (bmp->h - 1));
 #else
-      image_set_clip(bmp, 0, 0, (bmp->width - 1), (bmp->height - 1));
+      image_set_clip(bmp, 0, 0, (bmp->len_x - 1), (bmp->len_y - 1));
 #endif
     }
 
@@ -1114,18 +950,26 @@ double
   return width;
 }
 
-bool
+void
   Fl_Allegro_Graphics_Driver::flip_to_offscreen(bool clear)
-#if defined(USE_ALLEGRO)
 {
-  bool activated = false;
-
   do
     {
+      if (flipped_count_)
+        {
+          break;
+        }
+
       if (0 == backing_)
         {
+#if defined(USE_ALLEGRO)
           int depth = bitmap_color_depth(screen);
+
           backing_ = create_bitmap_ex(depth, SCREEN_W, SCREEN_H);
+#else
+          backing_
+            = image_new(::_screen->len_x, ::_screen->len_y, ::_screen->stride);
+#endif
 
           if (0 == backing_)
             {
@@ -1136,500 +980,45 @@ bool
       // TODO: _mjo if backing dimensions differ from screen
       // destroy and rebuild
 
-      if (backing_ == active_)
-        {
-          break;
-        }
+      active_ = backing_;
 
       if (clear)
         {
-          // TODO: get background color from somewhere
-          clear_to_color(backing_, 0);
+          surface_clear();
         }
-
       else
         {
-          mouse_hide();
+#if defined(USE_ALLEGRO)
           blit(::screen, backing_, 0, 0, 0, 0, backing_->w, backing_->h);
-          mouse_show();
-        }
-
-      active_ = backing_;
-      activated = true;
-    }
-  while (0);
-
-  return activated;
-}
 #else
-{
-  bool activated = false;
-
-  do
-    {
-      mouse_hide();
-
-      if (0 == backing_)
-        {
-          backing_
-            = image_new(_screen->width, _screen->height, _screen->stride);
+          image_blt_exact(backing_, ::_screen);
+#endif
         }
-
-      // TODO: _mjo if backing dimensions differ from screen
-      // destroy and rebuild
-
-      if (backing_ == active_)
-        {
-          break;
-        }
-
-      if (clear)
-        {
-          // TODO: get background color from somewhere
-          image_fill(backing_, 0);
-        }
-
-      else
-        {
-          image_blt_exact(backing_, _screen);
-        }
-
-      active_ = backing_;
-      activated = true;
     }
   while (0);
 
-  return activated;
-}
-#endif
+  flipped_count_++;
 
-bool
+  return;
+}
+
+void
   Fl_Allegro_Graphics_Driver::flip_to_onscreen()
+{
+  if (flipped_count_)
+    {
+      if (1 == flipped_count_)
+        {
 #if defined(USE_ALLEGRO)
-{
-  bool activated = false;
-
-  do
-    {
-      if (::screen == active_)
-        {
-          break;
-        }
-
-      blit(backing_, ::screen, 0, 0, 0, 0, backing_->w, backing_->h);
-      active_ = ::screen;
-      activated = true;
-      mouse_show();
-    }
-  while (0);
-
-  return activated;
-}
+          blit(backing_, ::screen, 0, 0, 0, 0, backing_->w, backing_->h);
 #else
-{
-  bool activated = false;
-
-  do
-    {
-      if (_screen == active_)
-        {
-          break;
-        }
-
-      mouse_hide();
-      image_blt_exact(_screen, backing_);
-      active_ = _screen;
-      activated = true;
-      mouse_show();
-    }
-  while (0);
-
-  return activated;
-}
+          image_blt_exact(::_screen, backing_);
 #endif
+          active_ = ::_screen;
+        }
 
-void
-  Fl_Allegro_Graphics_Driver::draw_image(
-    const uchar *buf, int X, int Y, int W, int H, int D, int L)
-{
-#if defined(USE_ALLEGRO)
-  BITMAP *bmp = rgb_data_to_bitmap(static_cast<unsigned int>(W),
-                                   static_cast<unsigned int>(H),
-                                   static_cast<unsigned int>(D),
-                                   static_cast<unsigned int>(L),
-                                   buf);
-
-  if (bmp)
-    {
-      X += Fl::window_draw_offset_x;
-      Y += Fl::window_draw_offset_y;
-      masked_blit(bmp, surface(), 0, 0, X, Y, bmp->w, bmp->h);
-      destroy_bitmap(bmp);
+      flipped_count_--;
     }
-
-#else
-
-  do
-    {
-      if (0 >= W)
-        {
-          break;
-        }
-
-      if (0 >= H)
-        {
-          break;
-        }
-
-      struct bitmap bmp;
-
-      bmp.stride = L;
-
-      bmp.width = static_cast<size_t>(W);
-
-      bmp.height = static_cast<size_t>(H);
-
-      bmp.bits.ref = buf;
-
-      int x = X + Fl::window_draw_offset_x;
-
-      int y = Y + Fl::window_draw_offset_y;
-
-      switch (D)
-        {
-        case 4: // 32
-          bitmap_32bpp_blt(surface(), x, y, &bmp);
-          break;
-
-        case 3: // 24
-          bitmap_24bpp_blt(surface(), x, y, &bmp);
-          break;
-
-        case 2: // 16
-          break;
-
-        case 1: // 8
-          bitmap_8bpp_blt(surface(), x, y, &bmp, 0);
-          break;
-
-        default:
-          break;
-        }
-    }
-  while (0);
-
-#endif
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::draw_image(
-    Fl_Draw_Image_Cb cb, void *data, int X, int Y, int W, int H, int D)
-{
-  X += Fl::window_draw_offset_x;
-  Y += Fl::window_draw_offset_y;
-
-#if defined(USE_ALLEGRO)
-  BITMAP *bmp = rgb_staged_to_image(cb,
-                                    data,
-                                    static_cast<unsigned int>(W),
-                                    static_cast<unsigned int>(H),
-                                    static_cast<unsigned int>(D));
-
-  if (bmp)
-    {
-      masked_blit(bmp, surface(), 0, 0, X, Y, bmp->w, bmp->h);
-      destroy_bitmap(bmp);
-    }
-
-#else
-
-  struct bitmap *bmp = rgb24cb_to_bitmap(
-    cb, data, static_cast<unsigned int>(W), static_cast<unsigned int>(H));
-
-  bitmap_32bpp_blt(surface(), X, Y, bmp);
-
-  bitmap_free(bmp);
-
-#endif
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::draw_rgb(
-    Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy)
-{
-#if defined(USE_ALLEGRO)
-  BITMAP *bmp = rgb_image_to_bitmap((*rgb));
-
-  if (bmp)
-    {
-      int X = XP + Fl::window_draw_offset_x;
-      int Y = YP + Fl::window_draw_offset_y;
-      masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
-      destroy_bitmap(bmp);
-    }
-
-#else
-
-  do
-    {
-      if (0 >= WP)
-        {
-          break;
-        }
-
-      if (0 >= HP)
-        {
-          break;
-        }
-
-      if (0 > cx)
-        {
-          break;
-        }
-
-      if (0 > cy)
-        {
-          break;
-        }
-
-      if (WP <= cx)
-        {
-          break;
-        }
-
-      if (HP <= cy)
-        {
-          break;
-        }
-
-      struct bitmap bmp;
-
-      bmp.width = static_cast<size_t>(WP);
-
-      bmp.height = static_cast<size_t>(HP);
-
-      bmp.bits.ref = rgb->array;
-
-      bmp.stride = bmp.width;
-
-      int x = XP + Fl::window_draw_offset_x;
-
-      int y = YP + Fl::window_draw_offset_y;
-
-      switch (rgb->d())
-        {
-        case 4:
-          bitmap_xy32bpp_blt(surface(), x, y, &bmp, cx, cy);
-          break;
-
-        case 3:
-          bitmap_xy24bpp_blt(surface(), x, y, &bmp, cx, cy);
-          break;
-
-        case 2:
-          break;
-
-        case 1:
-          break;
-
-        default:
-          break;
-        }
-    }
-  while (0);
-
-#endif
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::draw_pixmap(
-    Fl_Pixmap *pxm, int XP, int YP, int WP, int HP, int cx, int cy)
-{
-#if defined(USE_ALLEGRO)
-  BITMAP *bmp = pxm_to_bitmap((*pxm));
-
-  if (bmp)
-    {
-      int X = XP + Fl::window_draw_offset_x;
-      int Y = YP + Fl::window_draw_offset_y;
-      masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
-      destroy_bitmap(bmp);
-    }
-
-#else
-  uint8_t *bits = 0;
-
-  do
-    {
-      if (0 >= pxm->w())
-        {
-          break;
-        }
-
-      if (0 >= pxm->h())
-        {
-          break;
-        }
-
-      size_t limit = (pxm->w() * pxm->h() * 4);
-      bits = reinterpret_cast<unsigned char *>(malloc(limit));
-      char const *const *raw = pxm->data();
-      int rc = fl_convert_pixmap(raw, bits, 0);
-
-      if (0 == rc)
-        {
-          break;
-        }
-
-      uint8_t *byte = (uint8_t *)bits;
-
-      for (size_t slot = 0; (pxm->w() * pxm->h()) > slot; slot++)
-        {
-          uint8_t red = byte[0];
-          uint8_t green = byte[1];
-          uint8_t blue = byte[2];
-          uint32_t color = (red << 16) | (green << 8) | blue;
-          *(uint32_t *)byte = color;
-          byte += 4;
-        }
-
-      struct bitmap bmp;
-
-      bmp.width = static_cast<size_t>(pxm->w());
-
-      bmp.height = static_cast<size_t>(pxm->h());
-
-      bmp.bits.ref = bits;
-
-      bmp.stride = bmp.width;
-
-      int x = XP + Fl::window_draw_offset_x;
-
-      int y = YP + Fl::window_draw_offset_y;
-
-      bitmap_xy32bpp_blt(surface(), x, y, &bmp, cx, cy);
-    }
-  while (0);
-
-  free(bits);
-
-#endif
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::draw_bitmap(
-    Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy)
-{
-#if defined(USE_ALLEGRO)
-  BITMAP *bmp = bitmap_to_bitmap((*bm));
-
-  if (bmp)
-    {
-      int X = XP + Fl::window_draw_offset_x;
-      int Y = YP + Fl::window_draw_offset_y;
-      masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
-      destroy_bitmap(bmp);
-    }
-
-#else
-
-  do
-    {
-      if (0 >= bm->w())
-        {
-          break;
-        }
-
-      if (0 >= bm->h())
-        {
-          break;
-        }
-
-      struct bitmap bmp;
-
-      bmp.width = static_cast<size_t>(bm->w());
-
-      bmp.height = static_cast<size_t>(bm->h());
-
-      bmp.bits.ref = bm->array;
-
-      bmp.stride = bmp.width;
-
-      int x = XP + Fl::window_draw_offset_x;
-
-      int y = YP + Fl::window_draw_offset_y;
-
-      switch (bm->d())
-        {
-        case 0:
-          bitmap_xy1bpp_blt(surface(), x, y, &bmp, cx, cy);
-          break;
-
-        default:
-          break;
-        }
-    }
-  while (0);
-
-#endif
-
-  return;
-}
-
-void
-  Fl_Allegro_Graphics_Driver::nca_draw_frame(
-    int const nca_x,
-    int const nca_y,
-    unsigned int const nca_w,
-    unsigned int const nca_h,
-    unsigned int const title_bar_height,
-    char const *title)
-{
-#if defined(USE_ALLEGRO)
-  int fg = makecol(255, 255, 255);
-  int bg = makecol(45, 45, 45);
-
-  ::rectfill(
-    surface(), nca_x, nca_y, nca_x + nca_w, nca_y + title_bar_height - 1, bg);
-  ::rect(surface(), nca_x, nca_y, nca_x + nca_w, nca_y + nca_h - 1, bg);
-  ::line(surface(),
-         nca_x,
-         nca_y + title_bar_height - 2,
-         nca_x + nca_w - 1,
-         nca_y + title_bar_height - 2,
-         bg);
-
-  if (title && *title)
-    {
-      ::textout_centre_ex(
-        surface(), ::font, title, nca_x + (nca_w / 2), nca_y + 8, fg, -1);
-    }
-
-#else
-  uint32_t fg = 0xffffff;
-  uint32_t bg = 0x000000;
-
-  image_fill_area(
-    surface(), nca_x, nca_y, nca_x + nca_w, nca_y + title_bar_height - 1, bg);
-
-  image_lineh(surface(), nca_x, nca_y, nca_w, bg);
-  image_lineh(surface(), nca_x, nca_y + nca_h, nca_w, bg);
-  image_linev(surface(), nca_x, nca_y, nca_h, bg);
-  image_linev(surface(), nca_x + nca_w, nca_y, nca_h, bg);
-
-  if (title && *title)
-    {
-      size_t len = strlen(title);
-      int x = (nca_x + ((nca_w / 2) - (len / 2)));
-      int y = nca_y + title_bar_height - 4;
-      ft_.draw(surface(), title, len, x, y, 0, 14, fg);
-    }
-
-#endif
 
   return;
 }
@@ -1654,4 +1043,142 @@ void
   font_ = font;
   size_ = fsize;
   return;
+}
+
+void
+  Fl_Allegro_Graphics_Driver::draw_image(
+    const uchar *buf, int X, int Y, int W, int H, int D, int L)
+{
+  BITMAP *bmp = rgb_data_to_bitmap(static_cast<unsigned int>(W),
+                                   static_cast<unsigned int>(H),
+                                   static_cast<unsigned int>(D),
+                                   static_cast<unsigned int>(L),
+                                   buf);
+  X += Fl::window_draw_offset_x;
+  Y += Fl::window_draw_offset_y;
+
+  if (bmp)
+    {
+#if defined(USE_ALLEGRO)
+      masked_blit(bmp, surface(), 0, 0, X, Y, bmp->w, bmp->h);
+      destroy_bitmap(bmp);
+#else
+      struct slice slice;
+      slice.pos_x = 0;
+      slice.pos_y = 0;
+      slice.len_x = W;
+      slice.len_y = H;
+      bitmap_blt(surface(), X, Y, bmp, &slice, 0, 0);
+      bitmap_free(bmp);
+#endif
+    }
+
+  return;
+}
+
+void
+  Fl_Allegro_Graphics_Driver::draw_image(
+    Fl_Draw_Image_Cb cb, void *data, int X, int Y, int W, int H, int D)
+{
+  X += Fl::window_draw_offset_x;
+  Y += Fl::window_draw_offset_y;
+
+  BITMAP *bmp = rgb_staged_to_image(cb,
+                                    data,
+                                    static_cast<unsigned int>(W),
+                                    static_cast<unsigned int>(H),
+                                    static_cast<unsigned int>(D));
+
+  if (bmp)
+    {
+#if defined(USE_ALLEGRO)
+      masked_blit(bmp, surface(), 0, 0, X, Y, bmp->w, bmp->h);
+      destroy_bitmap(bmp);
+#else
+      struct slice slice;
+      slice.pos_x = 0;
+      slice.pos_y = 0;
+      slice.len_x = W;
+      slice.len_y = H;
+      bitmap_blt(surface(), X, Y, bmp, &slice, 0, 0);
+      bitmap_free(bmp);
+#endif
+    }
+  return;
+}
+
+void
+  Fl_Allegro_Graphics_Driver::draw_fixed(
+    Fl_RGB_Image *rgb, int XP, int YP, int WP, int HP, int cx, int cy)
+{
+  int X = XP + Fl::window_draw_offset_x;
+  int Y = YP + Fl::window_draw_offset_y;
+
+  BITMAP *bmp = rgb_image_to_bitmap((*rgb));
+
+  if (bmp)
+    {
+#if defined(USE_ALLEGRO)
+      masked_blit(bmp, surface(), cx, cy, X, Y, WP, HP);
+      destroy_bitmap(bmp);
+#else
+      struct slice slice;
+      slice.pos_x = cx;
+      slice.pos_y = cy;
+      slice.len_x = WP;
+      slice.len_y = HP;
+      bitmap_blt(surface(), X, Y, bmp, &slice, 0, 0);
+      bitmap_free(bmp);
+#endif
+    }
+}
+
+void
+  Fl_Allegro_Graphics_Driver::draw_fixed(
+    Fl_Pixmap *pxm, int XP, int YP, int WP, int HP, int cx, int cy)
+{
+  int X = XP + Fl::window_draw_offset_x;
+  int Y = YP + Fl::window_draw_offset_y;
+  BITMAP *bmp = pxm_to_bitmap((*pxm));
+
+  if (bmp)
+    {
+#if defined(USE_ALLEGRO)
+      masked_blit(bmp, surface(), cx, cy, X, Y, bmp->w, bmp->h);
+      destroy_bitmap(bmp);
+#else
+      struct slice slice;
+      slice.pos_x = cx;
+      slice.pos_y = cy;
+      slice.len_x = WP;
+      slice.len_y = HP;
+      bitmap_blt(surface(), X, Y, bmp, &slice, true, 0xFF00FF);
+      bitmap_free(bmp);
+#endif
+    }
+}
+
+void
+  Fl_Allegro_Graphics_Driver::draw_fixed(
+    Fl_Bitmap *bm, int XP, int YP, int WP, int HP, int cx, int cy)
+{
+  int X = XP + Fl::window_draw_offset_x;
+  int Y = YP + Fl::window_draw_offset_y;
+  BITMAP *bmp = bitmap_to_bitmap((*bm));
+
+  if (bmp)
+    {
+#if defined(USE_ALLEGRO)
+      masked_blit(bmp, surface(), cx, cy, X, Y, WP, HP);
+      destroy_bitmap(bmp);
+#else
+      struct slice slice;
+      slice.pos_x = cx;
+      slice.pos_y = cy;
+      slice.len_x = WP;
+      slice.len_y = HP;
+      bitmap_blt(surface(), X, Y, bmp, &slice, 0, 0);
+      bitmap_free(bmp);
+#endif
+    }
 }

@@ -153,8 +153,8 @@ void
     }
 
   s->timer.set(seconds);
-  s->seconds = seconds;
   s->cb = cb;
+  s->seconds = seconds;
   s->arg = arg;
 
   struct slot **p = &first_;

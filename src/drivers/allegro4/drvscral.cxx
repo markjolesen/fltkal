@@ -80,9 +80,6 @@ extern void
 
 // extern void cursor_set(Fl_Cursor const);
 
-#define __halt()
-
-
 static int
   screen_init()
 {
@@ -117,52 +114,51 @@ static int
   return -1;
 }
 
-
 void
   Fl_Allegro_Screen_Driver::open_display_platform()
 {
-if (-1 == num_screens)
-{
-  allegro_init();
-
-  if (install_keyboard())
+  if (-1 == num_screens)
     {
-      allegro_message("Install keyboard error: %s", allegro_error);
-      exit(-1);
-    }
+      allegro_init();
 
-  if (-1 == install_mouse())
-    {
-      allegro_message("Install mouse error: %s", allegro_error);
-      exit(-1);
-    }
+      if (install_keyboard())
+        {
+          allegro_message("Install keyboard error: %s", allegro_error);
+          exit(-1);
+        }
 
-  if (screen_init())
-    {
-      set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-      allegro_message("Unable to initialize graphics");
-      exit(-1);
-    }
+      if (-1 == install_mouse())
+        {
+          allegro_message("Install mouse error: %s", allegro_error);
+          exit(-1);
+        }
 
-  num_screens = 1;
-  cursor_create();
-  show_mouse(screen);
-}
+      if (screen_init())
+        {
+          set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+          allegro_message("Unable to initialize graphics");
+          exit(-1);
+        }
+
+      num_screens = 1;
+      cursor_create();
+      show_mouse(screen);
+    }
 
   return;
 }
 
 void
-Fl_Allegro_Screen_Driver::close_display()
+  Fl_Allegro_Screen_Driver::close_display()
 {
 #if defined(__DOS__)
   if (1 == num_screens)
-	{
-		cursor_destroy();
-		set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-		allegro_exit();
-		num_screens= -1;
-	}
+    {
+      cursor_destroy();
+      set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+      allegro_exit();
+      num_screens = -1;
+    }
 #endif
   return;
 }

@@ -32,7 +32,8 @@ EXES=&
     $(BIN)\omenubar.exe &
     $(BIN)\ohello.exe  &
     $(BIN)\otree.exe &
-    $(BIN)\oinput.exe 
+    $(BIN)\oinput.exe &
+    $(BIN)\ologo.exe 
     
 all : $(EXES) .SYMBOLIC
 
@@ -47,10 +48,13 @@ $(BIN)\omenubar.exe : $(OBJ)\omenubar.obj
     
 $(BIN)\oinput.exe : $(OBJ)\oinput.obj 
     *wlink NAME $^@ DEBUG ALL SYSTEM $(SYSTEM) FILE $< LIBRARY $(LIBS)
-
+    
+$(BIN)\ologo.exe : $(OBJ)\ologo.obj 
+    *wlink NAME $^@ DEBUG ALL SYSTEM $(SYSTEM) FILE $< LIBRARY $(LIBS)
+    
 $(OBJ)\ohello.obj : thello.cxx .AUTODEPEND
     $(CXX) $(CXXFLAGS) -fo=$^@ $<
-
+    
 $(OBJ)\otree.obj : ttree.cxx .AUTODEPEND
     $(CXX) $(CXXFLAGS) -fo=$^@ $<
     
@@ -59,4 +63,6 @@ $(OBJ)\omenubar.obj : tmenubar.cxx .AUTODEPEND
     
 $(OBJ)\oinput.obj : tinput.cxx .AUTODEPEND
     $(CXX) $(CXXFLAGS) -fo=$^@ $<
-
+    
+$(OBJ)\ologo.obj : tlogo.cxx .AUTODEPEND
+    $(CXX) $(CXXFLAGS) -fo=$^@ $<
