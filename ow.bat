@@ -15,13 +15,13 @@ wmake -f owd32.mak
 cd ..\..
 
 cd ow32svga\make
-wmake -D DEBUG -f owd32.mak
+wmake -f owd32.mak
 cd ..\..
 
-cd make -D DEBUG
+cd make
 wmake -f owd32.mak
 cd ..
 
-cd test -D DEBUG
+cd test
 wmake -f owd32.mak
 cd ..
