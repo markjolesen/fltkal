@@ -18,7 +18,7 @@
 
 #include <fl/filechn.h>
 
-#if defined(USE_ALLEGRO)
+#if defined(USE_ALLEGRO) || defined(USE_OWD32)
 Fl_Native_File_Chooser::Fl_Native_File_Chooser(int val) {
   platform_fnfc = new Fl_Native_File_Chooser_FLTK_Driver(val); // do this to use FLTK's default file chooser
 }

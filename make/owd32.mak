@@ -74,7 +74,7 @@ INC_PNG=-i$(PNG)
 JPEG=..\jpeg
 INC_JPEG=-i$(JPEG)
 
-TTF=..\ft29
+TTF=..\ft2_10_4
 INC_TTF=-i$(TTF)\include
 
 OW32SVGA=..\ow32svga
