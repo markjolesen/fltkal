@@ -1,14 +1,12 @@
 # kv3
-kv3 is a free software version and rewrite of the classic ``Kaso Verb Conjugation System'' Adolfo, C & Olesen, M (2005) ``Kaso Verb Conjugation System'' Boston MA Branden Books.
+kv3 is a free software version and rewrite of the classic ``Kaso Verb Conjugation System'' Caso, A & Olesen, M (2005) ``Kaso Verb Conjugation System'' Boston MA Branden Books.
 
-Mr. Caso created a database system in spreadsheet form whereby verbs can be conjugated. Although the database has changed over the years, the systematic approach remains the same. That is, the logic has not changed. 
-
-kv3 database system can be applied to most western languages. However, the current state of the database is three (3) languages: (1) English, (2) Spanish and (3) Italian.
+Mr. Caso created a database system in spreadsheet form whereby verbs can be conjugated. The database can be applied to most western languages. There are currently three (3) languages implemented: (1) English, (2) Italian and (3) Spanish.
 
 # Free 
 
-This software is unencumbered and exceeds ``free'' according to GNU software standards [free software](https://www.gnu.org/philosophy/free-sw.en.html).
+This software is unencumbered and ``free'' according to GNU software standards [free software](https://www.gnu.org/philosophy/free-sw.en.html).
 
 # KasoVerb
-This link 
-[KasoVerb](http://kasoverb.org/) will take you to the KasoVerb site, which contains a branded and non-free version (it is non-free because KasoVerb is a trademark of Mark J. Olesen).
+
+More information can be found at the following URL [http://KasoVerb.org](http://kasoverb.org/)
