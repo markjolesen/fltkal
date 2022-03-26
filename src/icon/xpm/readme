@@ -1,0 +1,19 @@
+Tango Desktop Project
+
+open.xpm (document_open.svg)
+first.xpm (go_first.svg)
+last.xpm (go_last.svg)
+next.xpm (go_next.svg)
+prev.xpm (go_previous.svg)
+add.xpm (list_add.svg)
+search.xpm (system_search.xpm)
+
+"The Tango desktop project icons were released originally under the
+license of ‘Copyleft Creative Commons,’ however were later released
+in the public domain in the year 2009 so as to allow for their easier
+reutilization." TANGO Project (<http://tango-project.org/> 2020).
+
+These files are distributed as part of the kv3 package.
+
+GNU Gimp is the tool used to convert the original SVG to XPM format.
+The source SVG files can be located in the '../svg' directory.

@@ -1,0 +1,167 @@
+@c  Copyright (c) 2020 Dante University Foundation and Contributors
+@c
+@c  CC BY 4.0
+@c
+@c  This file is licensed under the Creative Commons Attribution 4.0 
+@c  International license.
+@c
+@c  You are free to:
+@c
+@c    Share --- copy and redistribute the material in any medium or format
+@c 
+@c    Adapt --- remix, transform, and build upon the material for any purpose,
+@c              even commercially
+@c
+@c  Under the following terms:
+@c
+@c    Attribution --- You must give appropriate credit, provide a link
+@c                    to the license, and indicate if changes were made. You
+@c                    may do so in any reasonable manner, but not in any way
+@c                    that suggests the licensor endorses you or your use.
+@c
+@c   Full text of this license can be found in 
+@c   '${KV3_HOME}/CC-BY-SA-4.0'or visit 
+@c   'http://creativecommons.org/licenses/by/4.0/' or send a letter 
+@c   to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+@c
+@c  This file is part of kv3 
+@c
+@c  Dante University Foundation
+@c  P.O. Box 812158
+@c  Wellesley, MA 02482
+@c  USA
+@c  www.danteuniversity.org
+@c
+
+@c This file is intended to be included within another document
+
+@node database
+@chapter Database
+
+@emph{kv3} is comprised of several tables, which make up the
+database@.
+
+@section Tables
+
+@table @asis
+
+@item eng.kv3
+  English dictionary
+@item eng.inf
+  English infinitive index
+@item eng.ita
+  English cross reference index to Italian infinitives
+@item eng.spa
+  English cross reference index to Spanish infinitives
+
+@item ita.kv3
+  Italian dictionary
+@item ita.inf
+  Italian infinitive index
+@item ita.spa
+  Italian cross reference index to Spanish infinitives
+@item ita.eng
+  Italian cross reference index to English infinitives
+
+@item spa.kv3
+  Spanish dictionary
+@item spa.inf
+  Spanish infinitive index
+@item spa.ita
+  Spanish cross reference index to Italian infinitives
+@item spa.eng
+  Spanish cross reference index to English infinitives
+
+@end table
+
+There are three (3) types of tables per language: (1) Dictionary,
+(2) Infinitive index (3) Cross reference index@.
+
+Following are the attributes of the files:
+
+@itemize
+@item Files use ISO 639.2 3 letter language code
+@item Files are UTF-8 encoded (plain text; no binary data)
+@item Files are formatted in fixed length Comma Separated Values (CSV)
+@item Cells are padded with spaces to a fixed length
+@item Cells are enclosed in quotes
+@end itemize
+
+Spreadsheet programs can import data files directly@. However,
+@emph{kv3} provides a CVS export software tool (@emph{kv3tocsv})
+to format the files for easier editing@. Following, the CVS import
+software tool (@emph{csvtokv3}) can be used to rebuild the respective
+database@.
+
+@subsection Dictionary
+
+The dictionary table contains verb conjugation data for a specific
+language@.  The name of the file is the `ISO 639.2' 3 letter language code
+@url{https://www.loc.gov/standards/iso639-2/php/code_list.php} followed
+by ``kv3'' file suffix@. The table is sorted in lexicographical order
+by infinitive@.
+
+A record can be viewed as a matrix of eight (8) rows by thirty-two (32)
+columns@. The first record contains meta data@. The remaining records
+hold verb conjugation data@.
+
+@subsubsection Macros
+
+A cell in the dictionary can contain a macro@. There are three (3) types
+of macros: (1) subject, (2) link and (3) set@.
+
+@subsubheading Subject
+
+A @emph{subject} is enclosed in parenthesis, which denotes a word
+that is used repeatedly throughout a row@. There can be only one
+@emph{subject} per cell@. A @emph{subject} can not be mixed with a
+@emph{link} or @emph{set}@.
+
+@example
+``to (abate)''
+@end example
+
+@subsubheading Link
+
+A @emph{link} is enclosed in brackets and shall contain a valid
+cell identifier@. There can be multiple @emph{links} per cell@. The
+cell a @emph{link} points too shall be either a @emph{subject}
+or @emph{set}@.
+
+@example
+``[D] [A]''
+``[D] would have [C]''
+``@{that:if@} [D] [A]''
+@end example
+
+@subsubheading Set
+
+A @emph{set} is enclosed in braces@. A @emph{set} is used to group
+words such as pronouns@. A group is separated by a colon@. Within
+a group, there can be a list of synonyms@. A synonym is separated
+by a pipe@.  There shall be only one @emph{set} per cell@. Moreover,
+it must be the first element@.  Text and @emph{link} can appear
+after a set@. However, a @emph{subject} can not be put in a cell
+with a @emph{set}. If a @emph{set} appears in a row and column, it
+must also appear in an identical row and column in another language@.
+
+@example
+``@{he:she:it@}''
+``@{@'el:ella:ello@}''
+``@{egli|lui:ella|lei:esso@}''
+@end example
+
+@subsection Infinitive
+
+The name of the file is a three (3) letter language code
+followed by ''inf'' file suffix@. The index contains a list
+of lexicographical sorted infinitives@.
+
+@subsection Cross reference
+
+The name of the file is a three (3) letter language code followed by
+a three (3) letter language code suffix too which the language cross
+references@. The first column contains the infinitive in the native
+language@. It is then followed by up to seven (7) synonyms in the
+language it cross references@. The index is sorted lexicographical on
+the first column@.

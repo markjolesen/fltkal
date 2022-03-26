@@ -1,0 +1,264 @@
+@c  Copyright (c) 2020 Dante University Foundation and Contributors
+@c
+@c  CC BY 4.0
+@c
+@c  This file is licensed under the Creative Commons Attribution 4.0 
+@c  International license.
+@c
+@c  You are free to:
+@c
+@c    Share --- copy and redistribute the material in any medium or format
+@c 
+@c    Adapt --- remix, transform, and build upon the material for any purpose,
+@c              even commercially
+@c
+@c  Under the following terms:
+@c
+@c    Attribution --- You must give appropriate credit, provide a link
+@c                    to the license, and indicate if changes were made. You
+@c                    may do so in any reasonable manner, but not in any way
+@c                    that suggests the licensor endorses you or your use.
+@c
+@c   Full text of this license can be found in 
+@c   '${KV3_HOME}/CC-BY-SA-4.0'or visit 
+@c   'http://creativecommons.org/licenses/by/4.0/' or send a letter 
+@c   to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+@c
+@c  This file is part of kv3 
+@c
+@c  Dante University Foundation
+@c  P.O. Box 812158
+@c  Wellesley, MA 02482
+@c  USA
+@c  www.danteuniversity.org
+@c
+
+@c This file is intended to be included within another document
+
+@node building
+@chapter Building
+
+Building @emph{kv3} requires software tools and libraries to be
+available on your Operating System@. These are described in
+the subsequent sections of this chapter@.
+
+@section Dependencies
+
+@itemize
+@item make
+@item Compiler and Linker
+@item git
+@item CMake
+@item FLTK
+@end itemize
+
+@subsection make
+
+You will need a make utility, which is software that processes
+Makfile scripts@. The make utility you choose should be one
+that the @emph{CMake} generator understands@.
+
+@subsection CMake
+
+Another requirement is @emph{CMake} (<@url{https://cmake.org/}>),
+which is a tool used to build a compatible Makefile for the make
+utility you are using@.
+
+The following example will output the generators that @emph{CMake}
+can produce@.
+
+@example
+$ cmake --help
+@end example
+
+@subsection Compiler and Linker
+
+A C/C++ compiler is a tool that converts a source file into object
+code@. A linker takes the object code and produces machine code@.
+
+You can control the compiler @emph{CMake} will generate by using the
+following two (2) options: (1) CMAKE_C_COMPILER and (2)
+CMAKE_CXX_COMPILER@.
+
+@example
+cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
+@end example
+
+@subsection git
+
+@emph{git} (<@url{https://git-scm.com/}>) is software tool that is
+used to manage a source code repository@. The instructions in this
+chapter use @emph{git} to fetch the source code@. As an alternative,
+however, you can download released source tarballs@.
+
+@itemize
+@item @emph{kv3}
+@itemize @w{}
+@item <@url{https://github.com/markjolesen/kv3.git}>
+@end itemize
+@sp 1
+@item @emph{FLTK}
+@itemize @w{} 
+@item <@url{https://www.fltk.org/software.php}>
+@end itemize
+@end itemize
+
+@subsection FLTK
+
+A dependency of @emph{kv3} is the @emph{Fast Light Toolkit}
+(<@url{http://fltk.org}>) (@emph{FLTK}).  If you do not have
+@emph{FLTK} installed or it is not an available package for your
+Operating System, you can build it locally (installation is optional)@.
+
+@example
+$ cd $@{HOME@}
+$ git clone https://github.com/fltk/fltk.git
+$ cd fltk
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_BUILD_TYPE=Release -DOPTION_USE_GL=OFF ..
+@end example
+
+It is not necessary to install @emph{FLTK} headers and libraries
+to compile @emph{kv3}@. However, if a local install is desired,
+adjust the ``CMAKE_INSTALL_PREFIX'' macro to the path of
+your desired base directory@.
+
+@example
+$ cmake @backslashchar{}
+@indent -DCMAKE_INSTALL_PREFIX=~/usr/local @backslashchar{}
+@indent -DCMAKE_BUILD_TYPE=Release @backslashchar{}
+@indent -DOPTION_USE_GL=OFF 
+@end example
+
+@emph{CMake} produces a config.h file in the @emph{FLTK} build
+directory@.  Typically, the default settings will produce an
+@emph{FLTK} library without any issues@.  However, on some platforms
+it might be necessary to modify the file in order to get the library
+to compile without error@.
+
+After any configuration changes, the next step is to build @emph{FLTK}@. 
+
+@example
+$ make
+@end example
+
+If desired, @emph{FLTK} can also be installed@.
+
+@example
+$ make install
+@end example
+
+@emph{FLTK} has an ``uninstall'' target used to remove the package
+from your system@. 
+
+@example
+$ make uninstall
+@end example
+
+An official package from your distribution is the preferred method
+of installing @emph{FLTK} into base Operating System directories.
+By using packaging tools @emph{FLTK} will be easier to maintain
+such as fetching updates or removing the software.
+
+@section kv3
+
+@example
+$ cd $@{HOME@}
+$ git clone https://github.com/markjolesen/kv3.git
+$ cd kv3
+$ mkdir build
+$ cd build
+$ cmake @backslashchar{}
+@indent -DCMAKE_XDGDATA_DIR=~/.local/share @backslashchar{}
+@indent -DCMAKE_INSTALL_PREFIX=~/usr/local @backslashchar{}
+@indent -DCMAKE_BUILD_TYPE=Release ..
+$ make
+@end example
+
+The ``CMAKE_XDGDATA_DIR'' is an optional macro used to specify a
+base directory to place the @emph{kv3} database files@. If it is not 
+specified, the ``CMAKE_INSTALL_PREFIX'' macro will be used in it's 
+place@.
+
+The @emph{CMake} script (CMakeFiles.txt) in the @emph{kv3} top
+level directory will search for @emph{FLTK} in the @emph{CMake} default
+directories.  If it is not found, additional search will be performed
+in the following directories:
+
+@itemize
+@item $ENV@{HOME@}/fltk/build
+@item $ENV@{CMAKE_INSTALL_PREFIX@}/share/fltk
+@end itemize
+
+Alternatively, set the FLTK_DIR environment variable to point
+to the path where the @emph{FLTK} CMake configuration file
+(``FLTKConfig.cmake'') resides@.
+
+@example
+$ FLTK_DIR=~/usr/local/share/fltk cmake 
+@indent -DCMAKE_XDGDATA_DIR=~/.local/share @backslashchar{}
+@indent -DCMAKE_INSTALL_PREFIX=~/usr/local @backslashchar{}
+@indent -DCMAKE_BUILD_TYPE=Release ..
+@end example
+
+
+@section Install
+
+To install everything in the @emph{kv3} package, use the 
+``install-all' target@.
+
+@example
+$ make install-all
+@end example
+
+@subsection Components
+
+There are two (2) component install types: (1) ``Runtime,''
+(2) ``Tools.'''
+
+@subsubsection Runtime
+
+Install @emph{kv3} binary, database and desktop files
+
+@example
+$ make install-bin
+@end example
+
+The ``Runtime'' target is synonymous with the ``install'' target.
+
+@subsubsection  Tools
+
+Currently there are two (2) software tools: (1) kv3tocsv and (2) csvtokv3@.
+
+@itemize @bullet
+@item kv3tocsv 
+exports @emph{kv3} database into CSV formatted files
+@item csvtokv3
+imports @emph{kv3} CSV exported files into a @emph{kv3} database
+@end itemize
+
+@example
+$ make install-tools
+@end example
+
+@subsection Post Install
+
+Following installation, the @emph{kv3} desktop entry and MIME
+database can be updated@.
+
+@example
+$ update-desktop-database ~/.local/share/applications
+$ update-mime-database ~/.local/share/mime
+@end example
+
+@section Uninstall
+
+There is no ``uninstall'' target or script@. However, @emph{CMake}
+will create an ``install_manifest.txt'' file in your build directory@.
+To remove the software, execute the command below from the build
+directory@.
+
+@example
+$ xargs rm < install_manifest.txt
+@end example

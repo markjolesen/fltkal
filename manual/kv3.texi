@@ -1,0 +1,147 @@
+\input texinfo.tex
+@c  Copyright (c) 2020 Dante University Foundation and Contributors
+@c
+@c  CC BY 4.0
+@c
+@c  This file is licensed under the Creative Commons Attribution 4.0 
+@c  International license.
+@c
+@c  You are free to:
+@c
+@c    Share --- copy and redistribute the material in any medium or format
+@c 
+@c    Adapt --- remix, transform, and build upon the material for any purpose,
+@c              even commercially
+@c
+@c  Under the following terms:
+@c
+@c    Attribution --- You must give appropriate credit, provide a link
+@c                    to the license, and indicate if changes were made. You
+@c                    may do so in any reasonable manner, but not in any way
+@c                    that suggests the licensor endorses you or your use.
+@c
+@c   Full text of this license can be found in 
+@c   '${KV3_HOME}/licenses/CC-BY-SA-4.0'or visit 
+@c   'http://creativecommons.org/licenses/by/4.0/' or send a letter 
+@c   to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+@c
+@c  This file is part of kv3 
+@c
+@c  Dante University Foundation
+@c  P.O. Box 812158
+@c  Wellesley, MA 02482
+@c  USA
+@c  www.danteuniversity.org
+@c
+
+@setfilename kv3.info
+@settitle kv3
+
+@set UPDATED 25 December 2020
+@set EDITION 1.0
+@set VERSION 0.9
+
+@copying
+
+This manual is for @emph{kv3} (version @value{VERSION}, @value{UPDATED}),
+a verb conjugation system in three languages: (1) English, (2) Italian and 
+(3) Spanish@.
+
+@quotation
+  Copyright @copyright{} 2020 Dante University Foundation and Contributors
+
+  CC BY 4.0
+
+  This file is licensed under the Creative Commons Attribution 4.0 
+  International license.
+
+  You are free to:
+
+    Share --- copy and redistribute the material in any medium or format
+ 
+    Adapt --- remix, transform, and build upon the material for any purpose,
+              even commercially
+
+  Under the following terms:
+
+    Attribution --- You must give appropriate credit, provide a link
+                    to the license, and indicate if changes were made. You
+                    may do so in any reasonable manner, but not in any way
+                    that suggests the licensor endorses you or your use.
+
+   Full text of this license can be found in 
+   '$@{KV3_HOME@}/licenses/CC-BY-SA-4.0'or visit 
+   'http://creativecommons.org/licenses/by/4.0/' or send a letter 
+   to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+  This file is part of kv3
+
+  Dante University Foundation
+  P.O. Box 812158
+  Wellesley, MA 02482
+  USA
+  www.danteuniversity.org
+@end quotation
+@end copying
+
+@titlepage
+@title kv3
+@subtitle Verb Conjugation Software
+@subtitle version @value{VERSION}, @value{UPDATED}
+@insertcopying
+@end titlepage
+
+@node Introduction
+@chapter Introduction
+
+@emph{kv3} is free software
+(<@url{https://www.gnu.org/philosophy/free-sw.html}>), which allows
+complete split-second conjugation of verbs in English, Spanish, and
+Italian---in any order@. Twenty-two columns of verb-related information
+allow tense-related comparisons in any or all three languages@.
+
+@section History
+
+The original work began life from a book written by Adolph (Adolfo)
+Caso named ``Understanding English and Italian Verbs,'' 2005 Branden
+Books (unpublished)@.  The artifact, however, is not part of @emph{kv3}@.
+Therefore, the material is not distributed as part of the package@.
+
+@section Screen shot
+
+@node obtaining
+@section Obtaining
+
+The @emph{kv3} project 
+(<@url{https://github.com/markjolesen/kv3}>)
+is hosted on @emph{GIT Hub} (<@url{https://github.com/}>)@.
+This is where some of the project management aspects occur such as 
+SCM and bug reporting@.
+
+@subsection Source Code
+
+The source code is kept in a git repository located on 
+@emph{GIT Hub}.
+
+@example
+git clone https://github.com/markjolesen/kv3.git
+@end example
+
+@include building.texi
+
+@include database.texi
+
+@chapter Colophon
+
+The source files used to construct this manual are written in @emph{Texinfo}
+and can be found in the repository ($@{KV3_HOME@}/manual).
+
+@ifhtml
+updated: @value{UPDATED}
+@*
+edition: @value{EDITION}
+@*
+version @value{VERSION}
+@end ifhtml
+
+@bye

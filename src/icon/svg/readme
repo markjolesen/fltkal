@@ -1,0 +1,20 @@
+Tango Desktop Project
+
+document-open.svg
+go-first.svg
+go-last.svg
+go-next.svg
+go-previous.svg
+list-add.svg
+system-search.svg
+
+"The Tango desktop project icons were released originally under the
+license of ‘Copyleft Creative Commons,’ however were later released
+in the public domain in the year 2009 so as to allow for their easier
+reutilization." TANGO Project (<http://tango-project.org/> 2020).
+
+See also '../source/readme'
+
+These files are not distributed as part of the kv3 package.
+However, they are used for conversion to XMP format. The '../xpm'
+directory contains the converted files.

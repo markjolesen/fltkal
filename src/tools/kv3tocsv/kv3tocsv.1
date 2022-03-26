@@ -1,0 +1,114 @@
+.\"  Copyright (c) 2020 Dante University Foundation and Contributors
+.\"
+.\"  CC BY 4.0
+.\"
+.\"  This file is licensed under the Creative Commons Attribution 4.0 
+.\"  International license.
+.\"
+.\"  You are free to:
+.\"
+.\"    Share --- copy and redistribute the material in any medium or format
+.\" 
+.\"    Adapt --- remix, transform, and build upon the material for any purpose,
+.\"              even commercially
+.\"
+.\"  Under the following terms:
+.\"
+.\"    Attribution --- You must give appropriate credit, provide a link
+.\"                    to the license, and indicate if changes were made. You
+.\"                    may do so in any reasonable manner, but not in any way
+.\"                    that suggests the licensor endorses you or your use.
+.\"
+.\"   Full text of this license can be found in 
+.\"   '${KV3_HOME}/CC-BY-SA-4.0'or visit 
+.\"   'http://creativecommons.org/licenses/by/4.0/' or send a letter 
+.\"   to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+.\"
+.\"  Dante University Foundation
+.\"  P.O. Box 812158
+.\"  Wellesley, MA 02482
+.\"  USA
+.\"  www.danteuniversity.org
+.\"
+.TH kv3tocsv 1 "Export kv3 database to CSV" "19 July 2020"
+.SH NAME
+\fBkv3tocsv\fR \- kv3 database export utility
+.sp
+.SH SYNOPSIS
+.B kv3tocsv
+[\fB\-\-help\fR]
+[\fB\-\-version\fR]
+[\fB\-\-path=\fR\fIPATH\fR]
+[\fB\-\-lang=\fR\fILANG\fR]
+.SH DESCRIPTION
+.PP
+\fBkv3tocsv\fR exports kv3 database to CSV files
+.SH OPTIONS
+.TP
+\fB\-\-help\fR
+Display program options and exit
+.TP
+\fB\-\-version\fR
+Display program version and exit
+.TP
+\fB\-\-path=\fR\fIPATH\fR
+Path to database
+.TP
+\fB\-\-lang=\fR\fILANG\fR
+Language to export
+.SH EXIT STATUS
+An exit status of 0 is success. That is, the database was exported
+without error. Otherwise, the exit status will be either -1 or a 
+valid 
+.BR errno
+value. If an operating system or library routine call fails, the exit
+status will be the error number set by that call. Otherwise, it will be
+set to -1. Error diagnostics are written to
+.BR stderr. 
+Informational messages such as a status indicator is written to
+.BR stdout.
+.SH FILES
+\fBkv3tocsv\fR scans the current directory or the directory specified
+by \fIpath\fR searching for kv3 database files. If \fIlang\fR
+is specified, only specific tables for that language will be exported.
+.IP eng.kv3
+Exports to eng.kv3.csv
+.IP eng.ita
+Exports to eng.ita.csv
+.IP eng.spa
+Exports to eng.spa.csv
+.IP ita.kv3
+Exports to ita.kv3.csv
+.IP ita.spa
+Exports to ita.spa.csv
+.IP ita.eng
+Exports to ita.eng.csv
+.IP spa.kv3
+Exports to spa.kv3.csv
+.IP spa.ita
+Exports to spa.ita.csv
+.IP spa.eng
+Exports to spa.eng.csv
+.SH NOTES
+Exported files are clobbered without warning. In other words, if a CSV
+file exists with the same name, it will be overwritten.  In practice
+it is better to create a separate directory, copy the database files
+there and then export. 
+.SH EXAMPLE
+.EX
+$ mkdir kv3
+$ cp /usr/local/share/kvc/* kv3
+$ kv3tocsv
+.SH COPYRIGHT
+Copyright (c)© 2020 Dante University Foundation and Contributors
+.LP 
+CC BY 4.0
+.RS 2
+.LP 
+This work is licensed under the Creative Commons Attribution
+4.0 International License. To view a copy of this license, visit
+http://creativecommons.org/licenses/by/4.0/ or send a letter to Creative
+Commons, PO Box 1866, Mountain View, CA 94042, USA.
+.RS
+.SH SEE ALSO 
+csvtokv3(1)

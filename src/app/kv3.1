@@ -1,0 +1,117 @@
+.\"  Copyright (c) 2020-2021 Dante University Foundation and Contributors
+.\"
+.\"  CC BY 4.0
+.\"
+.\"  This file (kv3.1) is licensed under the Creative Commons Attribution 4.0
+.\"  International license.
+.\"
+.\"  You are free to:
+.\"
+.\"    Share --- copy and redistribute the material in any medium or format
+.\" 
+.\"    Adapt --- remix, transform, and build upon the material for any purpose,
+.\"              even commercially
+.\"
+.\"  Under the following terms:
+.\"
+.\"    Attribution --- You must give appropriate credit, provide a link
+.\"                    to the license, and indicate if changes were made. You
+.\"                    may do so in any reasonable manner, but not in any way
+.\"                    that suggests the licensor endorses you or your use.
+.\"
+.\"   Full text of this license can be found in 
+.\"   '${KV3_HOME}/CC-BY-SA-4.0'or visit 
+.\"   'http://creativecommons.org/licenses/by/4.0/' or send a letter 
+.\"   to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+.\"
+.\"  This file is part of kv3
+.\"
+.\"  Dante University Foundation
+.\"  P.O. Box 812158
+.\"  Wellesley, MA 02482
+.\"  USA
+.\"  www.danteuniversity.org
+.\"
+.TH kv3 1 "kv3" "19 July 2020"
+.SH NAME
+\fBkv3\fR
+.sp
+.SH SYNOPSIS
+.B kv3
+[\fB\--version\fR]
+[\fB\--help\fR]
+[\fB\--path\fR \fIPATH\fR]
+.SH DESCRIPTION
+.PP
+\fBkv3\fR allows conjugation of verbs in English, Spanish, and
+Italian. Twenty-two columns of verb\-related information allow
+tense\-related comparisons in any or all three languages. \fBkv3\fR is
+a graphical user interface written using the Fast Light Toolkit (FLTK).
+.SH OPTIONS
+.TP
+\fB\--version\fR 
+Display program version information and exit
+.TP
+\fB\--help\fR 
+Display all program options
+.TP
+\fB\--path\fR \fIPATH\fR
+Path to kv3 database
+.SH EXIT STATUS
+ According to the FLTK documentation, \fIFl::run()\fR
+returns zero when all the windows are closed. If an error occurs,
+.BR exit(3) 
+function is called.
+.SH ENVIRONMENT
+\fBkv3\fR does not alter the environment. However, it makes
+use of the following environment variables to search for database files:
+.IP HOME
+.IP XDG_DATA_HOME
+.IP XDG_DATA_DIRS
+.PP
+\fBkv3\fR will search the current directory, followed by the
+directory the application resides. If the database is not found,
+it will search in the above environment variables in the order
+listed.
+.SH FILES
+.IP /usr/local/share/man/man1/kv3.1
+This manual page
+The database contains the following set of files:
+.IP /usr/local/share/kv3/eng.kv3
+English dictionary 
+.IP /usr/local/share/kv3/eng.inf
+English infinitive index 
+.IP /usr/local/share/kv3/eng.ita
+English cross reference index to Italian infinitives 
+.IP /usr/local/share/kv3/eng.spa
+English cross reference index to Spanish infinitives
+.IP /usr/local/share/kv3/ita.kv3
+Italian dictionary 
+.IP /usr/local/share/kv3/ita.inf
+Italian infinitive index 
+.IP /usr/local/share/kv3/ita.spa
+Italian cross reference index to Spanish infinitives 
+.IP /usr/local/share/kv3/ita.eng
+Italian cross reference index to English infinitives
+.IP /usr/local/share/kv3/spa.kv3
+Spanish dictionary 
+.IP /usr/local/share/kv3/spa.inf
+Spanish infinitive index 
+.IP /usr/local/share/kv3/spa.ita
+Spanish cross reference index to Italian infinitives 
+.IP /usr/local/share/kv3/spa.eng
+Spanish cross reference index to English infinitives
+.PP
+Depending upon the Operating System and installation package,
+the actual location of the database files can differ.
+.SH COPYRIGHT
+Copyright (c) 2020 Dante University Foundation and Contributors
+.LP 
+CC BY 4.0
+.RS 2
+.LP 
+This work is licensed under the Creative Commons Attribution
+4.0 International License. To view a copy of this license, visit
+http://creativecommons.org/licenses/by/4.0/ or send a letter to Creative
+Commons, PO Box 1866, Mountain View, CA 94042, USA.
+.RS

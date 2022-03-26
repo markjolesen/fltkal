@@ -1,0 +1,74 @@
+# CC0 1.0 Universal --- Public Domain
+#
+# To the extent possible under law, Mark J. Olesen has waived all copyright
+# and related or neighboring rights to this file (owbldlib.mif). 
+# This work is published from: United States.
+#
+# This file is part of the mjo libraray.
+#
+# Full text of this license can be found in '${MJO_HOME}/licenses/CC-CC0'
+# or visit 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt' or
+# send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+#
+
+!ifdef DEBUG
+BLD = debug
+CFLAGS += -d3
+!else
+BLD = release
+!endif
+
+INC = ..\..\include
+
+!ifdef SRC
+SRC = $(SRC);..\..\src
+!endif
+
+
+OBJ_BASE= ..\obj
+OBJ_SFX= $(OBJ_BASE)\$(SFX)
+OBJ = $(OBJ_SFX)\$(BLD)
+
+LIB_BASE = ..\lib
+LIB_SFX= $(LIB_BASE)\$(SFX)
+LIB = $(LIB_SFX)\$(BLD)
+
+LIBC= $(OBJ)\$(LIBNAME).lbc
+
+INCLUDES += -i$(INC)
+
+COMPILE = *$(CC) $(CFLAGS) $(INCLUDES)
+ARCHIVE = wlib
+
+.EXTENSIONS :
+.EXTENSIONS :  .lib .$(SFX) .c .h .mif .lbc
+
+!include owobj.mif
+
+all : objdir libdir $(LIB)\$(LIBNAME).lib
+
+$(LIB)\$(LIBNAME).lib : $(LIBC) $(LIB_OBJS) 
+	$(ARCHIVE) $^@ @$(LIBC)
+	
+$(LIBC) : owobj.mif
+	%create $^@
+	for %i in ($(LIB_OBJS)) do %append $^@ -+%i
+	
+objdir:  $(OBJ_BASE) $(OBJ_SFX) $(OBJ) .SYMBOLIC
+
+libdir:  $(LIB_BASE) $(LIB_SFX) $(LIB) .SYMBOLIC
+
+$(OBJ_BASE) $(OBJ_SFX) $(OBJ) : 
+        - mkdir $^@
+	
+$(LIB_BASE) $(LIB_SFX) $(LIB) :
+        - mkdir $^@
+	
+.c: $(SRC)
+.c{$(OBJ)}.$(SFX) :
+	*$(COMPILE) -fo=$@ $[@
+	
+clean : .SYMBOLIC
+	- rm $(LIBNAME).lbc
+        - rm $(OBJ)\*.$(SFX)
+	- rm $(LIB)\$(LIBNAME).lib

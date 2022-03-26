@@ -1,0 +1,50 @@
+# CC0 1.0 Universal --- Public Domain
+#
+# To the extent possible under law, Mark J. Olesen has waived all copyright
+# and related or neighboring rights to this file (owobj.mif). 
+# This work is published from: United States.
+#
+# This file is part of the mjo libraray.
+#
+# Full text of this license can be found in '${MJO_HOME}/licenses/CC-CC0'
+# or visit 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt' or
+# send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+#
+
+
+LIB_OBJS= &
+	$(OBJ)\cellcopy.$(SFX) &
+	$(OBJ)\cellext.$(SFX) &
+	$(OBJ)\cellint.$(SFX) &
+	$(OBJ)\datumass.$(SFX) &
+	$(OBJ)\datumdis.$(SFX) &
+	$(OBJ)\datumopn.$(SFX) &
+	$(OBJ)\datumrd.$(SFX) &
+	$(OBJ)\infass.$(SFX) &
+	$(OBJ)\infdis.$(SFX) &
+	$(OBJ)\infload.$(SFX) &
+	$(OBJ)\parcell.$(SFX) &
+	$(OBJ)\parlink.$(SFX) &
+	$(OBJ)\paronce.$(SFX) &
+	$(OBJ)\parset.$(SFX) &
+	$(OBJ)\parsub.$(SFX) &
+	$(OBJ)\rowext.$(SFX) &
+	$(OBJ)\rowint.$(SFX) &
+	$(OBJ)\setext.$(SFX) &
+	$(OBJ)\setint.$(SFX)  &
+	$(OBJ)\strext.$(SFX) &
+	$(OBJ)\strint.$(SFX) &
+	$(OBJ)\tableass.$(SFX) &
+	$(OBJ)\tabledis.$(SFX) &
+	$(OBJ)\tableopn.$(SFX) &
+	$(OBJ)\tablerd.$(SFX) &
+	$(OBJ)\troveass.$(SFX) &
+	$(OBJ)\trovedis.$(SFX) &
+	$(OBJ)\troveopn.$(SFX) &
+	$(OBJ)\troverd.$(SFX) &
+	$(OBJ)\xrefass.$(SFX) &
+	$(OBJ)\xrefdis.$(SFX) &
+	$(OBJ)\xrefext.$(SFX) &
+	$(OBJ)\xrefint.$(SFX) &
+	$(OBJ)\xrefopn.$(SFX) &
+	$(OBJ)\xrefrd.$(SFX)
