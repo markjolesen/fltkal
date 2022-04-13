@@ -1,7 +1,7 @@
 /*
   version.c
 
-  Copyright (c) 2020-2021 Dante University Foundation and Contributors
+  Copyright (c) 2020-2022 Dante University Foundation and Contributors
 
     Permission to use, copy, modify, and distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
@@ -32,10 +32,10 @@ unsigned char const *g_program_name = (unsigned char const *)"kv3";
 unsigned char const *g_program_brief
   = (unsigned char const *)"Verb Conjugator";
 
-unsigned char const *g_version = (unsigned char const *)"2021.07.18";
+unsigned char const *g_version = (unsigned char const *)"2022.04.13";
 
 unsigned char const *g_copyright = (unsigned char const *)
-  "Copyright (c) 2020-2021 " "Dante University Foundation and Contributors";
+  "Copyright (c) 2020-2022 Dante University Foundation and Contributors";
 
 unsigned char const *g_license_brief = (unsigned char const *)
   "The 2-Clause BSD License "

@@ -1,7 +1,7 @@
 /*
   version.c
 
-  Copyright (c) 2020 Dante University Foundation and Contributors
+  Copyright (c) 2020-2022 Dante University Foundation and Contributors
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -37,15 +37,15 @@
 */
 #include <stdio.h>
 
-unsigned char const *g_program_name = (unsigned char const *)"kv3tocsv";
+unsigned char const *g_program_name = (unsigned char const *)"csvtokv3";
 
 unsigned char const *g_program_brief
-  = (unsigned char const *)"Export kv3 database to CSV";
+  = (unsigned char const *)"Import CSV to kv3 database";
 
-unsigned char const *g_version = (unsigned char const *)"2020.07.04";
+unsigned char const *g_version = (unsigned char const *)"2022.04.13";
 
 unsigned char const *g_copyright = (unsigned char const *)
-  "Copyright (c) 2020 " "Dante University Foundation and Contributors";
+  "Copyright (c) 2022 Dante University Foundation and Contributors";
 
 unsigned char const *g_license_brief = (unsigned char const *)
   "The 2-Clause BSD License "
