@@ -86,14 +86,14 @@ void
 
 static void
   inf_compare(int *const o_result,
-              void const *const i_obj_to_compare,
-              void const *const i_obj_to_find)
+              void const *const i_obj_to_find,
+              void const *const i_obj_to_compare)
 {
   struct kv3_dict_cell const *l_cell;
   unsigned char const *l_find;
 
-  l_cell = (struct kv3_dict_cell const *)i_obj_to_compare;
   l_find = (unsigned char const *)i_obj_to_find;
+  l_cell = (struct kv3_dict_cell const *)i_obj_to_compare;
   *o_result = strcmp(reinterpret_cast<char const *>(l_find),
                      reinterpret_cast<char const *>((*l_cell).m_text));
 
