@@ -357,7 +357,12 @@ extern void
             }
         }
 
+#  if !defined(__CYGWIN__)                                                    \
+    && (defined(_WIN32) || defined(__NT__) || defined(__DOS__))
+      l_exit= prefix_order_contains_kv3(o_prefix, reinterpret_cast<unsigned char const*>("."));
+#else
       l_exit = kv3_open_search_env(o_prefix);
+#endif
     }
   while (0);
 

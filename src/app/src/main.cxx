@@ -29,6 +29,14 @@
 #include "app.hxx"
 #include "version.h"
 
+#if defined(BRANDING_KV3_ICON)
+#include "kv3_icon.xpm"
+#endif
+
+#if !defined(BRANDING_KV3_LABEL)
+#define BRANDING_KV3_LABEL "kv3"
+#endif
+
 extern void
   kv3_open(unsigned char **o_path, unsigned char const *i_path);
 
@@ -126,7 +134,7 @@ static kv3::app *const
 
       Fl::visual(FL_DOUBLE | FL_INDEX);
 
-      l_app = new kv3::app(640, 480, "kv3");
+      l_app = new kv3::app(640, 480, BRANDING_KV3_LABEL);
       l_app->resizable(l_app);
 
       l_value = mjo_arg_value(&l_slots, l_arg, (unsigned char const *)"path");
@@ -181,6 +189,14 @@ int
         {
           break;
         }
+
+#if defined(BRANDING_KV3_ICON)
+      {
+	      Fl_Pixmap pxm(kv3_icon_xpm);
+	      Fl_RGB_Image rgb(&pxm, FL_WHITE);
+	      l_app->icon(&rgb);
+      }
+#endif
 
       l_app->show();
       l_exit = Fl::run();
