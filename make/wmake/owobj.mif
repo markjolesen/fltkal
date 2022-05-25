@@ -1,0 +1,55 @@
+# CC0 1.0 Universal --- Public Domain
+#
+# To the extent possible under law, Mark J. Olesen has waived all copyright
+# and related or neighboring rights to this file (owobj.mif). 
+# This work is published from: United States.
+#
+# Full text of this license can be found in '${KV3_HOME}/licenses/CC-CC0'
+# or visit 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt' or
+# send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+#
+
+BIN_OBJS = &
+	$(OBJ)\app.$(SFX) &
+	$(OBJ)\brload.$(SFX) &
+	$(OBJ)\browcb.$(SFX) &
+	$(OBJ)\drawcell.$(SFX) &
+	$(OBJ)\drawrows.$(SFX) &
+	$(OBJ)\shdraw.$(SFX) &
+	$(OBJ)\vdraw.$(SFX) &
+	$(OBJ)\filtercb.$(SFX) &
+	$(OBJ)\apfilter.$(SFX) &
+	$(OBJ)\filter.$(SFX) &
+	$(OBJ)\firstcb.$(SFX) &
+	$(OBJ)\shhandle.$(SFX) &
+	$(OBJ)\vhandle.$(SFX) &
+	$(OBJ)\header.$(SFX) &
+	$(OBJ)\item.$(SFX) &
+	$(OBJ)\lastcb.$(SFX) &
+	$(OBJ)\main.$(SFX) &
+	$(OBJ)\nextcb.$(SFX) &
+	$(OBJ)\opencb.$(SFX) &
+	$(OBJ)\apopen.$(SFX) &
+	$(OBJ)\kopen.$(SFX) &
+	$(OBJ)\popcfg.$(SFX) &
+	$(OBJ)\popup.$(SFX) &
+	$(OBJ)\prevcb.$(SFX) &
+	$(OBJ)\pushcell.$(SFX) &
+	$(OBJ)\pushcol.$(SFX) &
+	$(OBJ)\push.$(SFX) &
+	$(OBJ)\read.$(SFX) &
+	$(OBJ)\ref.$(SFX) &
+	$(OBJ)\vresize.$(SFX) &
+	$(OBJ)\sresize.$(SFX) &
+	$(OBJ)\scrlcb.$(SFX) &
+	$(OBJ)\scrlcfg.$(SFX) &
+	$(OBJ)\sheet.$(SFX) &
+	$(OBJ)\snap.$(SFX) &
+	$(OBJ)\text.$(SFX) &
+	$(OBJ)\toggle.$(SFX) &
+	$(OBJ)\treecb.$(SFX) &
+	$(OBJ)\trload.$(SFX) &
+	$(OBJ)\version.$(SFX) &
+	$(OBJ)\viewcb.$(SFX) &
+	$(OBJ)\viewchg.$(SFX) &
+	$(OBJ)\view.$(SFX)

@@ -1,0 +1,78 @@
+# CC0 1.0 Universal --- Public Domain
+#
+# To the extent possible under law, Mark J. Olesen has waived all copyright
+# and related or neighboring rights to this file (owbldexe.mif). 
+# This work is published from: United States.
+#
+# Full text of this license can be found in '${KV3_HOME}/licenses/CC-CC0'
+# or visit 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt' or
+# send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+#
+
+!ifdef DEBUG
+BLD = debug
+CXXFLAGS += -d3
+!else
+BLD = release
+!endif
+
+OBJ_BASE = ..\obj
+OBJ_SFX = $(OBJ_BASE)\$(SFX)
+OBJ = $(OBJ_SFX)\$(BLD)
+
+BIN_BASE = ..\bin
+BIN_SFX = $(BIN_BASE)\$(SFX)
+BIN = $(BIN_SFX)\$(BLD)
+
+EXE = $(BIN)\$(EXENAME).exe
+LNK = $(BIN)\$(EXENAME).lnk
+
+COMPILE = *$(CXX) $(CXXFLAGS) $(INCLUDES)
+
+.EXTENSIONS :
+.EXTENSIONS : .exe .$(SFX) .c .cxx .h .hxx .lnk .mif 
+
+!include owobj.mif
+
+all : objdir exedir $(EXE)
+
+$(EXE) : $(LNK) $(BIN_OBJS) 
+	$(LINK) @$(LNK)
+	
+$(LNK) : owobj.mif
+	%create $^@
+	%append $^@ NAME $^&
+!ifeq SFX d32
+	%append $^@ SYSTEM CAUSEWAY
+!else
+	%append $^@ SYSTEM NT
+!endif
+!ifdef DEBUG
+	%append $^@ DEBUG ALL
+!endif
+	for %i in ($(BIN_OBJS)) do %append $^@ FILE %i
+	for %i in ($(LIB_PATHS)) do %append $^@ LIBPATH %i
+	for %i in ($(LIBS)) do %append $^@ LIBRARY %i
+	
+objdir:  $(OBJ_BASE) $(OBJ_SFX) $(OBJ) .SYMBOLIC
+
+exedir:  $(BIN_BASE) $(BIN_SFX) $(BIN) .SYMBOLIC
+
+$(OBJ_BASE) $(OBJ_SFX) $(OBJ) : 
+        - mkdir $^@
+	
+$(BIN_BASE) $(BIN_SFX) $(BIN) :
+        - mkdir $^@
+	
+.c : $(SRC)
+.c{$(OBJ)}.$(SFX) :
+	*$(COMPILE) -fo=$@ $[@
+	
+.cxx : $(SRC)
+.cxx{$(OBJ)}.$(SFX) :
+	*$(COMPILE) -fo=$@ $[@
+	
+clean : .SYMBOLIC
+	- rm $(EXE)
+	- rm $(LNK)
+        - rm $(OBJ)\*.$(SFX)

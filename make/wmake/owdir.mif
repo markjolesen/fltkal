@@ -1,0 +1,55 @@
+# CC0 1.0 Universal --- Public Domain
+#
+# To the extent possible under law, Mark J. Olesen has waived all copyright
+# and related or neighboring rights to this file (owdir.mif). 
+# This work is published from: United States.
+#
+# Full text of this license can be found in '${KV3_HOME}/licenses/CC-CC0'
+# or visit 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt' or
+# send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+#
+
+!ifndef FLTKAL_DIR
+!error FLTKAL_DIR not defined
+!error wmake FLTKAL_DIR=path ...
+!endif
+
+!ifndef MJO_DIR
+!error MJO_DIR not defined
+!error wmake MJO_DIR=path ...
+!endif
+
+INCLUDES += -i$(FLTKAL_DIR)
+INCLUDES += -i$(MJO_DIR)\mjo\include
+INCLUDES += -i$(MJO_DIR)\mjoextra\include
+INCLUDES += -i$(MJO_DIR)\mjoextra\istream\include
+INCLUDES += -i$(MJO_DIR)\mjoextra\vector\include
+INCLUDES += -i$(MJO_DIR)\mjoextra\arg\include
+INCLUDES += -i..\..\src\app\include
+INCLUDES += -i..\..\lib\kv3\text\include
+INCLUDES += -i..\..\lib\kv3\db\include
+INCLUDES += -i..\..\lib\kv3\dict\include
+INCLUDES += -i..\..\src\icon\xpm
+
+SRC = ..\..\src\app\src;
+SRC +=..\..\src\app\src\app;
+SRC +=..\..\src\app\src\kv3;
+SRC +=..\..\src\app\src\sheet;
+SRC +=..\..\src\app\src\view
+
+LIB_PATHS = &
+    $(FLTKAL_DIR)\lib &
+    $(MJO_DIR)\mjo\make\lib\$(SFX)\$(BLD) &
+    $(MJO_DIR)\mjoextra\make\lib\$(SFX)\$(BLD) &
+    ..\..\lib\kv3\make\lib\$(SFX)\$(BLD)
+
+LIBS = &
+    kv3 &
+    mjoextra &
+    mjo &
+    fltk &
+    ft2_10_4 &
+    ow32svga &
+    jpeg &
+    png &
+    z 
