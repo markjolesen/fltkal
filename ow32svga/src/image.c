@@ -28,7 +28,7 @@ extern struct image *
   uint32_t selector;
   size_t line;
 
-  limit = stride * len_y * 4;
+  limit = stride * len_y;
   limit = ((limit + (4096 - 1)) & ~(4096 - 1));
 
   dpmi_alloc(&addr, &handle, limit);

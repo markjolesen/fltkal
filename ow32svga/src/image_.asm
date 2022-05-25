@@ -43,6 +43,7 @@ image_fill_ proc
     mov ecx, edx
     
     mov eax, dword ptr [esi].img_stride
+    shr eax, 4
     mov ebx, dword ptr [esi].img_height
     mul ebx
     shr eax, 2
