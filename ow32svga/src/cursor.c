@@ -13,55 +13,46 @@
 
 #include "bitmap.h"
 
-#undef STRIDE
-#define STRIDE(l) ((l)*4)
-
-#define CURSOR_PIXELS_MAX 72
-
 struct cursor_back
 {
   struct bitmap bmp;
-  uint32_t data[STRIDE(CURSOR_PIXELS_MAX) * CURSOR_PIXELS_MAX];
+  uint32_t data[CURSOR_PIXELS_MAX * CURSOR_PIXELS_MAX];
 };
 
-static struct cursor_front
+enum cursor_mask
 {
-  struct cursor const *cur;
-};
-
-enum cursor_flag
-{
-  FLAG_POS = 0x1,
-  FLAG_BACK = 0x2,
-  FLAG_SHAPE = 0x4
+  CURSOR_MASK_NONE = 0x0,
+  CURSOR_MASK_POS = 0x1,
+  CURSOR_MASK_BACK = 0x2,
+  CURSOR_MASK_SHAPE = 0x4
 };
 
 static struct
 {
-  enum cursor_flag flag;
+  enum cursor_mask mask;
   int x;
   int y;
   struct cursor_back back;
-  struct cursor_front front;
-} _cursor = { 0 };
+  struct cursor const *front;
+} _cursor = { CURSOR_MASK_NONE };
 
-extern void
+static void
   cursor_blt()
 {
   struct bitmap bmp;
   struct slice slice;
 
-  if ((FLAG_POS & _cursor.flag) && (FLAG_SHAPE & _cursor.flag))
+  if ((CURSOR_MASK_POS & _cursor.mask) && (CURSOR_MASK_SHAPE & _cursor.mask))
     {
-      bmp.stride = STRIDE(_cursor.front.cur->len_x);
-      bmp.len_x = _cursor.front.cur->len_x;
-      bmp.len_y = _cursor.front.cur->len_y;
-      bmp.bits.ref = _cursor.front.cur->data;
+      bmp.stride = (_cursor.front->len_x * sizeof(uint32_t));
+      bmp.len_x = _cursor.front->len_x;
+      bmp.len_y = _cursor.front->len_y;
+      bmp.bits.buf = (void *)_cursor.front->data;
 
       slice.pos_x = 0;
       slice.pos_y = 0;
-      slice.len_x = _cursor.front.cur->len_x;
-      slice.len_y = _cursor.front.cur->len_y;
+      slice.len_x = _cursor.front->len_x;
+      slice.len_y = _cursor.front->len_y;
 
       bitmap_blt(_screen, _cursor.x, _cursor.y, &bmp, &slice, 1, 0);
     }
@@ -74,15 +65,19 @@ extern void
 {
   struct slice slice;
 
-  if ((FLAG_POS & _cursor.flag) && (FLAG_BACK & _cursor.flag))
+  if ((CURSOR_MASK_POS & _cursor.mask) && (CURSOR_MASK_BACK & _cursor.mask))
     {
+      _cursor.back.bmp.bits.buf = (void *)_cursor.back.data;
+
       slice.pos_x = 0;
       slice.pos_y = 0;
       slice.len_x = _cursor.back.bmp.len_x;
       slice.len_y = _cursor.back.bmp.len_y;
+
       bitmap_blt(
         _screen, _cursor.x, _cursor.y, &_cursor.back.bmp, &slice, 0, 0);
-      _cursor.flag &= ~FLAG_BACK;
+
+      _cursor.mask &= ~CURSOR_MASK_BACK;
     }
 
   return;
@@ -93,22 +88,19 @@ extern void
 {
   struct slice slice;
 
-  if ((FLAG_POS & _cursor.flag) && (FLAG_SHAPE & _cursor.flag)
-      && (0 == (FLAG_BACK & _cursor.flag)))
+  if ((CURSOR_MASK_POS & _cursor.mask) && (CURSOR_MASK_SHAPE & _cursor.mask)
+      && (0 == (CURSOR_MASK_BACK & _cursor.mask)))
     {
+      _cursor.back.bmp.bits.buf = (void *)_cursor.back.data;
+
       slice.pos_x = _cursor.x;
       slice.pos_y = _cursor.y;
-      slice.len_x = _cursor.front.cur->len_x;
-      slice.len_y = _cursor.front.cur->len_y;
-
-      _cursor.back.bmp.stride = STRIDE(_cursor.front.cur->len_x);
-      _cursor.back.bmp.len_x = _cursor.front.cur->len_x;
-      _cursor.back.bmp.len_y = _cursor.front.cur->len_y;
-      _cursor.back.bmp.bits.buf = &_cursor.back.data;
+      slice.len_x = _cursor.front->len_x;
+      slice.len_y = _cursor.front->len_y;
 
       bitmap_copy_from_image(&_cursor.back.bmp, _screen, &slice);
 
-      _cursor.flag |= FLAG_BACK;
+      _cursor.mask |= CURSOR_MASK_BACK;
 
       cursor_blt();
     }
@@ -125,7 +117,7 @@ extern void
   to_x = dest_x;
   to_y = dest_y;
 
-  if (FLAG_SHAPE & _cursor.flag)
+  if (CURSOR_MASK_SHAPE & _cursor.mask)
     {
       cursor_hide();
 
@@ -139,20 +131,20 @@ extern void
           to_y = 0;
         }
 
-      if ((_screen->len_x - _cursor.front.cur->hot_x - 2) <= to_x)
+      if ((_screen->len_x - _cursor.front->hot_x - 2) <= to_x)
         {
           to_x = _screen->len_x - 2;
         }
 
-      if ((_screen->len_y - _cursor.front.cur->hot_y - 2) <= to_y)
+      if ((_screen->len_y - _cursor.front->hot_y - 2) <= to_y)
         {
           to_y = _screen->len_y - 2;
         }
 
-      _cursor.x = to_x - _cursor.front.cur->hot_x;
-      _cursor.y = to_y - _cursor.front.cur->hot_y;
+      _cursor.x = to_x - _cursor.front->hot_x;
+      _cursor.y = to_y - _cursor.front->hot_y;
 
-      _cursor.flag |= FLAG_POS;
+      _cursor.mask |= CURSOR_MASK_POS;
 
       cursor_show();
     }
@@ -161,31 +153,32 @@ extern void
 extern void
   cursor_shape(struct cursor const *const cur)
 {
-  if ((ptrdiff_t)cur != (ptrdiff_t)_cursor.front.cur)
+  if ((ptrdiff_t)cur != (ptrdiff_t)_cursor.front)
     {
-      if ((FLAG_POS & _cursor.flag) && (FLAG_SHAPE & _cursor.flag))
+      if ((CURSOR_MASK_POS & _cursor.mask)
+          && (CURSOR_MASK_SHAPE & _cursor.mask))
         {
           cursor_hide();
-          _cursor.x += _cursor.front.cur->hot_x;
-          _cursor.y += _cursor.front.cur->hot_y;
+          _cursor.x += _cursor.front->hot_x;
+          _cursor.y += _cursor.front->hot_y;
         }
 
-      _cursor.front.cur = cur;
+      _cursor.front = cur;
 
-      if (FLAG_POS & _cursor.flag)
+      if (CURSOR_MASK_POS & _cursor.mask)
         {
-          _cursor.x -= _cursor.front.cur->hot_x;
-          _cursor.y -= _cursor.front.cur->hot_y;
+          _cursor.x -= _cursor.front->hot_x;
+          _cursor.y -= _cursor.front->hot_y;
         }
 
       if ((ptrdiff_t)cur)
         {
-          _cursor.flag |= FLAG_SHAPE;
+          _cursor.mask |= CURSOR_MASK_SHAPE;
           cursor_show();
         }
       else
         {
-          _cursor.flag |= ~FLAG_SHAPE;
+          _cursor.mask |= ~CURSOR_MASK_SHAPE;
         }
     }
   return;

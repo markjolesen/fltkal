@@ -14,6 +14,8 @@
 
 #  include "image.h"
 
+#  define CURSOR_PIXELS_MAX 72
+
 #  ifdef __cplusplus
 extern "C"
 {
@@ -49,9 +51,6 @@ extern "C"
   extern struct cursor _cursor_sw;
   extern struct cursor _cursor_w;
   extern struct cursor _cursor_wait;
-
-  extern void
-    cursor_blt();
 
   extern void
     cursor_pos(signed const, signed const);

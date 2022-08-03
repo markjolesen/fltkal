@@ -11,7 +11,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h> // delete me
 #include <stdlib.h>
 #include <string.h>
 
@@ -88,8 +87,8 @@ extern void
              unsigned const skip_color)
 
 {
-  unsigned const *scolors;
-  unsigned __far *dcolors;
+  uint32_t const *scolors;
+  uint32_t __far *dcolors;
   struct slice dest;
   struct slice src;
   unsigned delta_x;
@@ -133,11 +132,11 @@ extern void
               break;
             }
 
-          dcolors = (unsigned __far *)MK_FP(img->buf.selector,
+          dcolors = (uint32_t __far *)MK_FP(img->buf.selector,
                                             img->buf.line[dest_y]);
 
           scolors
-            = (unsigned *)&((uint8_t *)bmp->bits.buf)[(bmp->stride * src_y)];
+            = (uint32_t *)&((uint8_t *)bmp->bits.buf)[(bmp->stride * src_y)];
 
           dest_x = dest.pos_x;
           src_x = src.pos_x;
@@ -176,8 +175,8 @@ extern void
                          struct image const *const img,
                          struct slice const *const slice)
 {
-  unsigned *dbits;
-  unsigned const __far *sbits;
+  uint32_t *dbits;
+  uint32_t const __far *sbits;
   struct slice src;
   unsigned dest_x;
   unsigned src_x;
@@ -189,9 +188,6 @@ extern void
 
   do
     {
-      bmp->len_x = slice->len_x;
-      bmp->len_y = slice->len_y;
-
       src.pos_x = slice->pos_x;
       src.pos_y = slice->pos_y;
       src.len_x = slice->len_x;
@@ -201,10 +197,15 @@ extern void
 
       if (rc)
         {
+          bmp->stride = 0;
           bmp->len_x = 0;
           bmp->len_y = 0;
           break;
         }
+
+      bmp->stride = src.len_x * sizeof(uint32_t);
+      bmp->len_x = src.len_x;
+      bmp->len_y = src.len_y;
 
       delta_x = slice->len_x - src.len_x;
       delta_y = slice->len_y - src.len_y;
@@ -220,10 +221,10 @@ extern void
             }
 
           dbits
-            = (unsigned *)&((uint8_t *)bmp->bits.buf)[(bmp->stride * dest_y)];
+            = (uint32_t *)&((uint8_t *)bmp->bits.buf)[(bmp->stride * dest_y)];
 
           sbits
-            = (unsigned __far *)MK_FP(img->buf.selector, img->buf.line[src_y]);
+            = (uint32_t __far *)MK_FP(img->buf.selector, img->buf.line[src_y]);
 
           dest_x = delta_x;
           src_x = src.pos_x;

@@ -137,12 +137,16 @@ void
   Fl::window_draw_offset_x += pWindow->x();
   Fl::window_draw_offset_y += pWindow->y();
 
+  fl_push_clip(pWindow->x(), pWindow->y(), pWindow->w(), pWindow->h());
+
   return;
 }
 
 void
   Fl_Allegro_Window_Driver::draw_end()
 {
+  fl_pop_clip();
+
   Fl::window_draw_offset_x -= pWindow->x();
   Fl::window_draw_offset_y -= pWindow->y();
 
